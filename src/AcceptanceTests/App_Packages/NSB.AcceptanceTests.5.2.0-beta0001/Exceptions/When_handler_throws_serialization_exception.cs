@@ -13,13 +13,13 @@
         [Test]
         public void Should_retry_the_message_using_flr()
         {
-            var context = new Context();
+            var context = new Context { Id = Guid.NewGuid() };
 
             Scenario.Define(context)
-                    .WithEndpoint<RetryEndpoint>(b => b.Given(bus => bus.SendLocal(new MessageToBeRetried())))
+                    .WithEndpoint<RetryEndpoint>(b => b.Given((bus, ctx) => bus.SendLocal(new MessageToBeRetried { ContextId = ctx.Id })))
                     .AllowExceptions()
                     .Done(c => c.HandedOverToSlr)
-                    .Run();
+                    .Run(TimeSpan.FromMinutes(5));
 
             Assert.AreEqual(5, context.NumberOfTimesInvoked);
             Assert.IsFalse(context.SerializationFailedCalled);
@@ -27,6 +27,7 @@
 
         public class Context : ScenarioContext
         {
+            public Guid Id { get; set; }
             public int NumberOfTimesInvoked { get; set; }
             public bool HandedOverToSlr { get; set; }
             public Dictionary<string, string> HeadersOfTheFailedMessage { get; set; }
@@ -68,6 +69,10 @@
 
                 public void Handle(MessageToBeRetried message)
                 {
+                    if (message.ContextId != Context.Id)
+                    {
+                        return;
+                    }
                     Context.NumberOfTimesInvoked++;
                     throw new SerializationException();
                 }
@@ -77,8 +82,7 @@
         [Serializable]
         public class MessageToBeRetried : IMessage
         {
+            public Guid ContextId { get; set; }
         }
     }
-
-
 }
