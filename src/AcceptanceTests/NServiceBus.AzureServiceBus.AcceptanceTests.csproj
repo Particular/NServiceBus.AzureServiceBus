@@ -213,9 +213,9 @@
     <Compile Include="App_Packages\NServiceBus.AcceptanceTests..5.0.0\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Transport\NServiceBus.Azure.Transports.WindowsAzureServiceBus.csproj">
+    <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj">
       <Project>{607c3f29-58d4-4eec-bffb-668976cbb5b8}</Project>
-      <Name>NServiceBus.Azure.Transports.WindowsAzureServiceBus</Name>
+      <Name>NServiceBus.AzureServiceBus</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
