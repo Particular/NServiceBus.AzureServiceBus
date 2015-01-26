@@ -1,6 +1,6 @@
 # Azure ServiceBus Transport for NServiceBus
 
-The Azure ServoceBus transport for NServiceBus enables the use of the Azure Service Bus Brokered Messaging service as the underlying transports used by NServiceBus. 
+The Azure ServiceBus transport for NServiceBus enables the use of the Azure Service Bus Brokered Messaging service as the underlying transport used by NServiceBus. 
 
 ## Documentation
 
