@@ -2,6 +2,7 @@
 {
     using System.Linq;
     using NServiceBus.AcceptanceTesting;
+    using NServiceBus.AcceptanceTesting.Support;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -12,10 +13,13 @@
         public void Should_be_a_no_op_discriminator()
         {
             Scenario.Define<Context>()
-                    .WithEndpoint<IndividualizedEndpoint>().Done(c =>c.EndpointsStarted)
-                    .Repeat(r=>r.For(ScenarioDescriptors.Transports.Msmq))
-                    .Should(c=>Assert.AreEqual(c.EndpointName,c.Address.Split('@').First()))
-                    .Run();
+                    .WithEndpoint<IndividualizedEndpoint>().Done(c => c.EndpointsStarted)
+                    .Repeat(r => r.For(ScenarioDescriptors.Transports.Msmq))
+                    .Should(c => Assert.AreEqual(c.EndpointName, c.Address.Split('@').First()))
+                    .Run(new RunSettings
+                    {
+                        UseSeparateAppDomains = true
+                    });
         }
 
         public class Context : ScenarioContext
@@ -26,10 +30,10 @@
 
         public class IndividualizedEndpoint : EndpointConfigurationBuilder
         {
-       
+
             public IndividualizedEndpoint()
             {
-                EndpointSetup<DefaultServer>(c=>c.ScaleOut().UniqueQueuePerEndpointInstance());
+                EndpointSetup<DefaultServer>(c => c.ScaleOut().UniqueQueuePerEndpointInstance());
             }
 
             class AddressSpy : IWantToRunWhenBusStartsAndStops
