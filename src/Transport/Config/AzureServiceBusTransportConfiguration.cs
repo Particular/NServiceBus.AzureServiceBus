@@ -29,7 +29,8 @@
 
             ServiceBusEnvironment.SystemConnectivity.Mode = (ConnectivityMode)Enum.Parse(typeof(ConnectivityMode), configSection.ConnectivityMode);
 
-            return NamingConventions.QueueNamingConvention(settings, null, settings.Get<string>("NServiceBus.LocalAddress"), false);
+            var queueName = settings.HasSetting("NServiceBus.LocalAddress") ? settings.Get<string>("NServiceBus.LocalAddress") : settings.EndpointName();
+            return NamingConventions.QueueNamingConvention(settings, null, queueName, false);
             
         }
 
