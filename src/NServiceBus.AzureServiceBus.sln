@@ -3,18 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Azure.Transports.WindowsAzureServiceBus", "Transport\NServiceBus.Azure.Transports.WindowsAzureServiceBus.csproj", "{607C3F29-58D4-4EEC-BFFB-668976CBB5B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBus", "Transport\NServiceBus.AzureServiceBus.csproj", "{607C3F29-58D4-4EEC-BFFB-668976CBB5B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Azure.WindowsAzureServiceBus.AcceptanceTests", "AcceptanceTests\NServiceBus.Azure.WindowsAzureServiceBus.AcceptanceTests.csproj", "{54FCA3C9-F153-4FDF-A7F6-46595275AE6E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBus.AcceptanceTests", "AcceptanceTests\NServiceBus.AzureServiceBus.AcceptanceTests.csproj", "{54FCA3C9-F153-4FDF-A7F6-46595275AE6E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{52AA5A83-8EF1-4B86-8CC2-1B64D432458A}"
 	ProjectSection(SolutionItems) = preProject
 		nuget.config = nuget.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Azure.WindowsAzureServiceBus.Tests", "Tests\NServiceBus.Azure.WindowsAzureServiceBus.Tests.csproj", "{0A5B4346-3C24-4192-B47C-B35706954907}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBus.Deployment", "Deployment\NServiceBus.AzureServiceBus.Deployment.csproj", "{82B9D3D2-C2B9-4BC1-AD78-DD4B470DAEE4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBus.Tests", "Tests\NServiceBus.AzureServiceBus.Tests.csproj", "{0A5B4346-3C24-4192-B47C-B35706954907}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,10 +32,6 @@ Global
 		{0A5B4346-3C24-4192-B47C-B35706954907}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A5B4346-3C24-4192-B47C-B35706954907}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A5B4346-3C24-4192-B47C-B35706954907}.Release|Any CPU.Build.0 = Release|Any CPU
-		{82B9D3D2-C2B9-4BC1-AD78-DD4B470DAEE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{82B9D3D2-C2B9-4BC1-AD78-DD4B470DAEE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{82B9D3D2-C2B9-4BC1-AD78-DD4B470DAEE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{82B9D3D2-C2B9-4BC1-AD78-DD4B470DAEE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,10 +11,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
         {
             get
             {
-                return (settings, messagetype, endpointname, doNotIndividualize) =>
+                return (settings, messagetype, queueName, doNotIndividualize) =>
                 {
-                    var queueName = endpointname;
-
                     var configSection = settings != null ? settings.GetConfigSection<AzureServiceBusQueueConfig>() : null;
 
                     if (configSection != null && !string.IsNullOrEmpty(configSection.QueueName))
