@@ -20,7 +20,7 @@
                         Assert.True(c.InvokedAt.HasValue);
                         Assert.Greater(c.InvokedAt.Value - c.RequestedAt, TimeSpan.FromSeconds(5));
                     })
-                  .Run(TimeSpan.FromSeconds(20));
+                  .Run();
         }
 
         public class Context : ScenarioContext

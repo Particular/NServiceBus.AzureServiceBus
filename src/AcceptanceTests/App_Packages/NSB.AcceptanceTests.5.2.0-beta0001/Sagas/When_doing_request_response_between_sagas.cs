@@ -34,7 +34,7 @@ namespace NServiceBus.AcceptanceTests.Sagas
             Scenario.Define(context)
                     .WithEndpoint<Endpoint>(b => b.Given(bus => bus.SendLocal(new InitiateRequestingSaga())))
                     .Done(c => c.DidRequestingSagaGetTheResponse)
-                    .Run(new RunSettings { UseSeparateAppDomains = true, TestExecutionTimeout = TimeSpan.FromSeconds(15) });
+                    .Run(new RunSettings { UseSeparateAppDomains = true});
 
             Assert.True(context.DidRequestingSagaGetTheResponse);
         }
