@@ -171,9 +171,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         {
             try
             {
-                var ass = Assembly.LoadWithPartialName("Microsoft.WindowsAzure.ServiceRuntime");
-                isAvailable = ass != null;
-                return ass;
+#pragma warning disable 618
+                var asm = Assembly.LoadWithPartialName("Microsoft.WindowsAzure.ServiceRuntime");
+#pragma warning restore 618
+                isAvailable = asm != null;
+                return asm;
             }
             catch (FileNotFoundException)
             {
