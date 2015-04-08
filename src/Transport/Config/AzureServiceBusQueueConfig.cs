@@ -17,7 +17,7 @@ namespace NServiceBus.Config
             }
             set
             {
-                logger.Warn("AzureServiceBusQueueConfig.QueueName is deprecated and will be removed in version 7.0. Use `configuration.EndpointName(name)` instead to define enpoint and input queue names.");
+                logger.Warn("AzureServiceBusQueueConfig.QueueName is deprecated and will be removed in version 7.0. Use `configuration.EndpointName(name)` instead to define endpoint and input queue names.");
                 this["QueueName"] = value;
             }
         }
