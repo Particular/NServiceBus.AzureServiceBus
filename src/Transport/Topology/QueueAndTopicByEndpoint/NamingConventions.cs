@@ -15,11 +15,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
                 {
                     var configSection = settings != null ? settings.GetConfigSection<AzureServiceBusQueueConfig>() : null;
 
-                    if (configSection != null && !string.IsNullOrEmpty(configSection.QueueName))
-                    {
-                        queueName = configSection.QueueName;
-                    }
-
                     queueName = SanitizeEntityName(queueName);
 
                     if (queueName.Length >= 283) // 290 - a spot for the "-" & 6 digits for the individualizer
