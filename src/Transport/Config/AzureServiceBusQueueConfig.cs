@@ -1,10 +1,13 @@
 namespace NServiceBus.Config
 {
     using System.Configuration;
-    using Azure.Transports.WindowsAzureServiceBus;
+    using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
+    using NServiceBus.Logging;
 
     public class AzureServiceBusQueueConfig : ConfigurationSection
     {
+        ILog logger = LogManager.GetLogger<AzureServiceBusQueueConfig>();
+
         [ConfigurationProperty("QueueName", IsRequired = false, DefaultValue = null)]
         public string QueueName
         {
@@ -14,6 +17,7 @@ namespace NServiceBus.Config
             }
             set
             {
+                logger.Warn("AzureServiceBusQueueConfig.QueueName is deprecated and will be removed in version 7.0. Use `configuration.EndpointName(name)` instead to define endpoint and input queue names.");
                 this["QueueName"] = value;
             }
         }
@@ -213,6 +217,7 @@ namespace NServiceBus.Config
             }
             set
             {
+                logger.Warn("AzureServiceBusQueueConfig.QueuePerInstance is deprecated and will be removed in version 7.0. Use `configuration.ScaleOut().UniqueQueuePerEndpointInstance()` instead.");
                 this["QueuePerInstance"] = value;
             }
         }
