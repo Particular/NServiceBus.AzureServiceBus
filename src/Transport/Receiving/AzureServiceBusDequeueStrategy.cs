@@ -113,7 +113,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                     // due to clock drift we may receive messages that aren't due yet according to our clock, let's put this back
                     if (brokeredMessage.ScheduledEnqueueTimeUtc > DateTime.UtcNow)
                     {
-                        pendingMessages.Add(brokeredMessage);
+                        pendingMessages.Add(brokeredMessage, cancellationToken);
                         continue;
                     }
 
