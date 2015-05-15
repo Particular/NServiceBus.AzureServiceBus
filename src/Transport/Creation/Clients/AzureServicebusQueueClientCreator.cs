@@ -21,7 +21,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         public QueueClient Create(string description, MessagingFactory factory)
         {
             var client = factory.CreateQueueClient(description, ShouldRetry() ? ReceiveMode.PeekLock : ReceiveMode.ReceiveAndDelete);
-            client.PrefetchCount = BatchSize; // todo make configurable
+            client.PrefetchCount = BatchSize;
             return client;
         }
 

@@ -104,65 +104,61 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                BrokeredMessage brokeredMessage;
-
-                while (!pendingMessages.TryTake(out brokeredMessage, 10000, cancellationToken)) ;
-
-                if (cancellationToken.IsCancellationRequested)
+                BrokeredMessage brokeredMessage = pendingMessages.Take(cancellationToken);
+                
+                if (!cancellationToken.IsCancellationRequested)
                 {
-                    continue;
-                }
+                    Exception exception = null;
 
-                Exception exception = null;
-
-                // due to clock drift we may receive messages that aren't due yet according to our clock, let's put this back
-                if (brokeredMessage.ScheduledEnqueueTimeUtc > DateTime.UtcNow)
-                {
-                    pendingMessages.Add(brokeredMessage);
-                    continue;
-                }
-
-
-                if (!RenewLockIfNeeded(brokeredMessage)) continue;
-
-                var transportMessage = brokeredMessage.ToTransportMessage();
-
-                try
-                {
-                    if (settings.IsTransactional)
+                    // due to clock drift we may receive messages that aren't due yet according to our clock, let's put this back
+                    if (brokeredMessage.ScheduledEnqueueTimeUtc > DateTime.UtcNow)
                     {
-                        using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
-                        {
-                            Transaction.Current.EnlistVolatile(new ReceiveResourceManager(brokeredMessage), EnlistmentOptions.None);
+                        pendingMessages.Add(brokeredMessage);
+                        continue;
+                    }
 
-                            if (transportMessage != null)
+
+                    if (!RenewLockIfNeeded(brokeredMessage)) continue;
+
+                    var transportMessage = brokeredMessage.ToTransportMessage();
+
+                    try
+                    {
+                        if (settings.IsTransactional)
+                        {
+                            using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
                             {
-                                if (tryProcessMessage(transportMessage))
+                                Transaction.Current.EnlistVolatile(new ReceiveResourceManager(brokeredMessage), EnlistmentOptions.None);
+
+                                if (transportMessage != null)
                                 {
-                                    scope.Complete();
+                                    if (tryProcessMessage(transportMessage))
+                                    {
+                                        scope.Complete();
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        if (transportMessage != null)
+                        else
                         {
-                            tryProcessMessage(transportMessage);
+                            if (transportMessage != null)
+                            {
+                                tryProcessMessage(transportMessage);
+                            }
                         }
-                    }
 
-                    circuitBreaker.Success();
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                }
-                finally
-                {
-                    if (!cancellationToken.IsCancellationRequested && (transportMessage != null || exception != null))
+                        circuitBreaker.Success();
+                    }
+                    catch (Exception ex)
                     {
-                        endProcessMessage(transportMessage, exception);
+                        exception = ex;
+                    }
+                    finally
+                    {
+                        if (!cancellationToken.IsCancellationRequested && (transportMessage != null || exception != null))
+                        {
+                            endProcessMessage(transportMessage, exception);
+                        }
                     }
                 }
             }
@@ -300,7 +296,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 // those are internal to the sdk
             }
 
-            pendingMessages.Add(brokeredMessage);
+            pendingMessages.Add(brokeredMessage, tokenSource.Token);
         }
 
 
