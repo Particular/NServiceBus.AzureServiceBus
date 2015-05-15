@@ -4,7 +4,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
     using System.Collections.Concurrent;
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
-    using System.Collections;
     using System.Threading;
     using System.Threading.Tasks;
     using CircuitBreakers;
@@ -24,16 +23,14 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         Func<TransportMessage, bool> tryProcessMessage;
         Action<TransportMessage, Exception> endProcessMessage;
         TransactionOptions transactionOptions;
-        Queue pendingMessages = Queue.Synchronized(new Queue());
+
+        BlockingCollection<BrokeredMessage> pendingMessages;
+
         ConcurrentDictionary<string, INotifyReceivedBrokeredMessages> notifiers = new ConcurrentDictionary<string, INotifyReceivedBrokeredMessages>();
         CancellationTokenSource tokenSource;
         RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
 
         ILog logger = LogManager.GetLogger(typeof(AzureServiceBusDequeueStrategy));
-        
-        const int PeekInterval = 50;
-        const int MaximumWaitTimeWhenIdle = 1000;
-        int timeToDelayNextPeek;
 
         public AzureServiceBusDequeueStrategy(ITopology topology, CriticalError criticalError)
         {
@@ -41,7 +38,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             this.criticalError = criticalError;
             circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker("AzureStoragePollingDequeueStrategy", TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure ServiceBus.", ex));
         }
-        
+
+        public int BatchSize { get; set; }
+
         /// <summary>
         /// Initializes the <see cref="IDequeueMessages"/>.
         /// </summary>
@@ -65,8 +64,10 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         /// <param name="maximumConcurrencyLevel">Indicates the maximum concurrency level this <see cref="IDequeueMessages"/> is able to support.</param>
         public virtual void Start(int maximumConcurrencyLevel)
         {
+            pendingMessages = new BlockingCollection<BrokeredMessage>(BatchSize * maximumConcurrencyLevel);
+
             CreateAndTrackNotifier();
-            
+
             tokenSource = new CancellationTokenSource();
 
             for (var i = 0; i < maximumConcurrencyLevel; i++)
@@ -82,18 +83,18 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             Task.Factory
                 .StartNew(TryProcessMessage, token, token, TaskCreationOptions.LongRunning, TaskScheduler.Default)
                 .ContinueWith(t =>
+                {
+                    if (t.Exception != null)
                     {
-                        if (t.Exception != null)
+                        t.Exception.Handle(ex =>
                         {
-                            t.Exception.Handle(ex =>
-                                {
-                                    circuitBreaker.Failure(ex);
-                                    return true;
-                                });
-                        }
+                            circuitBreaker.Failure(ex);
+                            return true;
+                        });
+                    }
 
-                        StartThread();
-                    }, TaskContinuationOptions.OnlyOnFaulted);
+                    StartThread();
+                }, TaskContinuationOptions.OnlyOnFaulted);
         }
 
 
@@ -103,69 +104,61 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                 BrokeredMessage brokeredMessage = null;
-
-                 if (pendingMessages.Count > 0) brokeredMessage = pendingMessages.Dequeue() as BrokeredMessage;
+                BrokeredMessage brokeredMessage = pendingMessages.Take(cancellationToken);
                 
-                 if (brokeredMessage == null)
-                 {
-                     if (timeToDelayNextPeek < MaximumWaitTimeWhenIdle) timeToDelayNextPeek += PeekInterval;
-
-                     Thread.Sleep(timeToDelayNextPeek);
-                     continue;
-                 }
-
-                 timeToDelayNextPeek = 0;
-                 Exception exception = null;
-
-                // due to clock drift we may receive messages that aren't due yet according to our clock, let's put this back
-                if (brokeredMessage.ScheduledEnqueueTimeUtc > DateTime.UtcNow) 
+                if (!cancellationToken.IsCancellationRequested)
                 {
-                    pendingMessages.Enqueue(brokeredMessage);
-                    continue;
-                }
+                    Exception exception = null;
 
-
-                if (!RenewLockIfNeeded(brokeredMessage)) continue;
-
-                var transportMessage = brokeredMessage.ToTransportMessage();
-
-                try
-                {
-                    if (settings.IsTransactional)
+                    // due to clock drift we may receive messages that aren't due yet according to our clock, let's put this back
+                    if (brokeredMessage.ScheduledEnqueueTimeUtc > DateTime.UtcNow)
                     {
-                        using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
-                        {
-                            Transaction.Current.EnlistVolatile(new ReceiveResourceManager(brokeredMessage), EnlistmentOptions.None);
+                        pendingMessages.Add(brokeredMessage, cancellationToken);
+                        continue;
+                    }
 
-                            if (transportMessage != null)
+
+                    if (!RenewLockIfNeeded(brokeredMessage)) continue;
+
+                    var transportMessage = brokeredMessage.ToTransportMessage();
+
+                    try
+                    {
+                        if (settings.IsTransactional)
+                        {
+                            using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
                             {
-                                if (tryProcessMessage(transportMessage))
+                                Transaction.Current.EnlistVolatile(new ReceiveResourceManager(brokeredMessage), EnlistmentOptions.None);
+
+                                if (transportMessage != null)
                                 {
-                                    scope.Complete();
+                                    if (tryProcessMessage(transportMessage))
+                                    {
+                                        scope.Complete();
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        if (transportMessage != null)
+                        else
                         {
-                            tryProcessMessage(transportMessage);
+                            if (transportMessage != null)
+                            {
+                                tryProcessMessage(transportMessage);
+                            }
                         }
-                    }
 
-                    circuitBreaker.Success();
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                }
-                finally
-                {
-                    if (!cancellationToken.IsCancellationRequested && (transportMessage != null || exception != null))
+                        circuitBreaker.Success();
+                    }
+                    catch (Exception ex)
                     {
-                        endProcessMessage(transportMessage, exception);
+                        exception = ex;
+                    }
+                    finally
+                    {
+                        if (!cancellationToken.IsCancellationRequested && (transportMessage != null || exception != null))
+                        {
+                            endProcessMessage(transportMessage, exception);
+                        }
                     }
                 }
             }
@@ -203,7 +196,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 // sadly enough I can't find a public property that checks who the receiver was or if the locktoken has been set
                 // those are internal to the sdk
             }
-            
+
             return true;
         }
 
@@ -235,8 +228,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
         void NotifierFaulted(object sender, EventArgs e)
         {
-           RemoveNotifier(null, address);
-           CreateAndTrackNotifier();
+            RemoveNotifier(null, address);
+            CreateAndTrackNotifier();
         }
 
         public void TrackNotifier(Type eventType, Address original, INotifyReceivedBrokeredMessages notifier)
@@ -260,7 +253,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         {
             var key = CreateKeyFor(eventType, original);
             if (!notifiers.ContainsKey(key)) return;
-            
+
             INotifyReceivedBrokeredMessages toRemove;
             if (notifiers.TryRemove(key, out toRemove))
             {
@@ -287,8 +280,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
         void EnqueueMessage(BrokeredMessage brokeredMessage)
         {
-           // while (pendingMessages.Count > 2 * maximumConcurrencyLevel){Thread.Sleep(10);}
-
             try
             {
                 if (brokeredMessage.LockedUntilUtc <= DateTime.UtcNow)
@@ -300,15 +291,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             }
             catch (InvalidOperationException)
             {
-               // if the message was received without a peeklock mechanism you're not allowed to call LockedUntilUtc
-               // sadly enough I can't find a public property that checks who the receiver was or if the locktoken has been set
-               // those are internal to the sdk
+                // if the message was received without a peeklock mechanism you're not allowed to call LockedUntilUtc
+                // sadly enough I can't find a public property that checks who the receiver was or if the locktoken has been set
+                // those are internal to the sdk
             }
 
-            pendingMessages.Enqueue(brokeredMessage);
+            pendingMessages.Add(brokeredMessage, tokenSource.Token);
         }
 
-       
+
 
         string CreateKeyFor(Type eventType, Address original)
         {
