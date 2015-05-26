@@ -28,6 +28,7 @@
         void ConfigureReceiveInfrastructure(FeatureConfigurationContext context, AzureServiceBusQueueConfig configSection)
         {
             context.Container.ConfigureComponent<AzureServiceBusDequeueStrategy>(DependencyLifecycle.InstancePerCall);
+            context.Container.ConfigureProperty<AzureServiceBusDequeueStrategy>(t => t.BatchSize, configSection.BatchSize);
 
             context.Container.ConfigureComponent<AzureServiceBusQueueNotifier>(DependencyLifecycle.InstancePerCall);
             context.Container.ConfigureProperty<AzureServiceBusQueueNotifier>(t => t.ServerWaitTime, configSection.ServerWaitTime);
@@ -64,6 +65,7 @@
 
             context.Container.ConfigureComponent<ManageQueueClientsLifeCycle>(DependencyLifecycle.SingleInstance);
             context.Container.ConfigureComponent<AzureServicebusQueueClientCreator>(DependencyLifecycle.InstancePerCall);
+            context.Container.ConfigureProperty<AzureServicebusQueueClientCreator>(t => t.BatchSize, configSection.BatchSize);
 
             context.Container.ConfigureComponent<AzureServiceBusTopologyCreator>(DependencyLifecycle.InstancePerCall);
 
@@ -94,7 +96,7 @@
             context.Container.ConfigureProperty<AzureServiceBusTopicCreator>(t => t.EnablePartitioning, configSection.EnablePartitioning);
 
             context.Container.ConfigureComponent<AzureServicebusSubscriptionClientCreator>(DependencyLifecycle.InstancePerCall);
-            
+
             context.Container.ConfigureComponent<AzureServiceBusSubscriptionCreator>(DependencyLifecycle.InstancePerCall);
             context.Container.ConfigureProperty<AzureServiceBusSubscriptionCreator>(t => t.LockDuration, TimeSpan.FromMilliseconds(configSection.LockDuration));
             context.Container.ConfigureProperty<AzureServiceBusSubscriptionCreator>(t => t.RequiresSession, configSection.RequiresSession);
