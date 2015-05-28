@@ -96,6 +96,7 @@
             context.Container.ConfigureProperty<AzureServiceBusTopicCreator>(t => t.EnablePartitioning, configSection.EnablePartitioning);
 
             context.Container.ConfigureComponent<AzureServicebusSubscriptionClientCreator>(DependencyLifecycle.InstancePerCall);
+            context.Container.ConfigureProperty<AzureServicebusSubscriptionClientCreator>(t => t.BatchSize, configSection.BatchSize);
 
             context.Container.ConfigureComponent<AzureServiceBusSubscriptionCreator>(DependencyLifecycle.InstancePerCall);
             context.Container.ConfigureProperty<AzureServiceBusSubscriptionCreator>(t => t.LockDuration, TimeSpan.FromMilliseconds(configSection.LockDuration));
