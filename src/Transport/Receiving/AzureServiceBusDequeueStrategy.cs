@@ -103,7 +103,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                BrokeredMessage brokeredMessage = pendingMessages.Take(cancellationToken);
+                var brokeredMessage = pendingMessages.Take(cancellationToken);
 
                 if (cancellationToken.IsCancellationRequested)
                 {
