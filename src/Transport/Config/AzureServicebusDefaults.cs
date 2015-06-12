@@ -98,6 +98,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         /// <summary>
         ///
         /// </summary>
-        public const bool DefaultSupportOrdering = false;
+        public const bool DefaultSupportOrdering = true;
     }
 }
