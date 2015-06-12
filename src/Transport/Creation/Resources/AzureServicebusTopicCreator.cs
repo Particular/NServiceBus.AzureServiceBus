@@ -24,6 +24,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         public int MaxDeliveryCount { get; set; }
         public bool EnableBatchedOperations { get; set; }
         public bool EnablePartitioning { get; set; }
+        public bool SupportOrdering { get; set; }
 
         ILog logger = LogManager.GetLogger(typeof(AzureServiceBusTopicCreator));
 
@@ -45,7 +46,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 DefaultMessageTimeToLive = DefaultMessageTimeToLive,
                 DuplicateDetectionHistoryTimeWindow = DuplicateDetectionHistoryTimeWindow,
                 EnableBatchedOperations = EnableBatchedOperations,
-                EnablePartitioning = EnablePartitioning
+                EnablePartitioning = EnablePartitioning,
+                SupportOrdering = SupportOrdering
             };
 
             try

@@ -80,6 +80,7 @@
             context.Container.ConfigureProperty<AzureServiceBusQueueCreator>(t => t.MaxDeliveryCount, configSection.MaxDeliveryCount);
             context.Container.ConfigureProperty<AzureServiceBusQueueCreator>(t => t.EnableBatchedOperations, configSection.EnableBatchedOperations);
             context.Container.ConfigureProperty<AzureServiceBusQueueCreator>(t => t.EnablePartitioning, configSection.EnablePartitioning);
+            context.Container.ConfigureProperty<AzureServiceBusQueueCreator>(t => t.SupportOrdering, configSection.SupportOrdering);
 
             context.Container.ConfigureComponent<ManageTopicClientsLifeCycle>(DependencyLifecycle.SingleInstance);
             context.Container.ConfigureComponent<AzureServicebusTopicClientCreator>(DependencyLifecycle.InstancePerCall);
@@ -94,6 +95,7 @@
             context.Container.ConfigureProperty<AzureServiceBusTopicCreator>(t => t.MaxDeliveryCount, configSection.MaxDeliveryCount);
             context.Container.ConfigureProperty<AzureServiceBusTopicCreator>(t => t.EnableBatchedOperations, configSection.EnableBatchedOperations);
             context.Container.ConfigureProperty<AzureServiceBusTopicCreator>(t => t.EnablePartitioning, configSection.EnablePartitioning);
+            context.Container.ConfigureProperty<AzureServiceBusTopicCreator>(t => t.SupportOrdering, configSection.SupportOrdering);
 
             context.Container.ConfigureComponent<AzureServicebusSubscriptionClientCreator>(DependencyLifecycle.InstancePerCall);
             context.Container.ConfigureProperty<AzureServicebusSubscriptionClientCreator>(t => t.BatchSize, configSection.BatchSize);
