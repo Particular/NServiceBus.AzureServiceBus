@@ -20,6 +20,7 @@
         public const bool DefaultRequiresDuplicateDetection = false;
         public const bool DefaultRequiresSession = false;
         public const int DefaultServerWaitTime = 300;
+        public const bool DefaultSupportOrdering = true;
         public const bool EnableDeadLetteringOnFilterEvaluationExceptions = false;
         public AzureServicebusDefaults() { }
     }
@@ -199,5 +200,7 @@ namespace NServiceBus.Config
         public int ServerWaitTime { get; set; }
         [System.Configuration.ConfigurationPropertyAttribute("ServiceNamespace", IsRequired=false)]
         public string ServiceNamespace { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("SupportOrdering", DefaultValue=true, IsRequired=false)]
+        public bool SupportOrdering { get; set; }
     }
 }

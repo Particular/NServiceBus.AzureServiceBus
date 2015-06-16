@@ -18,6 +18,7 @@
         public int MaxDeliveryCount { get; set; }
         public bool EnableBatchedOperations { get; set; }
         public bool EnablePartitioning { get; set; }
+        public bool SupportOrdering { get; set; }
 
         ICreateNamespaceManagers createNamespaceManagers;
         Configure config;
@@ -49,7 +50,8 @@
                 DuplicateDetectionHistoryTimeWindow = DuplicateDetectionHistoryTimeWindow,
                 MaxDeliveryCount = MaxDeliveryCount,
                 EnableBatchedOperations = EnableBatchedOperations,
-                EnablePartitioning = EnablePartitioning
+                EnablePartitioning = EnablePartitioning,
+                SupportOrdering = SupportOrdering
             };
 
             try
@@ -117,7 +119,7 @@
                 logger.InfoFormat("Checking namespace for existance of the queue '{0}'", path);
                 return namespaceClient.QueueExists(key);
             });
-            
+
             logger.InfoFormat("Determined that the queue '{0}' {1}", path, exists ? "exists" : "does not exist");
 
             return exists;

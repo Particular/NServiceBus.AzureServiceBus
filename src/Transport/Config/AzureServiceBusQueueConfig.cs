@@ -286,5 +286,18 @@ namespace NServiceBus.Config
                 this["EnablePartitioning"] = value;
             }
         }
+
+        [ConfigurationProperty("SupportOrdering", IsRequired = false, DefaultValue = AzureServicebusDefaults.DefaultSupportOrdering)]
+        public bool SupportOrdering
+        {
+            get
+            {
+                return (bool)this["SupportOrdering"];
+            }
+            set
+            {
+                this["SupportOrdering"] = value;
+            }
+        }
    }
 }
