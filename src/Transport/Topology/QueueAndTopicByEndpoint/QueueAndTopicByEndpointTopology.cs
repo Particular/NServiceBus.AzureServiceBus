@@ -57,7 +57,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
             var publisherAddress = NamingConventions.PublisherAddressConventionForSubscriptions(config.Settings, address);
             var notifier = config.Builder.Build<AzureServiceBusSubscriptionNotifier>();
             notifier.SubscriptionClient = CreateSubscriptionClient(eventType, publisherAddress);
-            //todo: notifier.BatchSize = maximumConcurrencyLevel;
             notifier.MessageType = eventType;
             notifier.Address = publisherAddress;
             return notifier;

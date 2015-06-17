@@ -14,6 +14,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{52AA5A83
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBus.Tests", "Tests\NServiceBus.AzureServiceBus.Tests.csproj", "{0A5B4346-3C24-4192-B47C-B35706954907}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NugetPackageDefinition", "NugetPackageDefinition", "{7FC54FB1-D732-49B2-A5F1-3EEE3F9A36F2}"
+	ProjectSection(SolutionItems) = preProject
+		..\packaging\nuget\nservicebus.azureservicebus.nuspec = ..\packaging\nuget\nservicebus.azureservicebus.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

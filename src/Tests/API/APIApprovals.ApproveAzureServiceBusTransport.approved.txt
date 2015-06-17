@@ -1,0 +1,206 @@
+﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
+{
+    
+    public class AzureServicebusDefaults
+    {
+        public const int DefaultBackoffTimeInSeconds = 10;
+        public const int DefaultBatchSize = 1000;
+        public const string DefaultConnectionString = "";
+        public const string DefaultConnectivityMode = "Tcp";
+        public const long DefaultDefaultMessageTimeToLive = 92233720368547;
+        public const int DefaultDuplicateDetectionHistoryTimeWindow = 600000;
+        public const bool DefaultEnableBatchedOperations = true;
+        public const bool DefaultEnableDeadLetteringOnMessageExpiration = false;
+        public const bool DefaultEnablePartitioning = false;
+        public const string DefaultIssuerName = "owner";
+        public const int DefaultLockDuration = 30000;
+        public const int DefaultMaxDeliveryCount = 6;
+        public const long DefaultMaxSizeInMegabytes = 1024;
+        public const bool DefaultQueuePerInstance = false;
+        public const bool DefaultRequiresDuplicateDetection = false;
+        public const bool DefaultRequiresSession = false;
+        public const int DefaultServerWaitTime = 300;
+        public const bool DefaultSupportOrdering = true;
+        public const bool EnableDeadLetteringOnFilterEvaluationExceptions = false;
+        public AzureServicebusDefaults() { }
+    }
+    public class AzureServiceBusTopologyCreator : NServiceBus.Transports.ICreateQueues
+    {
+        public AzureServiceBusTopologyCreator(NServiceBus.Azure.Transports.WindowsAzureServiceBus.ITopology topology) { }
+        public void CreateQueueIfNecessary(NServiceBus.Address address, string account) { }
+    }
+    public class DefaultTopology : NServiceBus.Features.Feature
+    {
+        public DefaultTopology() { }
+        protected override void Setup(NServiceBus.Features.FeatureConfigurationContext context) { }
+    }
+    public interface ICreateMessagingFactories
+    {
+        Microsoft.ServiceBus.Messaging.MessagingFactory Create(NServiceBus.Address address);
+    }
+    public interface ICreateNamespaceManagers
+    {
+        Microsoft.ServiceBus.NamespaceManager Create(string serviceBusNamespace);
+    }
+    public interface ICreateQueueClients
+    {
+        Microsoft.ServiceBus.Messaging.QueueClient Create(Microsoft.ServiceBus.Messaging.QueueDescription description, Microsoft.ServiceBus.Messaging.MessagingFactory factory);
+        Microsoft.ServiceBus.Messaging.QueueClient Create(string description, Microsoft.ServiceBus.Messaging.MessagingFactory factory);
+    }
+    public interface ICreateSubscriptionClients
+    {
+        Microsoft.ServiceBus.Messaging.SubscriptionClient Create(Microsoft.ServiceBus.Messaging.SubscriptionDescription description, Microsoft.ServiceBus.Messaging.MessagingFactory factory);
+    }
+    public interface ICreateSubscriptions
+    {
+        Microsoft.ServiceBus.Messaging.SubscriptionDescription Create(NServiceBus.Address topic, System.Type eventType, string subscriptionname);
+        void Delete(NServiceBus.Address topic, string subscriptionname);
+    }
+    public interface ICreateTopicClients
+    {
+        Microsoft.ServiceBus.Messaging.TopicClient Create(Microsoft.ServiceBus.Messaging.TopicDescription topic, Microsoft.ServiceBus.Messaging.MessagingFactory factory);
+        Microsoft.ServiceBus.Messaging.TopicClient Create(string topic, Microsoft.ServiceBus.Messaging.MessagingFactory factory);
+    }
+    public interface IManageMessagingFactoriesLifecycle
+    {
+        Microsoft.ServiceBus.Messaging.MessagingFactory Get(NServiceBus.Address address);
+    }
+    public interface IManageQueueClientsLifecycle
+    {
+        Microsoft.ServiceBus.Messaging.QueueClient Get(NServiceBus.Address address);
+    }
+    public interface IManageSubscriptionClientsLifecycle
+    {
+        Microsoft.ServiceBus.Messaging.TopicClient Get(NServiceBus.Address address);
+    }
+    public interface IManageTopicClientsLifecycle
+    {
+        Microsoft.ServiceBus.Messaging.TopicClient Get(NServiceBus.Address address);
+    }
+    public interface INotifyReceivedBrokeredMessages
+    {
+        NServiceBus.Address Address { get; set; }
+        System.Type MessageType { get; set; }
+        public event System.EventHandler Faulted;
+        void Start(System.Action<Microsoft.ServiceBus.Messaging.BrokeredMessage> tryProcessMessage, System.Action<System.Exception> errorProcessingMessage);
+        void Stop();
+    }
+    public interface IPublishBrokeredMessages
+    {
+        void Publish(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage);
+    }
+    public interface ISendBrokeredMessages
+    {
+        void Send(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage);
+    }
+    public interface ITopology
+    {
+        void Create(NServiceBus.Address address);
+        NServiceBus.Azure.Transports.WindowsAzureServiceBus.IPublishBrokeredMessages GetPublisher(NServiceBus.Address local);
+        NServiceBus.Azure.Transports.WindowsAzureServiceBus.INotifyReceivedBrokeredMessages GetReceiver(NServiceBus.Address address);
+        NServiceBus.Azure.Transports.WindowsAzureServiceBus.ISendBrokeredMessages GetSender(NServiceBus.Address destination);
+        void Initialize(NServiceBus.Settings.ReadOnlySettings setting);
+        NServiceBus.Azure.Transports.WindowsAzureServiceBus.INotifyReceivedBrokeredMessages Subscribe(System.Type eventType, NServiceBus.Address address);
+        void Unsubscribe(NServiceBus.Azure.Transports.WindowsAzureServiceBus.INotifyReceivedBrokeredMessages notifier);
+    }
+    public class MessageTooLargeException : System.Exception
+    {
+        public MessageTooLargeException() { }
+        public MessageTooLargeException(string message) { }
+        public MessageTooLargeException(string message, System.Exception inner) { }
+        protected MessageTooLargeException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+    }
+    public class RoleEnvironmentUnavailableException : System.Exception
+    {
+        public RoleEnvironmentUnavailableException() { }
+        public RoleEnvironmentUnavailableException(string message) { }
+        public RoleEnvironmentUnavailableException(string message, System.Exception inner) { }
+        protected RoleEnvironmentUnavailableException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+    }
+    public class SubscriptionAlreadyInUseException : System.Exception
+    {
+        public SubscriptionAlreadyInUseException() { }
+        public SubscriptionAlreadyInUseException(string message) { }
+        public SubscriptionAlreadyInUseException(string message, System.Exception inner) { }
+        protected SubscriptionAlreadyInUseException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+    }
+}
+namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.Transports
+{
+    
+    public interface ICreateQueues
+    {
+        Microsoft.ServiceBus.Messaging.QueueDescription Create(NServiceBus.Address address);
+    }
+    public interface ICreateTopics
+    {
+        Microsoft.ServiceBus.Messaging.TopicDescription Create(NServiceBus.Address address);
+    }
+}
+namespace NServiceBus
+{
+    
+    public class AzureServiceBusTransport : NServiceBus.Transports.TransportDefinition
+    {
+        public AzureServiceBusTransport() { }
+        protected override void Configure(NServiceBus.BusConfiguration config) { }
+    }
+    public class static ConfigureAzureServiceBusMessageQueue
+    {
+        [System.ObsoleteAttribute("Please use `config.UseTransport<AzureServiceBus>()` instead. Will be removed in v" +
+            "ersion 7.0.0.", true)]
+        public static NServiceBus.Configure AzureServiceBusMessageQueue(this NServiceBus.Configure config) { }
+    }
+}
+namespace NServiceBus.Config
+{
+    
+    public class AzureServiceBusQueueConfig : System.Configuration.ConfigurationSection
+    {
+        public AzureServiceBusQueueConfig() { }
+        [System.Configuration.ConfigurationPropertyAttribute("BackoffTimeInSeconds", DefaultValue=10, IsRequired=false)]
+        public int BackoffTimeInSeconds { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("BatchSize", DefaultValue=1000, IsRequired=false)]
+        public int BatchSize { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("ConnectionString", DefaultValue="", IsRequired=false)]
+        public string ConnectionString { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("ConnectivityMode", DefaultValue="Tcp", IsRequired=false)]
+        public string ConnectivityMode { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("DefaultMessageTimeToLive", DefaultValue=92233720368547, IsRequired=false)]
+        public long DefaultMessageTimeToLive { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("DuplicateDetectionHistoryTimeWindow", DefaultValue=600000, IsRequired=false)]
+        public int DuplicateDetectionHistoryTimeWindow { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("EnableBatchedOperations", DefaultValue=true, IsRequired=false)]
+        public bool EnableBatchedOperations { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("EnableDeadLetteringOnFilterEvaluationExceptions", DefaultValue=false, IsRequired=false)]
+        public bool EnableDeadLetteringOnFilterEvaluationExceptions { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("EnableDeadLetteringOnMessageExpiration", DefaultValue=false, IsRequired=false)]
+        public bool EnableDeadLetteringOnMessageExpiration { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("EnablePartitioning", DefaultValue=false, IsRequired=false)]
+        public bool EnablePartitioning { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("IssuerKey", IsRequired=false)]
+        public string IssuerKey { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("IssuerName", DefaultValue="owner", IsRequired=false)]
+        public string IssuerName { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("LockDuration", DefaultValue=30000, IsRequired=false)]
+        public int LockDuration { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("MaxDeliveryCount", DefaultValue=6, IsRequired=false)]
+        public int MaxDeliveryCount { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("MaxSizeInMegabytes", DefaultValue=1024, IsRequired=false)]
+        public long MaxSizeInMegabytes { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("QueueName", DefaultValue=null, IsRequired=false)]
+        public string QueueName { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("QueuePerInstance", DefaultValue=false, IsRequired=false)]
+        public bool QueuePerInstance { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("RequiresDuplicateDetection", DefaultValue=false, IsRequired=false)]
+        public bool RequiresDuplicateDetection { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("RequiresSession", DefaultValue=false, IsRequired=false)]
+        public bool RequiresSession { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("ServerWaitTime", DefaultValue=300, IsRequired=false)]
+        public int ServerWaitTime { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("ServiceNamespace", IsRequired=false)]
+        public string ServiceNamespace { get; set; }
+        [System.Configuration.ConfigurationPropertyAttribute("SupportOrdering", DefaultValue=true, IsRequired=false)]
+        public bool SupportOrdering { get; set; }
+    }
+}

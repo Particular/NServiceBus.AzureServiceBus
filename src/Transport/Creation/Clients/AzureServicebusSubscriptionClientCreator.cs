@@ -5,6 +5,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
     class AzureServicebusSubscriptionClientCreator : ICreateSubscriptionClients
     {
         Configure config;
+        public int BatchSize { get; set; }
 
         public AzureServicebusSubscriptionClientCreator(Configure config)
         {
@@ -13,7 +14,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
         public SubscriptionClient Create(SubscriptionDescription description, MessagingFactory factory)
         {
-            return factory.CreateSubscriptionClient(description.TopicPath, description.Name, ShouldRetry() ? ReceiveMode.PeekLock : ReceiveMode.ReceiveAndDelete);
+            var subscriptionClient = factory.CreateSubscriptionClient(description.TopicPath, description.Name, ShouldRetry() ? ReceiveMode.PeekLock : ReceiveMode.ReceiveAndDelete);
+            subscriptionClient.PrefetchCount = BatchSize;
+            return subscriptionClient;
         }
 
         bool ShouldRetry()
