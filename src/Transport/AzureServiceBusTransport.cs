@@ -1,10 +1,13 @@
 namespace NServiceBus
 {
     using System;
+    using System.Collections.Generic;
     using System.Transactions;
     using Azure.Transports.WindowsAzureServiceBus;
     using Configuration.AdvanceExtensibility;
     using Features;
+    using NServiceBus.ConsistencyGuarantees;
+    using NServiceBus.Performance.TimeToBeReceived;
     using Transports;
 
     /// <summary>
@@ -31,6 +34,27 @@ namespace NServiceBus
             config.Transactions().DefaultTimeout(TimeSpan.FromSeconds(AzureServicebusDefaults.DefaultServerWaitTime * 1.1)).IsolationLevel(IsolationLevel.Serializable);
 
             config.EnableFeature<AzureServiceBusTransportConfiguration>();
+        }
+
+        public override string GetSubScope(string address, string qualifier)
+        {
+            return string.Format("{0}.{1}", address, qualifier);
+        }
+
+        public override IEnumerable<Type> GetSupportedDeliveryConstraints()
+        {
+            return new List<Type>
+            {
+                typeof(DelayedDelivery.DelayedDeliveryConstraint),
+                typeof(DiscardIfNotReceivedBefore), //TTBR
+                typeof(NonDurableDelivery),
+            };
+        }
+
+        public override ConsistencyGuarantee GetDefaultConsistencyGuarantee()
+        {
+//            return new AtLeastOnce();
+            return new AtomicWithReceiveOperation();
         }
     }
 }

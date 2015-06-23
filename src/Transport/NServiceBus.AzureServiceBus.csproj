@@ -53,9 +53,9 @@
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="NServiceBus.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=9fc386479f8a226c, processorArchitecture=MSIL">
+    <Reference Include="NServiceBus.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9fc386479f8a226c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NServiceBus.5.2.2\lib\net45\NServiceBus.Core.dll</HintPath>
+      <HintPath>..\packages\NServiceBus.6.0.0-pullrequest2737\lib\net45\NServiceBus.Core.dll</HintPath>
     </Reference>
     <Reference Include="Obsolete, Version=3.1.0.0, Culture=neutral, PublicKeyToken=1ca091877d12ca03, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -116,7 +116,7 @@
     <Compile Include="AzureServiceBusTransport.cs" />
     <Compile Include="Config\AzureServicebusDefaults.cs" />
     <Compile Include="Receiving\AzureServiceBusDequeueStrategy.cs" />
-    <Compile Include="Sending\AzureServiceBusSender.cs" />
+    <Compile Include="Sending\AzureServiceBusDispatcher.cs" />
     <Compile Include="Receiving\AzureServiceBusQueueNotifier.cs" />
     <Compile Include="Receiving\AzureServiceBusSubscriptionNotifier.cs" />
     <Compile Include="Publishing\AzureServiceBusPublisher.cs" />

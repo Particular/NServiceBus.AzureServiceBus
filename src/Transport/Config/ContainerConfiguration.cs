@@ -52,7 +52,7 @@
 
         void ConfigureSendInfrastructure(FeatureConfigurationContext context, AzureServiceBusQueueConfig configSection)
         {
-            context.Container.ConfigureComponent<AzureServiceBusSender>(DependencyLifecycle.InstancePerCall);
+            context.Container.ConfigureComponent<AzureServiceBusDispatcher>(DependencyLifecycle.InstancePerCall);
             context.Container.ConfigureComponent<AzureServiceBusQueueSender>(DependencyLifecycle.InstancePerCall);
             context.Container.ConfigureProperty<AzureServiceBusQueueSender>(t => t.MaxDeliveryCount, configSection.MaxDeliveryCount);
         }
