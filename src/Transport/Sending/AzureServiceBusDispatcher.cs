@@ -87,19 +87,22 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 {
                     
                 }
-                else
+                else // DoNotDeliverBefore case
                 {
-                    // DoNotDeliverBefore case
                     var delayDeliveryWithExactTime = deliveryConstraint as DoNotDeliverBefore;
                 }
             }
 
+            // TODO: check for TTBR (constraint name: DiscardIfNotReceivedBefore)
+
             var directRouting = dispatchOptions.RoutingStrategy as DirectToTargetDestination; // string destination on this
 
-            if (directRouting == null)
+            if (directRouting == null) // publish
             {
                 var toAllSubscribers = dispatchOptions.RoutingStrategy as ToAllSubscribers;
-                //toAllSubscribers.
+            }
+            else // send
+            {
             }
 
             var batch = dispatchOptions.Context.Get<AzureServiceBusBatchingBehavior.AzureServiceBusBatch>();
@@ -143,7 +146,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
     {
         public static void Batch(this SendOptions options)
         {
-            options.GetExtensions().Set(new AzureServiceBusBatchingBehavior.AzureServiceBusBatch());
+            AzureServiceBusBatchingBehavior.AzureServiceBusBatch batch;
+            if (!options.GetExtensions().TryGet(out batch))
+            {
+                options.GetExtensions().Set(new AzureServiceBusBatchingBehavior.AzureServiceBusBatch());
+            }
         }
 
         public static void Commit(this SendOptions options)
@@ -151,7 +158,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             AzureServiceBusBatchingBehavior.AzureServiceBusBatch batch;
             if (!options.GetExtensions().TryGet(out batch))
             {
-                throw new Exception();
+                throw new Exception("No sending batch was started. Use sendOptions.Batch() to start one before using sendOptions.Commit()");
             }
             batch.Commit = true;
         }

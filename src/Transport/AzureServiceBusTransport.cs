@@ -36,25 +36,34 @@ namespace NServiceBus
             config.EnableFeature<AzureServiceBusTransportConfiguration>();
         }
 
+        // TODO: should core have this logic where transports only return SubScopeString ("." for ASB, "-" for ASQ)
         public override string GetSubScope(string address, string qualifier)
         {
             return string.Format("{0}.{1}", address, qualifier);
         }
 
+        // TODO: Supported-delivery-constraints sounds like "give me all the things you can't support for delivery"
+        // Perhaps should be "GetSupportedDeliveryCapabilities()"?
         public override IEnumerable<Type> GetSupportedDeliveryConstraints()
         {
             return new List<Type>
             {
+                // TODO: why do we need to use one generalized constraint instead of specifying what support can do? 
+                // Is using DelayedDelivery.DelayedDeliveryConstraint means that all DelayedDelivery methods are supported
                 typeof(DelayedDelivery.DelayedDeliveryConstraint),
+                //typeof(DelayedDelivery.DelayDeliveryWith),
+                //typeof(DelayedDelivery.DoNotDeliverBefore),
+                // TODO: DelayedDelivery.DelayDeliveryWith is technically converted into DelayedDelivery.DoNotDeliverBefore (current datetime + delay span). Why to have the two?
+
                 typeof(DiscardIfNotReceivedBefore), //TTBR
-                typeof(NonDurableDelivery),
+
+                // typeof(NonDurableDelivery) - N/A since we don't support express messages
             };
         }
 
         public override ConsistencyGuarantee GetDefaultConsistencyGuarantee()
         {
-//            return new AtLeastOnce();
-            return new AtomicWithReceiveOperation();
+            return new AtLeastOnce();
         }
     }
 }
