@@ -70,11 +70,20 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
 
                     subscriptionName = SanitizeEntityName(subscriptionName);
 
-                    if (subscriptionName.Length >= 50)
-                        subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
+                    var individualizedSubscriptionName = QueueIndividualizer.Individualize(subscriptionName);
 
-                    if (ShouldIndividualize(null, settings))
-                        subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+                    if (individualizedSubscriptionName.Length >= 50)
+                    {
+                        subscriptionName = new DeterministicGuidBuilder().Build(individualizedSubscriptionName).ToString();
+                    }
+                    else
+                    {
+                        if (subscriptionName.Length >= 50)
+                            subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
+
+                        if (ShouldIndividualize(null, settings))
+                            subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+                    }
 
                     return subscriptionName;
                 };
@@ -91,11 +100,20 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
 
                     subscriptionName = SanitizeEntityName(subscriptionName);
 
-                    if (subscriptionName.Length >= 50)
-                        subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
+                    var individualizedSubscriptionName = QueueIndividualizer.Individualize(subscriptionName);
 
-                    if (ShouldIndividualize(null, settings))
-                        subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+                    if (individualizedSubscriptionName.Length >= 50)
+                    {
+                        subscriptionName = new DeterministicGuidBuilder().Build(individualizedSubscriptionName).ToString();
+                    }
+                    else
+                    {
+                        if (subscriptionName.Length >= 50)
+                            subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
+
+                        if (ShouldIndividualize(null, settings))
+                            subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+                    }
 
                     return subscriptionName;
                 };
