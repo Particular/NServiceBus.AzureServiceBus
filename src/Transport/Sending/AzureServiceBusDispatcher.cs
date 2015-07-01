@@ -62,16 +62,20 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 var incomingMessage = dispatchOptions.Context.Get<TransportMessage>();
                 batchTrackingContext.TryGetValue(incomingMessage);
 
+                var outgoingContext = (OutgoingContext)dispatchOptions.Context;
+
+
 
                 if (batch.Commit)
                 {
                     // dispatch/send and array of messages (native ASB)
+                    // do not continue with OutgoingMessage that kicked off this dispatch call
                 }
                 
             }
             else
             {
-                // send single message (native ASB)
+                // send single message (native ASB) - dispatch message as there's no batching going on for it
             }
         }
     }
@@ -118,7 +122,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
             if (batchId != batchMetadata.BatchId)
             {
-                throw new InvalidOperationException("A previous batch is used (Batch ID=''). To start a new batch, create a new SendOptions object.");
+                throw new InvalidOperationException(string.Format("A previous batch is used (batch ID='{0}'). To start a new batch, create a new SendOptions object specifying a new batch ID.", batchMetadata.BatchId));
             }
         }
 
@@ -127,7 +131,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             AzureServiceBusBatchingBehavior.AzureServiceBusBatchMetadata batchMetadata;
             if (!options.GetExtensions().TryGet(out batchMetadata))
             {
-                throw new Exception("No sending batch was started. Use sendOptions.Batch() to start one before using sendOptions.Commit()");
+                throw new Exception("No sending batch was started. Use sendOptions.Batch(id) to start one before using sendOptions.Commit()");
             }
             batchMetadata.Commit = true;
         }
@@ -155,5 +159,11 @@ class how_would_a_user_use_batching
         {
             desc = "fake message"
         });
+
+        //eventually
+        bus.Send(new []{ new {}, new {}}, "batch-1");
+        bus.Send(new []{ new {}, new {}}, "batch-2");
+        bus.Send(new {}, "batch-2");
+        bus.Commit();
     }
 }
