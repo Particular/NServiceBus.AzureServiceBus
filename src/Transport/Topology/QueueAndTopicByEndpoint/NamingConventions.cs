@@ -54,7 +54,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
                 return configSection.QueuePerInstance;
 
             // if default is set
-            if(settings != null && !settings.GetOrDefault<bool>("ScaleOut.UseSingleBrokerQueue"))
+            if (settings != null && !settings.GetOrDefault<bool>("ScaleOut.UseSingleBrokerQueue"))
                 return !settings.GetOrDefault<bool>("ScaleOut.UseSingleBrokerQueue");
 
             return false;
@@ -70,19 +70,16 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
 
                     subscriptionName = SanitizeEntityName(subscriptionName);
 
-                    var individualizedSubscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+                    if (subscriptionName.Length >= 50)
+                        subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
 
-                    if (individualizedSubscriptionName.Length >= 50)
+                    if (ShouldIndividualize(null, settings))
                     {
-                        subscriptionName = new DeterministicGuidBuilder().Build(individualizedSubscriptionName).ToString();
-                    }
-                    else
-                    {
+                        subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+
+                        // check length again in case individualization made it too long
                         if (subscriptionName.Length >= 50)
                             subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
-
-                        if (ShouldIndividualize(null, settings))
-                            subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
                     }
 
                     return subscriptionName;
@@ -100,19 +97,16 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
 
                     subscriptionName = SanitizeEntityName(subscriptionName);
 
-                    var individualizedSubscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+                    if (subscriptionName.Length >= 50)
+                        subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
 
-                    if (individualizedSubscriptionName.Length >= 50)
+                    if (ShouldIndividualize(null, settings))
                     {
-                        subscriptionName = new DeterministicGuidBuilder().Build(individualizedSubscriptionName).ToString();
-                    }
-                    else
-                    {
+                        subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+
+                        // check length again in case individualization made it too long
                         if (subscriptionName.Length >= 50)
                             subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
-
-                        if (ShouldIndividualize(null, settings))
-                            subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
                     }
 
                     return subscriptionName;
