@@ -59,10 +59,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             if (batch != null)
             {
                 // first, add outgoing message to the in-memory collection
-                var incomingMessage = dispatchOptions.Context.Get<TransportMessage>();
-                batchTrackingContext.TryGetValue(incomingMessage);
-
                 var outgoingContext = (OutgoingContext)dispatchOptions.Context;
+                TransportMessage incomingMessage;
+                outgoingContext.TryGetIncomingPhysicalMessage(out incomingMessage);
 
 
 
