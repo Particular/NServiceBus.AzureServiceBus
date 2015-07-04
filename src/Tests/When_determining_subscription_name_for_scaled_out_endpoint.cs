@@ -16,11 +16,13 @@
             var settings = new SettingsHolder();
             settings.Set("ScaleOut.UseSingleBrokerQueue", false);
             var subscriptionName = NamingConventions.SubscriptionNamingConvention(settings, eventType, endpointName);
-            
+
             Assert.True(subscriptionName.Length <= 50);
             Assert.True(subscriptionName.EndsWith("-" + Environment.MachineName));
+
+            Console.WriteLine(subscriptionName);
             Guid guid;
-            Assert.IsTrue(Guid.TryParse(subscriptionName.Replace("-" + Environment.MachineName, ""), out guid));
+            Assert.IsTrue(Guid.TryParse(subscriptionName.Substring(0, 36), out guid));
         }
     }
 }
