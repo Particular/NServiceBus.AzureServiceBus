@@ -9,9 +9,9 @@
     public class When_determining_subscription_name_for_scaled_out_endpoint
     {
         [Test]
-        public void Should_generate_a_guid_based_name()
+        public void Should_generate_a_guid_based_name_with_individualizer_suffix()
         {
-            var endpointName = "When_determining_subscription_name_for_scaled_out_endpoint";
+            const string endpointName = "When_determining_subscription_name_for_scaled_out_endpoint";
             var eventType = typeof(SomeEventWithAnInsanelyLongName);
             var settings = new SettingsHolder();
             settings.Set("ScaleOut.UseSingleBrokerQueue", false);

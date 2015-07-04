@@ -6,7 +6,7 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class When_determining_subscription_name_with_scaled_out_endpoint_where_name_with_event_are_not_exceeding_max_length
+    public class When_determining_subscription_name_for_scaled_out_endpoint_where_name_with_event_are_not_exceeding_max_length
     {
         [Test]
         public void Should_generate_a_guid_based_name_with_individualizer_appended()
