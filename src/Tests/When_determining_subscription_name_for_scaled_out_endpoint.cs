@@ -9,6 +9,7 @@
     public class When_determining_subscription_name_for_scaled_out_endpoint
     {
         [Test]
+//        [Explicit("on build server machine name looks to be long that it causes test to fail")]
         public void Should_generate_a_guid_based_name_with_individualizer_suffix()
         {
             const string endpointName = "When_determining_subscription_name_for_scaled_out_endpoint";
@@ -18,7 +19,7 @@
             var subscriptionName = NamingConventions.SubscriptionNamingConvention(settings, eventType, endpointName);
 
             Assert.True(subscriptionName.Length <= 50);
-            Assert.True(subscriptionName.EndsWith("-" + Environment.MachineName), "expected subscription name to end with machine name, but it didn't. Subscription name was: " + subscriptionName);
+            Assert.True(subscriptionName.EndsWith("-" + Environment.MachineName), "expected subscription name to end with machine name, but it didn't. Subscription name: " + subscriptionName + " machine name: " + Environment.MachineName);
 
             Guid guid;
             Assert.IsTrue(Guid.TryParse(subscriptionName.Substring(0, 36), out guid), "expected to have a guid, but got: " + subscriptionName);
