@@ -1,0 +1,26 @@
+﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests
+{
+    using System;
+    using NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEndpoint;
+    using NServiceBus.Settings;
+    using NUnit.Framework;
+
+    [TestFixture]
+    public class When_determining_subscription_name_for_scaled_out_endpoint
+    {
+        [Test]
+        public void Should_generate_a_guid_based_name()
+        {
+            var endpointName = "When_determining_subscription_name_for_scaled_out_endpoint";
+            var eventType = typeof(SomeEventWithAnInsanelyLongName);
+            var settings = new SettingsHolder();
+            settings.Set("ScaleOut.UseSingleBrokerQueue", false);
+            var subscriptionName = NamingConventions.SubscriptionNamingConvention(settings, eventType, endpointName);
+            
+            Assert.True(subscriptionName.Length <= 50);
+            Assert.True(subscriptionName.EndsWith("-" + Environment.MachineName));
+            Guid guid;
+            Assert.IsTrue(Guid.TryParse(subscriptionName.Replace("-" + Environment.MachineName, ""), out guid));
+        }
+    }
+}
