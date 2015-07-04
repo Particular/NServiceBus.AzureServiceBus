@@ -20,9 +20,8 @@
             Assert.True(subscriptionName.Length <= 50);
             Assert.True(subscriptionName.EndsWith("-" + Environment.MachineName));
 
-            Console.WriteLine(subscriptionName);
             Guid guid;
-            Assert.IsTrue(Guid.TryParse(subscriptionName.Substring(0, 36), out guid));
+            Assert.IsTrue(Guid.TryParse(subscriptionName.Substring(0, 36), out guid), "expected to have a guid, but got: " + subscriptionName);
         }
     }
 }
