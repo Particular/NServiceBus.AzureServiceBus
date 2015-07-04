@@ -76,7 +76,6 @@
     <Compile Include="When_creating_subscriptions_on_servicebus_topics.cs" />
     <Compile Include="When_determining_subscription_name_for_non_scaled_out_endpoint.cs" />
     <Compile Include="When_determining_subscription_name_for_scaled_out_endpoint.cs" />
-    <Compile Include="When_determining_subscription_name_for_scaled_out_endpoint_where_name_with_event_are_not_exceeding_max_length.cs" />
     <Compile Include="When_parsing_connectionstrings.cs" />
   </ItemGroup>
   <ItemGroup>
