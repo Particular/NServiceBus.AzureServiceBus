@@ -9,7 +9,7 @@
     public class When_determining_subscription_name_for_scaled_out_endpoint
     {
         [Test]
-//        [Explicit("on build server machine name looks to be long that it causes test to fail")]
+        [Explicit("Build server machine name can be way too long (`AMAZONA-8QQ0TT5`) so this case doesn't work (guid + individualizer exceed 50 characters)")]
         public void Should_generate_a_guid_based_name_with_individualizer_suffix()
         {
             const string endpointName = "When_determining_subscription_name_for_scaled_out_endpoint";
