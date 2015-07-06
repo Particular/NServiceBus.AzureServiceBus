@@ -74,7 +74,9 @@
     <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="When_creating_subscriptions_on_servicebus_topics.cs" />
-    <Compile Include="When_determining_subscription_names.cs" />
+    <Compile Include="When_determining_subscription_name.cs" />
+    <Compile Include="When_determining_subscription_name_for_non_scaled_out_endpoint.cs" />
+    <Compile Include="When_determining_subscription_name_for_scaled_out_endpoint.cs" />
     <Compile Include="When_parsing_connectionstrings.cs" />
   </ItemGroup>
   <ItemGroup>
