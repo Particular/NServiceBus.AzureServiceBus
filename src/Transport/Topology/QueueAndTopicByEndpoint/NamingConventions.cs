@@ -54,7 +54,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
                 return configSection.QueuePerInstance;
 
             // if default is set
-            if(settings != null && !settings.GetOrDefault<bool>("ScaleOut.UseSingleBrokerQueue"))
+            if (settings != null && !settings.GetOrDefault<bool>("ScaleOut.UseSingleBrokerQueue"))
                 return !settings.GetOrDefault<bool>("ScaleOut.UseSingleBrokerQueue");
 
             return false;
@@ -64,19 +64,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
         {
             get
             {
-                return (settings, messagetype, endpointname) =>
+                return (settings, eventType, endpointName) =>
                 {
-                    var subscriptionName = messagetype != null ? endpointname + "." + messagetype.Name : endpointname;
-
-                    subscriptionName = SanitizeEntityName(subscriptionName);
-
-                    if (subscriptionName.Length >= 50)
-                        subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
-
-                    if (ShouldIndividualize(null, settings))
-                        subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
-
-                    return subscriptionName;
+                    return BuildSubscriptionName(settings, endpointName, eventType, e => e.Name);
                 };
             }
         }
@@ -85,21 +75,32 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
         {
             get
             {
-                return (settings, messagetype, endpointname) =>
+                return (settings, eventType, endpointName) =>
                 {
-                    var subscriptionName = messagetype != null ? endpointname + "." + messagetype.FullName : endpointname;
-
-                    subscriptionName = SanitizeEntityName(subscriptionName);
-
-                    if (subscriptionName.Length >= 50)
-                        subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
-
-                    if (ShouldIndividualize(null, settings))
-                        subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
-
-                    return subscriptionName;
+                    return BuildSubscriptionName(settings, endpointName, eventType, e => e.FullName);
                 };
             }
+        }
+
+        private static string BuildSubscriptionName(ReadOnlySettings settings, string endpointName, Type eventType, Func<Type, string> eventTypeNameBuilder)
+        {
+            var subscriptionName = eventType != null ? endpointName + "." + eventTypeNameBuilder(eventType) : endpointName;
+
+            subscriptionName = SanitizeEntityName(subscriptionName);
+
+            if (subscriptionName.Length >= 50)
+                subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
+
+            if (ShouldIndividualize(null, settings))
+            {
+                subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+
+                // check length again in case individualization made it too long
+                if (subscriptionName.Length >= 50)
+                    subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
+            }
+
+            return subscriptionName; 
         }
 
         internal static Func<ReadOnlySettings, Type, string, string> TopicNamingConvention
