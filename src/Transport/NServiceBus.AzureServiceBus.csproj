@@ -78,12 +78,16 @@
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTopologyExtensions.cs" />
     <Compile Include="Config\AzureServiceBusTransport.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTransportExtensions.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusCompositionSettings.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusIndividualizationSettings.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusPartitioningSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusQueueSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusResourceSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusAddressingSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSubscriptionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopicSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopologySettings.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusValidationSettings.cs" />
     <Compile Include="Config\OldCode\ConnectionStringParser.cs" />
     <Compile Include="Config\OldCode\ContainerConfiguration.cs" />
     <Compile Include="Config\OldCode\OverrideMaxRetries.cs" />
