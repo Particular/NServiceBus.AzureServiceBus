@@ -73,11 +73,15 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ExtensionMethods\AzureServiceBusQueueExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusResourceExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusAddressingExtensions.cs" />
+    <Compile Include="Config\ExtensionMethods\AzureServiceBussubscriptionExtensions.cs" />
+    <Compile Include="Config\ExtensionMethods\AzureServiceBusTopicExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTopologyExtensions.cs" />
     <Compile Include="Config\AzureServiceBusTransport.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTransportExtensions.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusBatchingSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusCompositionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusIndividualizationSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusPartitioningSettings.cs" />
@@ -87,11 +91,13 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSubscriptionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopicSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopologySettings.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusTransactionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusValidationSettings.cs" />
     <Compile Include="Config\OldCode\ConnectionStringParser.cs" />
     <Compile Include="Config\OldCode\ContainerConfiguration.cs" />
     <Compile Include="Config\OldCode\OverrideMaxRetries.cs" />
     <Compile Include="Config\OldCode\QueueIndividualizer.cs" />
+    <Compile Include="Config\WellKnownConfigurationKeys.cs" />
     <Compile Include="Creation\Clients\CircularBuffer.cs" />
     <Compile Include="Creation\Clients\ICreateMessagingFactories.cs" />
     <Compile Include="Creation\Clients\ICreateSubscriptionClients.cs" />

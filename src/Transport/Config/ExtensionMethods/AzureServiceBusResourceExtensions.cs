@@ -19,5 +19,4 @@
             return new AzureServiceBusSubscriptionSettings(resourceSettings.GetSettings());
         }
     }
-
 }
