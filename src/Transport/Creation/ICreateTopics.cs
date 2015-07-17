@@ -12,6 +12,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.Transports
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        TopicDescription Create(Address address);
+        TopicDescription Create(string address);
     }
 }

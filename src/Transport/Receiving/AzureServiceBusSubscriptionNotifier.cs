@@ -1,131 +1,133 @@
-namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
-{
-    using System;
-    using System.Threading;
-    using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Logging;
+// to be replaced by one based on mssage receiver
 
-    class AzureServiceBusSubscriptionNotifier : INotifyReceivedBrokeredMessages
-    {
-        Action<BrokeredMessage> tryProcessMessage;
-        Action<Exception> errorProcessingMessage;
-        bool cancelRequested;
-        ILog logger = LogManager.GetLogger(typeof(AzureServiceBusSubscriptionNotifier));
+//namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
+//{
+//    using System;
+//    using System.Threading;
+//    using Microsoft.ServiceBus.Messaging;
+//    using NServiceBus.Logging;
 
-        public int ServerWaitTime { get; set; }
-        public int BatchSize { get; set; }
-        public int BackoffTimeInSeconds { get; set; }
-        public SubscriptionClient SubscriptionClient { get; set; }
-        public Type MessageType { get; set; }
-        public Address Address { get; set; }
+//    class AzureServiceBusSubscriptionNotifier : INotifyReceivedBrokeredMessages
+//    {
+//        Action<BrokeredMessage> tryProcessMessage;
+//        Action<Exception> errorProcessingMessage;
+//        bool cancelRequested;
+//        ILog logger = LogManager.GetLogger(typeof(AzureServiceBusSubscriptionNotifier));
 
-        public void Start(Action<BrokeredMessage> tryProcessMessage, Action<Exception> errorProcessingMessage)
-        {
-            cancelRequested = false;
+//        public int ServerWaitTime { get; set; }
+//        public int BatchSize { get; set; }
+//        public int BackoffTimeInSeconds { get; set; }
+//        public SubscriptionClient SubscriptionClient { get; set; }
+//        public Type MessageType { get; set; }
+//        public Address Address { get; set; }
 
-            this.tryProcessMessage = tryProcessMessage;
-            this.errorProcessingMessage = errorProcessingMessage;
+//        public void Start(Action<BrokeredMessage> tryProcessMessage, Action<Exception> errorProcessingMessage)
+//        {
+//            cancelRequested = false;
 
-            SafeBeginReceive();
-        }
+//            this.tryProcessMessage = tryProcessMessage;
+//            this.errorProcessingMessage = errorProcessingMessage;
 
-        public void Stop()
-        {
-            cancelRequested = true;
-        }
+//            SafeBeginReceive();
+//        }
 
-        public event EventHandler Faulted;
+//        public void Stop()
+//        {
+//            cancelRequested = true;
+//        }
 
-        void OnFaulted()
-        {
-            if (Faulted != null)
-                Faulted(this, EventArgs.Empty);
-        }
+//        public event EventHandler Faulted;
 
-        void OnMessage(IAsyncResult ar)
-        {
-            try
-            {
-                if (SubscriptionClient.IsClosed)
-                {
-                    Stop();
-                    OnFaulted();
-                    return;
-                }
+//        void OnFaulted()
+//        {
+//            if (Faulted != null)
+//                Faulted(this, EventArgs.Empty);
+//        }
 
-                var receivedMessages = SubscriptionClient.EndReceiveBatch(ar);
+//        void OnMessage(IAsyncResult ar)
+//        {
+//            try
+//            {
+//                if (SubscriptionClient.IsClosed)
+//                {
+//                    Stop();
+//                    OnFaulted();
+//                    return;
+//                }
 
-                if (cancelRequested) return;
+//                var receivedMessages = SubscriptionClient.EndReceiveBatch(ar);
 
-                foreach (var receivedMessage in receivedMessages)
-                {
-                    tryProcessMessage(receivedMessage);
-                }
-            }
-            catch (TimeoutException ex)
-            {
+//                if (cancelRequested) return;
 
-                logger.Warn(string.Format("Timeout communication exception occured on subscription {0}", SubscriptionClient.Name), ex);
-                // time's up, just continue and retry
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                logger.Fatal(string.Format("Unauthorized Access Exception occured on subscription {0}", SubscriptionClient.Name), ex);
+//                foreach (var receivedMessage in receivedMessages)
+//                {
+//                    tryProcessMessage(receivedMessage);
+//                }
+//            }
+//            catch (TimeoutException ex)
+//            {
 
-                // errorProcessingMessage(ex);
-                // return
-                // for now choosen to continue
-            }
-            catch (MessagingException ex)
-            {
-                if (cancelRequested)
-                {
-                    return;
-                }
+//                logger.Warn(string.Format("Timeout communication exception occured on subscription {0}", SubscriptionClient.Name), ex);
+//                // time's up, just continue and retry
+//            }
+//            catch (UnauthorizedAccessException ex)
+//            {
+//                logger.Fatal(string.Format("Unauthorized Access Exception occured on subscription {0}", SubscriptionClient.Name), ex);
 
-                if (!ex.IsTransient && !RetriableReceiveExceptionHandling.IsRetryable(ex))
-                {
-                    logger.Fatal(string.Format("{1} Messaging exception occured on subscription {0}", SubscriptionClient.Name, (ex.IsTransient ? "Transient" : "Non transient")), ex);
+//                // errorProcessingMessage(ex);
+//                // return
+//                // for now choosen to continue
+//            }
+//            catch (MessagingException ex)
+//            {
+//                if (cancelRequested)
+//                {
+//                    return;
+//                }
 
-                    errorProcessingMessage(ex);
-                }
-                else
-                {
-                    logger.Warn(string.Format("{1} Messaging exception occured on subscription {0}", SubscriptionClient.Name, (ex.IsTransient ? "Transient" : "Non transient")), ex);
-                }
+//                if (!ex.IsTransient && !RetriableReceiveExceptionHandling.IsRetryable(ex))
+//                {
+//                    logger.Fatal(string.Format("{1} Messaging exception occured on subscription {0}", SubscriptionClient.Name, (ex.IsTransient ? "Transient" : "Non transient")), ex);
+
+//                    errorProcessingMessage(ex);
+//                }
+//                else
+//                {
+//                    logger.Warn(string.Format("{1} Messaging exception occured on subscription {0}", SubscriptionClient.Name, (ex.IsTransient ? "Transient" : "Non transient")), ex);
+//                }
 
 
-                logger.Warn("Will retry after backoff period");
+//                logger.Warn("Will retry after backoff period");
 
-                Thread.Sleep(TimeSpan.FromSeconds(BackoffTimeInSeconds));
-            }
-            catch (OperationCanceledException ex)
-            {
-                logger.Fatal(string.Format("Operation cancelled exception occured on receive for subscription {0}, most likely due to a closed channel, faulting this notifier", SubscriptionClient.Name), ex);
-                Stop();
-                OnFaulted();
-            }
-            finally
-            {
-                SafeBeginReceive();
-            }
-        }
+//                Thread.Sleep(TimeSpan.FromSeconds(BackoffTimeInSeconds));
+//            }
+//            catch (OperationCanceledException ex)
+//            {
+//                logger.Fatal(string.Format("Operation cancelled exception occured on receive for subscription {0}, most likely due to a closed channel, faulting this notifier", SubscriptionClient.Name), ex);
+//                Stop();
+//                OnFaulted();
+//            }
+//            finally
+//            {
+//                SafeBeginReceive();
+//            }
+//        }
 
-        void SafeBeginReceive()
-        {
-            if (!cancelRequested)
-            {
-                try
-                {
-                    SubscriptionClient.BeginReceiveBatch(BatchSize, TimeSpan.FromSeconds(ServerWaitTime), OnMessage, null);
-                }
-                catch (OperationCanceledException ex)
-                {
-                    logger.Fatal(string.Format("Operation cancelled exception occured on receive for subscription {0}, faulting this notifier", SubscriptionClient.Name), ex);
-                    Stop();
-                    OnFaulted();
-                }
-            }
-        }
-    }
-}
+//        void SafeBeginReceive()
+//        {
+//            if (!cancelRequested)
+//            {
+//                try
+//                {
+//                    SubscriptionClient.BeginReceiveBatch(BatchSize, TimeSpan.FromSeconds(ServerWaitTime), OnMessage, null);
+//                }
+//                catch (OperationCanceledException ex)
+//                {
+//                    logger.Fatal(string.Format("Operation cancelled exception occured on receive for subscription {0}, faulting this notifier", SubscriptionClient.Name), ex);
+//                    Stop();
+//                    OnFaulted();
+//                }
+//            }
+//        }
+//    }
+//}

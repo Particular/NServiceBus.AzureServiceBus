@@ -4,6 +4,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
     public interface IManageMessagingFactoriesLifecycle
     {
-        MessagingFactory Get(Address address);
+        MessagingFactory Get(string address);
     }
 }

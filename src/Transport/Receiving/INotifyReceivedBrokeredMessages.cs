@@ -12,6 +12,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         event EventHandler Faulted;
 
         Type MessageType { get; set; }
-        Address Address { get; set; }
+        string Address { get; set; }
     }
 }

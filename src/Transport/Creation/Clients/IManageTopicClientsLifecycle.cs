@@ -4,6 +4,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
     public interface IManageTopicClientsLifecycle
     {
-        TopicClient Get(Address address);
+        TopicClient Get(string address);
     }
 }

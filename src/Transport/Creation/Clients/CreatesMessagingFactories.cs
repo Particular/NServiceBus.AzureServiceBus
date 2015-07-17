@@ -1,31 +1,33 @@
-namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
-{
-    using System;
-    using Microsoft.ServiceBus.Messaging;
+// depends on address, needs new adressing infrastructure
 
-    class CreatesMessagingFactories : ICreateMessagingFactories
-    {
-        ICreateNamespaceManagers createNamespaceManagers;
+//namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
+//{
+//    using System;
+//    using Microsoft.ServiceBus.Messaging;
 
-        public CreatesMessagingFactories(ICreateNamespaceManagers createNamespaceManagers)
-        {
-            this.createNamespaceManagers = createNamespaceManagers;
-        }
+//    class CreatesMessagingFactories : ICreateMessagingFactories
+//    {
+//        ICreateNamespaceManagers createNamespaceManagers;
 
-        public MessagingFactory Create(Address address)
-        {
-            var potentialConnectionString = address.Machine;
-            var namespaceManager = createNamespaceManagers.Create(potentialConnectionString);
+//        public CreatesMessagingFactories(ICreateNamespaceManagers createNamespaceManagers)
+//        {
+//            this.createNamespaceManagers = createNamespaceManagers;
+//        }
 
-            var settings = new MessagingFactorySettings
-            {
-                TokenProvider = namespaceManager.Settings.TokenProvider,
-                NetMessagingTransportSettings =
-                {
-                    BatchFlushInterval = TimeSpan.FromSeconds(0.1)
-                }
-            };
-            return MessagingFactory.Create(namespaceManager.Address, settings);
-        }
-    }
-}
+//        public MessagingFactory Create(Address address)
+//        {
+//            var potentialConnectionString = address.Machine;
+//            var namespaceManager = createNamespaceManagers.Create(potentialConnectionString);
+
+//            var settings = new MessagingFactorySettings
+//            {
+//                TokenProvider = namespaceManager.Settings.TokenProvider,
+//                NetMessagingTransportSettings =
+//                {
+//                    BatchFlushInterval = TimeSpan.FromSeconds(0.1)
+//                }
+//            };
+//            return MessagingFactory.Create(namespaceManager.Address, settings);
+//        }
+//    }
+//}

@@ -1,144 +1,146 @@
-namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEndpoint
-{
-    using System;
-    using System.Text.RegularExpressions;
-    using Config;
-    using Settings;
+// to be replaced
 
-    static class NamingConventions
-    {
-        internal static Func<ReadOnlySettings, Type, string, bool, string> QueueNamingConvention
-        {
-            get
-            {
-                return (settings, messagetype, queueName, doNotIndividualize) =>
-                {
-                    var configSection = settings != null ? settings.GetConfigSection<AzureServiceBusQueueConfig>() : null;
+//namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEndpoint
+//{
+//    using System;
+//    using System.Text.RegularExpressions;
+//    using Config;
+//    using Settings;
 
-                    queueName = SanitizeEntityName(queueName);
+//    static class NamingConventions
+//    {
+//        internal static Func<ReadOnlySettings, Type, string, bool, string> QueueNamingConvention
+//        {
+//            get
+//            {
+//                return (settings, messagetype, queueName, doNotIndividualize) =>
+//                {
+//                    var configSection = settings != null ? settings.GetConfigSection<AzureServiceBusQueueConfig>() : null;
 
-                    if (queueName.Length >= 283) // 290 - a spot for the "-" & 6 digits for the individualizer
-                        queueName = new DeterministicGuidBuilder().Build(queueName).ToString();
+//                    queueName = SanitizeEntityName(queueName);
 
-                    if (!doNotIndividualize && ShouldIndividualize(configSection, settings))
-                        queueName = QueueIndividualizer.Individualize(queueName);
+//                    if (queueName.Length >= 283) // 290 - a spot for the "-" & 6 digits for the individualizer
+//                        queueName = new DeterministicGuidBuilder().Build(queueName).ToString();
 
-                    return queueName;
-                };
-            }
-        }
+//                    if (!doNotIndividualize && ShouldIndividualize(configSection, settings))
+//                        queueName = QueueIndividualizer.Individualize(queueName);
 
-        static string SanitizeEntityName(string queueName)
-        {
-            //*Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores */
+//                    return queueName;
+//                };
+//            }
+//        }
 
-            var rgx = new Regex(@"[^a-zA-Z0-9\-._]");
-            var n = rgx.Replace(queueName, "");
-            return n;
-        }
+//        static string SanitizeEntityName(string queueName)
+//        {
+//            //*Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores */
 
-        static bool ShouldIndividualize(AzureServiceBusQueueConfig configSection, ReadOnlySettings settings)
-        {
-            // if this setting is set, then the core is responsible for individualization
-            if (settings != null && settings.HasExplicitValue("IndividualizeEndpointAddress"))
-            {
-                return false;
-            }
+//            var rgx = new Regex(@"[^a-zA-Z0-9\-._]");
+//            var n = rgx.Replace(queueName, "");
+//            return n;
+//        }
 
-            // if explicitly set in code
-            if (settings != null && settings.HasExplicitValue("ScaleOut.UseSingleBrokerQueue"))
-                return !settings.Get<bool>("ScaleOut.UseSingleBrokerQueue");
+//        static bool ShouldIndividualize(AzureServiceBusQueueConfig configSection, ReadOnlySettings settings)
+//        {
+//            // if this setting is set, then the core is responsible for individualization
+//            if (settings != null && settings.HasExplicitValue("IndividualizeEndpointAddress"))
+//            {
+//                return false;
+//            }
 
-            // if explicitly set in config
-            if (configSection != null)
-                return configSection.QueuePerInstance;
+//            // if explicitly set in code
+//            if (settings != null && settings.HasExplicitValue("ScaleOut.UseSingleBrokerQueue"))
+//                return !settings.Get<bool>("ScaleOut.UseSingleBrokerQueue");
 
-            // if default is set
-            if(settings != null && !settings.GetOrDefault<bool>("ScaleOut.UseSingleBrokerQueue"))
-                return !settings.GetOrDefault<bool>("ScaleOut.UseSingleBrokerQueue");
+//            // if explicitly set in config
+//            if (configSection != null)
+//                return configSection.QueuePerInstance;
 
-            return false;
-        }
+//            // if default is set
+//            if(settings != null && !settings.GetOrDefault<bool>("ScaleOut.UseSingleBrokerQueue"))
+//                return !settings.GetOrDefault<bool>("ScaleOut.UseSingleBrokerQueue");
 
-        internal static Func<ReadOnlySettings, Type, string, string> SubscriptionNamingConvention
-        {
-            get
-            {
-                return (settings, messagetype, endpointname) =>
-                {
-                    var subscriptionName = messagetype != null ? endpointname + "." + messagetype.Name : endpointname;
+//            return false;
+//        }
 
-                    subscriptionName = SanitizeEntityName(subscriptionName);
+//        internal static Func<ReadOnlySettings, Type, string, string> SubscriptionNamingConvention
+//        {
+//            get
+//            {
+//                return (settings, messagetype, endpointname) =>
+//                {
+//                    var subscriptionName = messagetype != null ? endpointname + "." + messagetype.Name : endpointname;
 
-                    if (subscriptionName.Length >= 50)
-                        subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
+//                    subscriptionName = SanitizeEntityName(subscriptionName);
 
-                    if (ShouldIndividualize(null, settings))
-                        subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+//                    if (subscriptionName.Length >= 50)
+//                        subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
 
-                    return subscriptionName;
-                };
-            }
-        }
+//                    if (ShouldIndividualize(null, settings))
+//                        subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
 
-        internal static Func<ReadOnlySettings, Type, string, string> SubscriptionFullNamingConvention
-        {
-            get
-            {
-                return (settings, messagetype, endpointname) =>
-                {
-                    var subscriptionName = messagetype != null ? endpointname + "." + messagetype.FullName : endpointname;
+//                    return subscriptionName;
+//                };
+//            }
+//        }
 
-                    subscriptionName = SanitizeEntityName(subscriptionName);
+//        internal static Func<ReadOnlySettings, Type, string, string> SubscriptionFullNamingConvention
+//        {
+//            get
+//            {
+//                return (settings, messagetype, endpointname) =>
+//                {
+//                    var subscriptionName = messagetype != null ? endpointname + "." + messagetype.FullName : endpointname;
 
-                    if (subscriptionName.Length >= 50)
-                        subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
+//                    subscriptionName = SanitizeEntityName(subscriptionName);
 
-                    if (ShouldIndividualize(null, settings))
-                        subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
+//                    if (subscriptionName.Length >= 50)
+//                        subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
 
-                    return subscriptionName;
-                };
-            }
-        }
+//                    if (ShouldIndividualize(null, settings))
+//                        subscriptionName = QueueIndividualizer.Individualize(subscriptionName);
 
-        internal static Func<ReadOnlySettings, Type, string, string> TopicNamingConvention
-        {
-            get
-            {
-                return (settings, messagetype, endpointname) =>
-                {
-                    var name = endpointname;
+//                    return subscriptionName;
+//                };
+//            }
+//        }
 
-                    name = SanitizeEntityName(name);
+//        internal static Func<ReadOnlySettings, Type, string, string> TopicNamingConvention
+//        {
+//            get
+//            {
+//                return (settings, messagetype, endpointname) =>
+//                {
+//                    var name = endpointname;
 
-                    if (name.Length >= 290)
-                        name = new DeterministicGuidBuilder().Build(name).ToString();
+//                    name = SanitizeEntityName(name);
 
-                    return name;
-                };
-            }
-        }
+//                    if (name.Length >= 290)
+//                        name = new DeterministicGuidBuilder().Build(name).ToString();
 
-        internal static Func<ReadOnlySettings, Address, Address> PublisherAddressConvention
-        {
-            get
-            {
-                return (settings, address) => Address.Parse(TopicNamingConvention(settings, null, address.Queue + ".events") + "@" + address.Machine);
-            }
-        }
+//                    return name;
+//                };
+//            }
+//        }
 
-        internal static Func<ReadOnlySettings, Address, Address> PublisherAddressConventionForSubscriptions
-        {
-            get { return PublisherAddressConvention; }
-        }
+//        internal static Func<ReadOnlySettings, Address, Address> PublisherAddressConvention
+//        {
+//            get
+//            {
+//                return (settings, address) => Address.Parse(TopicNamingConvention(settings, null, address.Queue + ".events") + "@" + address.Machine);
+//            }
+//        }
 
-        internal static Func<ReadOnlySettings, Address, bool, Address> QueueAddressConvention
-        {
-            get
-            {
-                return (settings, address, doNotIndividualize) => Address.Parse(QueueNamingConvention(settings, null, address.Queue, doNotIndividualize) + "@" + address.Machine);
-            }
-        }
-    }
-}
+//        internal static Func<ReadOnlySettings, Address, Address> PublisherAddressConventionForSubscriptions
+//        {
+//            get { return PublisherAddressConvention; }
+//        }
+
+//        internal static Func<ReadOnlySettings, Address, bool, Address> QueueAddressConvention
+//        {
+//            get
+//            {
+//                return (settings, address, doNotIndividualize) => Address.Parse(QueueNamingConvention(settings, null, address.Queue, doNotIndividualize) + "@" + address.Machine);
+//            }
+//        }
+//    }
+//}

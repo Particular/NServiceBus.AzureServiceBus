@@ -12,6 +12,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.Transports
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        QueueDescription Create(Address address);
+        QueueDescription Create(string address);
     }
 }

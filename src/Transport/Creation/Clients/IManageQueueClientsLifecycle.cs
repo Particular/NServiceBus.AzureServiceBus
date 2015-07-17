@@ -4,6 +4,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
     public interface IManageQueueClientsLifecycle
     {
-        QueueClient Get(Address address);
+        QueueClient Get(string address);
     }
 }
