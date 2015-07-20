@@ -3,7 +3,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
     using System;
     using System.Text.RegularExpressions;
 
-    public class NamespaceValidationRules : IValidationStrategy
+    public class EntityNameValidationRules : IValidationStrategy
     {
         public bool IsValid(string entitypath, EntityType entityType)
         {
