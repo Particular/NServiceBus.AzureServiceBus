@@ -75,7 +75,7 @@
     <Compile Include="Configuration\When_configuring_addressing.cs" />
     <Compile Include="Configuration\When_configuring_composition.cs" />
     <Compile Include="Configuration\When_configuring_individualization.cs" />
-    <Compile Include="Configuration\When_configuring_partitioning.cs" />
+    <Compile Include="Configuration\When_configuring_namespace_partitioning.cs" />
     <Compile Include="Configuration\When_configuring_queues.cs" />
     <Compile Include="Configuration\When_configuring_sanitization.cs" />
     <Compile Include="Configuration\When_configuring_subscriptions.cs" />

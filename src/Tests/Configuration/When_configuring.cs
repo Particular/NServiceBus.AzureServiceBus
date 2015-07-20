@@ -30,14 +30,14 @@
         }
 
         [Test]
-        public void Should_be_able_to_extend_partitioning_settings()
+        public void Should_be_able_to_extend_namespace_partitioning_settings()
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var partitioningSettings = extensions.Topology().Addressing().Partitioning();
+            var partitioningSettings = extensions.Topology().Addressing().NamespacePartitioning();
 
-            Assert.IsInstanceOf<AzureServiceBusPartitioningSettings>(partitioningSettings);
+            Assert.IsInstanceOf<AzureServiceBusNamespacePartitioningSettings>(partitioningSettings);
         }
 
         [Test]

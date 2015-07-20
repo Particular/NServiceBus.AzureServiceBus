@@ -12,9 +12,9 @@
             return addressingSettings;
         }
 
-        public static AzureServiceBusPartitioningSettings Partitioning(this AzureServiceBusAddressingSettings addressingSettings)
+        public static AzureServiceBusNamespacePartitioningSettings NamespacePartitioning(this AzureServiceBusAddressingSettings addressingSettings)
         {
-            return new AzureServiceBusPartitioningSettings(addressingSettings.GetSettings());
+            return new AzureServiceBusNamespacePartitioningSettings(addressingSettings.GetSettings());
         }
 
         public static AzureServiceBusCompositionSettings Composition(this AzureServiceBusAddressingSettings addressingSettings)

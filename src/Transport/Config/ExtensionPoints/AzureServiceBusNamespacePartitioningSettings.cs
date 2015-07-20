@@ -3,9 +3,9 @@
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
 
-    public class AzureServiceBusPartitioningSettings : ExposeSettings
+    public class AzureServiceBusNamespacePartitioningSettings : ExposeSettings
     {
-        public AzureServiceBusPartitioningSettings(SettingsHolder settings)
+        public AzureServiceBusNamespacePartitioningSettings(SettingsHolder settings)
             : base(settings)
         {
         }
