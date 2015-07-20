@@ -75,6 +75,10 @@
   <ItemGroup>
     <Compile Include="Addressing\IAddressingStrategy.cs" />
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\DeterministicNamespacePartitioningStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioningStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioningStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Validation\IValidationStrategy.cs" />
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />
@@ -105,7 +109,7 @@
     <Compile Include="Config\OldCode\OverrideMaxRetries.cs" />
     <Compile Include="Config\OldCode\QueueIndividualizer.cs" />
     <Compile Include="Config\WellKnownConfigurationKeys.cs" />
-    <Compile Include="Creation\Clients\CircularBuffer.cs" />
+    <Compile Include="Utils\CircularBuffer.cs" />
     <Compile Include="Creation\Clients\ICreateMessagingFactories.cs" />
     <Compile Include="Creation\Clients\ICreateSubscriptionClients.cs" />
     <Compile Include="Creation\Clients\ICreateTopicClients.cs" />

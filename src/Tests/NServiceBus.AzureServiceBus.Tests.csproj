@@ -60,6 +60,7 @@
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -68,6 +69,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addressing\NamespacePartitioning\When_using_deterministic_strategy_on_multiple_namespaces.cs" />
+    <Compile Include="Addressing\NamespacePartitioning\When_using_failover_namespace.cs" />
+    <Compile Include="Addressing\NamespacePartitioning\When_using_roundrobin_strategy_on_multiple_namespaces.cs" />
+    <Compile Include="Addressing\NamespacePartitioning\When_using_single_namespace.cs" />
     <Compile Include="API\APIApprovals.cs" />
     <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiApprover.cs" />
     <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiGenerator.cs" />
