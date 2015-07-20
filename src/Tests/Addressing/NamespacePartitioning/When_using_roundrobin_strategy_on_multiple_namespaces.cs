@@ -19,9 +19,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             for (var i = 0; i < 2; i++)
             {
-                Assert.AreEqual(primary, strategy.GetConnectionString());
-                Assert.AreEqual(secondary, strategy.GetConnectionString());
-                Assert.AreEqual(tertiary, strategy.GetConnectionString());
+                Assert.AreEqual(primary, strategy.GetConnectionString("endpoint1"));
+                Assert.AreEqual(secondary, strategy.GetConnectionString("endpoint1"));
+                Assert.AreEqual(tertiary, strategy.GetConnectionString("endpoint1"));
             }
 
         }

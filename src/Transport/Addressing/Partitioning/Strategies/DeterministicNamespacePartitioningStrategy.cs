@@ -24,7 +24,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _allocationRule = rule;
         }
 
-        public string GetConnectionString()
+        public string GetConnectionString(string endpointname)
         {
             if (_allocationRule ==  null)
             {

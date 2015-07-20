@@ -25,7 +25,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             
             for (i = 0; i < 3; i++)
             {
-                Assert.AreEqual(buckets[i], strategy.GetConnectionString());
+                Assert.AreEqual(buckets[i], strategy.GetConnectionString("endpoint1"));
             }
 
         }

@@ -15,7 +15,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             const string connectionstring = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             var strategy = new SingleNamespacePartitioningStrategy(new List<string> { connectionstring });
 
-            Assert.AreEqual(connectionstring, strategy.GetConnectionString());
+            Assert.AreEqual(connectionstring, strategy.GetConnectionString("endpoint1"));
         }
 
         [Test, ExpectedException(typeof(ConfigurationErrorsException))]

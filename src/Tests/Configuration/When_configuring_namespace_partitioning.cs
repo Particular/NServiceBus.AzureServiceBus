@@ -37,7 +37,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         class MyNamespacePartitioningStrategy : INamespacePartitioningStrategy
         {
-            public string GetConnectionString()
+            public string GetConnectionString(string endpointname)
             {
                 throw new NotImplementedException(); // not relevant for the test
             }

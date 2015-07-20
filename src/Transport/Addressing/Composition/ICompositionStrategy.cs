@@ -2,5 +2,6 @@
 {
     public interface ICompositionStrategy
     {
+        string GetFullPath(string entityname);
     }
 }

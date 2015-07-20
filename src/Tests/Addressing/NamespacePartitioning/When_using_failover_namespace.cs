@@ -16,7 +16,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             var strategy = new FailOverNamespacePartitioningStrategy(new List<string> { primary, secondary });
 
-            Assert.AreEqual(primary, strategy.GetConnectionString());
+            Assert.AreEqual(primary, strategy.GetConnectionString("endpoint1"));
         }
 
         [Test]
@@ -30,7 +30,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             };
 
 
-            Assert.AreEqual(secondary, strategy.GetConnectionString());
+            Assert.AreEqual(secondary, strategy.GetConnectionString("endpoint1"));
         }
 
         [Test, ExpectedException(typeof(ConfigurationErrorsException))]
