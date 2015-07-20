@@ -73,6 +73,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addressing\Composition\Strategies\FlatCompositionStrategy.cs" />
+    <Compile Include="Addressing\Composition\Strategies\HierarchyCompositionStrategy.cs" />
     <Compile Include="Addressing\IAddressingStrategy.cs" />
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\DeterministicNamespacePartitioningStrategy.cs" />
