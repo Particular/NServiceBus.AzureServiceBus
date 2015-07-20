@@ -85,6 +85,8 @@
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />
     <Compile Include="Addressing\Partitioning\INamespacePartitioningStrategy.cs" />
+    <Compile Include="Addressing\Validation\Strategies\EntityType.cs" />
+    <Compile Include="Addressing\Validation\Strategies\NamespaceValidationRules.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusQueueExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusResourceExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusAddressingExtensions.cs" />

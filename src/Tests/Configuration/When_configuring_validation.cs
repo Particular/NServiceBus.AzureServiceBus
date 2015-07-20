@@ -23,6 +23,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         class MyValidationStrategy : IValidationStrategy
         {
+            public bool IsValid(string entitypath, EntityType entityType)
+            {
+                throw new NotImplementedException(); // not relevant for test
+            }
         }
     }
 }
