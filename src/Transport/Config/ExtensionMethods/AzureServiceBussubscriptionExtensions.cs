@@ -2,7 +2,7 @@
 {
     using NServiceBus.Configuration.AdvanceExtensibility;
 
-    public static class AzureServiceBussubscriptionExtensions
+    public static class AzureServiceBusSubscriptionExtensions
     {
         public static AzureServiceBusSubscriptionSettings SupportOrdering(this AzureServiceBusSubscriptionSettings resourceSettings, bool supported)
         {

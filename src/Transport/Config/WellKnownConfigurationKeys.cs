@@ -1,4 +1,5 @@
-﻿namespace NServiceBus
+﻿// ReSharper disable MemberHidesStaticFromOuterClass
+namespace NServiceBus
 {
     static class WellKnownConfigurationKeys
     {
@@ -17,6 +18,37 @@
                 public static class Subscriptions
                 {
                     public const string SupportOrdering = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.SupportOrdering";
+                }
+            }
+
+            public static class Addressing
+            {
+                public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Strategy";
+
+                public static class Partitioning
+                {
+                    public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Partitioning.Strategy";
+                    public const string Namespaces = "AzureServiceBus.Settings.Topology.Addressing.Partitioning.Namespaces";
+                }
+
+                public static class Composition
+                {
+                    public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Composition.Strategy";
+                }
+
+                public static class Validation
+                {
+                    public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Validation.Strategy";
+                }
+
+                public static class Sanitization
+                {
+                    public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.Strategy";
+                }
+
+                public static class Individualization
+                {
+                    public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Individualization.Strategy";
                 }
             }
         }

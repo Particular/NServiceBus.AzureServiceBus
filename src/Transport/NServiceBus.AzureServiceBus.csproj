@@ -73,14 +73,25 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addressing\IAddressingStrategy.cs" />
+    <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
+    <Compile Include="Addressing\Validation\IValidationStrategy.cs" />
+    <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
+    <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\IPartitioningStrategy.cs" />
+    <Compile Include="Config\ExtensionMethods\AzureServiceBusCompositionExtensions.cs" />
+    <Compile Include="Config\ExtensionMethods\AzureServiceBusIndividualizationExtensions.cs" />
+    <Compile Include="Config\ExtensionMethods\AzureServiceBusPartitioningExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusQueueExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusResourceExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusAddressingExtensions.cs" />
-    <Compile Include="Config\ExtensionMethods\AzureServiceBussubscriptionExtensions.cs" />
+    <Compile Include="Config\ExtensionMethods\AzureServiceBusSanitizationExtensions.cs" />
+    <Compile Include="Config\ExtensionMethods\AzureServiceBusSubscriptionExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTopicExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTopologyExtensions.cs" />
     <Compile Include="Config\AzureServiceBusTransport.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTransportExtensions.cs" />
+    <Compile Include="Config\ExtensionMethods\AzureServiceBusValidationExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusBatchingSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusCompositionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusIndividualizationSettings.cs" />
@@ -88,6 +99,7 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusQueueSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusResourceSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusAddressingSettings.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusSanitizationSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSubscriptionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopicSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopologySettings.cs" />
