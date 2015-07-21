@@ -17,7 +17,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var partitioningSettings = extensions.Topology().Addressing().NamespacePartitioning().Strategy<MyNamespacePartitioningStrategy>();
+            var partitioningSettings = extensions.Topology().Addressing().NamespacePartitioning().UseStrategy<MyNamespacePartitioningStrategy>();
 
             Assert.AreEqual(typeof(MyNamespacePartitioningStrategy), partitioningSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy));
         }

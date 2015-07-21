@@ -14,7 +14,7 @@
             _settings = settings;
         }
 
-        public AzureServiceBusValidationSettings Strategy<T>() where T : IValidationStrategy
+        public AzureServiceBusValidationSettings UseStrategy<T>() where T : IValidationStrategy
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(T));
 

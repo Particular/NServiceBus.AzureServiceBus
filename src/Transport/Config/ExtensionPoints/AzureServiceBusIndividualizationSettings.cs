@@ -14,7 +14,7 @@
             _settings = settings;
         }
 
-        public AzureServiceBusIndividualizationSettings Strategy<T>() where T : IIndividualizationStrategy
+        public AzureServiceBusIndividualizationSettings UseStrategy<T>() where T : IIndividualizationStrategy
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(T));
 
