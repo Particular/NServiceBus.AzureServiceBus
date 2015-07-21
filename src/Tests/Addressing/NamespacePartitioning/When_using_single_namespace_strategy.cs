@@ -7,10 +7,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_using_single_namespace
+    public class When_using_single_namespace_strategy
     {
         [Test]
-        public void Single_partitioning_strategy_will_return_configured_namespace()
+        public void Single_partitioning_strategy_will_return_configured_namespace_for_any_endpoint_name()
         {
             const string connectionstring = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             var strategy = new SingleNamespacePartitioningStrategy(new List<string> { connectionstring });
@@ -18,20 +18,21 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual(connectionstring, strategy.GetConnectionString("endpoint1"));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Single_partitioning_strategy_will_throw_if_no_namespace_defined()
         {
-            new SingleNamespacePartitioningStrategy(new List<string>());
+            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioningStrategy(new List<string>()));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Single_partitioning_strategy_will_throw_if_more_namespaces_defined()
         {
-            new SingleNamespacePartitioningStrategy(new List<string>
-            {
-                "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey",
-                "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
-            });
+            Assert.Throws<ConfigurationErrorsException>(() =>
+                new SingleNamespacePartitioningStrategy(new List<string>
+                {
+                    "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey",
+                    "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
+                }));
         }
     }
 }

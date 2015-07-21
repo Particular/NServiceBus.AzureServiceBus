@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Deterministic_partitioning_strategy_will_circle_namespaces()
         {
-            int i = 0;
+            var i = 0;
 
             var buckets = new List<string>
             {
@@ -30,19 +30,20 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Deterministic_partitioning_strategy_will_throw_if_no_namespace_defined()
         {
-            new DeterministicNamespacePartitioningStrategy(new List<string>());
+            Assert.Throws<ConfigurationErrorsException>(() => new DeterministicNamespacePartitioningStrategy(new List<string>()));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Deterministic_partitioning_strategy_will_throw_if_too_little_namespaces_defined()
         {
-            new DeterministicNamespacePartitioningStrategy(new List<string>
-            {
-                "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
-            });
+            Assert.Throws<ConfigurationErrorsException>(() =>
+                new DeterministicNamespacePartitioningStrategy(new List<string>
+                {
+                    "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
+                }));
         }
 
     }

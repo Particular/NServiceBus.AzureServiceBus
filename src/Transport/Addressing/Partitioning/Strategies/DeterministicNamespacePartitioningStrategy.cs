@@ -19,12 +19,12 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _connectionstrings = connectionstrings;
         }
 
-        public void SetAllocationRule(Func<int> rule )
+        public void SetAllocationRule(Func<int> rule)
         {
             _allocationRule = rule;
         }
 
-        public string GetConnectionString(string endpointname)
+        public string GetConnectionString(string endpointName)
         {
             if (_allocationRule ==  null)
             {

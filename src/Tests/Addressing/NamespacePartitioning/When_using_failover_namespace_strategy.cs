@@ -7,7 +7,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_using_failover_namespace
+    public class When_using_failover_namespace_strategy
     {
         [Test]
         public void Failover_partitioning_strategy_will_return_primary_namespace_by_default()
@@ -33,30 +33,30 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual(secondary, strategy.GetConnectionString("endpoint1"));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Failover_partitioning_strategy_will_throw_if_no_namespace_defined()
         {
-            new FailOverNamespacePartitioningStrategy(new List<string>());
+            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioningStrategy(new List<string>()));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
-        public void Failover_partitioning_strategy_will_throw_if_too_little_namespaces_defined()
+        [Test]
+        public void Failover_partitioning_strategy_will_throw_if_no_secondary_namespace_is_provided()
         {
-            new FailOverNamespacePartitioningStrategy(new List<string>
+            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioningStrategy(new List<string>
             {
                 "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
-            });
+            }));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
-        public void Failover_partitioning_strategy_will_throw_if_more_namespaces_defined()
+        [Test]
+        public void Failover_partitioning_strategy_will_throw_if_more_than_primary_and_secondary_namespaces_are_provided()
         {
-            new FailOverNamespacePartitioningStrategy(new List<string>
+            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioningStrategy(new List<string>
             {
                 "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey",
                 "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey",
                 "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
-            });
+            }));
         }
     }
 }

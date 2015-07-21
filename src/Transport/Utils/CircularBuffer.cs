@@ -15,12 +15,7 @@ namespace NServiceBus.AzureServiceBus
 
         private object syncRoot;
 
-        public CircularBuffer(int capacity)
-            : this(capacity, false)
-        {
-        }
-
-        public CircularBuffer(int capacity, bool allowOverflow)
+        public CircularBuffer(int capacity, bool allowOverflow = false)
         {
             if (capacity < 0)
                 throw new ArgumentException("Capacity can not be less than zero", "capacity");
@@ -33,7 +28,7 @@ namespace NServiceBus.AzureServiceBus
             AllowOverflow = allowOverflow;
         }
 
-        public bool AllowOverflow
+        bool AllowOverflow
         {
             get;
             set;
