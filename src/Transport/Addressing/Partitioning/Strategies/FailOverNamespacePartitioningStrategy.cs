@@ -20,9 +20,9 @@
 
         public FailOverMode Mode { get; set; }
 
-        public string GetConnectionString(string endpointName)
+        public IEnumerable<string> GetConnectionStrings(string endpointName)
         {
-            return Mode == FailOverMode.Primary ? _connectionstrings.First() : _connectionstrings.Last();
+            yield return Mode == FailOverMode.Primary ? _connectionstrings.First() : _connectionstrings.Last();
         }
     }
 

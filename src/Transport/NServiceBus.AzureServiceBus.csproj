@@ -80,6 +80,7 @@
     <Compile Include="Addressing\Partitioning\Strategies\ShardedNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioningStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\ReplicatedNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Validation\IValidationStrategy.cs" />
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />

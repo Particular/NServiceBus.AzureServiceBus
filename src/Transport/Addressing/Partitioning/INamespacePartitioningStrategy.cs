@@ -1,7 +1,9 @@
 ﻿namespace NServiceBus.AzureServiceBus.Addressing
 {
+    using System.Collections.Generic;
+
     public interface INamespacePartitioningStrategy
     {
-        string GetConnectionString(string endpointName);
+        IEnumerable<string> GetConnectionStrings(string endpointName);
     }
 }

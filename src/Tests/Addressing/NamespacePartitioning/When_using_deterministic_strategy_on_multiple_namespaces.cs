@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 {
     using System.Collections.Generic;
     using System.Configuration;
+    using System.Linq;
     using NServiceBus.AzureServiceBus.Addressing;
     using NUnit.Framework;
 
@@ -9,6 +10,23 @@ namespace NServiceBus.AzureServiceBus.Tests
     [Category("AzureServiceBus")]
     public class When_using_sharded_strategy_on_multiple_namespaces
     {
+        [Test]
+        public void Sharded_partitioning_strategy_will_return_a_single_namespace()
+        {
+            var i = 0;
+
+            var buckets = new List<string>
+            {
+                "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey",
+                "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey",
+                "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
+            };
+            var strategy = new ShardedNamespacePartitioningStrategy(buckets);
+            strategy.SetShardingRule(() => i);
+
+            Assert.AreEqual(1, strategy.GetConnectionStrings("endpoint1").Count());
+        }
+
         [Test]
         public void Sharded_partitioning_strategy_will_circle_namespaces()
         {
@@ -25,7 +43,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             
             for (i = 0; i < 3; i++)
             {
-                Assert.AreEqual(buckets[i], strategy.GetConnectionString("endpoint1"));
+                Assert.AreEqual(buckets[i], strategy.GetConnectionStrings("endpoint1").First());
             }
         }
 

@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 {
     using System.Collections.Generic;
     using System.Configuration;
+    using System.Linq;
     using NServiceBus.AzureServiceBus.Addressing;
     using NUnit.Framework;
 
@@ -10,13 +11,23 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_using_failover_namespace_strategy
     {
         [Test]
+        public void Failover_partitioning_strategy_will_return_a_single_namespace()
+        {
+            const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            var strategy = new FailOverNamespacePartitioningStrategy(new List<string> { primary, secondary });
+
+            Assert.AreEqual(1, strategy.GetConnectionStrings("endpoint1").Count());
+        }
+
+        [Test]
         public void Failover_partitioning_strategy_will_return_primary_namespace_by_default()
         {
             const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             var strategy = new FailOverNamespacePartitioningStrategy(new List<string> { primary, secondary });
 
-            Assert.AreEqual(primary, strategy.GetConnectionString("endpoint1"));
+            Assert.AreEqual(primary, strategy.GetConnectionStrings("endpoint1").First());
         }
 
         [Test]
@@ -30,7 +41,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             };
 
 
-            Assert.AreEqual(secondary, strategy.GetConnectionString("endpoint1"));
+            Assert.AreEqual(secondary, strategy.GetConnectionStrings("endpoint1").First());
         }
 
         [Test]

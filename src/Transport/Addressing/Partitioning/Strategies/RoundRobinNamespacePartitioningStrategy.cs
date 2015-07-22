@@ -21,9 +21,9 @@ namespace NServiceBus.AzureServiceBus.Addressing
             }
         }
 
-        public string GetConnectionString(string endpointName)
+        public IEnumerable<string> GetConnectionStrings(string endpointName)
         {
-            return _connectionstrings.Get();
+            yield return _connectionstrings.Get();
         }
     }
 }

@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 {
     using System.Collections.Generic;
     using System.Configuration;
+    using System.Linq;
     using NServiceBus.AzureServiceBus.Addressing;
     using NUnit.Framework;
 
@@ -10,12 +11,21 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_using_single_namespace_strategy
     {
         [Test]
+        public void Single_partitioning_strategy_will_return_a_single_connectionstring()
+        {
+            const string connectionstring = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            var strategy = new SingleNamespacePartitioningStrategy(new List<string> { connectionstring });
+
+            Assert.AreEqual(1, strategy.GetConnectionStrings("endpoint1").Count());
+        }
+
+        [Test]
         public void Single_partitioning_strategy_will_return_configured_namespace_for_any_endpoint_name()
         {
             const string connectionstring = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             var strategy = new SingleNamespacePartitioningStrategy(new List<string> { connectionstring });
 
-            Assert.AreEqual(connectionstring, strategy.GetConnectionString("endpoint1"));
+            Assert.AreEqual(connectionstring, strategy.GetConnectionStrings("endpoint1").First());
         }
 
         [Test]
@@ -35,4 +45,5 @@ namespace NServiceBus.AzureServiceBus.Tests
                 }));
         }
     }
+
 }
