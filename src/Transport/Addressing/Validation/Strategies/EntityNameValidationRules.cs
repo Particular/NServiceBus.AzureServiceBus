@@ -5,7 +5,11 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
     public class EntityNameValidationRules : IValidationStrategy
     {
-        public bool IsValid(string entitypath, EntityType entityType)
+        const int QueuePathMaxLength = 260;
+        const int TopicPathMaxLength = 260;
+        const int SubscriptionPathMaxLength = 50;
+
+        public bool IsValid(string entityPath, EntityType entityType)
         {
             /*Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/) */
             var topicQueueNameRegex = new Regex(@"^[0-9A-Za-z_\.\-\/]+$");
@@ -16,16 +20,16 @@ namespace NServiceBus.AzureServiceBus.Addressing
             switch (entityType)
             {
                 case EntityType.Queue:
-                    valid &= entitypath.Length <= 260;
-                    valid &= topicQueueNameRegex.IsMatch(entitypath);
+                    valid &= entityPath.Length <= QueuePathMaxLength;
+                    valid &= topicQueueNameRegex.IsMatch(entityPath);
                     break;
                 case EntityType.Topic:
-                    valid &= entitypath.Length <= 260;
-                    valid &= topicQueueNameRegex.IsMatch(entitypath);
+                    valid &= entityPath.Length <= TopicPathMaxLength;
+                    valid &= topicQueueNameRegex.IsMatch(entityPath);
                     break;
                 case EntityType.Subscription:
-                    valid &= entitypath.Length <= 50;
-                    valid &= subscriptionNameRegex.IsMatch(entitypath);
+                    valid &= entityPath.Length <= SubscriptionPathMaxLength;
+                    valid &= subscriptionNameRegex.IsMatch(entityPath);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("entityType");

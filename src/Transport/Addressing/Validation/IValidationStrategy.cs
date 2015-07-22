@@ -2,6 +2,6 @@
 {
     public interface IValidationStrategy
     {
-        bool IsValid(string entitypath, EntityType entityType);
+        bool IsValid(string entityPath, EntityType entityType);
     }
 }

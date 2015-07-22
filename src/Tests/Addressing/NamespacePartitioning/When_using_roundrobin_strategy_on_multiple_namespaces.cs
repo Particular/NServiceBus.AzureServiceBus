@@ -23,22 +23,21 @@ namespace NServiceBus.AzureServiceBus.Tests
                 Assert.AreEqual(secondary, strategy.GetConnectionString("endpoint1"));
                 Assert.AreEqual(tertiary, strategy.GetConnectionString("endpoint1"));
             }
-
         }
         
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
-        public void Roundrobin_partitioning_strategy_will_throw_if_no_namespace_defined()
+        [Test]
+        public void Roundrobin_partitioning_strategy_will_throw_if_no_namespace_are_provided()
         {
-            new RoundRobinNamespacePartitioningStrategy(new List<string>());
+            Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioningStrategy(new List<string>()));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
-        public void Roundrobin_partitioning_strategy_will_throw_if_too_little_namespaces_defined()
+        [Test]
+        public void Roundrobin_partitioning_strategy_will_throw_if_too_little_namespaces_are_provided()
         {
-            new RoundRobinNamespacePartitioningStrategy(new List<string>
+            Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioningStrategy(new List<string>
             {
                 "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
-            });
+            }));
         }
 
     }

@@ -5,10 +5,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_using_hierarchy_composition
+    public class When_using_hierarchy_composition_strategy
     {
         [Test]
-        public void Hierarchy_composition_will_prefix_entityname()
+        public void Hierarchy_composition_will_prefix_entity_name_with_path()
         {
             var prefix = "/my/path/";
             var entityname = "myqueue";

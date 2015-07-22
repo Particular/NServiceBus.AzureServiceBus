@@ -14,7 +14,7 @@
             _settings = settings;
         }
 
-        public AzureServiceBusCompositionSettings Strategy<T>() where T : ICompositionStrategy
+        public AzureServiceBusCompositionSettings UseStrategy<T>() where T : ICompositionStrategy
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(T));
 

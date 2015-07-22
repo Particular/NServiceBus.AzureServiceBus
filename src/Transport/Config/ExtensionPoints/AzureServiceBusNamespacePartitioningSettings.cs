@@ -16,7 +16,7 @@
             _settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string>());
         }
 
-        public AzureServiceBusNamespacePartitioningSettings Strategy<T>() where T : INamespacePartitioningStrategy
+        public AzureServiceBusNamespacePartitioningSettings UseStrategy<T>() where T : INamespacePartitioningStrategy
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(T));
 

@@ -16,7 +16,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         const string illegalCharacterSubscriptionName = "6pwTRR34FFr/6YhPi-iDNfdSRLNDFIqZ97_Ky64w49r50n72vk";
 
         [Test]
-        public void Namespaces_allows_queues_with_paths_up_to_260_characters()
+        public void Namespaces_allow_queues_with_paths_up_to_260_characters()
         {
             var validation = new EntityNameValidationRules();
 
@@ -24,7 +24,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_allows_queues_with_slashes_dashes_dots_and_underscores()
+        public void Namespaces_allow_queues_with_slashes_dashes_dots_and_underscores()
         {
             var validation = new EntityNameValidationRules();
 
@@ -32,7 +32,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_does_not_allows_queues_with_paths_over_260_characters()
+        public void Namespaces_do_not_allow_queues_with_paths_over_260_characters()
         {
             var validation = new EntityNameValidationRules();
 
@@ -40,7 +40,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_does_not_allows_queues_with_other_characters()
+        public void Namespaces_do_not_allows_queues_with_illegal_characters()
         {
             var validation = new EntityNameValidationRules();
 
@@ -48,7 +48,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_allows_topics_with_paths_up_to_260_characters()
+        public void Namespaces_allow_topics_with_paths_up_to_260_characters()
         {
             var validation = new EntityNameValidationRules();
 
@@ -56,7 +56,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_allows_topics_with_slashes_dashes_dots_and_underscores()
+        public void Namespaces_allow_topics_with_slashes_dashes_dots_and_underscores()
         {
             var validation = new EntityNameValidationRules();
 
@@ -64,7 +64,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_does_not_allows_topics_with_paths_over_260_characters()
+        public void Namespaces_do_not_allow_topics_with_paths_over_260_characters()
         {
             var validation = new EntityNameValidationRules();
 
@@ -72,7 +72,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_does_not_allows_topics_with_other_characters()
+        public void Namespaces_do_not_allow_topics_with_illegal_characters()
         {
             var validation = new EntityNameValidationRules();
 
@@ -80,7 +80,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_allows_subscriptions_with_paths_up_to_50_characters()
+        public void Namespaces_allow_subscriptions_with_paths_up_to_50_characters()
         {
             var validation = new EntityNameValidationRules();
 
@@ -88,7 +88,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_allows_subscriptions_with_dashes_dots_and_underscores()
+        public void Namespaces_allow_subscriptions_with_dashes_dots_and_underscores()
         {
             var validation = new EntityNameValidationRules();
 
@@ -96,7 +96,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_does_not_allows_topics_with_paths_over_50_characters()
+        public void Namespaces_do_not_allow_topics_with_paths_over_50_characters()
         {
             var validation = new EntityNameValidationRules();
 
@@ -104,7 +104,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Namespaces_does_not_allows_subscription_with_other_characters()
+        public void Namespaces_do_not_allow_subscription_with_illegal_characters()
         {
             var validation = new EntityNameValidationRules();
 

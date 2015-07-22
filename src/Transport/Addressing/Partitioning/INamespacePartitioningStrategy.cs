@@ -2,6 +2,6 @@
 {
     public interface INamespacePartitioningStrategy
     {
-        string GetConnectionString(string endpointname);
+        string GetConnectionString(string endpointName);
     }
 }

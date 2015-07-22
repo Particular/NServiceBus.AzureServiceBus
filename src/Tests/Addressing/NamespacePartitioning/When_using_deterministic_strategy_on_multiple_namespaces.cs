@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Sharded_partitioning_strategy_will_circle_namespaces()
         {
-            int i = 0;
+            var i = 0;
 
             var buckets = new List<string>
             {
@@ -27,22 +27,23 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 Assert.AreEqual(buckets[i], strategy.GetConnectionString("endpoint1"));
             }
-
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Sharded_partitioning_strategy_will_throw_if_no_namespace_defined()
         {
-            new ShardedNamespacePartitioningStrategy(new List<string>());
+            Assert.Throws<ConfigurationErrorsException>(() => new ShardedNamespacePartitioningStrategy(new List<string>()));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Sharded_partitioning_strategy_will_throw_if_too_little_namespaces_defined()
         {
-            new ShardedNamespacePartitioningStrategy(new List<string>
-            {
-                "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
-            });
+            Assert.Throws<ConfigurationErrorsException>(() =>
+                new ShardedNamespacePartitioningStrategy(new List<string>
+                {
+                    "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
+                }));
+
         }
 
     }

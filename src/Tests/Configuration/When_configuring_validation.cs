@@ -16,14 +16,14 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Topology().Addressing().Validation().Strategy<MyValidationStrategy>();
+            var topicSettings = extensions.Topology().Addressing().Validation().UseStrategy<MyValidationStrategy>();
 
             Assert.AreEqual(typeof(MyValidationStrategy), topicSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy));
         }
 
         class MyValidationStrategy : IValidationStrategy
         {
-            public bool IsValid(string entitypath, EntityType entityType)
+            public bool IsValid(string entityPath, EntityType entityType)
             {
                 throw new NotImplementedException(); // not relevant for test
             }

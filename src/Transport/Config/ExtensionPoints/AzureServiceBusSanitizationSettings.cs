@@ -14,7 +14,7 @@ namespace NServiceBus
             _settings = settings;
         }
 
-         public AzureServiceBusSanitizationSettings Strategy<T>() where T : ISanitizationStrategy
+         public AzureServiceBusSanitizationSettings UseStrategy<T>() where T : ISanitizationStrategy
          {
              _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(T));
 

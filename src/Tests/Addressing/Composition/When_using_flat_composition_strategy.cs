@@ -5,7 +5,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_using_flat_composition
+    public class When_using_flat_composition_strategy
     {
         [Test]
         public void Flat_composition_will_just_return_entityname()

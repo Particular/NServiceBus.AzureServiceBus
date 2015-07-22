@@ -16,7 +16,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Topology().Addressing().Strategy<MyAddressingStrategy>();
+            var topicSettings = extensions.Topology().Addressing().UseStrategy<MyAddressingStrategy>();
 
             Assert.AreEqual(typeof(MyAddressingStrategy), topicSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Strategy));
         }

@@ -5,7 +5,7 @@
 
     public static class AzureServiceBusAddressingExtensions
     {
-        public static AzureServiceBusAddressingSettings Strategy<T>(this AzureServiceBusAddressingSettings addressingSettings) where T : IAddressingStrategy
+        public static AzureServiceBusAddressingSettings UseStrategy<T>(this AzureServiceBusAddressingSettings addressingSettings) where T : IAddressingStrategy
         {
             addressingSettings.GetSettings().Set(WellKnownConfigurationKeys.Topology.Addressing.Strategy, typeof(T));
 
