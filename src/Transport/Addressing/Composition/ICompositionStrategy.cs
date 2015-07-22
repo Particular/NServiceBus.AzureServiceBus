@@ -2,6 +2,6 @@
 {
     public interface ICompositionStrategy
     {
-        string GetEntityPath(string entityname);
+        string GetEntityPath(string entityname, EntityType entityType);
     }
 }

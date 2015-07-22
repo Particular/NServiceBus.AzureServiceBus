@@ -11,8 +11,10 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _pathGenerator = pathGenerator;
         }
 
-        public string GetEntityPath(string entityname)
+        public string GetEntityPath(string entityname, EntityType entityType)
         {
+            if(entityType == EntityType.Subscription) return entityname;
+            
             return _pathGenerator(entityname) + entityname;
         }
     }
