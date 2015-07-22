@@ -77,7 +77,7 @@
     <Compile Include="Addressing\Composition\Strategies\HierarchyCompositionStrategy.cs" />
     <Compile Include="Addressing\IAddressingStrategy.cs" />
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
-    <Compile Include="Addressing\Partitioning\Strategies\DeterministicNamespacePartitioningStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\ShardedNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioningStrategy.cs" />
