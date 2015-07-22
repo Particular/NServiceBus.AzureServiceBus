@@ -1,4 +1,4 @@
-﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
+﻿namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System;
     using System.Security.Cryptography;

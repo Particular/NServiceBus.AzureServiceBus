@@ -72,11 +72,14 @@
     <Compile Include="Addressing\Composition\When_using_hierarchy_composition_strategy.cs" />
     <Compile Include="Addressing\Composition\When_using_flat_composition_strategy.cs" />
     <Compile Include="Addressing\Individualization\When_using_core_individualization_strategy.cs" />
+    <Compile Include="Addressing\Individualization\When_using_discriminator_individualization_strategy.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_deterministic_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_failover_namespace_strategy.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_replicated_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_roundrobin_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_single_namespace_strategy.cs" />
+    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_by_throwing.cs" />
+    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_by_adjusting.cs" />
     <Compile Include="Addressing\Validation\When_using_entity_validation.cs" />
     <Compile Include="API\APIApprovals.cs" />
     <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiApprover.cs" />
