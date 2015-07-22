@@ -1,9 +1,9 @@
-namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
-{
-    using Microsoft.ServiceBus.Messaging;
+//namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
+//{
+//    using Microsoft.ServiceBus.Messaging;
 
-    public interface ICreateMessagingFactories
-    {
-        MessagingFactory Create(string address);
-    }
-}
+//    public interface ICreateMessagingFactories
+//    {
+//        MessagingFactory Create(string address);
+//    }
+//}
