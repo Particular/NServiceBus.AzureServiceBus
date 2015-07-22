@@ -23,6 +23,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         class MyIndividualizationStrategy : IIndividualizationStrategy
         {
+            public string Individualize(string endpointname)
+            {
+                throw new NotImplementedException();//not relevant to the test
+            }
         }
     }
 }
