@@ -78,7 +78,7 @@
     <Compile Include="Addressing\NamespacePartitioning\When_using_replicated_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_roundrobin_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_single_namespace_strategy.cs" />
-    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_by_throwing.cs" />
+    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_by_throwing_exception.cs" />
     <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_by_adjusting.cs" />
     <Compile Include="Addressing\Validation\When_using_entity_validation.cs" />
     <Compile Include="API\APIApprovals.cs" />
