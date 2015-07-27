@@ -138,5 +138,16 @@
 
             Assert.IsInstanceOf<AzureServiceBusTransactionSettings>(transactionSettings);
         }
+
+        [Test]
+        public void Should_be_able_to_extend_connectivity_settings()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            var connectivitySettings = extensions.Connectivity();
+
+            Assert.IsInstanceOf<AzureServiceBusConnectivitySettings>(connectivitySettings);
+        }
     }
 }

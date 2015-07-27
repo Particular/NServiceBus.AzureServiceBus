@@ -41,6 +41,10 @@
     <Reference Include="ApprovalUtilities.Net45">
       <HintPath>..\packages\ApprovalUtilities.3.0.8\lib\net45\ApprovalUtilities.Net45.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ServiceBus, Version=2.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WindowsAzure.ServiceBus.2.6.0\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.dll</HintPath>
     </Reference>
@@ -87,6 +91,7 @@
     <Compile Include="Configuration\When_configuring.cs" />
     <Compile Include="Configuration\When_configuring_addressing.cs" />
     <Compile Include="Configuration\When_configuring_composition.cs" />
+    <Compile Include="Configuration\When_configuring_connectivity.cs" />
     <Compile Include="Configuration\When_configuring_individualization.cs" />
     <Compile Include="Configuration\When_configuring_namespace_partitioning.cs" />
     <Compile Include="Configuration\When_configuring_queues.cs" />

@@ -4,6 +4,6 @@ namespace NServiceBus.AzureServiceBus
 
     public interface ICreateMessagingFactories
     {
-        MessagingFactory Create(string address);
+        MessagingFactory Create(string connectionstring);
     }
 }

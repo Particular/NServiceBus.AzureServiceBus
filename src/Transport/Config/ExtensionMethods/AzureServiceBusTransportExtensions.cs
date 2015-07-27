@@ -18,5 +18,10 @@ namespace NServiceBus
         {
             return new AzureServiceBusTransactionSettings(transportExtensions.GetSettings());
         }
+
+        public static AzureServiceBusConnectivitySettings Connectivity(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        {
+            return new AzureServiceBusConnectivitySettings(transportExtensions.GetSettings());
+        }
     }
 }
