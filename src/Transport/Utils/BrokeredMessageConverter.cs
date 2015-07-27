@@ -11,7 +11,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         public static TransportMessage ToTransportMessage(this BrokeredMessage message)
         {
             TransportMessage t;
-            var rawMessage = message.GetBody<byte[]>() ?? new byte[0];
+            var rawMessage = BrokeredMessageBodyConversion.ExtractBody(message);
 
             if (message.Properties.Count > 0)
             {
@@ -42,7 +42,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
         public static BrokeredMessage ToBrokeredMessage(this TransportMessage message, PublishOptions options, ReadOnlySettings settings, Configure config)
         {
-            var brokeredMessage = message.Body != null ? new BrokeredMessage(message.Body) : new BrokeredMessage();
+            var brokeredMessage = BrokeredMessageBodyConversion.InjectBody(message.Body);
 
             SetHeaders(message, options, settings, config, brokeredMessage);
 
@@ -58,7 +58,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
         public static BrokeredMessage ToBrokeredMessage(this TransportMessage message, SendOptions options, SettingsHolder settings, bool expectDelay, Configure config)
         {
-            var brokeredMessage = message.Body != null ? new BrokeredMessage(message.Body) : new BrokeredMessage();
+            var brokeredMessage = BrokeredMessageBodyConversion.InjectBody(message.Body);
 
             SetHeaders(message, options, settings, config, brokeredMessage);
 
@@ -140,5 +140,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 
             return deliverAt;
         }
+    }
+
+    public static class BrokeredMessageBodyConversion
+    {
+        public static Func<BrokeredMessage, byte[]> ExtractBody = message => message.GetBody<byte[]>() ?? new byte[0];
+        public static Func<byte[], BrokeredMessage> InjectBody = bytes => bytes != null ? new BrokeredMessage(bytes) : new BrokeredMessage();
     }
 }

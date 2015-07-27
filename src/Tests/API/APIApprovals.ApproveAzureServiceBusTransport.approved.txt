@@ -29,6 +29,11 @@
         public AzureServiceBusTopologyCreator(NServiceBus.Azure.Transports.WindowsAzureServiceBus.ITopology topology) { }
         public void CreateQueueIfNecessary(NServiceBus.Address address, string account) { }
     }
+    public class static BrokeredMessageBodyConversion
+    {
+        public static System.Func<Microsoft.ServiceBus.Messaging.BrokeredMessage, byte[]> ExtractBody;
+        public static System.Func<byte[], Microsoft.ServiceBus.Messaging.BrokeredMessage> InjectBody;
+    }
     public class DefaultTopology : NServiceBus.Features.Feature
     {
         public DefaultTopology() { }
