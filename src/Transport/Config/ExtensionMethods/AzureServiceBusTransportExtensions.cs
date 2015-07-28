@@ -23,5 +23,6 @@ namespace NServiceBus
         {
             return new AzureServiceBusConnectivitySettings(transportExtensions.GetSettings());
         }
+
     }
 }

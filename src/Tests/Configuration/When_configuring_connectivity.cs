@@ -11,7 +11,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_configuring_connectivity
     {
         [Test]
-        public void Should_be_able_to_set_messaging_factory_settings_factory()
+        public void Should_be_able_to_set_messaging_factory_settings_factory_method()
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -43,6 +43,51 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectivitySettings = extensions.Connectivity().NumberOfMessageReceiversPerEntity(4);
 
             Assert.AreEqual(4, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfMessageReceiversPerEntity));
+        }
+
+    }
+
+    [TestFixture]
+    [Category("AzureServiceBus")]
+    public class When_configuring_resource_creation
+    {
+        [Test]
+        public void Should_be_able_to_set_queue_description_factory_method()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            Func<string, QueueDescription> registeredFactory = s => new QueueDescription("myqueue");
+
+            var connectivitySettings = extensions.Topology().Resources().QueueDescriptions(registeredFactory);
+
+            Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, QueueDescription>>(WellKnownConfigurationKeys.Topology.Resources.QueueDescriptionsFactory));
+        }
+
+        [Test]
+        public void Should_be_able_to_set_topic_description_factory_method()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            Func<string, TopicDescription> registeredFactory = s => new TopicDescription("mytopic");
+
+            var connectivitySettings = extensions.Topology().Resources().TopicDescriptions(registeredFactory);
+
+            Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, TopicDescription>>(WellKnownConfigurationKeys.Topology.Resources.TopicDescriptionsFactory));
+        }
+
+        [Test]
+        public void Should_be_able_to_set_subscription_description_factory_method()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            Func<string, SubscriptionDescription> registeredFactory = s => new SubscriptionDescription("mytopic", "mysubscription");
+
+            var connectivitySettings = extensions.Topology().Resources().SubscriptionDescriptions(registeredFactory);
+
+            Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, SubscriptionDescription>>(WellKnownConfigurationKeys.Topology.Resources.SubscriptionDescriptionsFactory));
         }
 
     }

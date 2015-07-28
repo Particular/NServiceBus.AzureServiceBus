@@ -7,18 +7,9 @@ namespace NServiceBus
         {
             public static class Resources
             {
-                public static class Queues
-                {
-                    public const string SupportOrdering = "AzureServiceBus.Settings.Topology.Resources.Queues.SupportOrdering";
-                }
-                public static class Topics
-                {
-                    public const string SupportOrdering = "AzureServiceBus.Settings.Topology.Resources.Topics.SupportOrdering";
-                }
-                public static class Subscriptions
-                {
-                    public const string SupportOrdering = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.SupportOrdering";
-                }
+                public const string QueueDescriptionsFactory = "AzureServiceBus.Settings.Topology.Resources.QueueDescriptionsFactory";
+                public const string TopicDescriptionsFactory = "AzureServiceBus.Settings.Topology.Resources.TopicDescriptionsFactory";
+                public const string SubscriptionDescriptionsFactory = "AzureServiceBus.Settings.Topology.Resources.SubscriptionDescriptionsFactory";
             }
 
             public static class Addressing

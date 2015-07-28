@@ -97,11 +97,8 @@
     <Compile Include="Connectivity\NamespaceManagerLifeCycleManager.cs" />
     <Compile Include="Creation\EntityType.cs" />
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationRules.cs" />
-    <Compile Include="Config\ExtensionMethods\AzureServiceBusQueueExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusResourceExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusAddressingExtensions.cs" />
-    <Compile Include="Config\ExtensionMethods\AzureServiceBusSubscriptionExtensions.cs" />
-    <Compile Include="Config\ExtensionMethods\AzureServiceBusTopicExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTopologyExtensions.cs" />
     <Compile Include="Config\AzureServiceBusTransport.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTransportExtensions.cs" />
@@ -123,10 +120,10 @@
     <Compile Include="Config\OldCode\OverrideMaxRetries.cs" />
     <Compile Include="Config\OldCode\QueueIndividualizer.cs" />
     <Compile Include="Config\WellKnownConfigurationKeys.cs" />
-    <Compile Include="Creation\ICreateMessageReceivers.cs" />
-    <Compile Include="Creation\ICreateMessagingFactories.cs" />
+    <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
+    <Compile Include="Connectivity\ICreateMessagingFactories.cs" />
     <Compile Include="Creation\ICreateNamespaceManagers.cs" />
-    <Compile Include="Creation\MessagingFactoryCreator.cs" />
+    <Compile Include="Connectivity\MessagingFactoryCreator.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
     <Compile Include="Creation\OldCode\Clients\ICreateMessagingFactories.cs" />
     <Compile Include="Creation\OldCode\Clients\ICreateSubscriptionClients.cs" />

@@ -1,7 +1,6 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
-    using System.Runtime.InteropServices.WindowsRuntime;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;

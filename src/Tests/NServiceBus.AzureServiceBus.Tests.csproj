@@ -66,6 +66,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -94,10 +95,7 @@
     <Compile Include="Configuration\When_configuring_connectivity.cs" />
     <Compile Include="Configuration\When_configuring_individualization.cs" />
     <Compile Include="Configuration\When_configuring_namespace_partitioning.cs" />
-    <Compile Include="Configuration\When_configuring_queues.cs" />
     <Compile Include="Configuration\When_configuring_sanitization.cs" />
-    <Compile Include="Configuration\When_configuring_subscriptions.cs" />
-    <Compile Include="Configuration\When_configuring_topics.cs" />
     <Compile Include="Configuration\When_configuring_validation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="When_creating_subscriptions_on_servicebus_topics.cs" />
@@ -113,7 +111,9 @@
       <Name>NServiceBus.AzureServiceBus</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Connectivity\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
