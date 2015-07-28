@@ -1,10 +1,10 @@
 namespace NServiceBus.AzureServiceBus.Addressing
 {
-    public class ThrowOnInvalidSanitizationStrategy : ISanitizationStrategy
+    public class ThrowOnFailingSanitizationStrategy : ISanitizationStrategy
     {
         IValidationStrategy _validationStrategy;
 
-        public ThrowOnInvalidSanitizationStrategy(IValidationStrategy validationStrategy)
+        public ThrowOnFailingSanitizationStrategy(IValidationStrategy validationStrategy)
         {
             _validationStrategy = validationStrategy;
         }

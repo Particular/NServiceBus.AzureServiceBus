@@ -86,7 +86,7 @@
     <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitizationStrategy.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\EndpointValidationException.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnInvalidSanitizationStrategy.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitizationStrategy.cs" />
     <Compile Include="Addressing\Validation\IValidationStrategy.cs" />
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />

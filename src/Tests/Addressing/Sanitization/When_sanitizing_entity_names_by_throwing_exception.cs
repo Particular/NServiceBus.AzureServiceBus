@@ -5,13 +5,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_sanitizing_entity_names_by_throwing
+    public class When_sanitizing_entity_names_by_throwing_exception
     {
         [Test]
         public void Valid_entity_names_are_returned_as_is()
         {
-            var validation = new ValidationMock(true);
-            var sanitization = new ThrowOnInvalidSanitizationStrategy(validation);
+            var validation = new ValidationMock(shouldValidationPass:true);
+            var sanitization = new ThrowOnFailingSanitizationStrategy(validation);
             var endpointname = "validendpoint";
 
             Assert.AreEqual(endpointname, sanitization.Sanitize(endpointname, EntityType.Queue));
@@ -20,8 +20,8 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Invalid_entity_names_result_in_exception()
         {
-            var validation = new ValidationMock(false);
-            var sanitization = new ThrowOnInvalidSanitizationStrategy(validation);
+            var validation = new ValidationMock(shouldValidationPass:false);
+            var sanitization = new ThrowOnFailingSanitizationStrategy(validation);
             var endpointname = "invalidendpoint";
 
             Assert.Throws<EndpointValidationException>(() => sanitization.Sanitize(endpointname, EntityType.Queue));
@@ -29,16 +29,16 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         class ValidationMock : IValidationStrategy
         {
-            bool _result;
+            bool shouldValidationPass;
 
-            public ValidationMock(bool result)
+            public ValidationMock(bool shouldValidationPass)
             {
-                _result = result;
+                this.shouldValidationPass = shouldValidationPass;
             }
 
             public bool IsValid(string entityPath, EntityType entityType)
             {
-                return _result;
+                return shouldValidationPass;
             }
         }
     }
