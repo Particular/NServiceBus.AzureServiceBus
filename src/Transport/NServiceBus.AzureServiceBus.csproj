@@ -46,9 +46,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.ServiceBus, Version=2.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.ServiceBus, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WindowsAzure.ServiceBus.2.6.0\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
+      <HintPath>..\packages\WindowsAzure.ServiceBus.2.7.5\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
@@ -91,10 +91,12 @@
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />
     <Compile Include="Addressing\Partitioning\INamespacePartitioningStrategy.cs" />
+    <Compile Include="Config\DefaultConfigurationValues.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusConnectivitySettings.cs" />
     <Compile Include="Connectivity\MessageReceiverLifeCycleManager.cs" />
     <Compile Include="Connectivity\MessagingFactoryLifeCycleManager.cs" />
     <Compile Include="Connectivity\NamespaceManagerLifeCycleManager.cs" />
+    <Compile Include="Creation\AzureServiceBusQueueCreator.cs" />
     <Compile Include="Creation\EntityType.cs" />
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationRules.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusResourceExtensions.cs" />
@@ -136,7 +138,7 @@
     <Compile Include="Creation\OldCode\Clients\ManageQueueClientsLifeCycle.cs" />
     <Compile Include="Creation\OldCode\Clients\ManageTopicClientsLifeCycle.cs" />
     <Compile Include="Creation\OldCode\ICreateQueues.cs" />
-    <Compile Include="Receiving\CreationExceptionHandling.cs" />
+    <Compile Include="Creation\CreationExceptionHandling.cs" />
     <Compile Include="Receiving\RetriableSendExceptionHandling.cs" />
     <Compile Include="Topology\AzureServiceBusTopologyCreator.cs" />
     <Compile Include="Creation\OldCode\Resources\ICreateNamespaceManagers.cs" />

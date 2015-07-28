@@ -1,4 +1,4 @@
-namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
+namespace NServiceBus.AzureServiceBus
 {
     using Microsoft.ServiceBus.Messaging;
 
