@@ -24,8 +24,9 @@ namespace NServiceBus
                     public const string AutoDeleteOnIdle = "AzureServiceBus.Settings.Topology.Resources.Queues.AutoDeleteOnIdle";
                     public const string EnableExpress = "AzureServiceBus.Settings.Topology.Resources.Queues.EnableExpress";
                     public const string ForwardDeadLetteredMessagesTo = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo";
+
+                    public const string ForwardToCondition = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardToCondition";
                     public const string ForwardTo = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardTo";
-                    public const string IsAnonymousAccessible = "AzureServiceBus.Settings.Topology.Resources.Queues.IsAnonymousAccessible";
                 }
 
                 public static class Topics
