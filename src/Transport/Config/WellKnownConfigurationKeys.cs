@@ -23,6 +23,8 @@ namespace NServiceBus
                     public const string EnablePartitioning = "AzureServiceBus.Settings.Topology.Resources.Queues.EnablePartitioning";
                     public const string AutoDeleteOnIdle = "AzureServiceBus.Settings.Topology.Resources.Queues.AutoDeleteOnIdle";
                     public const string EnableExpress = "AzureServiceBus.Settings.Topology.Resources.Queues.EnableExpress";
+
+                    public const string ForwardDeadLetteredMessagesToCondition = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardDeadLetteredMessagesToCondition";
                     public const string ForwardDeadLetteredMessagesTo = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo";
 
                     public const string ForwardToCondition = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardToCondition";

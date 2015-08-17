@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections;
     using System.Collections.Concurrent;
     using System.Reflection;
     using Microsoft.ServiceBus;
@@ -10,7 +11,7 @@
 
     class AzureServiceBusQueueCreator
     {
-        static ConcurrentDictionary<string, bool> rememberExistence = new ConcurrentDictionary<string, bool>();
+        ConcurrentDictionary<string, bool> rememberExistence = new ConcurrentDictionary<string, bool>();
         ReadOnlySettings _settings;
         Func<string, ReadOnlySettings, QueueDescription> _descriptionFactory;
 
@@ -37,7 +38,7 @@
                     SupportOrdering = s.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering),
                     AutoDeleteOnIdle = s.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.AutoDeleteOnIdle),
                     EnableExpress = s.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress),
-                    ForwardDeadLetteredMessagesTo = s.GetOrDefault<string>(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo),
+                    ForwardDeadLetteredMessagesTo = s.GetConditional<string>(name, WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo),
                     ForwardTo = s.GetConditional<string>(name, WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo)
                 };
             }
@@ -45,7 +46,6 @@
 
         public QueueDescription Create(string entityPath, NamespaceManager namespaceManager)
         {
-
             var description = _descriptionFactory(entityPath, _settings);
 
             try
@@ -56,10 +56,18 @@
                     {
                         namespaceManager.CreateQueue(description);
                         logger.InfoFormat("Queue '{0}' created", description.Path);
+
+                        rememberExistence.AddOrUpdate(description.Path, s => true, (s,b) => true);
                     }
                     else
                     {
                         logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
+                        logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
+                        if (!namespaceManager.GetQueue(description.Path).AllMembersAreEqual(description))
+                        {
+                            logger.InfoFormat("Updating queue '{0}' with new description", description.Path);
+                            namespaceManager.UpdateQueue(description);
+                        }
                     }
                 }
                 else
@@ -102,6 +110,8 @@
 
             return description;
         }
+
+       
 
         bool Exists(NamespaceManager namespaceClient, string path)
         {
@@ -153,6 +163,80 @@
             }
 
             return default(T);
+        }
+    }
+
+    static class MemberComparison
+    {
+        public static bool AllMembersAreEqual(this object left, object right)
+        {
+            if (ReferenceEquals(left, right))
+                return true;
+
+            if (left == null || right == null)
+                return false;
+
+            var type = left.GetType();
+            if (type != right.GetType())
+                return false;
+
+            if (left is ValueType)
+            {
+                // do a field comparison, or use the override if Equals is implemented:
+                return left.Equals(right);
+            }
+
+            // check for override:
+            if (type != typeof(object)
+                && type == type.GetMethod("Equals").DeclaringType)
+            {
+                // the Equals method is overridden, use it:
+                return left.Equals(right);
+            }
+
+            // all Arrays, Lists, IEnumerable<> etc implement IEnumerable
+            if (left is IEnumerable)
+            {
+                var rightEnumerator = (right as IEnumerable).GetEnumerator();
+                rightEnumerator.Reset();
+                foreach (object leftItem in left as IEnumerable)
+                {
+                    // unequal amount of items
+                    if (!rightEnumerator.MoveNext())
+                        return false;
+                    else
+                    {
+                        if (!AllMembersAreEqual(leftItem, rightEnumerator.Current))
+                            return false;
+                    }
+                }
+            }
+            else
+            {
+                // compare each property
+                foreach (PropertyInfo info in type.GetProperties(
+                    BindingFlags.Public |
+                    BindingFlags.NonPublic |
+                    BindingFlags.Instance |
+                    BindingFlags.GetProperty))
+                {
+                    // TODO: need to special-case indexable properties
+                    if (!AllMembersAreEqual(info.GetValue(left, null), info.GetValue(right, null)))
+                        return false;
+                }
+
+                // compare each field
+                foreach (FieldInfo info in type.GetFields(
+                    BindingFlags.GetField |
+                    BindingFlags.NonPublic |
+                    BindingFlags.Public |
+                    BindingFlags.Instance))
+                {
+                    if (!AllMembersAreEqual(info.GetValue(left), info.GetValue(right)))
+                        return false;
+                }
+            }
+            return true;
         }
     }
 }
