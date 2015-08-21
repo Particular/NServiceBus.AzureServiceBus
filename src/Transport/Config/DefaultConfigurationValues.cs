@@ -36,6 +36,8 @@
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardToCondition, new Func<string, bool>( name => true) );
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo, null);
+
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfMessagingFactoriesPerNamespace, 5);
         }
     }
 }

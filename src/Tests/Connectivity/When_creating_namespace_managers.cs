@@ -8,13 +8,16 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_creating_namespace_managers
     {
         [Test]
-        public void Creates_new_namespace_manager()
+        public void Creates_new_namespace_managers()
         {
             var creator = new NamespaceManagerCreator();
 
-            var manager = creator.Create(AzureServiceBusConnectionString.Value);
+            var first = creator.Create(AzureServiceBusConnectionString.Value);
+            var second = creator.Create(AzureServiceBusConnectionString.Value);
 
-            Assert.IsInstanceOf<INamespaceManager>(manager);
+            Assert.IsInstanceOf<INamespaceManager>(first);
+            Assert.IsInstanceOf<INamespaceManager>(second);
+            Assert.AreNotEqual(first, second);
         }
     }
 }

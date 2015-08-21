@@ -1,5 +1,6 @@
 namespace NServiceBus.AzureServiceBus
 {
+    using System;
     using Microsoft.ServiceBus;
 
     class NamespaceManagerAdapter : INamespaceManager
@@ -14,6 +15,11 @@ namespace NServiceBus.AzureServiceBus
         public NamespaceManagerSettings Settings
         {
             get { return _manager.Settings; }
+        }
+
+        public Uri Address
+        {
+            get { return _manager.Address; }
         }
     }
 }

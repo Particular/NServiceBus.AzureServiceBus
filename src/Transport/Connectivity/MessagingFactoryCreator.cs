@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Settings;
 
@@ -39,8 +40,9 @@ namespace NServiceBus.AzureServiceBus
 
         public IMessagingFactory Create(string connectionstring)
         {
+            var namespaceManager = _namespaceManagers.Get(connectionstring);
             var settings = _settingsFactory(connectionstring);
-            return new MessagingFactoryAdapter(MessagingFactory.Create(connectionstring, settings));
+            return new MessagingFactoryAdapter(MessagingFactory.Create(namespaceManager.Address, settings));
         }
 
         

@@ -55,6 +55,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 get { throw new NotImplementedException(); }
             }
+
+            public Uri Address
+            {
+                get { throw new NotImplementedException(); }
+            }
         }
     }
 }

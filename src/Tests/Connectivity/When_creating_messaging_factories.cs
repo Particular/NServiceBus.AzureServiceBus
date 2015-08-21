@@ -1,6 +1,8 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -10,23 +12,16 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Creates_new_factories_for_namespace()
         {
-            //var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            //var lifecycleManager = new MessagingFactoryLifeCycleManager( , settings);
+            var lifecycleManager = new MessagingFactoryCreator(new NamespaceManagerLifeCycleManager(new NamespaceManagerCreator()) , settings);
 
-            throw new Exception();
-        }
+            var first = lifecycleManager.Create(AzureServiceBusConnectionString.Value);
+            var second = lifecycleManager.Create(AzureServiceBusConnectionString.Value);
 
-        [Test]
-        public void Caches_factories_for_reuse()
-        {
-            throw new Exception();
-        }
-
-        [Test]
-        public void Replaces_factories_when_closed()
-        {
-            throw new Exception();
+            Assert.IsInstanceOf<IMessagingFactory>(first);
+            Assert.IsInstanceOf<IMessagingFactory>(second);
+            Assert.AreNotEqual(first, second);
         }
 
     }
