@@ -1,6 +1,6 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
-    using System;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NUnit.Framework;
 
     [TestFixture]
@@ -8,15 +8,13 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_creating_namespace_managers
     {
         [Test]
-        public void Creates_new_manager()
+        public void Creates_new_namespace_manager()
         {
-            //var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var creator = new NamespaceManagerCreator();
 
-            //var lifecycleManager = new MessagingFactoryLifeCycleManager( , settings);
+            var manager = creator.Create(AzureServiceBusConnectionString.Value);
 
-            throw new Exception();
+            Assert.IsInstanceOf<INamespaceManager>(manager);
         }
-
-
     }
 }

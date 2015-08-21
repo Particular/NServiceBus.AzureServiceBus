@@ -1,6 +1,8 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
+    using Microsoft.ServiceBus;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NUnit.Framework;
 
     [TestFixture]
@@ -8,25 +10,51 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_managing_namespace_manager_lifecycle
     {
         [Test]
-        public void Creates_new_factories_for_namespace()
+        public void Requests_creation_of_new_manager_for_namespace_initially()
         {
-            //var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var creator = new InterceptingCreator();
 
-            //var lifecycleManager = new MessagingFactoryLifeCycleManager( , settings);
-            throw new Exception();
+            var lifecycleManager = new NamespaceManagerLifeCycleManager(creator);
+
+            lifecycleManager.Get(AzureServiceBusConnectionString.Value);
+
+            Assert.IsTrue(creator.HasBeenInvoked);
         }
 
         [Test]
-        public void Caches_factories_for_reuse()
+        public void Caches_single_manager_for_reuse()
         {
-            throw new Exception();
+            var creator = new InterceptingCreator();
+
+            var lifecycleManager = new NamespaceManagerLifeCycleManager(creator);
+
+            var first = lifecycleManager.Get(AzureServiceBusConnectionString.Value);
+            var second = lifecycleManager.Get(AzureServiceBusConnectionString.Value);
+
+            Assert.AreEqual(1, creator.InvocationCount);
+            Assert.AreEqual(first, second);
+        }
+        
+        class InterceptingCreator : ICreateNamespaceManagers
+        {
+            public bool HasBeenInvoked;
+            public int InvocationCount = 0;
+
+            public INamespaceManager Create(string connectionstring)
+            {
+                HasBeenInvoked = true;
+                InvocationCount++;
+
+                return new InterceptedManager();
+            }
         }
 
-        [Test]
-        public void Replaces_factories_when_closed()
+        class InterceptedManager : INamespaceManager
         {
-            throw new Exception();
+            public NamespaceManagerSettings Settings
+            {
+                get { throw new NotImplementedException(); }
+            }
         }
-
     }
 }

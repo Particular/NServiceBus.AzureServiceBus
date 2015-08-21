@@ -1,7 +1,6 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System.Collections.Concurrent;
-    using Microsoft.ServiceBus;
 
     class NamespaceManagerLifeCycleManager
     {
