@@ -29,9 +29,9 @@
             return this;
         }
 
-        public AzureServiceBusConnectivitySettings NumberOfMessageReceiversPerEntity(int number)
+        public AzureServiceBusConnectivitySettings NumberOfClientsPerEntity(int number)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.NumberOfMessageReceiversPerEntity, number);
+            _settings.Set(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, number);
 
             return this;
         }

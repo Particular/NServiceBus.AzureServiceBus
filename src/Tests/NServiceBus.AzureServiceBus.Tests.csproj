@@ -107,6 +107,11 @@
     <Compile Include="Configuration\When_configuring_topics.cs" />
     <Compile Include="Configuration\When_configuring_validation.cs" />
     <Compile Include="ConnectionString.cs" />
+    <Compile Include="Connectivity\When_creating_messaging_factories.cs" />
+    <Compile Include="Connectivity\When_creating_namespace_managers.cs" />
+    <Compile Include="Connectivity\When_managing_client_entity_lifecycle.cs" />
+    <Compile Include="Connectivity\When_managing_factory_lifecycle.cs" />
+    <Compile Include="Connectivity\When_managing_namespace_manager_lifecycle.cs" />
     <Compile Include="Creation\When_creating_queues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="When_creating_subscriptions_on_servicebus_topics.cs" />
@@ -116,9 +121,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Connectivity\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj">
       <Project>{607c3f29-58d4-4eec-bffb-668976cbb5b8}</Project>

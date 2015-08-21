@@ -186,7 +186,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             namespaceManager.DeleteQueue("myqueue");
         }
 
-        [Test, Ignore("There seems to be a server side bug in ASB that doesn't set the actual value")]
+        [Test]
         public void Properly_sets_AutoDeleteOnIdle_on_the_created_entity()
         {
             var namespaceManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);

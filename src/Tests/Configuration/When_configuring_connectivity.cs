@@ -35,14 +35,14 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Should_be_able_to_set_number_of_message_receivers_per_entity()
+        public void Should_be_able_to_set_number_of_clients_per_entity()
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().NumberOfMessageReceiversPerEntity(4);
+            var connectivitySettings = extensions.Connectivity().NumberOfClientsPerEntity(4);
 
-            Assert.AreEqual(4, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfMessageReceiversPerEntity));
+            Assert.AreEqual(4, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
         }
 
     }

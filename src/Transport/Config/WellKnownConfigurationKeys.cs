@@ -81,7 +81,7 @@ namespace NServiceBus
         public static class Connectivity
         {
             public const string NumberOfMessagingFactoriesPerNamespace = "AzureServiceBus.Connectivity.NumberOfMessagingFactoriesPerNamespace";
-            public const string NumberOfMessageReceiversPerEntity = "AzureServiceBus.Connectivity.NumberOfMessageReceiversPerEntity";
+            public const string NumberOfClientsPerEntity = "AzureServiceBus.Connectivity.NumberOfClientsPerEntity";
             public const string MessagingFactorySettingsFactory = "AzureServiceBus.Connectivity.MessagingFactorySettingsFactory";
         }
 

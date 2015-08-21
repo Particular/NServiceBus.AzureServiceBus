@@ -37,13 +37,12 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        public MessagingFactory Create(string connectionstring)
+        public IMessagingFactory Create(string connectionstring)
         {
             var settings = _settingsFactory(connectionstring);
-            return MessagingFactory.Create(connectionstring, settings);
+            return new MessagingFactoryAdapter(MessagingFactory.Create(connectionstring, settings));
         }
 
         
     }
-
 }

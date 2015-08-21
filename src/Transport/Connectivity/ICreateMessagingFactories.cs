@@ -1,9 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
-    using Microsoft.ServiceBus.Messaging;
-
     public interface ICreateMessagingFactories
     {
-        MessagingFactory Create(string connectionstring);
+        IMessagingFactory Create(string connectionstring);
     }
 }

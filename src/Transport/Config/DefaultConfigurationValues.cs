@@ -32,10 +32,10 @@
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableBatchedOperations, true);
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesToCondition, new Func<string, bool>(name => true));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo, "");
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo, null);
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardToCondition, new Func<string, bool>( name => true) );
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo, "");
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo, null);
         }
     }
 }
