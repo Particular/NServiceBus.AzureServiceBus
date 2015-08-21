@@ -1,5 +1,8 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
+    using System.Threading.Tasks;
+    using Microsoft.ServiceBus;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -91,11 +94,22 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 get { return _isClosed; }
             }
-
             public void Close()
             {
                 _isClosed = true;
             }
+
+            public RetryPolicy RetryPolicy
+            {
+                get { throw new System.NotImplementedException(); }
+                set { throw new System.NotImplementedException(); }
+            }
+
+            public Task<IMessageReceiver> CreateMessageReceiverAsync(string entitypath, ReceiveMode receiveMode)
+            {
+                throw new System.NotImplementedException();
+            }
+
         }
     }
 }

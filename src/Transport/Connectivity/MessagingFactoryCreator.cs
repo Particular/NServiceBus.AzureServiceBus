@@ -9,10 +9,12 @@ namespace NServiceBus.AzureServiceBus
     {
         readonly NamespaceManagerLifeCycleManager _namespaceManagers;
         Func<string, MessagingFactorySettings> _settingsFactory;
+        readonly ReadOnlySettings _settings;
 
         public MessagingFactoryCreator(NamespaceManagerLifeCycleManager namespaceManagers, ReadOnlySettings settings)
         {
             this._namespaceManagers = namespaceManagers;
+            this._settings = settings;
 
             if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactorySettingsFactory))
             {
@@ -41,10 +43,18 @@ namespace NServiceBus.AzureServiceBus
         public IMessagingFactory Create(string connectionstring)
         {
             var namespaceManager = _namespaceManagers.Get(connectionstring);
-            var settings = _settingsFactory(connectionstring);
-            return new MessagingFactoryAdapter(MessagingFactory.Create(namespaceManager.Address, settings));
+            var factorySettings = _settingsFactory(connectionstring);
+            var inner = MessagingFactory.Create(namespaceManager.Address, factorySettings);
+            if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.PrefetchCount))
+            {
+                inner.PrefetchCount = _settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.PrefetchCount);
+            }
+            if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy))
+            {
+                inner.RetryPolicy = _settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy);
+            }
+            return new MessagingFactoryAdapter(inner);
         }
-
         
     }
 }

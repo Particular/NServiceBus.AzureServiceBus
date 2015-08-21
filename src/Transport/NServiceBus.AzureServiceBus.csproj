@@ -94,9 +94,12 @@
     <Compile Include="Config\DefaultConfigurationValues.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusConnectivitySettings.cs" />
     <Compile Include="Connectivity\ClientEntityLifeCycleManager.cs" />
-    <Compile Include="Connectivity\IEntityClient.cs" />
+    <Compile Include="Connectivity\IClientEntity.cs" />
+    <Compile Include="Connectivity\IMessageReceiver.cs" />
     <Compile Include="Connectivity\IMessagingFactory.cs" />
     <Compile Include="Connectivity\INamespaceManager.cs" />
+    <Compile Include="Connectivity\MessageReceiverAdapter.cs" />
+    <Compile Include="Connectivity\MessageReceiverCreator.cs" />
     <Compile Include="Connectivity\MessagingFactoryAdapter.cs" />
     <Compile Include="Connectivity\MessagingFactoryLifeCycleManager.cs" />
     <Compile Include="Connectivity\NamespaceManagerAdapter.cs" />
@@ -128,7 +131,7 @@
     <Compile Include="Config\OldCode\OverrideMaxRetries.cs" />
     <Compile Include="Config\OldCode\QueueIndividualizer.cs" />
     <Compile Include="Config\WellKnownConfigurationKeys.cs" />
-    <Compile Include="Connectivity\ICreateEntityClients.cs" />
+    <Compile Include="Connectivity\ICreateClientEntities.cs" />
     <Compile Include="Connectivity\ICreateMessagingFactories.cs" />
     <Compile Include="Creation\ICreateNamespaceManagers.cs" />
     <Compile Include="Connectivity\MessagingFactoryCreator.cs" />

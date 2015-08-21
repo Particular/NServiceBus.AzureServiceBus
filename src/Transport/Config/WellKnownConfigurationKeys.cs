@@ -83,6 +83,19 @@ namespace NServiceBus
             public const string NumberOfMessagingFactoriesPerNamespace = "AzureServiceBus.Connectivity.NumberOfMessagingFactoriesPerNamespace";
             public const string NumberOfClientsPerEntity = "AzureServiceBus.Connectivity.NumberOfClientsPerEntity";
             public const string MessagingFactorySettingsFactory = "AzureServiceBus.Connectivity.MessagingFactorySettingsFactory";
+
+            public static class MessageReceivers
+            {
+                public const string ReceiveMode = "AzureServiceBus.Connectivity.MessageReceivers.ReceiveMode";
+                public const string PrefetchCount = "AzureServiceBus.Connectivity.MessageReceivers.PrefetchCount";
+                public const string RetryPolicy = "AzureServiceBus.Connectivity.MessageReceivers.RetryPolicy";
+            }
+
+            public static class MessagingFactories
+            {
+                public const string PrefetchCount = "AzureServiceBus.Connectivity.MessagingFactories.PrefetchCount";
+                public const string RetryPolicy = "AzureServiceBus.Connectivity.MessagingFactories.RetryPolicy";
+            }
         }
 
     }
