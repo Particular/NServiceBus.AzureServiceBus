@@ -2,10 +2,9 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Threading.Tasks;
     using NServiceBus.Settings;
 
-    class ClientEntityLifeCycleManager
+    class ClientEntityLifeCycleManager : IManageClientEntityLifeCycle
     {
         readonly ICreateClientEntities _factory;
         int _numberOfReceiversPerEntity;

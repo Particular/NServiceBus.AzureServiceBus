@@ -92,9 +92,15 @@
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />
     <Compile Include="Addressing\Partitioning\INamespacePartitioningStrategy.cs" />
     <Compile Include="Config\DefaultConfigurationValues.cs" />
+    <Compile Include="Config\ExtensionMethods\AzureServiceBusConnectivitySettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusConnectivitySettings.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusMessageReceiverSettings.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusMessagingFactoriesSettings.cs" />
     <Compile Include="Connectivity\ClientEntityLifeCycleManager.cs" />
     <Compile Include="Connectivity\IClientEntity.cs" />
+    <Compile Include="Connectivity\IManageClientEntityLifeCycle.cs" />
+    <Compile Include="Connectivity\IManageMessagingFactoryLifeCycle.cs" />
+    <Compile Include="Connectivity\IManageNamespaceManagerLifeCycle.cs" />
     <Compile Include="Connectivity\IMessageReceiver.cs" />
     <Compile Include="Connectivity\IMessagingFactory.cs" />
     <Compile Include="Connectivity\INamespaceManager.cs" />

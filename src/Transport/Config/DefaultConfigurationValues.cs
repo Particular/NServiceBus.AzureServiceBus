@@ -1,15 +1,24 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Settings;
 
     public class DefaultConfigurationValues
     {
         public SettingsHolder Apply(SettingsHolder settings)
         {
+            ApplyDefaultsForConnectivity(settings);
             ApplyDefaultValuesForQueueDescriptions(settings);
 
             return settings;
+        }
+
+        void ApplyDefaultsForConnectivity(SettingsHolder settings)
+        {
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 5);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, 5);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.PeekLock);
         }
 
         void ApplyDefaultValuesForQueueDescriptions(SettingsHolder settings)
@@ -36,8 +45,6 @@
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardToCondition, new Func<string, bool>( name => true) );
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo, null);
-
-            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfMessagingFactoriesPerNamespace, 5);
         }
     }
 }

@@ -28,5 +28,10 @@ namespace NServiceBus.AzureServiceBus
             get { return _receiver.PrefetchCount; }
             set { _receiver.PrefetchCount = value; }
         }
+
+        public ReceiveMode Mode
+        {
+            get { return _receiver.Mode; }
+        }
     }
 }

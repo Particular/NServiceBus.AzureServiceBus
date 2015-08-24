@@ -2,7 +2,7 @@ namespace NServiceBus.AzureServiceBus
 {
     using System.Collections.Concurrent;
 
-    class NamespaceManagerLifeCycleManager
+    class NamespaceManagerLifeCycleManager : IManageNamespaceManagerLifeCycle
     {
         ICreateNamespaceManagers _factory;
         ConcurrentDictionary<string, INamespaceManager> namespaceManagers = new ConcurrentDictionary<string, INamespaceManager>();

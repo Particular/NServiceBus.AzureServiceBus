@@ -7,18 +7,18 @@ namespace NServiceBus.AzureServiceBus
 
     class MessagingFactoryCreator : ICreateMessagingFactories
     {
-        readonly NamespaceManagerLifeCycleManager _namespaceManagers;
+        readonly IManageNamespaceManagerLifeCycle _namespaceManagers;
         Func<string, MessagingFactorySettings> _settingsFactory;
         readonly ReadOnlySettings _settings;
 
-        public MessagingFactoryCreator(NamespaceManagerLifeCycleManager namespaceManagers, ReadOnlySettings settings)
+        public MessagingFactoryCreator(IManageNamespaceManagerLifeCycle namespaceManagers, ReadOnlySettings settings)
         {
             this._namespaceManagers = namespaceManagers;
             this._settings = settings;
 
-            if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactorySettingsFactory))
+            if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.MessagingFactorySettingsFactory))
             {
-                _settingsFactory = settings.Get<Func<string, MessagingFactorySettings>>(WellKnownConfigurationKeys.Connectivity.MessagingFactorySettingsFactory);
+                _settingsFactory = settings.Get<Func<string, MessagingFactorySettings>>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.MessagingFactorySettingsFactory);
             }
             else
             {

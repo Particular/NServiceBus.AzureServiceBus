@@ -15,7 +15,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Creates_a_pool_of_factories_for_namespace()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfMessagingFactoriesPerNamespace);
+            var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);
 
             var creator = new InterceptedFactoryCreator();
 
@@ -35,7 +35,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var lifecycleManager = new MessagingFactoryLifeCycleManager(creator, settings);
 
-            var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfMessagingFactoriesPerNamespace);
+            var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);
 
             var first = lifecycleManager.Get(AzureServiceBusConnectionString.Value);
             var next = first;
@@ -58,7 +58,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Replaces_factories_when_closed()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            settings.Set(WellKnownConfigurationKeys.Connectivity.NumberOfMessagingFactoriesPerNamespace, 1); // pool size of 1 simplifies the test
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, 1); // pool size of 1 simplifies the test
             
             var creator = new InterceptedFactoryCreator();
 

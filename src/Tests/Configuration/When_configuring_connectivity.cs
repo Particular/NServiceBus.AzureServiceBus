@@ -18,9 +18,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Func<string, MessagingFactorySettings> registeredFactory = s => new MessagingFactorySettings();
 
-            var connectivitySettings = extensions.Connectivity().MessagingFactorySettings(registeredFactory);
+            var connectivitySettings = extensions.Connectivity().MessagingFactories().MessagingFactorySettingsFactory(registeredFactory);
 
-            Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, MessagingFactorySettings>>(WellKnownConfigurationKeys.Connectivity.MessagingFactorySettingsFactory));
+            Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, MessagingFactorySettings>>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.MessagingFactorySettingsFactory));
         }
 
         [Test]
@@ -29,9 +29,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().NumberOfMessagingFactoriesPerNamespace(4);
+            var connectivitySettings = extensions.Connectivity().MessagingFactories().NumberOfMessagingFactoriesPerNamespace(4);
 
-            Assert.AreEqual(4, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfMessagingFactoriesPerNamespace));
+            Assert.AreEqual(4, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace));
         }
 
         [Test]
@@ -44,6 +44,5 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.AreEqual(4, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
         }
-
     }
 }

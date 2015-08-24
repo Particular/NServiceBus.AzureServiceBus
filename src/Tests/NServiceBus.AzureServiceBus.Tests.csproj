@@ -99,6 +99,8 @@
     <Compile Include="Configuration\When_configuring_composition.cs" />
     <Compile Include="Configuration\When_configuring_connectivity.cs" />
     <Compile Include="Configuration\When_configuring_individualization.cs" />
+    <Compile Include="Configuration\When_configuring_message_receivers.cs" />
+    <Compile Include="Configuration\When_configuring_messaging_factories.cs" />
     <Compile Include="Configuration\When_configuring_namespace_partitioning.cs" />
     <Compile Include="Configuration\When_configuring_queues.cs" />
     <Compile Include="Configuration\When_configuring_resource_creation.cs" />
@@ -107,6 +109,7 @@
     <Compile Include="Configuration\When_configuring_topics.cs" />
     <Compile Include="Configuration\When_configuring_validation.cs" />
     <Compile Include="ConnectionString.cs" />
+    <Compile Include="Connectivity\When_creating_message_receivers.cs" />
     <Compile Include="Connectivity\When_creating_messaging_factories.cs" />
     <Compile Include="Connectivity\When_creating_namespace_managers.cs" />
     <Compile Include="Connectivity\When_managing_client_entity_lifecycle.cs" />

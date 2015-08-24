@@ -7,10 +7,10 @@ namespace NServiceBus.AzureServiceBus
 
     class MessageReceiverCreator : ICreateClientEntities
     {
-        readonly MessagingFactoryLifeCycleManager _factories;
+        readonly IManageMessagingFactoryLifeCycle _factories;
         readonly ReadOnlySettings _settings;
 
-        public MessageReceiverCreator(MessagingFactoryLifeCycleManager factories, ReadOnlySettings settings)
+        public MessageReceiverCreator(IManageMessagingFactoryLifeCycle factories, ReadOnlySettings settings)
         {
             this._factories = factories;
             _settings = settings;
@@ -24,9 +24,9 @@ namespace NServiceBus.AzureServiceBus
 
             var receiver = await factory.CreateMessageReceiverAsync(entitypath, receiveMode);
 
-            if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode))
+            if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount))
             {
-                receiver.PrefetchCount = _settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
+                receiver.PrefetchCount = _settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount);
             }
             if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy))
             {

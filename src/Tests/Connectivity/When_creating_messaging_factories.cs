@@ -1,6 +1,5 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
-    using System;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NServiceBus.Settings;
     using NUnit.Framework;

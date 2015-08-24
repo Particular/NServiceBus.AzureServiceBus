@@ -1,7 +1,5 @@
 ﻿namespace NServiceBus
 {
-    using System;
-    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
 
@@ -13,20 +11,6 @@
             : base(settings)
         {
             _settings = settings;
-        }
-
-        public AzureServiceBusConnectivitySettings MessagingFactorySettings(Func<string, MessagingFactorySettings> factory)
-        {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactorySettingsFactory, factory);
-
-            return this;
-        }
-
-        public AzureServiceBusConnectivitySettings NumberOfMessagingFactoriesPerNamespace(int number)
-        {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.NumberOfMessagingFactoriesPerNamespace, number);
-
-            return this;
         }
 
         public AzureServiceBusConnectivitySettings NumberOfClientsPerEntity(int number)
