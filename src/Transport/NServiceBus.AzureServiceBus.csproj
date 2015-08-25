@@ -140,6 +140,7 @@
     <Compile Include="Config\WellKnownConfigurationKeys.cs" />
     <Compile Include="Connectivity\ICreateClientEntities.cs" />
     <Compile Include="Connectivity\ICreateMessagingFactories.cs" />
+    <Compile Include="Creation\ICreateAzureServiceBusQueues.cs" />
     <Compile Include="Creation\ICreateNamespaceManagers.cs" />
     <Compile Include="Connectivity\MessagingFactoryCreator.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />

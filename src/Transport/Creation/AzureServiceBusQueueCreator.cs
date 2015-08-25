@@ -9,7 +9,7 @@
     using NServiceBus.Logging;
     using NServiceBus.Settings;
 
-    class AzureServiceBusQueueCreator
+    class AzureServiceBusQueueCreator : ICreateAzureServiceBusQueues
     {
         ConcurrentDictionary<string, bool> rememberExistence = new ConcurrentDictionary<string, bool>();
         ReadOnlySettings _settings;
@@ -111,9 +111,8 @@
             return description;
         }
 
-       
 
-        bool Exists(NamespaceManager namespaceClient, string path)
+        public bool Exists(NamespaceManager namespaceClient, string path)
         {
             var key = path;
             logger.InfoFormat("Checking existence cache for '{0}'", path);
