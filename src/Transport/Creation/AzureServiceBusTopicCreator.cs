@@ -78,7 +78,7 @@
                 logger.InfoFormat("Timeout occured on topic creation for '{0}' going to validate if it doesn't exist", topicDescription.Path);
 
                 // there is a chance that the timeout occured, but the topic was still created, check again
-                if (! await ExistsAsync(topicDescription.Path, namespaceManager))
+                if (!ExistsAsync(topicDescription.Path, namespaceManager).Result) // blocking, can't await in catch clause and can't move code out as that would otherwise break stacktrace
                 {
                     throw;
                 }
