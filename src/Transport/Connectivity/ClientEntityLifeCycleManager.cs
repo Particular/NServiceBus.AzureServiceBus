@@ -49,7 +49,7 @@ namespace NServiceBus.AzureServiceBus
             return entry.ClientEntity;
 
         }
-
+        
         class EntityClientEntry
         {
             internal Object Mutex = new object();

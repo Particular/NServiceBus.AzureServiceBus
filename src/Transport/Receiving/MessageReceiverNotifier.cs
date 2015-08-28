@@ -15,6 +15,8 @@ namespace NServiceBus.AzureServiceBus
         IMessageReceiver internalReceiver;
         OnMessageOptions options;
         Func<IncomingMessage, Task> incoming;
+        string path;
+        string connstring;
 
         ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
         
@@ -29,13 +31,8 @@ namespace NServiceBus.AzureServiceBus
         public void Initialize(string entitypath, string connectionstring, Func<IncomingMessage, Task> callback, int maximumConcurrency)
         {
             this.incoming = callback;
-
-            internalReceiver = clientEntities.Get(entitypath, connectionstring) as IMessageReceiver;
-
-            if (internalReceiver == null)
-            {
-                throw new Exception(string.Format("MessageReceiverNotifier did not get a MessageReceiver instance for entity path {0}, this is probably due to a misconfiguration of the topology", entitypath));
-            }
+            this.path = entitypath;
+            this.connstring = connectionstring;
 
             options = new OnMessageOptions
             {
@@ -62,6 +59,13 @@ namespace NServiceBus.AzureServiceBus
 
         public Task Start()
         {
+            internalReceiver = clientEntities.Get(path, connstring) as IMessageReceiver;
+
+            if (internalReceiver == null)
+            {
+                throw new Exception(string.Format("MessageReceiverNotifier did not get a MessageReceiver instance for entity path {0}, this is probably due to a misconfiguration of the topology", path));
+            }
+
             internalReceiver.OnMessageAsync(message => incoming(brokeredMessageConverter.Convert(message)), options);
 
             return Task.FromResult(true);
