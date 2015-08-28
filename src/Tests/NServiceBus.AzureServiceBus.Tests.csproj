@@ -116,6 +116,7 @@
     <Compile Include="Connectivity\When_managing_client_entity_lifecycle.cs" />
     <Compile Include="Connectivity\When_managing_factory_lifecycle.cs" />
     <Compile Include="Connectivity\When_managing_namespace_manager_lifecycle.cs" />
+    <Compile Include="Creation\When_creating_topics.cs" />
     <Compile Include="Creation\When_creating_queues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="When_creating_subscriptions_on_servicebus_topics.cs" />

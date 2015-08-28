@@ -2,6 +2,7 @@
 {
     using System;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
 
@@ -29,7 +30,7 @@
             return this;
         }
 
-        public AzureServiceBusTopicSettings AutoDeleteOnIdle(bool autoDeleteOnIdle)
+        public AzureServiceBusTopicSettings AutoDeleteOnIdle(TimeSpan autoDeleteOnIdle)
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle, autoDeleteOnIdle);
             return this;

@@ -1,5 +1,5 @@
 ﻿// ReSharper disable MemberHidesStaticFromOuterClass
-namespace NServiceBus
+namespace NServiceBus.AzureServiceBus
 {
     static class WellKnownConfigurationKeys
     {
@@ -124,5 +124,9 @@ namespace NServiceBus
             }
         }
 
+        internal static class Core
+        {
+            public const string CreateTopology = "Transport.CreateQueues";
+        }
     }
 }

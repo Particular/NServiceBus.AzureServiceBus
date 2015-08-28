@@ -15,9 +15,9 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Topology().Resources().Topics().AutoDeleteOnIdle(true);
+            var topicSettings = extensions.Topology().Resources().Topics().AutoDeleteOnIdle(TimeSpan.MinValue);
 
-            Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle));
+            Assert.AreEqual(TimeSpan.MinValue, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle));
         }
 
         [Test]

@@ -1,5 +1,6 @@
 ﻿namespace NServiceBus
 {
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
 
