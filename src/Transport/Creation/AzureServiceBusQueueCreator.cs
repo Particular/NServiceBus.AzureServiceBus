@@ -44,13 +44,13 @@
             }
         }
 
-        public QueueDescription Create(string entityPath, NamespaceManager namespaceManager)
+        public QueueDescription Create(string queuePath, NamespaceManager namespaceManager)
         {
-            var description = _descriptionFactory(entityPath, _settings);
+            var description = _descriptionFactory(queuePath, _settings);
 
             try
             {
-                if (_settings.GetOrDefault<bool>("Transport.CreateQueues"))
+                if (_settings.GetOrDefault<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 {
                     if (!Exists(namespaceManager, description.Path))
                     {
@@ -90,10 +90,8 @@
                 {
                     throw;
                 }
-                else
-                {
-                    logger.InfoFormat("Looks like queue '{0}' exists anyway", description.Path);
-                }
+
+                logger.InfoFormat("Looks like queue '{0}' exists anyway", description.Path);
             }
             catch (MessagingException ex)
             {
@@ -102,27 +100,25 @@
                     logger.Fatal(string.Format("{1} {2} occured on queue creation {0}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
                     throw;
                 }
-                else
-                {
-                    logger.Info(string.Format("{1} {2} occured on queue creation {0}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
-                }
+
+                logger.Info(string.Format("{1} {2} occured on queue creation {0}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
             }
 
             return description;
         }
 
 
-        public bool Exists(NamespaceManager namespaceClient, string path)
+        public bool Exists(NamespaceManager namespaceClient, string queuePath)
         {
-            var key = path;
-            logger.InfoFormat("Checking existence cache for '{0}'", path);
+            var key = queuePath;
+            logger.InfoFormat("Checking existence cache for '{0}'", queuePath);
             var exists = rememberExistence.GetOrAdd(key, s =>
             {
-                logger.InfoFormat("Checking namespace for existance of the queue '{0}'", path);
+                logger.InfoFormat("Checking namespace for existance of the queue '{0}'", queuePath);
                 return namespaceClient.QueueExists(key);
             });
 
-            logger.InfoFormat("Determined, from cache, that the queue '{0}' {1}", path, exists ? "exists" : "does not exist");
+            logger.InfoFormat("Determined, from cache, that the queue '{0}' {1}", queuePath, exists ? "exists" : "does not exist");
 
             return exists;
         }

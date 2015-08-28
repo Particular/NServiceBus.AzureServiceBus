@@ -5,7 +5,6 @@ namespace NServiceBus.AzureServiceBus
 
     public interface ICreateAzureServiceBusQueues
     {
-        QueueDescription Create(string entityPath, NamespaceManager namespaceManager);
-        bool Exists(NamespaceManager namespaceClient, string path);
+        QueueDescription Create(string queuePath, NamespaceManager namespaceManager);
     }
 }

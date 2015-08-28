@@ -113,6 +113,7 @@
     <Compile Include="Connectivity\NamespaceManagerCreator.cs" />
     <Compile Include="Connectivity\NamespaceManagerLifeCycleManager.cs" />
     <Compile Include="Creation\AzureServiceBusQueueCreator.cs" />
+    <Compile Include="Creation\AzureServiceBusTopicCreator.cs" />
     <Compile Include="Creation\EntityType.cs" />
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationRules.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusResourceExtensions.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Connectivity\ICreateClientEntities.cs" />
     <Compile Include="Connectivity\ICreateMessagingFactories.cs" />
     <Compile Include="Creation\ICreateAzureServiceBusQueues.cs" />
+    <Compile Include="Creation\ICreateAzureServiceBusTopics.cs" />
     <Compile Include="Creation\ICreateNamespaceManagers.cs" />
     <Compile Include="Connectivity\MessagingFactoryCreator.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
