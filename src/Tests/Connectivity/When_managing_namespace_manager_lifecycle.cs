@@ -1,7 +1,9 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
+    using System.Threading.Tasks;
     using Microsoft.ServiceBus;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NUnit.Framework;
 
@@ -59,6 +61,31 @@ namespace NServiceBus.AzureServiceBus.Tests
             public Uri Address
             {
                 get { throw new NotImplementedException(); }
+            }
+
+            public Task CreateQueueAsync(QueueDescription description)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task UpdateQueueAsync(QueueDescription description)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task DeleteQueueAsync(string path)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<QueueDescription> GetQueueAsync(string path)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> QueueExistsAsync(string path)
+            {
+                throw new NotImplementedException();
             }
         }
     }

@@ -1,10 +1,10 @@
 namespace NServiceBus.AzureServiceBus
 {
-    using Microsoft.ServiceBus;
+    using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
 
     public interface ICreateAzureServiceBusQueues
     {
-        QueueDescription Create(string queuePath, NamespaceManager namespaceManager);
+        Task<QueueDescription> CreateAsync(string queuePath, INamespaceManager namespaceManager);
     }
 }

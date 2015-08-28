@@ -1,17 +1,15 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
-    using System.Collections;
     using System.Collections.Concurrent;
-    using System.Reflection;
-    using Microsoft.ServiceBus;
+    using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Logging;
     using NServiceBus.Settings;
 
     class AzureServiceBusQueueCreator : ICreateAzureServiceBusQueues
     {
-        ConcurrentDictionary<string, bool> rememberExistence = new ConcurrentDictionary<string, bool>();
+        ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
         ReadOnlySettings _settings;
         Func<string, ReadOnlySettings, QueueDescription> _descriptionFactory;
 
@@ -44,7 +42,7 @@
             }
         }
 
-        public QueueDescription Create(string queuePath, NamespaceManager namespaceManager)
+        public async Task<QueueDescription> CreateAsync(string queuePath, INamespaceManager namespaceManager)
         {
             var description = _descriptionFactory(queuePath, _settings);
 
@@ -52,21 +50,22 @@
             {
                 if (_settings.GetOrDefault<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 {
-                    if (!Exists(namespaceManager, description.Path))
+                    if (!await Exists(namespaceManager, description.Path))
                     {
-                        namespaceManager.CreateQueue(description);
+                        await namespaceManager.CreateQueueAsync(description);
                         logger.InfoFormat("Queue '{0}' created", description.Path);
 
-                        rememberExistence.AddOrUpdate(description.Path, s => true, (s,b) => true);
+                        await rememberExistence.AddOrUpdate(description.Path, s => Task.FromResult(true), (s, b) => Task.FromResult(true));
                     }
                     else
                     {
                         logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
                         logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
-                        if (!namespaceManager.GetQueue(description.Path).AllMembersAreEqual(description))
+                        var desc = await namespaceManager.GetQueueAsync(description.Path);
+                        if (!desc.AllMembersAreEqual(description))
                         {
                             logger.InfoFormat("Updating queue '{0}' with new description", description.Path);
-                            namespaceManager.UpdateQueue(description);
+                            await namespaceManager.UpdateQueueAsync(description);
                         }
                     }
                 }
@@ -86,7 +85,7 @@
 
                 // there is a chance that the timeout occurs, but the queue is created still
                 // check for this
-                if (!Exists(namespaceManager, description.Path))
+                if (!Exists(namespaceManager, description.Path).Result)
                 {
                     throw;
                 }
@@ -108,130 +107,22 @@
         }
 
 
-        public bool Exists(NamespaceManager namespaceClient, string queuePath)
+        async Task<bool> Exists(INamespaceManager namespaceClient, string queuePath)
         {
             var key = queuePath;
             logger.InfoFormat("Checking existence cache for '{0}'", queuePath);
-            var exists = rememberExistence.GetOrAdd(key, s =>
+
+            var exists = await rememberExistence.GetOrAdd(key, async s =>
             {
                 logger.InfoFormat("Checking namespace for existance of the queue '{0}'", queuePath);
-                return namespaceClient.QueueExists(key);
+                return await namespaceClient.QueueExistsAsync(key);
             });
 
             logger.InfoFormat("Determined, from cache, that the queue '{0}' {1}", queuePath, exists ? "exists" : "does not exist");
 
             return exists;
         }
-
         
 
-    }
-
-    static class ReadOnlySettingsExtensions
-    {
-        internal static T GetConditional<T>(this ReadOnlySettings settings, string name, string key)
-        {
-            var condition = settings.Get<Func<string, bool>>(key + "Condition");
-            return GetConditional<T>(settings, () => condition(name), key);
-        }
-
-        //todo, these 2 methods should become part of the core
-
-        internal static T GetConditional<T>(this ReadOnlySettings settings, Func<bool> condition, string key)
-        {
-            if (condition())
-            {
-                return settings.GetOrDefault<T>(key);
-            }
-
-            return settings.GetDefault<T>(key);
-        }
-
-        internal static T GetDefault<T>(this ReadOnlySettings settings, string key)
-        {
-            object result;
-            var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-            var defaults = (ConcurrentDictionary<string, object>)typeof(SettingsHolder).GetField("Defaults", bindingFlags).GetValue(settings);
-            if (defaults.TryGetValue(key, out result))
-            {
-                return (T)result;
-            }
-
-            return default(T);
-        }
-    }
-
-    static class MemberComparison
-    {
-        public static bool AllMembersAreEqual(this object left, object right)
-        {
-            if (ReferenceEquals(left, right))
-                return true;
-
-            if (left == null || right == null)
-                return false;
-
-            var type = left.GetType();
-            if (type != right.GetType())
-                return false;
-
-            if (left is ValueType)
-            {
-                // do a field comparison, or use the override if Equals is implemented:
-                return left.Equals(right);
-            }
-
-            // check for override:
-            if (type != typeof(object)
-                && type == type.GetMethod("Equals").DeclaringType)
-            {
-                // the Equals method is overridden, use it:
-                return left.Equals(right);
-            }
-
-            // all Arrays, Lists, IEnumerable<> etc implement IEnumerable
-            if (left is IEnumerable)
-            {
-                var rightEnumerator = (right as IEnumerable).GetEnumerator();
-                rightEnumerator.Reset();
-                foreach (object leftItem in left as IEnumerable)
-                {
-                    // unequal amount of items
-                    if (!rightEnumerator.MoveNext())
-                        return false;
-                    else
-                    {
-                        if (!AllMembersAreEqual(leftItem, rightEnumerator.Current))
-                            return false;
-                    }
-                }
-            }
-            else
-            {
-                // compare each property
-                foreach (PropertyInfo info in type.GetProperties(
-                    BindingFlags.Public |
-                    BindingFlags.NonPublic |
-                    BindingFlags.Instance |
-                    BindingFlags.GetProperty))
-                {
-                    // TODO: need to special-case indexable properties
-                    if (!AllMembersAreEqual(info.GetValue(left, null), info.GetValue(right, null)))
-                        return false;
-                }
-
-                // compare each field
-                foreach (FieldInfo info in type.GetFields(
-                    BindingFlags.GetField |
-                    BindingFlags.NonPublic |
-                    BindingFlags.Public |
-                    BindingFlags.Instance))
-                {
-                    if (!AllMembersAreEqual(info.GetValue(left), info.GetValue(right)))
-                        return false;
-                }
-            }
-            return true;
-        }
     }
 }

@@ -107,6 +107,8 @@
     <Compile Include="Connectivity\INamespaceManager.cs" />
     <Compile Include="Connectivity\MessageReceiverAdapter.cs" />
     <Compile Include="Connectivity\MessageReceiverCreator.cs" />
+    <Compile Include="Creation\MemberComparison.cs" />
+    <Compile Include="Creation\ReadOnlySettingsExtensions.cs" />
     <Compile Include="Receiving\IConvertBrokeredMessagesToIncomingMessages.cs" />
     <Compile Include="Sending\IConvertOutgoingMessagesToBrokeredMessages.cs" />
     <Compile Include="Receiving\INotifyIncomingMessages.cs" />

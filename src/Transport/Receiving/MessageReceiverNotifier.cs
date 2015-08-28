@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBus
         readonly ReadOnlySettings settings;
         IMessageReceiver internalReceiver;
         OnMessageOptions options;
-        Func<IncomingMessage, Task> callback;
+        Func<IncomingMessage, Task> incoming;
 
         ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
         
@@ -28,7 +28,7 @@ namespace NServiceBus.AzureServiceBus
 
         public void Initialize(string entitypath, string connectionstring, Func<IncomingMessage, Task> callback, int maximumConcurrency)
         {
-            this.callback = callback;
+            this.incoming = callback;
 
             internalReceiver = clientEntities.Get(entitypath, connectionstring) as IMessageReceiver;
 
@@ -62,7 +62,7 @@ namespace NServiceBus.AzureServiceBus
 
         public Task Start()
         {
-            internalReceiver.OnMessageAsync(message => callback(brokeredMessageConverter.Convert(message)), options);
+            internalReceiver.OnMessageAsync(message => incoming(brokeredMessageConverter.Convert(message)), options);
 
             return Task.FromResult(true);
         }
