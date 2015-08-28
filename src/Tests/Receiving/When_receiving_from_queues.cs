@@ -1,8 +1,6 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
-    using System;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -31,6 +29,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
             creator.CreateAsync("myqueue", namespaceManager).Wait();
 
+            // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
             notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, message => Task.FromResult(true), 10);
@@ -62,6 +61,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
             creator.CreateAsync("myqueue", namespaceManager).Wait();
 
+            // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
             notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, message => Task.FromResult(true), 10);
