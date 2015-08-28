@@ -1,5 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
+    using System;
+    using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
 
@@ -32,6 +34,11 @@ namespace NServiceBus.AzureServiceBus
         public ReceiveMode Mode
         {
             get { return _receiver.Mode; }
+        }
+
+        public void OnMessageAsync(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
+        {
+            _receiver.OnMessageAsync(callback, options);
         }
     }
 }

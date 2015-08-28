@@ -107,6 +107,8 @@
     <Compile Include="Connectivity\INamespaceManager.cs" />
     <Compile Include="Connectivity\MessageReceiverAdapter.cs" />
     <Compile Include="Connectivity\MessageReceiverCreator.cs" />
+    <Compile Include="Receiving\INotifyIncomingMessages.cs" />
+    <Compile Include="Receiving\MessageReceiverNotifier.cs" />
     <Compile Include="Connectivity\MessagingFactoryAdapter.cs" />
     <Compile Include="Connectivity\MessagingFactoryLifeCycleManager.cs" />
     <Compile Include="Connectivity\NamespaceManagerAdapter.cs" />
@@ -162,7 +164,7 @@
     <Compile Include="Creation\OldCode\Resources\AzureServicebusSubscriptionCreator.cs" />
     <Compile Include="Creation\OldCode\Resources\ICreateSubscriptions.cs" />
     <Compile Include="Creation\OldCode\Resources\SubscriptionAlreadyInUseException.cs" />
-    <Compile Include="Receiving\RetriableReceiveExceptionHandling.cs" />
+    <Compile Include="Receiving\OldCode\RetriableReceiveExceptionHandling.cs" />
     <Compile Include="Publishing\AzureServiceBusTopicPublisher.cs" />
     <Compile Include="Publishing\IPublishBrokeredMessages.cs" />
     <Compile Include="Sending\AzureServiceBusQueueSender.cs" />
@@ -176,10 +178,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Config\OldCode\AzureServiceBusTransport.cs" />
     <Compile Include="Config\OldCode\AzureServicebusDefaults.cs" />
-    <Compile Include="Receiving\AzureServiceBusDequeueStrategy.cs" />
+    <Compile Include="Receiving\OldCode\AzureServiceBusDequeueStrategy.cs" />
     <Compile Include="Sending\AzureServiceBusDispatcher.cs" />
-    <Compile Include="Receiving\AzureServiceBusQueueNotifier.cs" />
-    <Compile Include="Receiving\AzureServiceBusSubscriptionNotifier.cs" />
+    <Compile Include="Receiving\OldCode\AzureServiceBusQueueNotifier.cs" />
+    <Compile Include="Receiving\OldCode\AzureServiceBusSubscriptionNotifier.cs" />
     <Compile Include="Publishing\AzureServiceBusPublisher.cs" />
     <Compile Include="Subscribing\AzureServiceBusTopicSubscriptionManager.cs" />
     <Compile Include="Utils\BrokeredMessageConverter.cs" />
@@ -196,8 +198,8 @@
     <Compile Include="Creation\OldCode\ICreateTopics.cs" />
     <Compile Include="Creation\OldCode\Clients\AzureServicebusQueueClientCreator.cs" />
     <Compile Include="Creation\OldCode\Resources\ServicebusSubscriptionFilterBuilder.cs" />
-    <Compile Include="Receiving\INotifyReceivedBrokeredMessages.cs" />
-    <Compile Include="Receiving\ReceiveResourceManager.cs" />
+    <Compile Include="Receiving\OldCode\INotifyReceivedBrokeredMessages.cs" />
+    <Compile Include="Receiving\OldCode\ReceiveResourceManager.cs" />
     <Compile Include="Sending\SendResourceManager.cs" />
   </ItemGroup>
   <ItemGroup>

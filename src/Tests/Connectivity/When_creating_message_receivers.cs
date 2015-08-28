@@ -1,5 +1,6 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
+    using System;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
@@ -98,6 +99,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             public int PrefetchCount { get; set; }
 
             public ReceiveMode Mode { get; internal set; }
+            public void OnMessageAsync(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }
