@@ -1,8 +1,8 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
-    using System.Configuration;
     using System.Threading.Tasks;
+    using FakeItEasy;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus.Creation;
@@ -29,9 +29,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, false);
 
             //make sure there is no leftover from previous test
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             const string topicPath = "mytopic1";
-            namespaceManager.DeleteTopic(topicPath);
+            await namespaceManager.DeleteTopicAsync(topicPath);
 
             var creator = new AzureServiceBusTopicCreator(settings);
 
@@ -46,7 +46,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Should_use_topic_description_defaults_if_user_does_not_provide_topic_description_values()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             const string topicPath = "mytopic2";
 
@@ -74,7 +74,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             const string topicPath = "mytopic3";
             var topicDescriptionToUse = new TopicDescription(topicPath)
@@ -97,7 +97,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public async Task Should_set_AutoDeleteOnIdle_on_the_created_entity()
         {
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -117,9 +117,9 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async void Should_set_DefaultMessageTimeToLive_on_the_created_entity()
+        public async Task Should_set_DefaultMessageTimeToLive_on_the_created_entity()
         {
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -138,5 +138,18 @@ namespace NServiceBus.AzureServiceBus.Tests
             cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
         }
 
+//        [Test]
+//        public async Task Should_not_not_hang_on_Result_invocation_in_a_catch_block()
+//        {
+//            var namespaceManager = A.Fake<INamespaceManager>();
+//            A.CallTo(() => namespaceManager.TopicExistsAsync(A<string>.Ignored)).Returns(Task.FromResult(false)).Once();
+//            A.CallTo(() => namespaceManager.CreateTopicAsync(A<TopicDescription>.Ignored)).Throws<TimeoutException>();
+//            A.CallTo(() => namespaceManager.TopicExistsAsync(A<string>.Ignored)).Returns(Task.FromResult(true)).Once();
+//
+//            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+//            var creator = new AzureServiceBusTopicCreator(settings);
+//
+//            await creator.CreateAsync("testtopic", namespaceManager);
+//        }
     }
 }

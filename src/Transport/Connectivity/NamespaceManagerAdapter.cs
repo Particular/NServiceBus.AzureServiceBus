@@ -44,9 +44,34 @@ namespace NServiceBus.AzureServiceBus
             return await _manager.QueueExistsAsync(path);
         }
 
+        public async Task<TopicDescription> CreateTopicAsync(TopicDescription topicDescription)
+        {
+            return await _manager.CreateTopicAsync(topicDescription);
+        }
+
         public async Task DeleteQueueAsync(string path)
         {
             await _manager.DeleteQueueAsync(path);
+        }
+
+        public async Task DeleteTopicAsync(string path)
+        {
+            await _manager.DeleteTopicAsync(path);
+        }
+
+        public async Task<TopicDescription> UpdateTopicAsync(TopicDescription topicDescription)
+        {
+            return await _manager.UpdateTopicAsync(topicDescription);
+        }
+
+        public async Task<bool> TopicExistsAsync(string path)
+        {
+            return await _manager.TopicExistsAsync(path);
+        }
+
+        public async Task<TopicDescription> GetTopicAsync(string path)
+        {
+            return await _manager.GetTopicAsync(path);
         }
     }
 }

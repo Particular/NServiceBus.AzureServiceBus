@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Logging;
@@ -38,7 +37,7 @@
             }
         }
 
-        public async Task<TopicDescription> CreateAsync(string topicPath, NamespaceManager namespaceManager)
+        public async Task<TopicDescription> CreateAsync(string topicPath, INamespaceManager namespaceManager)
         {
             var topicDescription = topicDescriptionFactory(topicPath, settings);
 
@@ -78,7 +77,7 @@
                 logger.InfoFormat("Timeout occured on topic creation for '{0}' going to validate if it doesn't exist", topicDescription.Path);
 
                 // there is a chance that the timeout occured, but the topic was still created, check again
-                if (!ExistsAsync(topicDescription.Path, namespaceManager).Result) // blocking, can't await in catch clause and can't move code out as that would otherwise break stacktrace
+                if (!ExistsAsync(topicDescription.Path, namespaceManager).Result) //TODO: blocking, can't await in catch clause and can't move code out as that would otherwise break stacktrace
                 {
                     throw;
                 }
@@ -99,7 +98,7 @@
             return topicDescription;
         }
 
-        async Task<bool> ExistsAsync(string topicPath, NamespaceManager namespaceClient)
+        async Task<bool> ExistsAsync(string topicPath, INamespaceManager namespaceClient)
         {
             logger.InfoFormat("Checking existence cache for '{0}'", topicPath);
 

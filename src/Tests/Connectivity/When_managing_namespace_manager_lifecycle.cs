@@ -87,6 +87,31 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 throw new NotImplementedException();
             }
+
+            public Task<TopicDescription> CreateTopicAsync(TopicDescription topicDescription)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<TopicDescription> GetTopicAsync(string path)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<TopicDescription> UpdateTopicAsync(TopicDescription topicDescription)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> TopicExistsAsync(string path)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task DeleteTopicAsync(string path)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

@@ -70,13 +70,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             public bool IsClosed
             {
-                get { throw new System.NotImplementedException(); }
+                get { throw new NotImplementedException(); }
             }
 
             public RetryPolicy RetryPolicy
             {
-                get { throw new System.NotImplementedException(); }
-                set { throw new System.NotImplementedException(); }
+                get { throw new NotImplementedException(); }
+                set { throw new NotImplementedException(); }
             }
 
             public Task<IMessageReceiver> CreateMessageReceiverAsync(string entitypath, ReceiveMode receiveMode)
