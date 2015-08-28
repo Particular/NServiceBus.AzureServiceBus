@@ -1,5 +1,6 @@
 ﻿namespace NServiceBus
 {
+    using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
@@ -33,6 +34,13 @@
         public AzureServiceBusMessageReceiverSettings RetryPolicy(RetryPolicy retryPolicy)
         {
             _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy, retryPolicy);
+
+            return this;
+        }
+
+        public AzureServiceBusMessageReceiverSettings AutoRenewTimeout(TimeSpan autoRenewTimeout)
+        {
+            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout, autoRenewTimeout);
 
             return this;
         }

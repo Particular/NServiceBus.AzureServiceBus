@@ -9,5 +9,6 @@ namespace NServiceBus.AzureServiceBus
         int PrefetchCount { get; set; }
         ReceiveMode Mode { get; }
         void OnMessageAsync(Func<BrokeredMessage, Task> callback, OnMessageOptions options);
+        Task CloseAsync();
     }
 }

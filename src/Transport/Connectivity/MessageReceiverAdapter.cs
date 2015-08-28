@@ -40,5 +40,10 @@ namespace NServiceBus.AzureServiceBus
         {
             _receiver.OnMessageAsync(callback, options);
         }
+
+        public Task CloseAsync()
+        {
+           return _receiver.CloseAsync();
+        }
     }
 }

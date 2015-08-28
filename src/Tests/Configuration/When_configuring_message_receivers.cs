@@ -1,5 +1,6 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
+    using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Configuration.AdvanceExtensibility;
@@ -41,6 +42,17 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectivitySettings = extensions.Connectivity().MessageReceivers().RetryPolicy(RetryPolicy.NoRetry);
 
             Assert.IsInstanceOf<NoRetry>(connectivitySettings.GetSettings().Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy));
+        }
+
+        [Test]
+        public void Should_be_able_to_set_autorenewtimeout()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            var connectivitySettings = extensions.Connectivity().MessageReceivers().AutoRenewTimeout(TimeSpan.FromSeconds(60));
+
+            Assert.AreEqual(TimeSpan.FromSeconds(60), connectivitySettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout));
         }
     }
 }

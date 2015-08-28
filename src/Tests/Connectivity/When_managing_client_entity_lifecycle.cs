@@ -107,6 +107,11 @@ namespace NServiceBus.AzureServiceBus.Tests
                 throw new NotImplementedException();
             }
 
+            public Task CloseAsync()
+            {
+                throw new NotImplementedException();
+            }
+
             public void Close()
             {
                 _isClosed = true;

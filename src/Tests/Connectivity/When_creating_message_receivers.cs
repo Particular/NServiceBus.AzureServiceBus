@@ -99,7 +99,13 @@ namespace NServiceBus.AzureServiceBus.Tests
             public int PrefetchCount { get; set; }
 
             public ReceiveMode Mode { get; internal set; }
+
             public void OnMessageAsync(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task CloseAsync()
             {
                 throw new NotImplementedException();
             }

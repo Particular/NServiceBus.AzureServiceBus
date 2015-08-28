@@ -113,6 +113,7 @@ namespace NServiceBus.AzureServiceBus
                 public const string ReceiveMode = "AzureServiceBus.Connectivity.MessageReceivers.ReceiveMode";
                 public const string PrefetchCount = "AzureServiceBus.Connectivity.MessageReceivers.PrefetchCount";
                 public const string RetryPolicy = "AzureServiceBus.Connectivity.MessageReceivers.RetryPolicy";
+                public const string AutoRenewTimeout = "AzureServiceBus.Connectivity.MessageReceivers.AutoRenewTimeout";
             }
 
             public static class MessagingFactories
