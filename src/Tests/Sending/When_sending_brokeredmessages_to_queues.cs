@@ -8,7 +8,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_sending_to_queues
+    public class When_sending_brokeredmessages_to_queues
     {
         [Test]
         public async Task Can_send_a_brokered_message()

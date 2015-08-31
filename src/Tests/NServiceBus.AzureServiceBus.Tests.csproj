@@ -124,7 +124,7 @@
     <Compile Include="Receiving\AsyncAutoResetEvent.cs" />
     <Compile Include="Receiving\When_receiving_brokeredmessages_from_queues.cs" />
     <Compile Include="Receiving\When_receiving_incomingmessages_from_queues.cs" />
-    <Compile Include="Sending\When_sending_to_queues.cs" />
+    <Compile Include="Sending\When_sending_brokeredmessages_to_queues.cs" />
     <Compile Include="When_creating_subscriptions_on_servicebus_topics.cs" />
     <Compile Include="When_determining_subscription_names.cs" />
     <Compile Include="When_parsing_connectionstrings.cs" />
