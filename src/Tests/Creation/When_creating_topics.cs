@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using FakeItEasy;
     using Microsoft.ServiceBus;
@@ -81,7 +82,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 AutoDeleteOnIdle = TimeSpan.MaxValue
             };
-            
+
             extensions.Topology().Resources().Topics().DescriptionFactory((path, s) => topicDescriptionToUse);
 
             var creator = new AzureServiceBusTopicCreator(settings);
@@ -138,18 +139,72 @@ namespace NServiceBus.AzureServiceBus.Tests
             cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
         }
 
-//        [Test]
-//        public async Task Should_not_not_hang_on_Result_invocation_in_a_catch_block()
-//        {
-//            var namespaceManager = A.Fake<INamespaceManager>();
-//            A.CallTo(() => namespaceManager.TopicExistsAsync(A<string>.Ignored)).Returns(Task.FromResult(false)).Once();
-//            A.CallTo(() => namespaceManager.CreateTopicAsync(A<TopicDescription>.Ignored)).Throws<TimeoutException>();
-//            A.CallTo(() => namespaceManager.TopicExistsAsync(A<string>.Ignored)).Returns(Task.FromResult(true)).Once();
-//
-//            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-//            var creator = new AzureServiceBusTopicCreator(settings);
-//
-//            await creator.CreateAsync("testtopic", namespaceManager);
-//        }
+        [Test]
+        public async Task Should_not_throw_when_another_node_creates_the_same_topic_first()
+        {
+            const string topicPath = "testtopic";
+
+            var namespaceManager = A.Fake<INamespaceManager>();
+            A.CallTo(() => namespaceManager.TopicExistsAsync(topicPath)).Returns(Task.FromResult(false));
+
+            var topicCreationThrewException = false;
+            A.CallTo(() => namespaceManager.CreateTopicAsync(A<TopicDescription>.Ignored))
+                .Invokes(() => topicCreationThrewException = true)
+                .Throws(() => new MessagingEntityAlreadyExistsException("blah"));
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var creator = new AzureServiceBusTopicCreator(settings);
+
+            await creator.CreateAsync(topicPath, namespaceManager);
+
+            Assert.IsTrue(topicCreationThrewException);
+
+            cleanup_action = () => { };
+        }
+
+        [Test]
+        public void Should_throw_TimeoutException_if_creation_of_entity_timed_out_and_topic_was_not_created()
+        {
+            var namespaceManager = A.Fake<INamespaceManager>();
+            A.CallTo(() => namespaceManager.TopicExistsAsync(A<string>.Ignored)).Returns(Task.FromResult(false));
+            A.CallTo(() => namespaceManager.CreateTopicAsync(A<TopicDescription>.Ignored)).Throws<TimeoutException>();
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var creator = new AzureServiceBusTopicCreator(settings);
+
+            Assert.Throws<TimeoutException>(async () => await creator.CreateAsync("faketopic", namespaceManager));
+
+            cleanup_action = () => { };
+        }
+
+        [Test]
+        public async Task Should_not_throw_TimeoutException_if_creation_of_entity_timed_out_and_topic_was_created()
+        {
+            var namespaceManager = A.Fake<INamespaceManager>();
+            A.CallTo(() => namespaceManager.TopicExistsAsync(A<string>.Ignored)).ReturnsNextFromSequence(Task.FromResult(false), Task.FromResult(true));
+            A.CallTo(() => namespaceManager.CreateTopicAsync(A<TopicDescription>.Ignored)).Throws<TimeoutException>();
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var creator = new AzureServiceBusTopicCreator(settings);
+
+            await creator.CreateAsync("faketopic", namespaceManager);
+
+            cleanup_action = () => { };
+        }
+
+        [Test]
+        public async Task Should_throw_for_MessagingException_that_is_not_transient()
+        {
+            var namespaceManager = A.Fake<INamespaceManager>();
+            A.CallTo(() => namespaceManager.TopicExistsAsync(A<string>.Ignored)).Throws(new MessagingException("boom", false, new Exception("wrapped")));
+            
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var creator = new AzureServiceBusTopicCreator(settings);
+
+            Assert.Throws<MessagingException>(async () => await creator.CreateAsync("faketopic", namespaceManager));
+
+            cleanup_action = () => { };
+        }
+
     }
 }
