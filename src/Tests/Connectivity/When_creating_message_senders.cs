@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
@@ -10,7 +11,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_creating_message_receivers
+    public class When_creating_message_senders
     {
         [Test]
         public void Delegates_creation_to_messaging_factory()
@@ -19,12 +20,12 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var factory = new InterceptedMessagingFactory();
 
-            var creator = new MessageReceiverCreator(new InterceptedMessagingFactoryFactory(factory), settings);
+            var creator = new MessageSenderCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var receiver = creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value).Result;
+            var sender = creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value).Result;
 
             Assert.IsTrue(factory.IsInvoked);
-            Assert.IsInstanceOf<IMessageReceiver>(receiver);
+            Assert.IsInstanceOf<IMessageSender>(sender);
         }
 
         [Test]
@@ -33,20 +34,16 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Connectivity().MessageReceivers()
-                      .PrefetchCount(1000)
-                      .RetryPolicy(RetryPolicy.NoRetry)
-                      .ReceiveMode(ReceiveMode.ReceiveAndDelete);
+            extensions.Connectivity().MessageSenders()
+                      .RetryPolicy(RetryPolicy.NoRetry);
 
             var factory = new InterceptedMessagingFactory();
 
-            var creator = new MessageReceiverCreator(new InterceptedMessagingFactoryFactory(factory), settings);
+            var creator = new MessageSenderCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var receiver = (IMessageReceiver)creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value).Result;
+            var sender = (IMessageSender)creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value).Result;
 
-            Assert.AreEqual(ReceiveMode.ReceiveAndDelete, receiver.Mode);
-            Assert.IsInstanceOf<NoRetry>(receiver.RetryPolicy);
-            Assert.AreEqual(1000, receiver.PrefetchCount);
+            Assert.IsInstanceOf<NoRetry>(sender.RetryPolicy);
         }
 
         class InterceptedMessagingFactoryFactory : IManageMessagingFactoryLifeCycle
@@ -70,47 +67,46 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             public bool IsClosed
             {
-                get { throw new System.NotImplementedException(); }
+                get { throw new NotImplementedException(); }
             }
 
             public RetryPolicy RetryPolicy
             {
-                get { throw new System.NotImplementedException(); }
-                set { throw new System.NotImplementedException(); }
+                get { throw new NotImplementedException(); }
+                set { throw new NotImplementedException(); }
             }
 
             public Task<IMessageReceiver> CreateMessageReceiverAsync(string entitypath, ReceiveMode receiveMode)
             {
-                IsInvoked = true;
-
-                return Task.FromResult<IMessageReceiver>(new FakeMessageReceiver() { Mode = receiveMode });
+                throw new NotImplementedException();
             }
 
             public Task<IMessageSender> CreateMessageSenderAsync(string entitypath)
             {
-                throw new NotImplementedException();
+                IsInvoked = true;
+
+                return Task.FromResult<IMessageSender>(new FakeMessageSender());
             }
         }
 
-        class FakeMessageReceiver : IMessageReceiver
+        class FakeMessageSender : IMessageSender
         {
             public bool IsClosed
             {
                 get { return false; }
             }
 
-            public RetryPolicy RetryPolicy { get; set; }
+            public RetryPolicy RetryPolicy
+            {
+                get; set;
+            }
 
-            public int PrefetchCount { get; set; }
-
-            public ReceiveMode Mode { get; internal set; }
-
-            public void OnMessageAsync(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
+            public Task SendAsync(BrokeredMessage message)
             {
                 throw new NotImplementedException();
             }
 
-            public Task CloseAsync()
+            public Task SendBatchAsync(IEnumerable<BrokeredMessage> messages)
             {
                 throw new NotImplementedException();
             }

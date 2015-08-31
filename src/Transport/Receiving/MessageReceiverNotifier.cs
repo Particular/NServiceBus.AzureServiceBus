@@ -15,11 +15,12 @@ namespace NServiceBus.AzureServiceBus
         IMessageReceiver internalReceiver;
         OnMessageOptions options;
         Func<IncomingMessage, Task> incoming;
+        Func<Exception, Task> error;
         string path;
         string connstring;
+        bool stopping = false;
 
         ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
-        
 
         public MessageReceiverNotifier(IManageClientEntityLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
@@ -28,9 +29,10 @@ namespace NServiceBus.AzureServiceBus
             this.settings = settings;
         }
 
-        public void Initialize(string entitypath, string connectionstring, Func<IncomingMessage, Task> callback, int maximumConcurrency)
+        public void Initialize(string entitypath, string connectionstring, Func<IncomingMessage, Task> callback, Func<Exception, Task> errorCallback , int maximumConcurrency)
         {
             this.incoming = callback;
+            this.error = errorCallback;
             this.path = entitypath;
             this.connstring = connectionstring;
 
@@ -44,21 +46,30 @@ namespace NServiceBus.AzureServiceBus
             options.ExceptionReceived += OptionsOnExceptionReceived;
         }
 
-        void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
+        async void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
             // todo respond appropriately
 
             // according to blog posts, this method is invoked on
             //- Exceptions raised during the time that the message pump is waiting for messages to arrive on the service bus
             //- Exceptions raised during the time that your code is processing the BrokeredMessage
-            //- And, it is raised when the receive process successfully completes.
+            //- It is raised when the receive process successfully completes. (Does not seem to be the case)
 
-            logger.InfoFormat("OptionsOnExceptionReceived invoked, action: {0}, exception: {0}", exceptionReceivedEventArgs.Action, exceptionReceivedEventArgs.Exception);
+            if (!stopping) //- It is raised when the underlying connection closes because of our close operation 
+            {
+                logger.InfoFormat("OptionsOnExceptionReceived invoked, action: {0}, exception: {1}", exceptionReceivedEventArgs.Action, exceptionReceivedEventArgs.Exception);
+
+                if (error != null)
+                {
+                    await error(exceptionReceivedEventArgs.Exception);
+                }
+            }
         }
-
-
+        
         public Task Start()
         {
+            stopping = false;
+
             internalReceiver = clientEntities.Get(path, connstring) as IMessageReceiver;
 
             if (internalReceiver == null)
@@ -73,6 +84,8 @@ namespace NServiceBus.AzureServiceBus
 
         public async Task Stop()
         {
+            stopping = true;
+
             await internalReceiver.CloseAsync();
         }
     }

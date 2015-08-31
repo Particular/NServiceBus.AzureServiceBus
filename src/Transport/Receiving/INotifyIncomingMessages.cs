@@ -7,7 +7,7 @@ namespace NServiceBus.AzureServiceBus
 
     public interface INotifyIncomingMessages
     {
-        void Initialize(string entitypath, string connectionstring, Func<IncomingMessage, Task> callback, int maximumConcurrency);
+        void Initialize(string entitypath, string connectionstring, Func<IncomingMessage, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency);
 
         Task Start();
         Task Stop();
