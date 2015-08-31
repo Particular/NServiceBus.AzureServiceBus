@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_receiving_incomingmessages_from_queues
     {
         [Test]
-        public void Can_start_and_stop_notifier()
+        public async Task Can_start_and_stop_notifier()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -29,22 +29,22 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
             notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, message => Task.FromResult(true), null, 10);
 
-            notifier.Start().Wait();
-            notifier.Stop().Wait();
+            await notifier.Start();
+            await notifier.Stop();
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
         [Test]
-        public void Can_start_stop_and_restart_notifier()
+        public async Task Can_start_stop_and_restart_notifier()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -61,21 +61,21 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
             notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, message => Task.FromResult(true), null, 10);
 
-            notifier.Start().Wait();
-            notifier.Stop().Wait();
+            await notifier.Start();
+            await notifier.Stop();
 
-            notifier.Start().Wait();
-            notifier.Stop().Wait();
+            await notifier.Start();
+            await notifier.Stop();
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
         [Test]

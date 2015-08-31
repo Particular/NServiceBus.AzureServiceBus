@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
+    using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
@@ -12,26 +13,26 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_creating_queues
     {
         [Test]
-        public void Does_not_create_queues_when_createqueues_is_set_to_false()
+        public async Task Does_not_create_queues_when_createqueues_is_set_to_false()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             //make sure there is no leftover from previous test
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
 
             settings.Set("Transport.CreateQueues", false);
             
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            Assert.IsFalse(namespaceManager.QueueExistsAsync("myqueue").Result);
+            Assert.IsFalse(await namespaceManager.QueueExistsAsync("myqueue"));
         }
 
         [Test]
-        public void Uses_queue_description_when_provided_by_user()
+        public async Task Uses_queue_description_when_provided_by_user()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -43,17 +44,17 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            var description = creator.CreateAsync("myqueue", namespaceManager).Result;
+            var description = await creator.CreateAsync("myqueue", namespaceManager);
 
-            Assert.IsTrue(namespaceManager.QueueExistsAsync("myqueue").Result);
+            Assert.IsTrue(await namespaceManager.QueueExistsAsync("myqueue"));
             Assert.AreEqual(descriptionToUse, description);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
         [Test]
-        public void Properly_sets_ForwardTo_on_the_created_entity()
+        public async Task Properly_sets_ForwardTo_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -61,7 +62,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // needs to be created with different settings as it cannot forward to itself obviously
             var originalsettings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var originalcreator = new AzureServiceBusQueueCreator(originalsettings);
-            originalcreator.CreateAsync("myotherqueue", namespaceManager).Wait();
+            await originalcreator.CreateAsync("myotherqueue", namespaceManager);
 
             // actual test
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -71,19 +72,19 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.IsTrue(real.ForwardTo.EndsWith("myotherqueue"));
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
-            namespaceManager.DeleteQueueAsync("myotherqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueueAsync("myotherqueue");
         }
 
         [Test]
-        public void Properly_sets_ForwardTo_on_the_created_entity_that_qualifies_condition()
+        public async Task Properly_sets_ForwardTo_on_the_created_entity_that_qualifies_condition()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
            
@@ -94,22 +95,22 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myotherqueue", namespaceManager).Wait();
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myotherqueue", namespaceManager);
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
-            var forwardReal = namespaceManager.GetQueueAsync("myotherqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var forwardReal = await namespaceManager.GetQueueAsync("myotherqueue");
 
             Assert.IsTrue(real.ForwardTo.EndsWith("myotherqueue"));
             Assert.IsTrue(string.IsNullOrEmpty(forwardReal.ForwardTo));
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
-            namespaceManager.DeleteQueueAsync("myotherqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueueAsync("myotherqueue");
         }
 
         [Test]
-        public void Properly_sets_ForwardDeadLetteredMessagesTo_on_the_created_entity()
+        public async Task Properly_sets_ForwardDeadLetteredMessagesTo_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -117,7 +118,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // needs to be created with different settings as it cannot forward to itself obviously
             var originalsettings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var originalcreator = new AzureServiceBusQueueCreator(originalsettings);
-            originalcreator.CreateAsync("myotherqueue", namespaceManager).Wait();
+            await originalcreator.CreateAsync("myotherqueue", namespaceManager);
 
             // actual test
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -127,19 +128,19 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.IsTrue(real.ForwardDeadLetteredMessagesTo.EndsWith("myotherqueue"));
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
-            namespaceManager.DeleteQueueAsync("myotherqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueueAsync("myotherqueue");
         }
 
         [Test]
-        public void Properly_sets_ForwardDeadLetteredMessagesTo_on_the_created_entity_that_qualifies_condition()
+        public async Task Properly_sets_ForwardDeadLetteredMessagesTo_on_the_created_entity_that_qualifies_condition()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -150,22 +151,22 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myotherqueue", namespaceManager).Wait();
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myotherqueue", namespaceManager);
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
-            var forwardReal = namespaceManager.GetQueueAsync("myotherqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var forwardReal = await namespaceManager.GetQueueAsync("myotherqueue");
 
             Assert.IsTrue(real.ForwardDeadLetteredMessagesTo.EndsWith("myotherqueue"));
             Assert.IsTrue(string.IsNullOrEmpty(forwardReal.ForwardDeadLetteredMessagesTo));
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
-            namespaceManager.DeleteQueueAsync("myotherqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueueAsync("myotherqueue");
         }
 
         [Test]
-        public void Properly_sets_EnableExpress_on_the_created_entity()
+        public async Task Properly_sets_EnableExpress_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -176,18 +177,18 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.IsTrue(real.EnableExpress);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
         [Test]
-        public void Properly_sets_AutoDeleteOnIdle_on_the_created_entity()
+        public async Task Properly_sets_AutoDeleteOnIdle_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -198,23 +199,23 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.AreEqual(TimeSpan.FromDays(1), real.AutoDeleteOnIdle);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
         [Test]
-        public void Properly_sets_EnablePartitioning_on_the_created_entity()
+        public async Task Properly_sets_EnablePartitioning_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             //make sure any previously created queues with this name are removed as the EnablePartitioning cannot be updated
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -223,18 +224,18 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.IsTrue(real.EnablePartitioning);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
         [Test]
-        public void Properly_sets_EnableBatchedOperations_on_the_created_entity()
+        public async Task Properly_sets_EnableBatchedOperations_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -245,18 +246,18 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.IsFalse(real.EnableBatchedOperations);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
         [Test]
-        public void Properly_sets_MaxDeliveryCount_on_the_created_entity()
+        public async Task Properly_sets_MaxDeliveryCount_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -267,18 +268,18 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.AreEqual(10, real.MaxDeliveryCount);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
         [Test]
-        public void Properly_sets_DuplicateDetectionHistoryTimeWindow_on_the_created_entity()
+        public async Task Properly_sets_DuplicateDetectionHistoryTimeWindow_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -289,18 +290,18 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.AreEqual(TimeSpan.FromMinutes(20), real.DuplicateDetectionHistoryTimeWindow);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
         [Test]
-        public void Properly_sets_EnableDeadLetteringOnMessageExpiration_on_the_created_entity()
+        public async Task Properly_sets_EnableDeadLetteringOnMessageExpiration_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -311,17 +312,17 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.IsTrue(real.EnableDeadLetteringOnMessageExpiration);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
-        public void Properly_sets_DefaultMessageTimeToLive_on_the_created_entity()
+        public async Task Properly_sets_DefaultMessageTimeToLive_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -332,22 +333,22 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.AreEqual(TimeSpan.FromDays(1), real.DefaultMessageTimeToLive);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
-        public void Properly_sets_RequiresSession_on_the_created_entity()
+        public async Task Properly_sets_RequiresSession_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             //make sure any existing queue is cleaned up as the RequiresSession property cannot be changed on existing queues
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -356,17 +357,17 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.IsTrue(real.RequiresSession);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
-        public void Properly_sets_RequiresDuplicateDetection_on_the_created_entity()
+        public async Task Properly_sets_RequiresDuplicateDetection_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -377,17 +378,17 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.IsTrue(real.RequiresDuplicateDetection);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
-        public void Properly_sets_MaxSizeInMegabytes_on_the_created_entity()
+        public async Task Properly_sets_MaxSizeInMegabytes_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -398,17 +399,17 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.AreEqual(3072, real.MaxSizeInMegabytes);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
-        public void Properly_sets_LockDuration_on_the_created_entity()
+        public async Task Properly_sets_LockDuration_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -419,17 +420,17 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.AreEqual(TimeSpan.FromMinutes(5), real.LockDuration);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
-        public void Properly_sets_SupportOrdering_on_the_created_entity()
+        public async Task Properly_sets_SupportOrdering_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -440,14 +441,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            creator.CreateAsync("myqueue", namespaceManager).Wait();
+            await creator.CreateAsync("myqueue", namespaceManager);
 
-            var real = namespaceManager.GetQueueAsync("myqueue").Result;
+            var real = await namespaceManager.GetQueueAsync("myqueue");
 
             Assert.IsTrue(real.SupportOrdering);
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
     }
 

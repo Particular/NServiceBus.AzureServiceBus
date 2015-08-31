@@ -38,7 +38,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
 
             //cleanup 
-            namespaceManager.DeleteQueueAsync("myqueue").Wait();
+            await namespaceManager.DeleteQueueAsync("myqueue");
         }
     }
 }

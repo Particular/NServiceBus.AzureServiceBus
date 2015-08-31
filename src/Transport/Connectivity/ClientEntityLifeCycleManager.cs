@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus
                     var e = new EntityClientEntry();
                     lock (e.Mutex)
                     {
-                        e.ClientEntity = _factory.CreateAsync(entitypath, connectionstring).Result;
+                        e.ClientEntity = _factory.CreateAsync(entitypath, connectionstring).Result; //cannot await in lock statement
                     }
                     b.Put(e);
                 }
@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus
                 {
                     if (entry.ClientEntity.IsClosed)
                     {
-                        entry.ClientEntity = _factory.CreateAsync(entitypath, connectionstring).Result;
+                        entry.ClientEntity = _factory.CreateAsync(entitypath, connectionstring).Result; //cannot await in lock statement
                     }
                 }
             }

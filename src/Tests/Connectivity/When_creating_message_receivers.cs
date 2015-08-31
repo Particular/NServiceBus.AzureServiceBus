@@ -13,7 +13,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_creating_message_receivers
     {
         [Test]
-        public void Delegates_creation_to_messaging_factory()
+        public async Task Delegates_creation_to_messaging_factory()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -21,14 +21,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new MessageReceiverCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var receiver = creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value).Result;
+            var receiver = await creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
 
             Assert.IsTrue(factory.IsInvoked);
             Assert.IsInstanceOf<IMessageReceiver>(receiver);
         }
 
         [Test]
-        public void Applies_user_defined_connectivity_settings()
+        public async Task Applies_user_defined_connectivity_settings()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -42,7 +42,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new MessageReceiverCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var receiver = (IMessageReceiver)creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value).Result;
+            var receiver = (IMessageReceiver)await creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
 
             Assert.AreEqual(ReceiveMode.ReceiveAndDelete, receiver.Mode);
             Assert.IsInstanceOf<NoRetry>(receiver.RetryPolicy);
