@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBus
     {
         public IncomingMessage Convert(BrokeredMessage brokeredMessage)
         {
-            return new IncomingMessage("", new Dictionary<string, string>(), new MemoryStream() );
+            return new IncomingMessage(brokeredMessage.MessageId, new Dictionary<string, string>(), new MemoryStream() );
         }
     }
 }

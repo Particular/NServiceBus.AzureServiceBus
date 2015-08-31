@@ -28,5 +28,10 @@ namespace NServiceBus.AzureServiceBus
         {
             return new MessageReceiverAdapter(await _factory.CreateMessageReceiverAsync(entitypath, receiveMode));
         }
+
+        public async Task<IMessageSender> CreateMessageSenderAsync(string entitypath)
+        {
+            return new MessageSenderAdapter(await _factory.CreateMessageSenderAsync(entitypath));
+        }
     }
 }

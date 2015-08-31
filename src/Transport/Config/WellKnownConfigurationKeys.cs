@@ -116,6 +116,11 @@ namespace NServiceBus.AzureServiceBus
                 public const string AutoRenewTimeout = "AzureServiceBus.Connectivity.MessageReceivers.AutoRenewTimeout";
             }
 
+            public static class MessageSenders
+            {
+                public const string RetryPolicy = "AzureServiceBus.Connectivity.MessageSenders.RetryPolicy";
+            }
+
             public static class MessagingFactories
             {
                 public const string PrefetchCount = "AzureServiceBus.Connectivity.MessagingFactories.PrefetchCount";

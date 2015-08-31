@@ -9,6 +9,11 @@ namespace NServiceBus
             return new AzureServiceBusMessageReceiverSettings(azureServiceBusConnectivitySettings.GetSettings());
         }
 
+        public static AzureServiceBusMessageSenderSettings MessageSenders(this AzureServiceBusConnectivitySettings azureServiceBusConnectivitySettings)
+        {
+            return new AzureServiceBusMessageSenderSettings(azureServiceBusConnectivitySettings.GetSettings());
+        }
+
         public static AzureServiceBusMessagingFactoriesSettings MessagingFactories(this AzureServiceBusConnectivitySettings azureServiceBusConnectivitySettings)
         {
             return new AzureServiceBusMessagingFactoriesSettings(azureServiceBusConnectivitySettings.GetSettings());

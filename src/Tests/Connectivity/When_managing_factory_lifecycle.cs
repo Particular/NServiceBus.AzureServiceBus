@@ -110,6 +110,10 @@ namespace NServiceBus.AzureServiceBus.Tests
                 throw new System.NotImplementedException();
             }
 
+            public Task<IMessageSender> CreateMessageSenderAsync(string entitypath)
+            {
+                throw new System.NotImplementedException();
+            }
         }
     }
 }
