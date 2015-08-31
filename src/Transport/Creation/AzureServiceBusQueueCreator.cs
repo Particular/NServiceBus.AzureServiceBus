@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Runtime.ExceptionServices;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Logging;
@@ -46,11 +47,13 @@
         {
             var description = _descriptionFactory(queuePath, _settings);
 
+            ExceptionDispatchInfo timeoutExceptionCaught = null;
+
             try
             {
                 if (_settings.GetOrDefault<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 {
-                    if (!await Exists(namespaceManager, description.Path))
+                    if (!await ExistsAsync(namespaceManager, description.Path))
                     {
                         await namespaceManager.CreateQueueAsync(description);
                         logger.InfoFormat("Queue '{0}' created", description.Path);
@@ -79,22 +82,15 @@
                 // the queue already exists or another node beat us to it, which is ok
                 logger.InfoFormat("Queue '{0}' already exists, another node probably beat us to it", description.Path);
             }
-            catch (TimeoutException)
+            catch (TimeoutException timeoutException)
             {
                 logger.InfoFormat("Timeout occured on queue creation for '{0}' going to validate if it doesn't exist", description.Path);
 
-                // there is a chance that the timeout occurs, but the queue is created still
-                // check for this
-                if (!Exists(namespaceManager, description.Path).Result)
-                {
-                    throw;
-                }
-
-                logger.InfoFormat("Looks like queue '{0}' exists anyway", description.Path);
+                timeoutExceptionCaught = ExceptionDispatchInfo.Capture(timeoutException);
             }
             catch (MessagingException ex)
             {
-                if (!ex.IsTransient && !CreationExceptionHandling.IsInnerExceptionTransient(ex))
+                if (!ex.IsTransient)
                 {
                     logger.Fatal(string.Format("{1} {2} occured on queue creation {0}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
                     throw;
@@ -103,11 +99,23 @@
                 logger.Info(string.Format("{1} {2} occured on queue creation {0}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
             }
 
+            if (timeoutExceptionCaught != null)
+            {
+                // there is a chance that the timeout occured, but the topic was still created, check again
+                if (!await ExistsAsync(namespaceManager, description.Path, removeCacheEntry: true))
+                {
+                    timeoutExceptionCaught.Throw();
+                }
+
+                logger.InfoFormat("Looks like queue '{0}' exists anyway", description.Path);
+
+            }
+
             return description;
         }
 
 
-        async Task<bool> Exists(INamespaceManager namespaceClient, string queuePath)
+        async Task<bool> ExistsAsync(INamespaceManager namespaceClient, string queuePath, bool removeCacheEntry = false)
         {
             var key = queuePath;
             logger.InfoFormat("Checking existence cache for '{0}'", queuePath);
