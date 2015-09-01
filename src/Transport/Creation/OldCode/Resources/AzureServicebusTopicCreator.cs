@@ -93,7 +93,7 @@
 //            }
 //            catch (MessagingException ex)
 //            {
-//                if (!ex.IsTransient && !CreationExceptionHandling.IsCommon(ex))
+//                if (!ex.IsTransient && !CreationExceptionHandling.IsInnerExceptionTransient(ex))
 //                {
 //                    logger.Fatal(string.Format("{1} {2} occured on topic creation {0}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
 //                    throw;

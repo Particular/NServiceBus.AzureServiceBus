@@ -13,8 +13,13 @@ namespace NServiceBus.AzureServiceBus
         Task CreateQueueAsync(QueueDescription description);
         Task UpdateQueueAsync(QueueDescription description);
         Task DeleteQueueAsync(string path);
-
         Task<QueueDescription> GetQueueAsync(string path);
         Task<bool> QueueExistsAsync(string path);
+
+        Task<TopicDescription> CreateTopicAsync(TopicDescription topicDescription);
+        Task<TopicDescription> GetTopicAsync(string path);
+        Task<TopicDescription> UpdateTopicAsync(TopicDescription topicDescription);
+        Task<bool> TopicExistsAsync(string path);
+        Task DeleteTopicAsync(string path);
     }
 }

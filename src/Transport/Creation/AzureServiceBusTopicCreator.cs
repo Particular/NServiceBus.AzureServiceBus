@@ -2,8 +2,8 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Runtime.ExceptionServices;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Logging;
@@ -38,9 +38,11 @@
             }
         }
 
-        public async Task<TopicDescription> CreateAsync(string topicPath, NamespaceManager namespaceManager)
+        public async Task<TopicDescription> CreateAsync(string topicPath, INamespaceManager namespaceManager)
         {
             var topicDescription = topicDescriptionFactory(topicPath, settings);
+
+            ExceptionDispatchInfo timeoutExceptionCaught = null;
 
             try
             {
@@ -73,35 +75,48 @@
                 // the topic already exists or another node beat us to it, which is ok
                 logger.InfoFormat("Topic '{0}' already exists, another node probably beat us to it", topicDescription.Path);
             }
-            catch (TimeoutException)
+            catch (TimeoutException timeoutException)
             {
                 logger.InfoFormat("Timeout occured on topic creation for '{0}' going to validate if it doesn't exist", topicDescription.Path);
 
-                // there is a chance that the timeout occured, but the topic was still created, check again
-                if (!ExistsAsync(topicDescription.Path, namespaceManager).Result) // blocking, can't await in catch clause and can't move code out as that would otherwise break stacktrace
-                {
-                    throw;
-                }
-
-                logger.InfoFormat("Looks like topic '{0}' exists anyway", topicDescription.Path);
+                timeoutExceptionCaught = ExceptionDispatchInfo.Capture(timeoutException);
             }
             catch (MessagingException ex)
             {
-                if (!ex.IsTransient && !CreationExceptionHandling.IsCommon(ex))
+                var loggedMessage = string.Format("{1} {2} occured on topic creation {0}", topicDescription.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name);
+
+                if (!ex.IsTransient)
                 {
-                    logger.Fatal(string.Format("{1} {2} occured on topic creation {0}", topicDescription.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
+                    logger.Fatal(loggedMessage, ex);
                     throw;
                 }
 
-                logger.Info(string.Format("{1} {2} occured on topic creation {0}", topicDescription.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
+                logger.Info(loggedMessage, ex);
+            }
+
+            if (timeoutExceptionCaught != null)
+            {
+                // there is a chance that the timeout occured, but the topic was still created, check again
+                if (! await ExistsAsync(topicDescription.Path, namespaceManager, removeCacheEntry: true))
+                {
+                    timeoutExceptionCaught.Throw();
+                }
+
+                logger.InfoFormat("Looks like topic '{0}' exists anyway", topicDescription.Path);
             }
 
             return topicDescription;
         }
 
-        async Task<bool> ExistsAsync(string topicPath, NamespaceManager namespaceClient)
+        async Task<bool> ExistsAsync(string topicPath, INamespaceManager namespaceClient, bool removeCacheEntry = false)
         {
             logger.InfoFormat("Checking existence cache for '{0}'", topicPath);
+
+            if (removeCacheEntry)
+            {
+                Task<bool> dummy;
+                rememberExistence.TryRemove(topicPath, out dummy);
+            }
 
             var exists = await rememberExistence.GetOrAdd(topicPath, async notFoundTopicPath =>
             {
