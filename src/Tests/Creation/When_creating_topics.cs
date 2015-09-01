@@ -213,7 +213,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             extensions.Topology().Resources().Topics().EnablePartitioning(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
-            const string topicPath = "mytopic8";
+            const string topicPath = "mytopic9";
             await creator.CreateAsync(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopicAsync(topicPath);
@@ -234,7 +234,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             extensions.Topology().Resources().Topics().MaxSizeInMegabytes(4096);
 
             var creator = new AzureServiceBusTopicCreator(settings);
-            const string topicPath = "mytopic9";
+            const string topicPath = "mytopic10";
             await creator.CreateAsync(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopicAsync(topicPath);
@@ -255,7 +255,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             extensions.Topology().Resources().Topics().RequiresDuplicateDetection(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
-            const string topicPath = "mytopic10";
+            const string topicPath = "mytopic11";
             await creator.CreateAsync(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopicAsync(topicPath);
@@ -276,7 +276,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             extensions.Topology().Resources().Topics().SupportOrdering(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
-            const string topicPath = "mytopic11";
+            const string topicPath = "mytopic12";
             await creator.CreateAsync(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopicAsync(topicPath);
@@ -291,7 +291,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             var creator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
-            const string topicPath = "mytopic12";
+            const string topicPath = "mytopic13";
 
             await creator.CreateAsync(topicPath, namespaceManager);
 
@@ -311,8 +311,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
         }
 
-        // todo: check for all defaults to be sets
-
+        
         [Test]
         public async Task Should_not_throw_when_another_node_creates_the_same_topic_first()
         {
