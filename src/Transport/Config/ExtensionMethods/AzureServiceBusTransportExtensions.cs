@@ -24,5 +24,10 @@ namespace NServiceBus
             return new AzureServiceBusConnectivitySettings(transportExtensions.GetSettings());
         }
 
+        public static AzureServiceBusSerializationSettings Serialization(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        {
+            return new AzureServiceBusSerializationSettings(transportExtensions.GetSettings());
+        }
+
     }
 }

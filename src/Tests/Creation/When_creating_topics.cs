@@ -206,6 +206,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Should_set_EnablePartitioning_on_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            const string topicPath = "mytopic8";
+
+            //clean up before test starts
+            await namespaceManager.DeleteTopicAsync(topicPath);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -213,7 +217,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             extensions.Topology().Resources().Topics().EnablePartitioning(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
-            const string topicPath = "mytopic8";
+           
             await creator.CreateAsync(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopicAsync(topicPath);

@@ -35,8 +35,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             //validate
             var queue = await namespaceManager.GetQueueAsync("myqueue");
             Assert.IsTrue(queue.MessageCount > 0);
-
-
+            
             //cleanup 
             await namespaceManager.DeleteQueueAsync("myqueue");
         }

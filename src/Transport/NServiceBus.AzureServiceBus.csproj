@@ -98,6 +98,7 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessageReceiverSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessageSenderSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessagingFactoriesSettings.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusSerializationSettings.cs" />
     <Compile Include="Connectivity\ClientEntityLifeCycleManager.cs" />
     <Compile Include="Connectivity\IClientEntity.cs" />
     <Compile Include="Connectivity\IManageClientEntityLifeCycle.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="Connectivity\MessageSenderCreator.cs" />
     <Compile Include="Creation\MemberComparison.cs" />
     <Compile Include="Creation\ReadOnlySettingsExtensions.cs" />
+    <Compile Include="Receiving\DefaultBrokeredMessagesToIncomingMessagesConverter.cs" />
     <Compile Include="Receiving\IConvertBrokeredMessagesToIncomingMessages.cs" />
     <Compile Include="Sending\IConvertOutgoingMessagesToBrokeredMessages.cs" />
     <Compile Include="Receiving\INotifyIncomingMessages.cs" />
