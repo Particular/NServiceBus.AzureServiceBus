@@ -112,6 +112,7 @@
     <Compile Include="Configuration\When_configuring_sanitization.cs" />
     <Compile Include="Configuration\When_configuring_subscriptions.cs" />
     <Compile Include="Configuration\When_configuring_topics.cs" />
+    <Compile Include="Configuration\When_configuring_serialization.cs" />
     <Compile Include="Configuration\When_configuring_validation.cs" />
     <Compile Include="ConnectionString.cs" />
     <Compile Include="Connectivity\When_creating_message_senders.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Creation\When_creating_queues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Receiving\AsyncAutoResetEvent.cs" />
+    <Compile Include="Receiving\When_converting_brokered_messages_to_incoming_messages.cs" />
     <Compile Include="Receiving\When_receiving_brokeredmessages_from_queues.cs" />
     <Compile Include="Receiving\When_receiving_incomingmessages_from_queues.cs" />
     <Compile Include="Sending\When_sending_brokeredmessages_to_queues.cs" />

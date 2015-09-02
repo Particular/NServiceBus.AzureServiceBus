@@ -133,5 +133,11 @@ namespace NServiceBus.AzureServiceBus
         {
             public const string CreateTopology = "Transport.CreateQueues";
         }
+
+        public static class Serialization
+        {
+            public const string BrokeredMessageBodyType = "AzureServiceBus.Serialization.BrokeredMessageBodyType";
+            
+        }
     }
 }

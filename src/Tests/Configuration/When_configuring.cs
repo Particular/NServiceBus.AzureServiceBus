@@ -149,5 +149,16 @@
 
             Assert.IsInstanceOf<AzureServiceBusConnectivitySettings>(connectivitySettings);
         }
+
+        [Test]
+        public void Should_be_able_to_extend_serialization_settings()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            var connectivitySettings = extensions.Serialization();
+
+            Assert.IsInstanceOf<AzureServiceBusSerializationSettings>(connectivitySettings);
+        }
     }
 }

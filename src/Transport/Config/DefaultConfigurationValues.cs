@@ -12,8 +12,14 @@
             ApplyDefaultValuesForQueueDescriptions(settings);
             ApplyDefaultValuesForTopics(settings);
             ApplyDefaultValuesForSubscriptions(settings);
+            ApplyDefaultValuesForSerialization(settings);
 
             return settings;
+        }
+
+        void ApplyDefaultValuesForSerialization(SettingsHolder settings)
+        {
+            settings.SetDefault(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType, SupportedBrokeredMessageBodyTypes.ByteArray);
         }
 
         void ApplyDefaultsForConnectivity(SettingsHolder settings)
