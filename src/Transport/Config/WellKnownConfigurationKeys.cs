@@ -52,7 +52,6 @@ namespace NServiceBus.AzureServiceBus
                     public const string DescriptionFactory = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.DescriptionFactory";
 
                     public const string AutoDeleteOnIdle = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.AutoDeleteOnIdle";
-                    public const string SupportOrdering = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.SupportOrdering";
                     public const string DefaultMessageTimeToLive = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.DefaultMessageTimeToLive";
                     public const string EnableBatchedOperations = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.EnableBatchedOperations";
                     public const string EnableDeadLetteringOnFilterEvaluationExceptions = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.EnableDeadLetteringOnFilterEvaluationExceptions";

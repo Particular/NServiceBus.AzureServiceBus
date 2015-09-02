@@ -23,13 +23,6 @@ namespace NServiceBus
             return this;
         }
 
-         public AzureServiceBusSubscriptionSettings SupportOrdering(bool supported)
-        {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.SupportOrdering, supported);
-
-            return this;
-        }
-
         public AzureServiceBusSubscriptionSettings DefaultMessageTimeToLive(TimeSpan expiryTimespan)
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DefaultMessageTimeToLive, expiryTimespan);

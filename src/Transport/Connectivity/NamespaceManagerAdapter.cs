@@ -5,7 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
 
-    class NamespaceManagerAdapter : INamespaceManager
+    public class NamespaceManagerAdapter : INamespaceManager
     {
         readonly NamespaceManager _manager;
 
@@ -59,6 +59,26 @@ namespace NServiceBus.AzureServiceBus
             await _manager.DeleteTopicAsync(path);
         }
 
+        public Task<bool> SubscriptionExistsAsync(string topicPath, string subscriptionName)
+        {
+            return _manager.SubscriptionExistsAsync(topicPath, subscriptionName);
+        }
+
+        public async Task<SubscriptionDescription> CreateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
+        {
+            return await _manager.CreateSubscriptionAsync(subscriptionDescription);
+        }
+
+        public async Task<SubscriptionDescription> GetSubscriptionAsync(string topicPath, string subscriptionName)
+        {
+            return await _manager.GetSubscriptionAsync(topicPath, subscriptionName);
+        }
+
+        public async Task<SubscriptionDescription> UpdateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
+        {
+            return await _manager.UpdateSubscriptionAsync(subscriptionDescription);
+        }
+
         public async Task<TopicDescription> UpdateTopicAsync(TopicDescription topicDescription)
         {
             return await _manager.UpdateTopicAsync(topicDescription);
@@ -72,6 +92,11 @@ namespace NServiceBus.AzureServiceBus
         public async Task<TopicDescription> GetTopicAsync(string path)
         {
             return await _manager.GetTopicAsync(path);
+        }
+
+        public async Task DeleteSubsciptionAsync(string topicPath, string subscriptionName)
+        {
+            await _manager.DeleteSubscriptionAsync(topicPath, subscriptionName);
         }
     }
 }

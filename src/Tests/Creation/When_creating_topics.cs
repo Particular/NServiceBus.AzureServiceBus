@@ -57,7 +57,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual(TimeSpan.MaxValue, topicDescription.AutoDeleteOnIdle);
             Assert.AreEqual(TimeSpan.MaxValue, topicDescription.DefaultMessageTimeToLive);
             Assert.AreEqual(TimeSpan.FromMilliseconds(600000), topicDescription.DuplicateDetectionHistoryTimeWindow);
-            Assert.IsFalse(topicDescription.EnableBatchedOperations);
+            Assert.IsTrue(topicDescription.EnableBatchedOperations);
             Assert.IsFalse(topicDescription.EnableExpress);
             Assert.IsFalse(topicDescription.EnableFilteringMessagesBeforePublishing);
             Assert.IsFalse(topicDescription.EnablePartitioning);
@@ -168,7 +168,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.Topology().Resources().Topics().EnableBatchedOperations(true);
+            extensions.Topology().Resources().Topics().EnableBatchedOperations(false);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic7";
@@ -176,7 +176,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var foundTopic = await namespaceManager.GetTopicAsync(topicPath);
 
-            Assert.IsTrue(foundTopic.EnableBatchedOperations);
+            Assert.IsFalse(foundTopic.EnableBatchedOperations);
 
             cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
         }
@@ -300,7 +300,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual(TimeSpan.MaxValue, foundTopic.AutoDeleteOnIdle);
             Assert.AreEqual(TimeSpan.MaxValue, foundTopic.DefaultMessageTimeToLive);
             Assert.AreEqual(TimeSpan.FromMilliseconds(600000), foundTopic.DuplicateDetectionHistoryTimeWindow);
-            Assert.IsFalse(foundTopic.EnableBatchedOperations);
+            Assert.IsTrue(foundTopic.EnableBatchedOperations);
             Assert.IsFalse(foundTopic.EnableExpress);
             Assert.IsFalse(foundTopic.EnableFilteringMessagesBeforePublishing);
             Assert.IsFalse(foundTopic.EnablePartitioning);

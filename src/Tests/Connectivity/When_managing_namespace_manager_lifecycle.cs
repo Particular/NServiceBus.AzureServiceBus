@@ -112,6 +112,26 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 throw new NotImplementedException();
             }
+
+            public Task<bool> SubscriptionExistsAsync(string topicPath, string subscriptionName)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<SubscriptionDescription> CreateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<SubscriptionDescription> GetSubscriptionAsync(string topicPath, string subscriptionName)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<SubscriptionDescription> UpdateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

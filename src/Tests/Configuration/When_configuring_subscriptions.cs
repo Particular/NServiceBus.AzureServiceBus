@@ -22,17 +22,6 @@
         }
 
         [Test]
-        public void Should_be_able_to_set_SupportOrdering()
-        {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            var topicSettings = extensions.Topology().Resources().Subscriptions().SupportOrdering(true);
-
-            Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.SupportOrdering));
-        }
-
-        [Test]
         public void Should_be_able_to_set_DefaultMessageTimeToLive()
         {
             var setting = new SettingsHolder();
