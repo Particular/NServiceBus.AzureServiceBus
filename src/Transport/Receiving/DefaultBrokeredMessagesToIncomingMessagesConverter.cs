@@ -1,6 +1,8 @@
 namespace NServiceBus.AzureServiceBus
 {
+    using System;
     using System.Configuration;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
@@ -38,9 +40,24 @@ namespace NServiceBus.AzureServiceBus
                 default:
                     throw new ConfigurationErrorsException("Unsupported brokered message body type configured");
             }
-            var incomingMessage = new IncomingMessage(brokeredMessage.MessageId, headers, rawBody);
+            
 
-            return incomingMessage;
+            if (!string.IsNullOrWhiteSpace(brokeredMessage.ReplyTo) && !headers.ContainsKey(Headers.ReplyToAddress))
+            {
+                headers[Headers.ReplyToAddress] = brokeredMessage.ReplyTo;
+            }
+
+            if (!string.IsNullOrWhiteSpace(brokeredMessage.CorrelationId) && !headers.ContainsKey(Headers.CorrelationId))
+            {
+                headers[Headers.CorrelationId] = brokeredMessage.CorrelationId;
+            }
+
+            if (brokeredMessage.TimeToLive < TimeSpan.MaxValue && !headers.ContainsKey(Headers.TimeToBeReceived))
+            {
+                headers[Headers.TimeToBeReceived] = brokeredMessage.TimeToLive.ToString("c", CultureInfo.InvariantCulture);
+            }
+
+            return new IncomingMessage(brokeredMessage.MessageId, headers, rawBody);
         }
     }
 

@@ -1,5 +1,6 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
+    using System;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -91,6 +92,64 @@ namespace NServiceBus.AzureServiceBus.Tests
             var body = sr.ReadToEnd();
 
             Assert.AreEqual("Whatever", body);
+        }
+
+        public async Task Should_complete_replyto_address_if_not_present_in_headers()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var brokeredMessage = new BrokeredMessage("")
+            {
+                ReplyTo = "MyQueue"
+            };
+
+
+            var incomingMessage = converter.Convert(brokeredMessage);
+
+            Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.ReplyToAddress));
+            Assert.AreEqual("MyQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
+        }
+
+        public async Task Should_complete_correlationid_if_not_present_in_headers()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var brokeredMessage = new BrokeredMessage("")
+            {
+                CorrelationId = "SomeId"
+            };
+
+
+            var incomingMessage = converter.Convert(brokeredMessage);
+
+            Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.CorrelationId));
+            Assert.AreEqual("SomeId", incomingMessage.Headers[Headers.CorrelationId]);
+        }
+
+        public async Task Should_complete_timetobereceived_if_not_present_in_headers()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var timespan = TimeSpan.FromHours(1);
+            var brokeredMessage = new BrokeredMessage("")
+            {
+                TimeToLive = timespan
+            };
+
+
+            var incomingMessage = converter.Convert(brokeredMessage);
+
+            Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.TimeToBeReceived));
+            Assert.AreEqual(timespan.ToString(), incomingMessage.Headers[Headers.TimeToBeReceived]);
         }
     }
 }
