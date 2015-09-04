@@ -21,5 +21,10 @@ namespace NServiceBus.AzureServiceBus
         Task<TopicDescription> UpdateTopicAsync(TopicDescription topicDescription);
         Task<bool> TopicExistsAsync(string path);
         Task DeleteTopicAsync(string path);
+
+        Task<bool> SubscriptionExistsAsync(string topicPath, string subscriptionName);
+        Task<SubscriptionDescription> CreateSubscriptionAsync(SubscriptionDescription subscriptionDescription);
+        Task<SubscriptionDescription> GetSubscriptionAsync(string topicPath, string subscriptionName);
+        Task<SubscriptionDescription> UpdateSubscriptionAsync(SubscriptionDescription subscriptionDescription);
     }
 }
