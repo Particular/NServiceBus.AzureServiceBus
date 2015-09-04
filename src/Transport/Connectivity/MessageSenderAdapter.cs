@@ -27,7 +27,7 @@ namespace NServiceBus.AzureServiceBus
 
         public async Task SendAsync(BrokeredMessage message)
         {
-            await _sender.SendAsync(message);
+            await _sender.SendAsync(message).ConfigureAwait(false);
         }
 
         public async Task SendBatchAsync(IEnumerable<BrokeredMessage> messages)

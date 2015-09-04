@@ -1,5 +1,6 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
+    using System;
     using Microsoft.ServiceBus;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
@@ -29,6 +30,17 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectivitySettings = extensions.Connectivity().MessagingFactories().RetryPolicy(RetryPolicy.NoRetry);
 
             Assert.IsInstanceOf<NoRetry>(connectivitySettings.GetSettings().Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy));
+        }
+
+        [Test]
+        public void Should_be_able_to_set_batchflushinterval()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            var connectivitySettings = extensions.Connectivity().MessagingFactories().BatchFlushInterval(TimeSpan.FromSeconds(0));
+
+            Assert.AreEqual(TimeSpan.FromSeconds(0), connectivitySettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval));
         }
 
     }

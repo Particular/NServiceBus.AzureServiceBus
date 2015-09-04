@@ -126,6 +126,7 @@ namespace NServiceBus.AzureServiceBus
                 public const string RetryPolicy = "AzureServiceBus.Connectivity.MessagingFactories.RetryPolicy";
                 public const string NumberOfMessagingFactoriesPerNamespace = "AzureServiceBus.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace";
                 public const string MessagingFactorySettingsFactory = "AzureServiceBus.Connectivity.MessagingFactories.MessagingFactorySettingsFactory";
+                public const string BatchFlushInterval = "AzureServiceBus.Connectivity.MessagingFactories.BatchFlushInterval";
             }
         }
 

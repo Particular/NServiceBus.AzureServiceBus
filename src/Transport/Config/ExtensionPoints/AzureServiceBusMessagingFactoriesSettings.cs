@@ -45,5 +45,12 @@
 
             return this;
         }
+
+        public AzureServiceBusMessagingFactoriesSettings BatchFlushInterval(TimeSpan batchFlushInterval)
+        {
+            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval, batchFlushInterval);
+
+            return this;
+        }
     }
 }

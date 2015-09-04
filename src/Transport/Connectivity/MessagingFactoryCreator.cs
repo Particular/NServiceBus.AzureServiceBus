@@ -31,7 +31,7 @@ namespace NServiceBus.AzureServiceBus
                         TokenProvider = namespaceManager.Settings.TokenProvider,
                         NetMessagingTransportSettings =
                         {
-                            BatchFlushInterval = TimeSpan.FromSeconds(0.1)
+                            BatchFlushInterval = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval)
                         }
                     };
 
