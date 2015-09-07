@@ -118,6 +118,9 @@
     <Compile Include="Creation\ReadOnlySettingsExtensions.cs" />
     <Compile Include="Receiving\DefaultBrokeredMessagesToIncomingMessagesConverter.cs" />
     <Compile Include="Receiving\IConvertBrokeredMessagesToIncomingMessages.cs" />
+    <Compile Include="Sending\DefaultOutgoingMessageSender.cs" />
+    <Compile Include="Sending\DefaultOutgoingMessagesToBrokeredMessagesConverter.cs" />
+    <Compile Include="Sending\ISendOutgoingMessages.cs" />
     <Compile Include="Sending\IConvertOutgoingMessagesToBrokeredMessages.cs" />
     <Compile Include="Receiving\INotifyIncomingMessages.cs" />
     <Compile Include="Receiving\MessageReceiverNotifier.cs" />
