@@ -3,14 +3,21 @@ namespace NServiceBus.AzureServiceBus.Addressing
     using System;
     using System.Collections.Generic;
     using System.Configuration;
+    using NServiceBus.Settings;
 
     public class ShardedNamespacePartitioningStrategy : INamespacePartitioningStrategy
     {
         readonly IList<string> _connectionstrings;
         Func<int> _shardingRule;
 
-        public ShardedNamespacePartitioningStrategy(IList<string> connectionstrings)
+        public ShardedNamespacePartitioningStrategy(ReadOnlySettings settings)
         {
+            List<string> connectionstrings;
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out connectionstrings))
+            {
+                connectionstrings = new List<string>();
+            }
+
             if (connectionstrings.Count <= 1)
             {
                 throw new ConfigurationErrorsException("The 'Sharded' namespace partitioning strategy requires more than one namespace, please configure multiple azure servicebus namespaces");

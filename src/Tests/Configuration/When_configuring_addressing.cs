@@ -23,12 +23,12 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         class MyAddressingStrategy : IAddressingStrategy
         {
-            public AzureServiceBusAddress GetAddressForPublishing(Type eventType)
+            public EntityInfo[] GetEntitiesForPublishing(Type eventType)
             {
                 throw new NotImplementedException();
             }
 
-            public AzureServiceBusAddress GetAddressForSending(string destination)
+            public EntityInfo[] GetEntitiesForSending(string destination)
             {
                 throw new NotImplementedException();
             }

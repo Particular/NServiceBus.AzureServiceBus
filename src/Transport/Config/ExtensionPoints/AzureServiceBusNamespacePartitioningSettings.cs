@@ -14,7 +14,11 @@
             : base(settings)
         {
             _settings = settings;
-            _settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string>());
+
+            if (!_settings.HasSetting(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces))
+            {
+                _settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string>());
+            }
         }
 
         public AzureServiceBusNamespacePartitioningSettings UseStrategy<T>() where T : INamespacePartitioningStrategy

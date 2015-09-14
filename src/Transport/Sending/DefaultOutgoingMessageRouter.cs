@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
@@ -25,7 +26,7 @@ namespace NServiceBus.AzureServiceBus
         {
             var address = GetAddress(dispatchOptions);
 
-            var messageSender = (IMessageSender) senders.Get(address.EntityPath, address.ConnectionString);
+            var messageSender = (IMessageSender) senders.Get(address.Path, address.Namespace.ConnectionString);
 
             var brokeredMessage = outgoingMessageConverter.Convert(message, dispatchOptions);
             await messageSender.SendAsync(brokeredMessage);
@@ -35,13 +36,13 @@ namespace NServiceBus.AzureServiceBus
         {
             var address = GetAddress(dispatchOptions);
 
-            var messageSender = (IMessageSender)senders.Get(address.EntityPath, address.ConnectionString);
+            var messageSender = (IMessageSender)senders.Get(address.Path, address.Namespace.ConnectionString);
 
             var brokeredMessages = outgoingMessageConverter.Convert(messages, dispatchOptions);
             await messageSender.SendBatchAsync(brokeredMessages);
         }
 
-        AzureServiceBusAddress GetAddress(DispatchOptions dispatchOptions)
+        EntityInfo GetAddress(DispatchOptions dispatchOptions)
         {
             var directRouting = dispatchOptions.RoutingStrategy as DirectToTargetDestination;
 
@@ -49,11 +50,11 @@ namespace NServiceBus.AzureServiceBus
             {
                 var toAllSubscribers = (ToAllSubscribers)dispatchOptions.RoutingStrategy;
 
-                return addressingStrategy.GetAddressForPublishing(toAllSubscribers.EventType);
+                return addressingStrategy.GetEntitiesForPublishing(toAllSubscribers.EventType).FirstOrDefault();
             }
             else // send
             {
-                return addressingStrategy.GetAddressForSending(directRouting.Destination);
+                return addressingStrategy.GetEntitiesForSending(directRouting.Destination).FirstOrDefault();
             }
         }
 

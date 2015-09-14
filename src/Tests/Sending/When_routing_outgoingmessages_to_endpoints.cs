@@ -57,18 +57,25 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
-        public class FakeAddressingStrategy : IAddressingStrategy{
-            public AzureServiceBusAddress GetAddressForPublishing(Type eventType)
+        public class FakeAddressingStrategy : IAddressingStrategy
+        {
+            public EntityInfo[] GetEntitiesForPublishing(Type eventType)
             {
                 throw new NotImplementedException();
             }
 
-            public AzureServiceBusAddress GetAddressForSending(string destination)
+            public EntityInfo[] GetEntitiesForSending(string destination)
             {
-                return new AzureServiceBusAddress()
+                return new[]
                 {
-                    EntityPath = destination,
-                    ConnectionString = AzureServiceBusConnectionString.Value
+                    new EntityInfo
+                    {
+                        Path = destination,
+                        Namespace = new NamespaceInfo
+                        {
+                            ConnectionString = AzureServiceBusConnectionString.Value
+                        }
+                    }
                 };
             }
         }

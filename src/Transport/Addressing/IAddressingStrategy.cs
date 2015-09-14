@@ -8,13 +8,8 @@
 
     public interface IAddressingStrategy
     {
-        AzureServiceBusAddress GetAddressForPublishing(Type eventType);
-        AzureServiceBusAddress GetAddressForSending(string destination);
+        EntityInfo[] GetEntitiesForPublishing(Type eventType);
+        EntityInfo[] GetEntitiesForSending(string destination);
     }
 
-    public class AzureServiceBusAddress
-    {
-        public string EntityPath { get; set; }
-        public string ConnectionString { get; set; }
-    }
 }
