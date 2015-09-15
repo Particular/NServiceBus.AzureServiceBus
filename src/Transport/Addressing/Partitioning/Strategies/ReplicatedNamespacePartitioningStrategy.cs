@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System.Collections.Generic;
     using System.Configuration;
+    using System.Linq;
     using NServiceBus.Settings;
 
     public class ReplicatedNamespacePartitioningStrategy : INamespacePartitioningStrategy
@@ -24,9 +25,9 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _connectionstrings = connectionstrings;
         }
 
-        public IEnumerable<string> GetConnectionStrings(string endpointName)
+        public IEnumerable<NamespaceInfo> GetNamespaceInfo(string endpointName)
         {
-            return _connectionstrings;
+            return _connectionstrings.Select(connectionstring => new NamespaceInfo(connectionstring, NamespaceMode.Active));
         }
     }
 }

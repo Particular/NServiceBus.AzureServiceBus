@@ -71,10 +71,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     new EntityInfo
                     {
                         Path = destination,
-                        Namespace = new NamespaceInfo
-                        {
-                            ConnectionString = AzureServiceBusConnectionString.Value
-                        }
+                        Namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active)
                     }
                 };
             }

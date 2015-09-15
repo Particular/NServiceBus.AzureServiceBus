@@ -25,7 +25,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(1, strategy.GetConnectionStrings("endpoint1").Count());
+            Assert.AreEqual(1, strategy.GetNamespaceInfo("endpoint1").Count());
         }
 
         [Test]
@@ -45,9 +45,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             for (var i = 0; i < 2; i++)
             {
-                Assert.AreEqual(primary, strategy.GetConnectionStrings("endpoint1").First());
-                Assert.AreEqual(secondary, strategy.GetConnectionStrings("endpoint1").First());
-                Assert.AreEqual(tertiary, strategy.GetConnectionStrings("endpoint1").First());
+                Assert.AreEqual(new NamespaceInfo(primary, NamespaceMode.Active), strategy.GetNamespaceInfo("endpoint1").First());
+                Assert.AreEqual(new NamespaceInfo(secondary, NamespaceMode.Active), strategy.GetNamespaceInfo("endpoint1").First());
+                Assert.AreEqual(new NamespaceInfo(tertiary, NamespaceMode.Active), strategy.GetNamespaceInfo("endpoint1").First());
             }
         }
         

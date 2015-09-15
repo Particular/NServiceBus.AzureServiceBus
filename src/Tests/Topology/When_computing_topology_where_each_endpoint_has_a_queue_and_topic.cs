@@ -19,7 +19,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            settings.SetDefault("EndpointName", "sales");
+            settings.SetDefault<EndpointName>(new EndpointName("sales"));
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
@@ -29,7 +29,8 @@ namespace NServiceBus.AzureServiceBus.Tests
             topology.InitializeContainer();
             topology.Determine();
 
-            Assert.IsTrue(topology.Definition.Namespaces.Any(n => n.ConnectionString == connectionstring));
+            var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
+            Assert.IsTrue(topology.Definition.Namespaces.Any(nsi => nsi == namespaceInfo));
         }
 
         [Test]

@@ -31,14 +31,14 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _shardingRule = rule;
         }
 
-        public IEnumerable<string> GetConnectionStrings(string endpointname)
+        public IEnumerable<NamespaceInfo> GetNamespaceInfo(string endpointname)
         {
             if (_shardingRule ==  null)
             {
                 throw new ConfigurationErrorsException("The 'Sharded' namespace partitioning strategy requires a configured sharding rule to determine a namespace, please configure a sharding rule");
             }
 
-            yield return _connectionstrings[_shardingRule()];
+            yield return new NamespaceInfo(_connectionstrings[_shardingRule()], NamespaceMode.Active);
         }
     }
 }

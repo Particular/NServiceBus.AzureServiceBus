@@ -1,6 +1,5 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
-    using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
     using NServiceBus.AzureServiceBus.Addressing;
@@ -22,7 +21,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new SingleNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(1, strategy.GetConnectionStrings("endpoint1").Count());
+            Assert.AreEqual(1, strategy.GetNamespaceInfo("endpoint1").Count());
         }
 
         [Test]
@@ -36,7 +35,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new SingleNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(connectionstring, strategy.GetConnectionStrings("endpoint1").First());
+            Assert.AreEqual(new NamespaceInfo(connectionstring, NamespaceMode.Active), strategy.GetNamespaceInfo("endpoint1").First());
         }
 
         [Test]

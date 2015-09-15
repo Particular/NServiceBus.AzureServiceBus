@@ -23,7 +23,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new FailOverNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(1, strategy.GetConnectionStrings("endpoint1").Count());
+            Assert.AreEqual(1, strategy.GetNamespaceInfo("endpoint1").Count());
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var strategy = new FailOverNamespacePartitioningStrategy(settings);
 
 
-            Assert.AreEqual(primary, strategy.GetConnectionStrings("endpoint1").First());
+            Assert.AreEqual(new NamespaceInfo(primary, NamespaceMode.Active), strategy.GetNamespaceInfo("endpoint1").First());
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             };
 
 
-            Assert.AreEqual(secondary, strategy.GetConnectionStrings("endpoint1").First());
+            Assert.AreEqual(new NamespaceInfo(secondary, NamespaceMode.Passive), strategy.GetNamespaceInfo("endpoint1").First());
         }
 
         [Test]

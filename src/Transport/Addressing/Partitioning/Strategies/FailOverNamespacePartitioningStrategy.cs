@@ -27,9 +27,11 @@
 
         public FailOverMode Mode { get; set; }
 
-        public IEnumerable<string> GetConnectionStrings(string endpointName)
+        public IEnumerable<NamespaceInfo> GetNamespaceInfo(string endpointName)
         {
-            yield return Mode == FailOverMode.Primary ? _connectionstrings.First() : _connectionstrings.Last();
+            yield return Mode == FailOverMode.Primary 
+                ? new NamespaceInfo(_connectionstrings.First(), NamespaceMode.Active) 
+                : new NamespaceInfo(_connectionstrings.Last(), NamespaceMode.Passive);
         }
     }
 

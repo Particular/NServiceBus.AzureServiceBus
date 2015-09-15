@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var strategy = new ShardedNamespacePartitioningStrategy(settings);
             strategy.SetShardingRule(() => i);
 
-            Assert.AreEqual(1, strategy.GetConnectionStrings("endpoint1").Count());
+            Assert.AreEqual(1, strategy.GetNamespaceInfo("endpoint1").Count());
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             
             for (i = 0; i < 3; i++)
             {
-                Assert.AreEqual(buckets[i], strategy.GetConnectionStrings("endpoint1").First());
+                Assert.AreEqual(new NamespaceInfo(buckets[i], NamespaceMode.Active), strategy.GetNamespaceInfo("endpoint1").First());
             }
         }
 

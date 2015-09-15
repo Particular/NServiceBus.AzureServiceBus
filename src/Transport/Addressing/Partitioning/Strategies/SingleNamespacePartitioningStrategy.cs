@@ -30,9 +30,9 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _connectionstring = connectionstrings.First();
         }
 
-        public IEnumerable<string> GetConnectionStrings(string endpointName)
+        public IEnumerable<NamespaceInfo> GetNamespaceInfo(string endpointName)
         {
-            yield return _connectionstring;
+            yield return new NamespaceInfo(_connectionstring, NamespaceMode.Active);
         }
     }
 }
