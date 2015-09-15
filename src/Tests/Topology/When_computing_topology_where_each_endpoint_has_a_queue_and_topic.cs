@@ -1,8 +1,10 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System.Linq;
+    using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Settings;
     using NUnit.Framework;
+    using EntityType = NServiceBus.AzureServiceBus.EntityType;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -25,10 +27,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             topology.InitializeSettings();
             topology.InitializeContainer();
-            topology.Determine();
+            var definition = topology.Determine(Purpose.Creating);
 
             var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
-            Assert.IsTrue(topology.Definition.Namespaces.Any(nsi => nsi == namespaceInfo));
+            Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
         }
 
         [Test]
@@ -48,9 +50,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             topology.InitializeSettings();
             topology.InitializeContainer();
-            topology.Determine();
+            var definition = topology.Determine(Purpose.Creating);
 
-            Assert.IsTrue(topology.Definition.LocalEntities.Count(ei => ei == new EntityInfo {Path = "sales", Type = EntityType.Queue}) == 1);
+            Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == connectionstring));
         }
 
         [Test]
@@ -70,9 +72,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             topology.InitializeSettings();
             topology.InitializeContainer();
-            topology.Determine();
+            var definition = topology.Determine(Purpose.Creating);
 
-            Assert.IsTrue(topology.Definition.LocalEntities.Count(ei => ei == new EntityInfo { Path = "sales.events", Type = EntityType.Topic }) == 1);
+            Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales.events" && ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == connectionstring ));
         }
     }
 }

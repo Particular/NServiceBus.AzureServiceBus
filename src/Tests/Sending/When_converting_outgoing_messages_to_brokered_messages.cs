@@ -16,7 +16,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_converting_outgoing_messages_to_brokered_messages
     {
         [Test]
-        public async Task Should_inject_body_as_byte_array_by_default()
+        public void Should_inject_body_as_byte_array_by_default()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_extract_body_as_stream_when_configured()
+        public void Should_extract_body_as_stream_when_configured()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -60,7 +60,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_copy_the_message_id()
+        public void Should_copy_the_message_id()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -76,7 +76,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_copy_the_headers()
+        public void Should_copy_the_headers()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -98,7 +98,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_apply_delayed_delivery()
+        public void Should_apply_delayed_delivery()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -121,7 +121,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_apply_delivery_at_specific_date()
+        public void Should_apply_delivery_at_specific_date()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -143,7 +143,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_apply_time_to_live()
+        public void Should_apply_time_to_live()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -164,7 +164,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_apply_correlationid()
+        public void Should_apply_correlationid()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -185,7 +185,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_set_replytoaddress()
+        public void Should_set_replytoaddress()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 

@@ -11,7 +11,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_using_failover_namespace_strategy
     {
         [Test]
-        public void Failover_partitioning_strategy_will_return_a_single_namespace()
+        public void Failover_partitioning_strategy_will_return_a_single_active_namespace_for_the_purpose_of_sending()
         {
             const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
@@ -23,7 +23,39 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new FailOverNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(1, strategy.GetNamespaceInfo("endpoint1").Count());
+            Assert.AreEqual(1, strategy.GetNamespaces("endpoint1", Purpose.Sending).Count());
+        }
+
+        [Test]
+        public void Failover_partitioning_strategy_will_return_both_namespaces_for_the_purpose_of_receiving()
+        {
+            const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(primary);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(secondary);
+
+            var strategy = new FailOverNamespacePartitioningStrategy(settings);
+
+            Assert.AreEqual(2, strategy.GetNamespaces("endpoint1", Purpose.Receiving).Count());
+        }
+
+        [Test]
+        public void Failover_partitioning_strategy_will_both_namespaces_for_the_purpose_of_creation()
+        {
+            const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(primary);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(secondary);
+
+            var strategy = new FailOverNamespacePartitioningStrategy(settings);
+
+            Assert.AreEqual(2, strategy.GetNamespaces("endpoint1", Purpose.Creating).Count());
         }
 
         [Test]
@@ -40,7 +72,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var strategy = new FailOverNamespacePartitioningStrategy(settings);
 
 
-            Assert.AreEqual(new NamespaceInfo(primary, NamespaceMode.Active), strategy.GetNamespaceInfo("endpoint1").First());
+            Assert.AreEqual(new NamespaceInfo(primary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", Purpose.Creating).First());
         }
 
         [Test]
@@ -59,7 +91,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             };
 
 
-            Assert.AreEqual(new NamespaceInfo(secondary, NamespaceMode.Passive), strategy.GetNamespaceInfo("endpoint1").First());
+            Assert.AreEqual(new NamespaceInfo(secondary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", Purpose.Sending).First());
         }
 
         [Test]

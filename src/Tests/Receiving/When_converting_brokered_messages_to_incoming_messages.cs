@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_converting_brokered_messages_to_incoming_messages
     {
         [Test]
-        public async Task Should_copy_the_message_id()
+        public void Should_copy_the_message_id()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -32,7 +32,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_copy_properties_into_the_headers()
+        public void Should_copy_properties_into_the_headers()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -48,7 +48,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_extract_body_as_byte_array_by_default()
+        public void Should_extract_body_as_byte_array_by_default()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -68,7 +68,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_extract_body_as_stream_when_configured()
+        public void Should_extract_body_as_stream_when_configured()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -94,7 +94,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual("Whatever", body);
         }
 
-        public async Task Should_complete_replyto_address_if_not_present_in_headers()
+        public void Should_complete_replyto_address_if_not_present_in_headers()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -113,7 +113,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual("MyQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
         }
 
-        public async Task Should_complete_correlationid_if_not_present_in_headers()
+        public void Should_complete_correlationid_if_not_present_in_headers()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -132,7 +132,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual("SomeId", incomingMessage.Headers[Headers.CorrelationId]);
         }
 
-        public async Task Should_complete_timetobereceived_if_not_present_in_headers()
+        public void Should_complete_timetobereceived_if_not_present_in_headers()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());

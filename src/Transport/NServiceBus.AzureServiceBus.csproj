@@ -80,6 +80,7 @@
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualizationStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\Purpose.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\ShardedNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioningStrategy.cs" />

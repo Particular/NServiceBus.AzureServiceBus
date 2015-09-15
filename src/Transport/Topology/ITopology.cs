@@ -30,12 +30,11 @@
         /// <summary>
         /// Creates the topology definition, called when settings are set
         /// </summary>
-        void Determine();
+        TopologyDefinition Determine(Purpose purpose);
 
         //void Subscribe(Type eventtype) // probably need this separatly as subscriptions can be added at runtime
         //void Unsubscribe(Type eventtype) // probably need this separatly as subscriptions can be removed at runtime
 
-        TopologyDefinition Definition { get; }
     }
 
     // responsible for creating (part of) the topology
@@ -68,15 +67,8 @@
     public class TopologyDefinition
     {
         public NamespaceInfo[] Namespaces { get; set; }
-        public EntityInfo[] SharedEntities { get; set; }
-        public EntityInfo[] LocalEntities { get; set; }
-
+        public EntityInfo[] Entities { get; set; }
         public EntityRelationShipInfo[] Relationships { get; set; }
-
-        public EntityInfo[] EntitiesForReceiving { get; set; }
-        public EntityInfo[] EntitiesForSubscribing { get; set; }
-        public EntityInfo[] EntitiesForSending { get; set; }
-        public EntityInfo[] EntitiesForPublishing { get; set; }
     }
 
     public class NamespaceInfo
@@ -93,7 +85,7 @@
 
         protected bool Equals(NamespaceInfo other)
         {
-            return string.Equals(ConnectionString, other.ConnectionString) && Mode == other.Mode;
+            return string.Equals(ConnectionString, other.ConnectionString); // && Mode == other.Mode; // namespaces can switch mode, so should not be included in the equality check
         }
 
         public override bool Equals(object obj)
@@ -117,7 +109,7 @@
         {
             unchecked
             {
-                return ((ConnectionString != null ? ConnectionString.GetHashCode() : 0) * 397) ^ (int)Mode;
+                return ((ConnectionString != null ? ConnectionString.GetHashCode() : 0) * 397); // ^ (int)Mode; // namespaces can switch mode, so should not be included in the equality check
             }
         }
 
@@ -255,7 +247,7 @@
             container.Configure(validationStrategyType, DependencyLifecycle.InstancePerCall);
         }
 
-        public void Determine()
+        public TopologyDefinition Determine(Purpose purpose)
         {
             // computes the topology
 
@@ -264,29 +256,23 @@
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
             var sanitazationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
 
-            Definition = new TopologyDefinition()
+            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), purpose).ToArray();
+
+            var inputqueuepath = sanitazationStrategy.Sanitize(endpointName.ToString(), Addressing.EntityType.Queue);
+            var inputqueues = namespaces.Select(n => new EntityInfo { Path = inputqueuepath, Type = EntityType.Queue, Namespace = n }).ToArray();
+
+            var topicpath = sanitazationStrategy.Sanitize(endpointName + ".events", Addressing.EntityType.Topic);
+            var topics = namespaces.Select(n => new EntityInfo { Path = topicpath, Type = EntityType.Topic, Namespace = n }).ToArray();
+
+            var entities = inputqueues.Concat(topics).ToArray();
+
+            return new TopologyDefinition()
             {
-                Namespaces = partitioningStrategy.GetNamespaceInfo(endpointName.ToString()).ToArray(),
-                LocalEntities = new[]
-                {
-                    // input queue
-                    new EntityInfo
-                    {
-                        // todo: what about namespace here?
-                        Path = sanitazationStrategy.Sanitize(endpointName.ToString(), Addressing.EntityType.Queue),
-                        Type = EntityType.Queue
-                    },
-                    // locall events topic
-                    new EntityInfo
-                    {
-                        Path = sanitazationStrategy.Sanitize(endpointName + ".events", Addressing.EntityType.Topic),
-                        Type = EntityType.Topic
-                    }
-                }
+                Namespaces = namespaces,
+                Entities = entities
             };
         }
 
-        public TopologyDefinition Definition { get; private set; }
     }
 
     public class OriginalAddressingStrategy : IAddressingStrategy

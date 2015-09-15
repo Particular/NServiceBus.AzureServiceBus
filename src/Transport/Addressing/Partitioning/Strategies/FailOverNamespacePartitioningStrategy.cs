@@ -27,12 +27,22 @@
 
         public FailOverMode Mode { get; set; }
 
-        public IEnumerable<NamespaceInfo> GetNamespaceInfo(string endpointName)
+        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, Purpose purpose)
         {
-            yield return Mode == FailOverMode.Primary 
-                ? new NamespaceInfo(_connectionstrings.First(), NamespaceMode.Active) 
-                : new NamespaceInfo(_connectionstrings.Last(), NamespaceMode.Passive);
+            if(purpose == Purpose.Sending)
+            {
+                yield return Mode == FailOverMode.Primary 
+                ? new NamespaceInfo(_connectionstrings.First(), NamespaceMode.Active)
+                : new NamespaceInfo(_connectionstrings.Last(), NamespaceMode.Active);
+            }
+
+            if (purpose == Purpose.Creating || purpose == Purpose.Receiving)
+            {
+                yield return new NamespaceInfo(_connectionstrings.First(), Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
+                yield return new NamespaceInfo(_connectionstrings.Last(), Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
+            }
         }
+
     }
 
     public enum FailOverMode

@@ -11,7 +11,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_using_replicated_strategy_on_multiple_namespaces
     {
         [Test]
-        public void Replicated_partitioning_strategy_will_return_all_connectionstrings()
+        public void Replicated_partitioning_strategy_will_return_all_connectionstrings_for_purpose_of_sending()
         {
             const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
@@ -25,7 +25,43 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new ReplicatedNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(3, strategy.GetNamespaceInfo("endpoint1").Count());
+            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", Purpose.Sending).Count());
+        }
+
+        [Test]
+        public void Replicated_partitioning_strategy_will_return_all_connectionstrings_for_purpose_of_creating()
+        {
+            const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            const string tertiary = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(primary);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(secondary);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
+
+            var strategy = new ReplicatedNamespacePartitioningStrategy(settings);
+
+            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", Purpose.Creating).Count());
+        }
+
+        [Test]
+        public void Replicated_partitioning_strategy_will_return_all_connectionstrings_for_purpose_of_receiving()
+        {
+            const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            const string tertiary = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(primary);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(secondary);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
+
+            var strategy = new ReplicatedNamespacePartitioningStrategy(settings);
+
+            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", Purpose.Receiving).Count());
         }
 
         [Test]

@@ -11,7 +11,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_using_single_namespace_strategy
     {
         [Test]
-        public void Single_partitioning_strategy_will_return_a_single_connectionstring()
+        public void Single_partitioning_strategy_will_return_a_single_connectionstring_for_the_purpose_of_creating()
         {
             const string connectionstring = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
 
@@ -21,7 +21,35 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new SingleNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(1, strategy.GetNamespaceInfo("endpoint1").Count());
+            Assert.AreEqual(1, strategy.GetNamespaces("endpoint1", Purpose.Creating).Count());
+        }
+
+        [Test]
+        public void Single_partitioning_strategy_will_return_a_single_connectionstring_for_the_purpose_of_receiving()
+        {
+            const string connectionstring = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+
+            var strategy = new SingleNamespacePartitioningStrategy(settings);
+
+            Assert.AreEqual(1, strategy.GetNamespaces("endpoint1", Purpose.Receiving).Count());
+        }
+
+        [Test]
+        public void Single_partitioning_strategy_will_return_a_single_connectionstring_for_the_purpose_of_sending()
+        {
+            const string connectionstring = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+
+            var strategy = new SingleNamespacePartitioningStrategy(settings);
+
+            Assert.AreEqual(1, strategy.GetNamespaces("endpoint1", Purpose.Sending).Count());
         }
 
         [Test]
@@ -35,7 +63,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new SingleNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(new NamespaceInfo(connectionstring, NamespaceMode.Active), strategy.GetNamespaceInfo("endpoint1").First());
+            Assert.AreEqual(new NamespaceInfo(connectionstring, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", Purpose.Creating).First());
         }
 
         [Test]

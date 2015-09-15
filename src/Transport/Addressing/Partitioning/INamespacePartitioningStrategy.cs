@@ -4,6 +4,6 @@
 
     public interface INamespacePartitioningStrategy
     {
-        IEnumerable<NamespaceInfo> GetNamespaceInfo(string endpointName);
+        IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, Purpose purpose);
     }
 }

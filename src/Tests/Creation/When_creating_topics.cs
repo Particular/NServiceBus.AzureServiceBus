@@ -370,7 +370,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Should_throw_for_MessagingException_that_is_not_transient()
+        public void Should_throw_for_MessagingException_that_is_not_transient()
         {
             var namespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => namespaceManager.TopicExistsAsync(A<string>.Ignored)).Throws(new MessagingException("boom", false, new Exception("wrapped")));
