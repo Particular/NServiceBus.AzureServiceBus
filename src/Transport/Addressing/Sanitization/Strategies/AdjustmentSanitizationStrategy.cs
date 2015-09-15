@@ -11,19 +11,19 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _validationStrategy = validationStrategy;
         }
 
-        public string Sanitize(string endpointname, EntityType type)
+        public string Sanitize(string endpointName, EntityType entityType)
         {
             // remove invalid characters
             var rgx = new Regex(@"[^a-zA-Z0-9\-\._\/]");
-            endpointname = rgx.Replace(endpointname, "");
+            endpointName = rgx.Replace(endpointName, "");
 
-            if (!_validationStrategy.IsValid(endpointname, type))
+            if (!_validationStrategy.IsValid(endpointName, entityType))
             {
                 // turn long name into a guid
-                endpointname = new DeterministicGuidBuilder().Build(endpointname).ToString();
+                endpointName = new DeterministicGuidBuilder().Build(endpointName).ToString();
             }
 
-            return endpointname;
+            return endpointName;
         }
     }
 }

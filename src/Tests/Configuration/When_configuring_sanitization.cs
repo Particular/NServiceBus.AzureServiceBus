@@ -23,7 +23,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         class MySanitizationStrategy : ISanitizationStrategy
         {
-            public string Sanitize(string endpointname, EntityType type)
+            public string Sanitize(string endpointName, EntityType entityType)
             {
                 throw new NotImplementedException();//not relevant for test
             }

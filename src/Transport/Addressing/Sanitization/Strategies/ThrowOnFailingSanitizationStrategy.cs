@@ -9,14 +9,14 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _validationStrategy = validationStrategy;
         }
 
-        public string Sanitize(string endpointname, EntityType type)
+        public string Sanitize(string endpointName, EntityType entityType)
         {
-            if (!_validationStrategy.IsValid(endpointname, type))
+            if (!_validationStrategy.IsValid(endpointName, entityType))
             {
                 throw new EndpointValidationException("The endpoint name {0} cannot be used as a name for azure servicebus entities");
             }
 
-            return endpointname;
+            return endpointName;
         }
     }
 }

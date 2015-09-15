@@ -1,7 +1,6 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.Addressing;
@@ -52,10 +51,10 @@
     // Operational aspects of running on top of the topology
     // Takes care of the topology and it's specific state at runtime
     // Examples
-        // Decissions of currently active namespace go here f.e.
-        // So is the list of notifiers etc...
+    // Decissions of currently active namespace go here f.e.
+    // So is the list of notifiers etc...
     // etc..
-    
+
     public interface IOperateTopology
     {
         Task Start();
@@ -82,9 +81,55 @@
 
     public class NamespaceInfo
     {
+        public NamespaceInfo(string connectionString, NamespaceMode mode)
+        {
+            ConnectionString = connectionString;
+            Mode = mode;
+        }
+
         public string ConnectionString { get; set; }
 
         public NamespaceMode Mode { get; set; }
+
+        protected bool Equals(NamespaceInfo other)
+        {
+            return string.Equals(ConnectionString, other.ConnectionString) && Mode == other.Mode;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+            return Equals((NamespaceInfo)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((ConnectionString != null ? ConnectionString.GetHashCode() : 0) * 397) ^ (int)Mode;
+            }
+        }
+
+        public static bool operator ==(NamespaceInfo left, NamespaceInfo right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(NamespaceInfo left, NamespaceInfo right)
+        {
+            return !(left == right);
+        }
     }
 
     public enum NamespaceMode
@@ -100,6 +145,49 @@
         public EntityType Type { get; set; }
 
         public NamespaceInfo Namespace { get; set; }
+
+        protected bool Equals(EntityInfo other)
+        {
+            return string.Equals(Path, other.Path) && Type == other.Type && Equals(Namespace, other.Namespace);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+            return Equals((EntityInfo) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Path != null ? Path.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (int) Type;
+                hashCode = (hashCode*397) ^ (Namespace != null ? Namespace.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(EntityInfo left, EntityInfo right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(EntityInfo left, EntityInfo right)
+        {
+            return !Equals(left, right);
+        }
     }
 
     public enum EntityType
@@ -148,7 +236,7 @@
         public void InitializeContainer()
         {
             // configures container
-            var addressingStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Strategy);
+            var addressingStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Strategy);
             container.Configure(addressingStrategyType, DependencyLifecycle.InstancePerCall);
 
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
@@ -171,25 +259,30 @@
         {
             // computes the topology
 
-            var endpointName = settings.Get<string>("EndpointName");
+            var endpointName = settings.Get<EndpointName>();
 
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
-
-            var namespaces = new List<NamespaceInfo>();
-                
-            var connectionstrings = partitioningStrategy.GetConnectionStrings(endpointName);
-
-            foreach (var connectionstring in connectionstrings)
-            {
-                namespaces.Add(new NamespaceInfo()
-                {
-                    ConnectionString = connectionstring
-                });
-            }
+            var sanitazationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
 
             Definition = new TopologyDefinition()
             {
-                Namespaces = namespaces.ToArray()
+                Namespaces = partitioningStrategy.GetNamespaceInfo(endpointName.ToString()).ToArray(),
+                LocalEntities = new[]
+                {
+                    // input queue
+                    new EntityInfo
+                    {
+                        // todo: what about namespace here?
+                        Path = sanitazationStrategy.Sanitize(endpointName.ToString(), Addressing.EntityType.Queue),
+                        Type = EntityType.Queue
+                    },
+                    // locall events topic
+                    new EntityInfo
+                    {
+                        Path = sanitazationStrategy.Sanitize(endpointName + ".events", Addressing.EntityType.Topic),
+                        Type = EntityType.Topic
+                    }
+                }
             };
         }
 
