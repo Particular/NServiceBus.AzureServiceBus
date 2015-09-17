@@ -113,7 +113,7 @@
     <Compile Include="Connectivity\MessageReceiverCreator.cs" />
     <Compile Include="Connectivity\MessageSenderAdapter.cs" />
     <Compile Include="Connectivity\MessageSenderCreator.cs" />
-    <Compile Include="Creation\AzureServiceBusSubsciptionCreator.cs" />
+    <Compile Include="Creation\AzureServiceBusSubscriptionCreator.cs" />
     <Compile Include="Creation\ICreateAzureServiceBusSubsciption.cs" />
     <Compile Include="Creation\MemberComparison.cs" />
     <Compile Include="Creation\ReadOnlySettingsExtensions.cs" />

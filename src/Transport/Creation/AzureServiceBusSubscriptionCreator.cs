@@ -2,21 +2,20 @@
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Runtime.ExceptionServices;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Logging;
     using NServiceBus.Settings;
 
-    class AzureServiceBusSubsciptionCreator : ICreateAzureServiceBusSubsciption
+    class AzureServiceBusSubscriptionCreator : ICreateAzureServiceBusSubsciption
     {
         ReadOnlySettings settings;
         Func<string, string, ReadOnlySettings, SubscriptionDescription> subscriptionDescriptionFactory;
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
-        ILog logger = LogManager.GetLogger<AzureServiceBusSubsciptionCreator>();
+        ILog logger = LogManager.GetLogger<AzureServiceBusSubscriptionCreator>();
 
-        public AzureServiceBusSubsciptionCreator(ReadOnlySettings settings)
+        public AzureServiceBusSubscriptionCreator(ReadOnlySettings settings)
         {
             this.settings = settings;
 
@@ -39,17 +38,15 @@
             }
         }
 
-        public async Task<SubscriptionDescription> CreateAsync(string topicPath, string subsciptionName, INamespaceManager namespaceManager)
+        public async Task<SubscriptionDescription> CreateAsync(string topicPath, string subscriptionName, INamespaceManager namespaceManager)
         {
-            var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subsciptionName, settings);
-
-            ExceptionDispatchInfo timeoutExceptionCaught = null;
+            var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
 
             try
             {
                 if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 {
-                    if (!await ExistsAsync(topicPath, subsciptionName, namespaceManager))
+                    if (!await ExistsAsync(topicPath, subscriptionName, namespaceManager))
                     {
                         await namespaceManager.CreateSubscriptionAsync(subscriptionDescription);
                         logger.InfoFormat("Subscription '{0}' created", subscriptionDescription.Name);
@@ -78,11 +75,17 @@
                 // the subscription already exists or another node beat us to it, which is ok
                 logger.InfoFormat("Subscription '{0}' already exists, another node probably beat us to it", subscriptionDescription.Name);
             }
-            catch (TimeoutException timeoutException)
+            catch (TimeoutException)
             {
-                logger.InfoFormat("Timeout occured on subscription creation for topic '{0}' subscription name '{1}' going to validate if it doesn't exist", subscriptionDescription.TopicPath, subscriptionDescription.Name);
+                logger.InfoFormat("Timeout occurred on subscription creation for topic '{0}' subscription name '{1}' going to validate if it doesn't exist", subscriptionDescription.TopicPath, subscriptionDescription.Name);
 
-                timeoutExceptionCaught = ExceptionDispatchInfo.Capture(timeoutException);
+                // there is a chance that the timeout occured, but the topic was still created, check again
+                if (!await ExistsAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name, namespaceManager, removeCacheEntry: true))
+                {
+                    throw;
+                }
+
+                logger.InfoFormat("Looks like topic '{0}' exists anyway", subscriptionDescription.Name);
             }
             catch (MessagingException ex)
             {
@@ -96,17 +99,6 @@
                 }
 
                 logger.Info(loggedMessage, ex);
-            }
-
-            if (timeoutExceptionCaught != null)
-            {
-                // there is a chance that the timeout occured, but the topic was still created, check again
-                if (!await ExistsAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name, namespaceManager, removeCacheEntry: true))
-                {
-                    timeoutExceptionCaught.Throw();
-                }
-
-                logger.InfoFormat("Looks like topic '{0}' exists anyway", subscriptionDescription.Name);
             }
 
             return subscriptionDescription;
@@ -127,11 +119,11 @@
 
             var exists = await rememberExistence.GetOrAdd(key, async notFoundKey =>
             {
-                logger.InfoFormat("Checking namespace for existance of subscription '{0}' for the topic '{1}'", subscriptionName, topicPath);
+                logger.InfoFormat("Checking namespace for existence of subscription '{0}' for the topic '{1}'", subscriptionName, topicPath);
                 return await namespaceClient.SubscriptionExistsAsync(topicPath, notFoundKey);
             });
 
-            logger.InfoFormat("Determined, from cache, that the subsciption '{0}' {1}", subscriptionName, exists ? "exists" : "does not exist");
+            logger.InfoFormat("Determined, from cache, that the subscription '{0}' {1}", subscriptionName, exists ? "exists" : "does not exist");
 
             return exists;
         }

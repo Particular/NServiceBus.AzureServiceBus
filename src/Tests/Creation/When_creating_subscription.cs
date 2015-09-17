@@ -43,7 +43,7 @@
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteSubsciptionAsync(topicPath, subsciptionName);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             await creator.CreateAsync(topicPath, subsciptionName, namespaceManager);
 
@@ -56,7 +56,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
             const string subsciptionName = "sub1";
             var subscriptionDescription = await creator.CreateAsync(topicPath, subsciptionName, namespaceManager);
 
@@ -91,7 +91,7 @@
 
             extensions.Topology().Resources().Subscriptions().DescriptionFactory((_topicPath, subName, _settings) => subscriptionDescription);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             var foundDescription = await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
 
@@ -112,7 +112,7 @@
             var autoDeleteTime = TimeSpan.FromDays(1);
             extensions.Topology().Resources().Subscriptions().AutoDeleteOnIdle(autoDeleteTime);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub3";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -134,7 +134,7 @@
             var timeToLive = TimeSpan.FromDays(10);
             extensions.Topology().Resources().Subscriptions().DefaultMessageTimeToLive(timeToLive);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub4";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -156,7 +156,7 @@
 
             extensions.Topology().Resources().Subscriptions().EnableBatchedOperations(false);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub5";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -178,7 +178,7 @@
 
             extensions.Topology().Resources().Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub6";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -200,7 +200,7 @@
 
             extensions.Topology().Resources().Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub7";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -223,7 +223,7 @@
             var lockDuration = TimeSpan.FromMinutes(2);
             extensions.Topology().Resources().Subscriptions().LockDuration(lockDuration);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub8";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -246,7 +246,7 @@
             const int deliveryCount = 10;
             extensions.Topology().Resources().Subscriptions().MaxDeliveryCount(deliveryCount);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub9";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -268,7 +268,7 @@
 
             extensions.Topology().Resources().Subscriptions().RequiresSession(true);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub10";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -294,7 +294,7 @@
 
             extensions.Topology().Resources().Subscriptions().ForwardTo(topicToForwardTo.Path);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub11";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -321,7 +321,7 @@
 
             extensions.Topology().Resources().Subscriptions().ForwardTo(subName => subName == "sub12", topicToForwardTo.Path);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub12";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -348,7 +348,7 @@
 
             extensions.Topology().Resources().Subscriptions().ForwardDeadLetteredMessagesTo(topicToForwardTo.Path);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub13";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
@@ -375,7 +375,7 @@
 
             extensions.Topology().Resources().Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "sub14", topicToForwardTo.Path);
 
-            var creator = new AzureServiceBusSubsciptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub14";
             await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);

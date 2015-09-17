@@ -4,7 +4,6 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using System.Threading.Tasks;
     using NServiceBus.DelayedDelivery;
     using NServiceBus.DeliveryConstraints;
     using NServiceBus.Settings;
