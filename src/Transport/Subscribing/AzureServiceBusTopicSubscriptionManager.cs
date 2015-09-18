@@ -1,4 +1,33 @@
-//TODO: needs to be redone, delegating to topology
+namespace NServiceBus.AzureServiceBus
+{
+    using System;
+    using Extensibility;
+    using Transports;
+
+    class AzureServiceBusSubscriptionManager : IManageSubscriptions
+    {
+        readonly ITopology topology; // responsible for providing the metadata about the subscription (what in case of EH?)
+        readonly IOperateTopology topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
+
+        public AzureServiceBusSubscriptionManager(ITopology topology, IOperateTopology topologyOperator)
+        {
+            this.topology = topology;
+            this.topologyOperator = topologyOperator;
+        }
+
+        public void Subscribe(Type eventType, ContextBag context)
+        {
+            var subscriptions = topology.Subscribe(eventType);
+            topologyOperator.Start(subscriptions);
+        }
+
+        public void Unsubscribe(Type eventType, ContextBag context)
+        {
+            var subscriptions = topology.Unsubscribe(eventType);
+            topologyOperator.Stop(subscriptions);
+        }
+    }
+}
 
 //namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 //{

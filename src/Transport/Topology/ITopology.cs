@@ -1,11 +1,12 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.ObjectBuilder.Common;
-    using NServiceBus.Settings;
+    using Addressing;
+    using ObjectBuilder.Common;
+    using Settings;
 
     // a topology is responsible to determine what the underlying physical topology in asb looks like
     // This includes, which namespaces are to be used
@@ -32,8 +33,8 @@
         /// </summary>
         TopologyDefinition Determine(Purpose purpose);
 
-        //void Subscribe(Type eventtype) // probably need this separatly as subscriptions can be added at runtime
-        //void Unsubscribe(Type eventtype) // probably need this separatly as subscriptions can be removed at runtime
+        IEnumerable<SubscriptionInfo> Subscribe(Type eventtype);
+        IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype);
 
     }
 
@@ -56,9 +57,8 @@
 
     public interface IOperateTopology
     {
-        Task Start();
-
-        Task Stop();
+        Task Start(IEnumerable<EntityInfo> subscriptions);
+        Task Stop(IEnumerable<EntityInfo> subscriptions);
     }
 
     // the classes below will hold the metadata about the topology, 
@@ -66,9 +66,9 @@
 
     public class TopologyDefinition
     {
-        public NamespaceInfo[] Namespaces { get; set; }
-        public EntityInfo[] Entities { get; set; }
-        public EntityRelationShipInfo[] Relationships { get; set; }
+        public IEnumerable<NamespaceInfo> Namespaces { get; set; }
+        public IEnumerable<EntityInfo> Entities { get; set; }
+        public IEnumerable<EntityRelationShipInfo> Relationships { get; set; }
     }
 
     public class NamespaceInfo
@@ -182,6 +182,27 @@
         }
     }
 
+    public class SubscriptionInfo : EntityInfo
+    {
+        public ISubscriptionFilter Filter { get; set; }
+    }
+
+    public interface ISubscriptionFilter
+    {
+        /// <summary>
+        /// serialized the filter into native format, so that it can be injected into the broker (subscription case)
+        /// </summary>
+        /// <returns></returns>
+        object Serialize();
+
+        /// <summary>
+        /// executes the filter in memory, if it is impossible to inject it into the broker (eventhub case)
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        bool Execute(object message);
+    }
+
     public enum EntityType
     {
         Queue,
@@ -217,7 +238,6 @@
         public void InitializeSettings()
         {
             // ensures settings are present/correct
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Strategy, typeof(OriginalAddressingStrategy));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(FlatCompositionStrategy));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(DiscriminatorBasedIndividualizationStrategy));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioningStrategy));
@@ -228,9 +248,6 @@
         public void InitializeContainer()
         {
             // configures container
-            var addressingStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Strategy);
-            container.Configure(addressingStrategyType, DependencyLifecycle.InstancePerCall);
-
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
             container.Configure(compositionStrategyType, DependencyLifecycle.InstancePerCall);
 
@@ -273,18 +290,15 @@
             };
         }
 
-    }
-
-    public class OriginalAddressingStrategy : IAddressingStrategy
-    {
-        public EntityInfo[] GetEntitiesForPublishing(Type eventType)
+        public IEnumerable<SubscriptionInfo> Subscribe(Type eventtype)
         {
             throw new NotImplementedException();
         }
 
-        public EntityInfo[] GetEntitiesForSending(string destination)
+        public IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype)
         {
             throw new NotImplementedException();
         }
     }
+    
 }

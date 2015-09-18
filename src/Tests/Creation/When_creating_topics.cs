@@ -65,7 +65,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsFalse(topicDescription.RequiresDuplicateDetection);
             Assert.IsFalse(topicDescription.SupportOrdering);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
 
@@ -91,7 +91,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(await namespaceManager.TopicExistsAsync(topicPath));
             Assert.AreEqual(topicDescriptionToUse, description);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         [Test]
@@ -113,7 +113,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.AreEqual(autoDeleteTime, foundTopic.AutoDeleteOnIdle);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         [Test]
@@ -135,7 +135,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.AreEqual(timeToLive, foundTopic.DefaultMessageTimeToLive);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         [Test]
@@ -157,7 +157,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.AreEqual(duplicateDetectionTime, foundTopic.DuplicateDetectionHistoryTimeWindow);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         [Test]
@@ -178,7 +178,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.IsFalse(foundTopic.EnableBatchedOperations);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         [Test]
@@ -199,7 +199,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.IsTrue(foundTopic.EnableFilteringMessagesBeforePublishing);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         [Test]
@@ -224,7 +224,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.IsTrue(foundTopic.EnablePartitioning);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         [Test]
@@ -245,7 +245,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.AreEqual(4096, foundTopic.MaxSizeInMegabytes);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         [Test]
@@ -266,7 +266,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.IsTrue(foundTopic.RequiresDuplicateDetection);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         [Test]
@@ -287,7 +287,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.IsTrue(foundTopic.SupportOrdering);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         [Test]
@@ -312,7 +312,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsFalse(foundTopic.RequiresDuplicateDetection);
             Assert.IsFalse(foundTopic.SupportOrdering);
 
-            cleanup_action = () => namespaceManager.DeleteTopicAsync(topicPath);
+            cleanup_action = async () => await namespaceManager.DeleteTopicAsync(topicPath);
         }
 
         

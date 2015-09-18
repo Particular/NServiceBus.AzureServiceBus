@@ -3,9 +3,9 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Logging;
-    using NServiceBus.Settings;
-    using NServiceBus.Transports;
+    using Logging;
+    using Settings;
+    using Transports;
 
     class MessageReceiverNotifier : INotifyIncomingMessages
     {
@@ -89,4 +89,5 @@ namespace NServiceBus.AzureServiceBus
             await internalReceiver.CloseAsync();
         }
     }
+
 }

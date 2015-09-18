@@ -72,8 +72,6 @@ namespace NServiceBus.AzureServiceBus
 
             public static class Addressing
             {
-                public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Strategy";
-
                 public static class Partitioning
                 {
                     public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Partitioning.Strategy";

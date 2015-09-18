@@ -99,7 +99,6 @@
     <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiApprover.cs" />
     <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiGenerator.cs" />
     <Compile Include="Configuration\When_configuring.cs" />
-    <Compile Include="Configuration\When_configuring_addressing.cs" />
     <Compile Include="Configuration\When_configuring_composition.cs" />
     <Compile Include="Configuration\When_configuring_connectivity.cs" />
     <Compile Include="Configuration\When_configuring_individualization.cs" />

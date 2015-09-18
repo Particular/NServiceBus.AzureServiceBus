@@ -1,18 +1,9 @@
 ﻿namespace NServiceBus
 {
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Configuration.AdvanceExtensibility;
 
     public static class AzureServiceBusAddressingExtensions
     {
-        public static AzureServiceBusAddressingSettings UseStrategy<T>(this AzureServiceBusAddressingSettings addressingSettings) where T : IAddressingStrategy
-        {
-            addressingSettings.GetSettings().Set(WellKnownConfigurationKeys.Topology.Addressing.Strategy, typeof(T));
-
-            return addressingSettings;
-        }
-
         public static AzureServiceBusNamespacePartitioningSettings NamespacePartitioning(this AzureServiceBusAddressingSettings addressingSettings)
         {
             return new AzureServiceBusNamespacePartitioningSettings(addressingSettings.GetSettings());
