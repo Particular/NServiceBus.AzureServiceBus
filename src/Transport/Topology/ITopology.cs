@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using Addressing;
@@ -229,6 +230,8 @@
         readonly SettingsHolder settings;
         readonly IContainer container;
 
+        readonly Dictionary<Type, List<SubscriptionInfo>> subscriptions = new Dictionary<Type, List<SubscriptionInfo>>();
+
         public EachEndpointHasQueueAndTopic(SettingsHolder settings, IContainer container)
         {
             this.settings = settings;
@@ -292,12 +295,28 @@
 
         public IEnumerable<SubscriptionInfo> Subscribe(Type eventtype)
         {
-            throw new NotImplementedException();
+            if (!subscriptions.ContainsKey(eventtype))
+            {
+                subscriptions[eventtype] = new List<SubscriptionInfo>();
+            }
+
+            return (subscriptions[eventtype]);
         }
 
         public IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype)
         {
-            throw new NotImplementedException();
+            List<SubscriptionInfo> result;
+
+            if (!subscriptions.TryGetValue(eventtype, out result))
+            {
+                result = new List<SubscriptionInfo>();
+            }
+            else
+            {
+                subscriptions.Remove(eventtype);
+            }
+
+            return result;
         }
     }
     
