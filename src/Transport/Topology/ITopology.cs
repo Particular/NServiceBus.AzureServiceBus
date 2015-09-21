@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -33,7 +34,7 @@
         /// </summary>
         TopologyDefinition Determine(Purpose purpose);
 
-        IEnumerable<SubscriptionInfo> Subscribe(Type eventtype);
+        IEnumerable<SubscriptionInfo> Subscribe(Type eventType);
         IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype);
 
     }
@@ -51,7 +52,7 @@
     // Operational aspects of running on top of the topology
     // Takes care of the topology and it's specific state at runtime
     // Examples
-    // Decissions of currently active namespace go here f.e.
+    // Decisions of currently active namespace go here f.e.
     // So is the list of notifiers etc...
     // etc..
 
@@ -203,6 +204,27 @@
         bool Execute(object message);
     }
 
+    class SimpleSubscriptionFilter : ISubscriptionFilter
+    {
+        private Type eventType;
+
+        public SimpleSubscriptionFilter(Type eventType)
+        {
+            this.eventType = eventType;
+        }
+
+        public object Serialize()
+        {
+            return string.Format("[{0}] LIKE '{1}%' OR [{0}] LIKE '%{1}%' OR [{0}] LIKE '%{1}' OR [{0}] = '{1}'", Headers.EnclosedMessageTypes, eventType.FullName);
+        }
+
+        public bool Execute(object message)
+        {
+            throw new InvalidOperationException("Execute is intended for EventHubs");
+        }
+    }
+
+
     public enum EntityType
     {
         Queue,
@@ -229,7 +251,7 @@
         readonly SettingsHolder settings;
         readonly IContainer container;
 
-        readonly Dictionary<Type, List<SubscriptionInfo>> subscriptions = new Dictionary<Type, List<SubscriptionInfo>>();
+        readonly ConcurrentDictionary<Type, List<SubscriptionInfo>> subscriptions = new ConcurrentDictionary<Type, List<SubscriptionInfo>>();
 
         public EachEndpointHasQueueAndTopic(SettingsHolder settings, IContainer container)
         {
@@ -275,14 +297,14 @@
             var endpointName = settings.Get<EndpointName>();
 
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
-            var sanitazationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
-
+            var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
+            
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), purpose).ToArray();
 
-            var inputQueuePath = sanitazationStrategy.Sanitize(endpointName.ToString(), Addressing.EntityType.Queue);
+            var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), Addressing.EntityType.Queue);
             var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
 
-            var topicPath = sanitazationStrategy.Sanitize(endpointName + ".events", Addressing.EntityType.Topic);
+            var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", Addressing.EntityType.Topic);
             var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
 
             var entities = inputQueues.Concat(topics).ToArray();
@@ -294,14 +316,27 @@
             };
         }
 
-        public IEnumerable<SubscriptionInfo> Subscribe(Type eventtype)
+        public IEnumerable<SubscriptionInfo> Subscribe(Type eventType)
         {
-            if (!subscriptions.ContainsKey(eventtype))
+            if (!subscriptions.ContainsKey(eventType))
             {
-                subscriptions[eventtype] = new List<SubscriptionInfo>();
+                var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
+                var endpointName = settings.Get<EndpointName>();
+                var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), Purpose.Creating).ToArray();
+                var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
+                var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, Addressing.EntityType.Subscription);
+
+                subscriptions[eventType] =
+                    namespaces.Select(ns => new SubscriptionInfo
+                    {
+                        Namespace = ns,
+                        Type = EntityType.Subscription,
+                        Path = subscriptionPath,
+                        Filter = new SimpleSubscriptionFilter(eventType)
+                    }).ToList();
             }
 
-            return (subscriptions[eventtype]);
+            return (subscriptions[eventType]);
         }
 
         public IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype)
@@ -314,7 +349,8 @@
             }
             else
             {
-                subscriptions.Remove(eventtype);
+                List<SubscriptionInfo> removedItem;
+                subscriptions.TryRemove(eventtype, out removedItem);
             }
 
             return result;
