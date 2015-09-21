@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using Addressing;
@@ -240,6 +239,8 @@
 
         public void InitializeSettings()
         {
+            // apply all configuration defaults
+            new DefaultConfigurationValues().Apply(settings);
             // ensures settings are present/correct
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(FlatCompositionStrategy));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(DiscriminatorBasedIndividualizationStrategy));
@@ -278,13 +279,13 @@
 
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), purpose).ToArray();
 
-            var inputqueuepath = sanitazationStrategy.Sanitize(endpointName.ToString(), Addressing.EntityType.Queue);
-            var inputqueues = namespaces.Select(n => new EntityInfo { Path = inputqueuepath, Type = EntityType.Queue, Namespace = n }).ToArray();
+            var inputQueuePath = sanitazationStrategy.Sanitize(endpointName.ToString(), Addressing.EntityType.Queue);
+            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
 
-            var topicpath = sanitazationStrategy.Sanitize(endpointName + ".events", Addressing.EntityType.Topic);
-            var topics = namespaces.Select(n => new EntityInfo { Path = topicpath, Type = EntityType.Topic, Namespace = n }).ToArray();
+            var topicPath = sanitazationStrategy.Sanitize(endpointName + ".events", Addressing.EntityType.Topic);
+            var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
 
-            var entities = inputqueues.Concat(topics).ToArray();
+            var entities = inputQueues.Concat(topics).ToArray();
 
             return new TopologyDefinition()
             {

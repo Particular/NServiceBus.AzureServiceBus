@@ -37,7 +37,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 var rightEnumerator = (right as IEnumerable).GetEnumerator();
                 rightEnumerator.Reset();
-                foreach (object leftItem in left as IEnumerable)
+                foreach (var leftItem in left as IEnumerable)
                 {
                     // unequal amount of items
                     if (!rightEnumerator.MoveNext())
@@ -52,19 +52,19 @@ namespace NServiceBus.AzureServiceBus
             else
             {
                 // compare each property
-                foreach (PropertyInfo info in type.GetProperties(
+                foreach (var info in type.GetProperties(
                     BindingFlags.Public |
                     BindingFlags.NonPublic |
                     BindingFlags.Instance |
                     BindingFlags.GetProperty))
                 {
-                    // TODO: need to special-case indexable properties
+                    // TODO: need to special-case index-able properties
                     if (!AllMembersAreEqual(info.GetValue(left, null), info.GetValue(right, null)))
                         return false;
                 }
 
                 // compare each field
-                foreach (FieldInfo info in type.GetFields(
+                foreach (var info in type.GetFields(
                     BindingFlags.GetField |
                     BindingFlags.NonPublic |
                     BindingFlags.Public |

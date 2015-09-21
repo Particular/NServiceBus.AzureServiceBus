@@ -2,12 +2,16 @@ namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System;
     using System.Text.RegularExpressions;
+    using NServiceBus.Settings;
 
     public class EntityNameValidationRules : IValidationStrategy
     {
-        const int QueuePathMaxLength = 260;
-        const int TopicPathMaxLength = 260;
-        const int SubscriptionPathMaxLength = 50;
+        readonly ReadOnlySettings settings;
+
+        public EntityNameValidationRules(ReadOnlySettings settings)
+        {
+            this.settings = settings;
+        }
 
         public bool IsValid(string entityPath, EntityType entityType)
         {
@@ -20,19 +24,19 @@ namespace NServiceBus.AzureServiceBus.Addressing
             switch (entityType)
             {
                 case EntityType.Queue:
-                    valid &= entityPath.Length <= QueuePathMaxLength;
+                    valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength);
                     valid &= topicQueueNameRegex.IsMatch(entityPath);
                     break;
                 case EntityType.Topic:
-                    valid &= entityPath.Length <= TopicPathMaxLength;
+                    valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength);
                     valid &= topicQueueNameRegex.IsMatch(entityPath);
                     break;
                 case EntityType.Subscription:
-                    valid &= entityPath.Length <= SubscriptionPathMaxLength;
+                    valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength);
                     valid &= subscriptionNameRegex.IsMatch(entityPath);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("entityType");
+                    throw new ArgumentOutOfRangeException(nameof(entityType));
             }
             
             return valid;

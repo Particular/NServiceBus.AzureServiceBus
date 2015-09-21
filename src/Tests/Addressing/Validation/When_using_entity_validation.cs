@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using NServiceBus.AzureServiceBus.Addressing;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -18,7 +19,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_allow_queues_with_paths_up_to_260_characters()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsTrue(validation.IsValid(validEntityName, EntityType.Queue));
         }
@@ -26,7 +30,9 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_allow_queues_with_slashes_dashes_dots_and_underscores()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsTrue(validation.IsValid(validEntityName, EntityType.Queue));
         }
@@ -34,7 +40,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_do_not_allow_queues_with_paths_over_260_characters()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsFalse(validation.IsValid(tooLongEntityName, EntityType.Queue));
         }
@@ -42,7 +51,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_do_not_allows_queues_with_illegal_characters()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsFalse(validation.IsValid(illegalCharacterEntityName, EntityType.Queue));
         }
@@ -50,7 +62,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_allow_topics_with_paths_up_to_260_characters()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsTrue(validation.IsValid(validEntityName, EntityType.Topic));
         }
@@ -58,7 +73,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_allow_topics_with_slashes_dashes_dots_and_underscores()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsTrue(validation.IsValid(validEntityName, EntityType.Queue));
         }
@@ -66,7 +84,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_do_not_allow_topics_with_paths_over_260_characters()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsFalse(validation.IsValid(tooLongEntityName, EntityType.Topic));
         }
@@ -74,7 +95,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_do_not_allow_topics_with_illegal_characters()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsFalse(validation.IsValid(illegalCharacterEntityName, EntityType.Queue));
         }
@@ -82,7 +106,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_allow_subscriptions_with_paths_up_to_50_characters()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsTrue(validation.IsValid(validSubscriptionName, EntityType.Subscription));
         }
@@ -90,7 +117,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_allow_subscriptions_with_dashes_dots_and_underscores()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsTrue(validation.IsValid(validSubscriptionName, EntityType.Subscription));
         }
@@ -98,7 +128,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_do_not_allow_topics_with_paths_over_50_characters()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsFalse(validation.IsValid(tooLongSubscriptionName, EntityType.Subscription));
         }
@@ -106,7 +139,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Namespaces_do_not_allow_subscription_with_illegal_characters()
         {
-            var validation = new EntityNameValidationRules();
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsFalse(validation.IsValid(illegalCharacterSubscriptionName, EntityType.Subscription));
         }
