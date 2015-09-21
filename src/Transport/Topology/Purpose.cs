@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBus.Addressing
+namespace NServiceBus.AzureServiceBus
 {
     public enum Purpose
     {

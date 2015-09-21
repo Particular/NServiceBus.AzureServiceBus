@@ -63,10 +63,10 @@ namespace NServiceBus.AzureServiceBus
             
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), purpose).ToArray();
 
-            var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), Addressing.EntityType.Queue);
+            var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
             var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
 
-            var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", Addressing.EntityType.Topic);
+            var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", EntityType.Topic);
             var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
 
             var entities = inputQueues.Concat(topics).ToArray();
@@ -96,13 +96,13 @@ namespace NServiceBus.AzureServiceBus
             var sanitizationStrategy = (ISanitizationStrategy) container.Build(typeof(ISanitizationStrategy));
 
             var topicPaths = DetermineTopicsFor(eventType);
-            var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, Addressing.EntityType.Subscription);
+            var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Subscription);
 
             var topics = new List<EntityInfo>();
             var subs = new List<SubscriptionInfo>();
             foreach (var topicPath in topicPaths)
             {
-                var path = sanitizationStrategy.Sanitize(topicPath, Addressing.EntityType.Topic);
+                var path = sanitizationStrategy.Sanitize(topicPath, EntityType.Topic);
                 topics.AddRange(namespaces.Select(ns => new EntityInfo()
                 {
                     Namespace = ns,

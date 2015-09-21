@@ -80,7 +80,7 @@
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualizationStrategy.cs" />
-    <Compile Include="Addressing\Partitioning\Purpose.cs" />
+    <Compile Include="Topology\Purpose.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\ShardedNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioningStrategy.cs" />
@@ -132,7 +132,6 @@
     <Compile Include="Connectivity\NamespaceManagerLifeCycleManager.cs" />
     <Compile Include="Creation\AzureServiceBusQueueCreator.cs" />
     <Compile Include="Creation\AzureServiceBusTopicCreator.cs" />
-    <Compile Include="Creation\EntityType.cs" />
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationRules.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusResourceExtensions.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusAddressingExtensions.cs" />
