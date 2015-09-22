@@ -101,6 +101,12 @@ namespace NServiceBus.AzureServiceBus
                     public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Individualization.Strategy";
                 }
             }
+
+            public static class Bundling
+            {
+                public const string NumberOfEntitiesInBundle = "AzureServiceBus.Settings.Topology.Bundling.NumberOfEntitiesInBundle";
+                public const string BundlePrefix = "AzureServiceBus.Settings.Topology.Bundling.BundlePrefix";
+            }
         }
 
         public static class Connectivity

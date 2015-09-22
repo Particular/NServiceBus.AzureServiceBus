@@ -162,6 +162,7 @@
     <Compile Include="Creation\ICreateAzureServiceBusTopics.cs" />
     <Compile Include="Creation\ICreateNamespaceManagers.cs" />
     <Compile Include="Connectivity\MessagingFactoryCreator.cs" />
+    <Compile Include="Topology\Topologies\BundledTopicsWithForwardingToQueuePerEndpoint.cs" />
     <Compile Include="Topology\Topologies\EachEndpointHasQueueAndTopic.cs" />
     <Compile Include="Topology\MetaModel\EntityInfo.cs" />
     <Compile Include="Topology\MetaModel\EntityRelationShipInfo.cs" />
