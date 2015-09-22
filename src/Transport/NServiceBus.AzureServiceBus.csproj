@@ -177,6 +177,7 @@
     <Compile Include="Topology\MetaModel\SqlSubscriptionFilter.cs" />
     <Compile Include="Topology\MetaModel\SubscriptionInfo.cs" />
     <Compile Include="Topology\MetaModel\TopologyDefinition.cs" />
+    <Compile Include="Topology\Topologies\EachEndpointHasQueueOnly.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
     <Compile Include="Creation\OldCode\Clients\ICreateMessagingFactories.cs" />
     <Compile Include="Creation\OldCode\Clients\ICreateSubscriptionClients.cs" />
