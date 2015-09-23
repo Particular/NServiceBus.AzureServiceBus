@@ -6,7 +6,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_computing_topology_where_each_endpoint_has_a_queue_subscribed_to_bundle_of_topics
+    public class When_computing_ForwardingTopology
     {
         [Test]
         public void Determines_the_namespace_from_partitioning_strategy()
@@ -21,7 +21,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new BundledTopicsWithForwardingToQueuePerEndpoint(settings, container);
+            var topology = new ForwardingTopology(settings, container);
 
             topology.InitializeSettings();
             topology.InitializeContainer();
@@ -44,7 +44,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new BundledTopicsWithForwardingToQueuePerEndpoint(settings, container);
+            var topology = new ForwardingTopology(settings, container);
 
             topology.InitializeSettings();
             topology.InitializeContainer();

@@ -8,15 +8,14 @@ namespace NServiceBus.AzureServiceBus
     using ObjectBuilder.Common;
     using Settings;
 
-    public class BundledTopicsWithForwardingToQueuePerEndpoint : ITopology
+    public class StandardTopology : ITopology
     {
         readonly SettingsHolder settings;
         readonly IContainer container;
 
         readonly ConcurrentDictionary<Type, List<SubscriptionInfo>> subscriptions = new ConcurrentDictionary<Type, List<SubscriptionInfo>>();
-        readonly List<EntityInfo> topics = new List<EntityInfo>();
 
-        public BundledTopicsWithForwardingToQueuePerEndpoint(SettingsHolder settings, IContainer container)
+        public StandardTopology(SettingsHolder settings, IContainer container)
         {
             this.settings = settings;
             this.container = container;
@@ -32,8 +31,6 @@ namespace NServiceBus.AzureServiceBus
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioningStrategy));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(AdjustmentSanitizationStrategy));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(EntityNameValidationRules));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle, 2);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix, "bundle-");
         }
 
         public void InitializeContainer()
@@ -60,43 +57,25 @@ namespace NServiceBus.AzureServiceBus
             // computes the topology
 
             var endpointName = settings.Get<EndpointName>();
-            
+
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
-
+            
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), purpose).ToArray();
 
             var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
             var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
 
-            if (!topics.Any())
-            {
-                BuildTopicBundles(namespaces, sanitizationStrategy);
-            }
+            var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", EntityType.Topic);
+            var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
 
             var entities = inputQueues.Concat(topics).ToArray();
 
-            return new TopologyDefinition
+            return new TopologyDefinition()
             {
                 Namespaces = namespaces,
                 Entities = entities
             };
-        }
-
-        void BuildTopicBundles(NamespaceInfo[] namespaces, ISanitizationStrategy sanitizationStrategy)
-        {
-            var numberOfEntitiesInBundle = settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
-            var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
-
-            for (var i = 0; i < numberOfEntitiesInBundle; i++)
-            {
-                topics.AddRange(namespaces.Select(n => new EntityInfo
-                {
-                    Path = sanitizationStrategy.Sanitize(bundlePrefix + i, EntityType.Topic),
-                    Type = EntityType.Topic,
-                    Namespace = n
-                }));
-            }
         }
 
         public IEnumerable<SubscriptionInfo> Subscribe(Type eventType)
@@ -109,38 +88,30 @@ namespace NServiceBus.AzureServiceBus
             return (subscriptions[eventType]);
         }
 
-        public IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype)
-        {
-            List<SubscriptionInfo> result;
-
-            if (!subscriptions.TryRemove(eventtype, out result))
-            {
-                result = new List<SubscriptionInfo>();
-            }
-
-            return result;
-        }
-
         List<SubscriptionInfo> BuildSubscriptionHierarchy(Type eventType)
         {
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
+            var partitioningStrategy = (INamespacePartitioningStrategy) container.Build(typeof(INamespacePartitioningStrategy));
             var endpointName = settings.Get<EndpointName>();
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), Purpose.Creating).ToArray();
-            var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy) container.Build(typeof(ISanitizationStrategy));
 
+            var topicPaths = DetermineTopicsFor(eventType);
             var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Subscription);
 
-            if (!topics.Any())
-            {
-                BuildTopicBundles(namespaces, sanitizationStrategy);
-            }
+            var topics = new List<EntityInfo>();
             var subs = new List<SubscriptionInfo>();
-            foreach (var topic in topics)
+            foreach (var topicPath in topicPaths)
             {
+                var path = sanitizationStrategy.Sanitize(topicPath, EntityType.Topic);
+                topics.AddRange(namespaces.Select(ns => new EntityInfo()
+                {
+                    Namespace = ns,
+                    Type = EntityType.Topic,
+                    Path = path
+                }));
+
                 subs.AddRange(namespaces.Select(ns =>
                 {
-                    var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
-
                     var sub = new SubscriptionInfo
                     {
                         Namespace = ns,
@@ -151,24 +122,51 @@ namespace NServiceBus.AzureServiceBus
                     sub.RelationShips.Add(new EntityRelationShipInfo
                     {
                         Source = sub,
-                        Target = topic,
+                        Target = topics.First(t => t.Namespace == ns),
                         Type = EntityRelationShipType.Subscription
-                    });
-                    sub.RelationShips.Add(new EntityRelationShipInfo
-                    {
-                        Source = sub,
-                        Target = new EntityInfo
-                        {
-                            Namespace = ns,
-                            Path = inputQueuePath,
-                            Type = EntityType.Queue
-                        },
-                        Type = EntityRelationShipType.Forward
                     });
                     return sub;
                 }));
             }
             return subs;
+        }
+
+        List<string> DetermineTopicsFor(Type eventType)
+        {
+            throw new NotImplementedException(); //StaticMessageRouter is obsolete and no public replacement exists at the moment
+
+            //var messageMapper = (IMessageMapper)container.Build(typeof(IMessageMapper));
+            //var messageRouter = (StaticMessageRouter)container.Build(typeof(StaticMessageRouter));
+
+            //var destinations = messageRouter.GetDestinationFor(eventType);
+
+            //if (destinations.Any())
+            //{
+            //    return destinations;
+            //}
+
+            //if (messageMapper != null && !eventType.IsInterface)
+            //{
+            //    var t = messageMapper.GetMappedTypeFor(eventType);
+            //    if (t != null && t != eventType)
+            //    {
+            //        return DetermineTopicsFor(t);
+            //    }
+            //}
+
+            //return destinations;
+        }
+
+        public IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype)
+        {
+            List<SubscriptionInfo> result;
+
+            if (!subscriptions.TryRemove(eventtype, out result))
+            {
+                result = new List<SubscriptionInfo>();
+            }
+           
+            return result;
         }
     }
 }

@@ -7,12 +7,12 @@ namespace NServiceBus.AzureServiceBus
     using ObjectBuilder.Common;
     using Settings;
 
-    public class EachEndpointHasQueueOnly : ITopology
+    public class BasicTopology : ITopology
     {
         readonly SettingsHolder settings;
         readonly IContainer container;
 
-        public EachEndpointHasQueueOnly(SettingsHolder settings, IContainer container)
+        public BasicTopology(SettingsHolder settings, IContainer container)
         {
             this.settings = settings;
             this.container = container;

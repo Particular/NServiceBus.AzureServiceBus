@@ -134,9 +134,9 @@
     <Compile Include="Sending\When_routing_outgoingmessages_to_endpoints.cs" />
     <Compile Include="Sending\When_sending_brokeredmessages_to_queues.cs" />
     <Compile Include="Topology\FuncBuilder.cs" />
-    <Compile Include="Topology\When_computing_topology_where_each_endpoint_has_a_queue_subscribed_to_bundle_of_topics.cs" />
-    <Compile Include="Topology\When_computing_topology_where_each_endpoint_only_has_a_queue.cs" />
-    <Compile Include="Topology\When_computing_topology_where_each_endpoint_has_a_queue_and_topic.cs" />
+    <Compile Include="Topology\When_computing_ForwardingTopology.cs" />
+    <Compile Include="Topology\When_computing_BasicTopology.cs" />
+    <Compile Include="Topology\When_computing_StandardTopology.cs" />
     <Compile Include="When_creating_subscriptions_on_servicebus_topics.cs" />
     <Compile Include="When_determining_subscription_names.cs" />
     <Compile Include="When_parsing_connectionstrings.cs" />
