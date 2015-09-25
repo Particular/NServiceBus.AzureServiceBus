@@ -22,14 +22,18 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RegisterForComInterop>true</RegisterForComInterop>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RegisterForComInterop>true</RegisterForComInterop>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ApprovalTests">
@@ -134,6 +138,7 @@
     <Compile Include="Sending\When_routing_outgoingmessages_to_endpoints.cs" />
     <Compile Include="Sending\When_sending_brokeredmessages_to_queues.cs" />
     <Compile Include="Topology\FuncBuilder.cs" />
+    <Compile Include="Topology\MetaModel\When_SqlSubscriptionFilter_is_serializing_an_event.cs" />
     <Compile Include="Topology\When_computing_ForwardingTopology.cs" />
     <Compile Include="Topology\When_computing_BasicTopology.cs" />
     <Compile Include="Topology\When_computing_StandardTopology.cs" />
