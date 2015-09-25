@@ -7,6 +7,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.DeliveryConstraints;
+    using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
@@ -44,7 +45,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions("myqueue", null, new List<DeliveryConstraint>(), null);
+            var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("MyQueue"), null, new List<DeliveryConstraint>());
 
             
             await router.RouteAsync(outgoingMessage, dispatchOptions);

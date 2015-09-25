@@ -1,6 +1,5 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
-    using System.Collections.Generic;
     using System.Linq;
     using Settings;
     using NUnit.Framework;
