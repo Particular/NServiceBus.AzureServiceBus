@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using Extensibility;
     using Transports;
 
@@ -15,16 +16,16 @@ namespace NServiceBus.AzureServiceBus
             this.topologyOperator = topologyOperator;
         }
 
-        public void Subscribe(Type eventType, ContextBag context)
+        public async Task SubscribeAsync(Type eventType, ContextBag context)
         {
             var subscriptions = topology.Subscribe(eventType);
-            topologyOperator.Start(subscriptions);
+            await topologyOperator.Start(subscriptions);
         }
 
-        public void Unsubscribe(Type eventType, ContextBag context)
+        public async Task UnsubscribeAsync(Type eventType, ContextBag context)
         {
             var subscriptions = topology.Unsubscribe(eventType);
-            topologyOperator.Stop(subscriptions);
+            await topologyOperator.Stop(subscriptions);
         }
     }
 }
