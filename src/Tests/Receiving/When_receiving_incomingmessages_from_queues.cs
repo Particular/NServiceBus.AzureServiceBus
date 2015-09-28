@@ -34,7 +34,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
-            notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, message => Task.FromResult(true), null, 10);
+            notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, (message, context) => Task.FromResult(true), null, 10);
 
             await notifier.Start();
             await notifier.Stop();
@@ -66,7 +66,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
-            notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, message => Task.FromResult(true), null, 10);
+            notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, (message, context) => Task.FromResult(true), null, 10);
 
             await notifier.Start();
             await notifier.Stop();
@@ -112,7 +112,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Exception ex = null;
             var received = false;
 
-            notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, message =>
+            notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, (message, context) =>
             {
                 received = true;
 

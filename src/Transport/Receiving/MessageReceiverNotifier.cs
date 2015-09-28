@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBus
         readonly ReadOnlySettings settings;
         IMessageReceiver internalReceiver;
         OnMessageOptions options;
-        Func<IncomingMessage, Task> incoming;
+        Func<IncomingMessage, ReceiveContext, Task> incoming;
         Func<Exception, Task> error;
         string path;
         string connstring;
@@ -29,7 +29,7 @@ namespace NServiceBus.AzureServiceBus
             this.settings = settings;
         }
 
-        public void Initialize(string entitypath, string connectionstring, Func<IncomingMessage, Task> callback, Func<Exception, Task> errorCallback , int maximumConcurrency)
+        public void Initialize(string entitypath, string connectionstring, Func<IncomingMessage, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
         {
             this.incoming = callback;
             this.error = errorCallback;
@@ -77,7 +77,17 @@ namespace NServiceBus.AzureServiceBus
                 throw new Exception(string.Format("MessageReceiverNotifier did not get a MessageReceiver instance for entity path {0}, this is probably due to a misconfiguration of the topology", path));
             }
 
-            internalReceiver.OnMessageAsync(message => incoming(brokeredMessageConverter.Convert(message)), options);
+            internalReceiver.OnMessageAsync(message =>
+            {
+                var incomingMessage = brokeredMessageConverter.Convert(message);
+                var context = new BrokeredMessageReceiveContext()
+                {
+                    BrokeredMessage = message,
+                    EntityPath = path,
+                    ConnectionString = connstring
+                };
+                return incoming(incomingMessage, context);
+            }, options);
 
             return Task.FromResult(true);
         }

@@ -5,12 +5,12 @@ namespace NServiceBus.AzureServiceBus
     using Extensibility;
     using Transports;
 
-    class AzureServiceBusSubscriptionManager : IManageSubscriptions
+    class SubscriptionManager : IManageSubscriptions
     {
         readonly ITopology topology; // responsible for providing the metadata about the subscription (what in case of EH?)
         readonly IOperateTopology topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
 
-        public AzureServiceBusSubscriptionManager(ITopology topology, IOperateTopology topologyOperator)
+        public SubscriptionManager(ITopology topology, IOperateTopology topologyOperator)
         {
             this.topology = topology;
             this.topologyOperator = topologyOperator;

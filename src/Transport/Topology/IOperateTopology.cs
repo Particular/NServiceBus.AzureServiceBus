@@ -1,7 +1,9 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using NServiceBus.Transports;
 
     /// <summary>
     /// Operational aspects of running on top of the topology
@@ -13,7 +15,20 @@
     /// </summary>
     public interface IOperateTopology
     {
+        //invoked for static parts of the topology
+
+        Task Start(TopologyDefinition topology, int maximumConcurrency);
+        Task Stop();
+
+        //invoked whenever subscriptions are added or removed
+
         Task Start(IEnumerable<EntityInfo> subscriptions);
         Task Stop(IEnumerable<EntityInfo> subscriptions);
+
+        // callback when there is a new message available, or an error occurs
+
+        void OnIncomingMessage(Func<IncomingMessage, ReceiveContext, Task> func);
+
+        void OnError(Func<Exception, Task> func);
     }
 }

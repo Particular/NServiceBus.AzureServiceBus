@@ -81,6 +81,9 @@
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualizationStrategy.cs" />
+    <Compile Include="Seam\Dispatcher.cs" />
+    <Compile Include="Seam\MessagePump.cs" />
+    <Compile Include="Receiving\ReceiveContext.cs" />
     <Compile Include="Topology\Purpose.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\ShardedNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioningStrategy.cs" />
@@ -180,6 +183,7 @@
     <Compile Include="Topology\MetaModel\SubscriptionInfo.cs" />
     <Compile Include="Topology\MetaModel\TopologyDefinition.cs" />
     <Compile Include="Topology\Topologies\BasicTopology.cs" />
+    <Compile Include="Topology\TopologyOperator.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
     <Compile Include="Creation\OldCode\Clients\ICreateMessagingFactories.cs" />
     <Compile Include="Creation\OldCode\Clients\ICreateSubscriptionClients.cs" />
@@ -219,7 +223,7 @@
     <Compile Include="Receiving\OldCode\AzureServiceBusQueueNotifier.cs" />
     <Compile Include="Receiving\OldCode\AzureServiceBusSubscriptionNotifier.cs" />
     <Compile Include="Publishing\AzureServiceBusPublisher.cs" />
-    <Compile Include="Subscribing\AzureServiceBusTopicSubscriptionManager.cs" />
+    <Compile Include="Seam\SubscriptionManager.cs" />
     <Compile Include="Utils\BrokeredMessageConverter.cs" />
     <Compile Include="Utils\BrokeredMessageExtensions.cs" />
     <Compile Include="Config\OldCode\AzureServiceBusQueueConfig.cs" />

@@ -69,6 +69,10 @@ namespace NServiceBus.AzureServiceBus
             var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", EntityType.Topic);
             var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
 
+            //TODO: core has a a list of queues as well, which I suppose includes ErrorQ & AuditQ
+            // integrate those correctly into the topology
+            // settings.Get<QueueBindings>()
+
             var entities = inputQueues.Concat(topics).ToArray();
 
             return new TopologyDefinition()
