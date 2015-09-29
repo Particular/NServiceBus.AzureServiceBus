@@ -62,7 +62,7 @@ namespace NServiceBus.AzureServiceBus
         {
             if (brokeredMessage.Size > 256 * 1024)
             {
-                throw new MessageTooLargeException(string.Format("The message with id {0} is larger that the maximum message size allowed by Azure ServiceBus, consider using the databus instead", brokeredMessage.MessageId));
+                throw new MessageTooLargeException($"The message with id {brokeredMessage.MessageId} is larger that the maximum message size allowed by Azure ServiceBus, consider using the databus instead");
             }
         }
     }

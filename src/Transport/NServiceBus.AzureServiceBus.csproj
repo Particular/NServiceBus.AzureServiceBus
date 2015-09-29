@@ -241,6 +241,7 @@
     <Compile Include="Receiving\OldCode\INotifyReceivedBrokeredMessages.cs" />
     <Compile Include="Receiving\OldCode\ReceiveResourceManager.cs" />
     <Compile Include="Sending\OldCode\SendResourceManager.cs" />
+    <Compile Include="TaskEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
