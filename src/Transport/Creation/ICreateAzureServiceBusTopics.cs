@@ -1,8 +1,7 @@
-﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.Creation
+﻿namespace NServiceBus.AzureServiceBus
 {
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
 
     public interface ICreateAzureServiceBusTopics
     {

@@ -5,7 +5,6 @@ namespace NServiceBus.AzureServiceBus.Tests
     using FakeItEasy;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.Transports.WindowsAzureServiceBus.Creation;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NServiceBus.Settings;
     using NUnit.Framework;

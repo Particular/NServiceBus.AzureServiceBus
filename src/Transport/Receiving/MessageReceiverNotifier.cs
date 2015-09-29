@@ -29,6 +29,9 @@ namespace NServiceBus.AzureServiceBus
             this.settings = settings;
         }
 
+        public bool IsRunning { get; private set; }
+        public int RefCount { get; set; }
+
         public void Initialize(string entitypath, string connectionstring, Func<IncomingMessage, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
         {
             this.incoming = callback;
@@ -89,6 +92,8 @@ namespace NServiceBus.AzureServiceBus
                 return incoming(incomingMessage, context);
             }, options);
 
+            IsRunning = true;
+
             return Task.FromResult(true);
         }
 
@@ -97,6 +102,8 @@ namespace NServiceBus.AzureServiceBus
             stopping = true;
 
             await internalReceiver.CloseAsync();
+
+            IsRunning = false;
         }
     }
 

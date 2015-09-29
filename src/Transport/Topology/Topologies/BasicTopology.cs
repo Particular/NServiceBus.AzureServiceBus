@@ -32,7 +32,23 @@ namespace NServiceBus.AzureServiceBus
 
         public void InitializeContainer()
         {
-            // configures container
+            // runtime components
+            container.Configure(typeof(NamespaceManagerCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(NamespaceManagerLifeCycleManager), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessagingFactoryCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessagingFactoryLifeCycleManager), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessageReceiverCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessageSenderCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(ClientEntityLifeCycleManager), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(AzureServiceBusQueueCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(AzureServiceBusTopicCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(AzureServiceBusSubscriptionCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(DefaultBrokeredMessagesToIncomingMessagesConverter), DependencyLifecycle.InstancePerCall);
+            container.Configure(typeof(TopologyCreator), DependencyLifecycle.InstancePerCall);
+            container.Configure(typeof(TopologyOperator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessageReceiverNotifier), DependencyLifecycle.InstancePerCall);
+
+            // strategies
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
             container.Configure(compositionStrategyType, DependencyLifecycle.InstancePerCall);
 

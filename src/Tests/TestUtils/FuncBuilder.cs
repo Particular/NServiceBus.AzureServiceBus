@@ -11,6 +11,11 @@ namespace NServiceBus.AzureServiceBus.Tests
     {
         IList<Tuple<Type, Func<object>>> funcs = new List<Tuple<Type, Func<object>>>();
 
+        public FuncBuilder()
+        {
+            Register<IContainer>(() => this);
+        }
+
         public void Dispose()
         {
 

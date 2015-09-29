@@ -12,6 +12,8 @@ namespace NServiceBus.AzureServiceBus
     {
         readonly IContainer container;
 
+        TopologyDefinition topology;
+
         Func<IncomingMessage, ReceiveContext, Task> onMessage;
         Func<Exception, Task> onError;
 
@@ -26,20 +28,21 @@ namespace NServiceBus.AzureServiceBus
             this.container = container;
         }
 
-        public async Task Start(TopologyDefinition topology, int maximumConcurrency)
+        public async Task Start(TopologyDefinition topologyDefinition, int maximumConcurrency)
         {
             this.maxConcurrency = maximumConcurrency;
+            topology = topologyDefinition;
 
             cancellationTokenSource = new CancellationTokenSource();
 
             await StartNotifiersFor(topology.Entities, maxConcurrency);
         }
 
-        public Task Stop()
+        public async Task Stop()
         {
             cancellationTokenSource.Cancel();
 
-            return Task.FromResult(true);
+            await StopNotifiersFor(topology.Entities);
         }
 
         public async Task Start(IEnumerable<EntityInfo> subscriptions)
@@ -47,9 +50,9 @@ namespace NServiceBus.AzureServiceBus
             await StartNotifiersFor(subscriptions, maxConcurrency);
         }
 
-        public Task Stop(IEnumerable<EntityInfo> subscriptions)
+        public async Task Stop(IEnumerable<EntityInfo> subscriptions)
         {
-            throw new NotImplementedException();
+            await StopNotifiersFor(subscriptions);
         }
 
         public void OnIncomingMessage(Func<IncomingMessage, ReceiveContext, Task> func)
@@ -66,16 +69,51 @@ namespace NServiceBus.AzureServiceBus
         {
             foreach (var entity in entities)
             {
-                if (entity.Type == EntityType.Queue || entity.Type == EntityType.Subscription)
+                var notifier = notifiers.GetOrAdd(entity, e =>
                 {
-                    var notifier = (MessageReceiverNotifier)notifiers.GetOrAdd(entity, e =>
-                    {
-                        var n = (MessageReceiverNotifier)container.Build(typeof(MessageReceiverNotifier));
-                        n.Initialize(e.Path, e.Namespace.ConnectionString, onMessage, onError, maximumConcurrency);
-                        return null;
-                    });
+                    var n = CreateNotifier(entity.Type);
+                    n.Initialize(e.Path, e.Namespace.ConnectionString, onMessage, onError, maximumConcurrency);
+                    return n;
+                });
 
+                if (!notifier.IsRunning)
+                {
                     await notifier.Start();
+                }
+                else
+                {
+                    notifier.RefCount++;
+                }
+                
+            }
+        }
+
+        INotifyIncomingMessages CreateNotifier(EntityType type)
+        {
+            if (type == EntityType.Queue || type == EntityType.Subscription)
+            {
+                return (INotifyIncomingMessages)container.Build(typeof(MessageReceiverNotifier));
+            }
+
+            throw new NotSupportedException("Entity type " + type + " not supported");
+        }
+
+        async Task StopNotifiersFor(IEnumerable<EntityInfo> entities)
+        {
+            foreach (var entity in entities)
+            {
+                INotifyIncomingMessages notifier;
+                notifiers.TryGetValue(entity, out notifier);
+
+                if (notifier == null || !notifier.IsRunning) continue;
+
+                if (notifier.RefCount > 0)
+                {
+                    notifier.RefCount--;
+                }
+                else
+                {
+                    await notifier.Stop();
                 }
             }
         }

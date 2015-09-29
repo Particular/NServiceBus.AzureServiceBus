@@ -118,7 +118,7 @@
     <Compile Include="Connectivity\MessageSenderAdapter.cs" />
     <Compile Include="Connectivity\MessageSenderCreator.cs" />
     <Compile Include="Creation\AzureServiceBusSubscriptionCreator.cs" />
-    <Compile Include="Creation\ICreateAzureServiceBusSubsciption.cs" />
+    <Compile Include="Creation\ICreateAzureServiceBusSubscriptions.cs" />
     <Compile Include="Creation\MemberComparison.cs" />
     <Compile Include="Creation\ReadOnlySettingsExtensions.cs" />
     <Compile Include="Receiving\DefaultBrokeredMessagesToIncomingMessagesConverter.cs" />
@@ -183,6 +183,7 @@
     <Compile Include="Topology\MetaModel\SubscriptionInfo.cs" />
     <Compile Include="Topology\MetaModel\TopologyDefinition.cs" />
     <Compile Include="Topology\Topologies\BasicTopology.cs" />
+    <Compile Include="Topology\TopologyCreator.cs" />
     <Compile Include="Topology\TopologyOperator.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
     <Compile Include="Creation\OldCode\Clients\ICreateMessagingFactories.cs" />
@@ -252,7 +253,9 @@
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Topology\Creation\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

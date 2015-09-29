@@ -1,14 +1,13 @@
-﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.Creation
+﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
     using NServiceBus.Logging;
     using NServiceBus.Settings;
 
-    class AzureServiceBusSubscriptionCreator : ICreateAzureServiceBusSubsciption
+    class AzureServiceBusSubscriptionCreator : ICreateAzureServiceBusSubscriptions
     {
         ReadOnlySettings settings;
         Func<string, string, ReadOnlySettings, SubscriptionDescription> subscriptionDescriptionFactory;
