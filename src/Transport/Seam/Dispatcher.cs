@@ -3,7 +3,6 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Cryptography;
     using System.Text;
     using System.Threading.Tasks;
     using NServiceBus.Logging;
@@ -13,50 +12,49 @@ namespace NServiceBus.AzureServiceBus
     class Dispatcher : IDispatchMessages
     {
         readonly IRouteOutgoingMessages routeOutgoingMessages;
-        ILog log = LogManager.GetLogger<Dispatcher>();
+        ILog logger = LogManager.GetLogger<Dispatcher>();
 
         public Dispatcher(IRouteOutgoingMessages routeOutgoingMessages)
         {
             this.routeOutgoingMessages = routeOutgoingMessages;
         }
 
-        public Task Dispatch(IEnumerable<TransportOperation> outgoingMessages)
+        public async Task Dispatch(IEnumerable<TransportOperation> outgoingMessages)
         {
-            // messages should be grouped by the following hash
-            // + identical routing strategy and it's value, queue ((DirectToTargetDestination => Destination) or event type (ToAllSubscribers => EventType)
-            // + identical dispatch consistency
-            // - delivery constraints doesn't matter
-            // - contextbag doesn't matter
+            var batches = outgoingMessages.GroupBy(x => new { Hash = ComputeGroupIdFor(x.DispatchOptions) });
+            var exceptions = new List<Exception>();
 
-            var groups = outgoingMessages.GroupBy(x => new { Hash = ComputeHashFor(x.DispatchOptions)});
-
-            foreach (var @group in groups)
+            foreach (var batch in batches)
             {
                 try
                 {
-                    routeOutgoingMessages.RouteBatchAsync(@group.Select(x => x.Message), @group.FirstOrDefault().DispatchOptions);
+                    await routeOutgoingMessages.RouteBatchAsync(batch.Select(x => x.Message), batch.First().DispatchOptions);
                 }
-                catch (Exception exception)
+                catch (Exception ex)
                 {
-                    // TODO: 
-                    // Should we spawn off multiple tasks and perform Task.WhenAll(t1, t2, ... tn)?
-                    // Should we have a continuation with Failed condition to signal to core that we've failed?
-                    // How do we handle exceptions here?
-                    //   TimeoutException
-                    //   InvalidOperationException
-                    //   MessagingException
-                    log.Error("Failed to dispatch messages.", exception);
+                    var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", batch.Select(x => x.Message.MessageId));
+                    logger.Error(message, ex);
+
+                    exceptions.Add(ex);
                 }
             }
 
-            return TaskEx.Completed;
+            if (exceptions.Any())
+            {
+                throw new AggregateException(exceptions);
+            }
+
+            // How do we handle exceptions here?
+            //   TimeoutException
+            //   InvalidOperationException
+            //   MessagingException
+            //   ?? MessagingEntityNotFoundException => core only knows about QueueNotFoundException, what if this is a topic?
+            //  if different types of exceptions where raised for several batches, what do we do?
         }
 
-        string ComputeHashFor(DispatchOptions dispatchOptions)
+        string ComputeGroupIdFor(DispatchOptions dispatchOptions)
         {
             var sb = new StringBuilder();
-
-            var cryptoServiceProvider = new MD5CryptoServiceProvider();
 
             var strategy = dispatchOptions.RoutingStrategy as DirectToTargetDestination;
             if (strategy != null)
@@ -68,13 +66,9 @@ namespace NServiceBus.AzureServiceBus
                 sb.Append($"ToAllSubscribers;-{(dispatchOptions.RoutingStrategy as ToAllSubscribers).EventType}");
             }
 
-            sb.Append($"RequiredDispatchConsistency-{dispatchOptions.RequiredDispatchConsistency}");
+            sb.Append($"--RequiredDispatchConsistency-{dispatchOptions.RequiredDispatchConsistency}");
 
-            var bytes = Encoding.Default.GetBytes(sb.ToString());
-            var computeHash = cryptoServiceProvider.ComputeHash(bytes);
-
-            var result = BitConverter.ToString(computeHash);
-            return result;
+            return sb.ToString();
         }
     }
 }
