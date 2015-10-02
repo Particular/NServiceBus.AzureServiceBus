@@ -4,7 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-
+    
     public class MessageSenderAdapter : IMessageSender
     {
         readonly MessageSender _sender;
@@ -27,12 +27,12 @@ namespace NServiceBus.AzureServiceBus
 
         public async Task SendAsync(BrokeredMessage message)
         {
-            await _sender.SendAsync(message).ConfigureAwait(false);
+          await _sender.SendAsync(message).ConfigureAwait(false);
         }
 
         public async Task SendBatchAsync(IEnumerable<BrokeredMessage> messages)
         {
-            await _sender.SendBatchAsync(messages);
+            await _sender.SendBatchAsync(messages).ConfigureAwait(false);
         }
 
         public Task CloseAsync()

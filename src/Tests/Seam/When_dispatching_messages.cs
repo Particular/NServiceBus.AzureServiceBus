@@ -31,7 +31,7 @@
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingMessageRouter(new FakeAddressingStrategy(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager);
+            var router = new DefaultOutgoingMessageRouter(new FakeAddressingStrategy(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -79,7 +79,7 @@
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingMessageRouter(new FakeAddressingStrategy(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager);
+            var router = new DefaultOutgoingMessageRouter(new FakeAddressingStrategy(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);

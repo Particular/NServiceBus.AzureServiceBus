@@ -114,6 +114,7 @@
     <Compile Include="Configuration\When_configuring_serialization.cs" />
     <Compile Include="Configuration\When_configuring_validation.cs" />
     <Compile Include="Seam\When_dispatching_messages.cs" />
+    <Compile Include="Sending\When_retrying_on_throttle.cs" />
     <Compile Include="TestUtils\ConnectionString.cs" />
     <Compile Include="Connectivity\When_creating_message_senders.cs" />
     <Compile Include="Connectivity\When_creating_message_receivers.cs" />

@@ -1,5 +1,6 @@
 namespace NServiceBus.AzureServiceBus
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -7,6 +8,7 @@ namespace NServiceBus.AzureServiceBus
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Routing;
+    using NServiceBus.Settings;
     using NServiceBus.Transports;
 
     public class DefaultOutgoingMessageRouter : IRouteOutgoingMessages
@@ -15,11 +17,17 @@ namespace NServiceBus.AzureServiceBus
         readonly IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter;
         readonly IManageClientEntityLifeCycle senders;
 
-        public DefaultOutgoingMessageRouter(IAddressingStrategy addressingStrategy, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageClientEntityLifeCycle senders)
+        int maxRetryAttemptsOnThrottle;
+        TimeSpan backOffTimeOnThrottle;
+
+        public DefaultOutgoingMessageRouter(IAddressingStrategy addressingStrategy, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageClientEntityLifeCycle senders, ReadOnlySettings settings)
         {
             this.addressingStrategy = addressingStrategy;
             this.outgoingMessageConverter = outgoingMessageConverter;
             this.senders = senders;
+
+            backOffTimeOnThrottle = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle);
+            maxRetryAttemptsOnThrottle = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle);
         }
 
         public async Task RouteAsync(OutgoingMessage message, DispatchOptions dispatchOptions)
@@ -29,7 +37,7 @@ namespace NServiceBus.AzureServiceBus
             var messageSender = (IMessageSender) senders.Get(address.Path, address.Namespace.ConnectionString);
 
             var brokeredMessage = outgoingMessageConverter.Convert(message, dispatchOptions);
-            await messageSender.SendAsync(brokeredMessage);
+            await messageSender.RetryOnThrottle(s => s.SendAsync(brokeredMessage), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle);
         }
 
         public async Task RouteBatchAsync(IEnumerable<OutgoingMessage> messages, DispatchOptions dispatchOptions)
@@ -39,7 +47,7 @@ namespace NServiceBus.AzureServiceBus
             var messageSender = (IMessageSender)senders.Get(address.Path, address.Namespace.ConnectionString);
 
             var brokeredMessages = outgoingMessageConverter.Convert(messages, dispatchOptions);
-            await messageSender.SendBatchAsync(brokeredMessages);
+            await messageSender.RetryOnThrottle(s => s.SendBatchAsync(brokeredMessages), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle);
         }
 
         EntityInfo GetAddress(DispatchOptions dispatchOptions)

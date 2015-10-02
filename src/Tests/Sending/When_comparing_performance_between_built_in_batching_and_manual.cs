@@ -5,8 +5,8 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System.Diagnostics;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
-    using NServiceBus.Settings;
+    using Azure.WindowsAzureServiceBus.Tests;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -52,7 +52,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 for (var i = 0; i < 1000; i++)
                 {
                     var sender = (IMessageSender) entityLifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
-                    tasks.Add(sender.SendAsync(new BrokeredMessage()));
+                    tasks.Add(sender.RetryOnThrottle(s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
                     //await sender.SendAsync(new BrokeredMessage()).ConfigureAwait(false); // this is really slow
 
                     counter++;
@@ -113,7 +113,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     counter++;
                 }
                 var sender = (IMessageSender)entityLifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
-                await sender.SendBatchAsync(batch);
+                await sender.RetryOnThrottle(s => s.SendBatchAsync(batch), TimeSpan.FromSeconds(10), 5);
             }
            
 

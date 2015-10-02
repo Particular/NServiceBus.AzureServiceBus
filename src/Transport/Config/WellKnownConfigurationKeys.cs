@@ -125,6 +125,8 @@ namespace NServiceBus.AzureServiceBus
             public static class MessageSenders
             {
                 public const string RetryPolicy = "AzureServiceBus.Connectivity.MessageSenders.RetryPolicy";
+                public const string BackOffTimeOnThrottle = "AzureServiceBus.Connectivity.MessageSenders.BackOffTimeOnThrottle";
+                public const string RetryAttemptsOnThrottle = "AzureServiceBus.Connectivity.MessageSenders.RetryAttemptsOnThrottle";
             }
 
             public static class MessagingFactories

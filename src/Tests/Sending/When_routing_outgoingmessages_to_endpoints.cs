@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var router = new DefaultOutgoingMessageRouter(
                 new FakeAddressingStrategy(), //TODO: Is this the same as IProvideDynamicRouting?
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
-                clientLifecycleManager
+                clientLifecycleManager, settings
                 );
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
@@ -83,7 +83,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var router = new DefaultOutgoingMessageRouter(
                 new FakeAddressingStrategy(), //TODO: Is this the same as IProvideDynamicRouting?
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
-                clientLifecycleManager
+                clientLifecycleManager, settings
                 );
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
