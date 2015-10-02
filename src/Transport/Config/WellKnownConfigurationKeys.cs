@@ -127,6 +127,7 @@ namespace NServiceBus.AzureServiceBus
                 public const string RetryPolicy = "AzureServiceBus.Connectivity.MessageSenders.RetryPolicy";
                 public const string BackOffTimeOnThrottle = "AzureServiceBus.Connectivity.MessageSenders.BackOffTimeOnThrottle";
                 public const string RetryAttemptsOnThrottle = "AzureServiceBus.Connectivity.MessageSenders.RetryAttemptsOnThrottle";
+                public const string MaximuMessageSizeInKilobytes = "AzureServiceBus.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes";
             }
 
             public static class MessagingFactories

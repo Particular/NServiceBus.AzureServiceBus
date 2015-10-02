@@ -39,6 +39,7 @@
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval, TimeSpan.FromSeconds(0.5));
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle, TimeSpan.FromSeconds(10));
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle, 5);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes, 256);
         }
 
         void ApplyDefaultValuesForQueueDescriptions(SettingsHolder settings)

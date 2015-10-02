@@ -19,6 +19,7 @@ namespace NServiceBus.AzureServiceBus
 
         int maxRetryAttemptsOnThrottle;
         TimeSpan backOffTimeOnThrottle;
+        int maximuMessageSizeInKilobytes;
 
         public DefaultOutgoingMessageRouter(IAddressingStrategy addressingStrategy, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageClientEntityLifeCycle senders, ReadOnlySettings settings)
         {
@@ -28,13 +29,14 @@ namespace NServiceBus.AzureServiceBus
 
             backOffTimeOnThrottle = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle);
             maxRetryAttemptsOnThrottle = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle);
+            maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes);
         }
 
         public async Task RouteAsync(OutgoingMessage message, DispatchOptions dispatchOptions)
         {
             var address = GetAddress(dispatchOptions);
 
-            var messageSender = (IMessageSender) senders.Get(address.Path, address.Namespace.ConnectionString);
+            var messageSender = (IMessageSender)senders.Get(address.Path, address.Namespace.ConnectionString);
 
             var brokeredMessage = outgoingMessageConverter.Convert(message, dispatchOptions);
             await messageSender.RetryOnThrottle(s => s.SendAsync(brokeredMessage), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle);
@@ -47,7 +49,8 @@ namespace NServiceBus.AzureServiceBus
             var messageSender = (IMessageSender)senders.Get(address.Path, address.Namespace.ConnectionString);
 
             var brokeredMessages = outgoingMessageConverter.Convert(messages, dispatchOptions);
-            await messageSender.RetryOnThrottle(s => s.SendBatchAsync(brokeredMessages), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle);
+
+            await SendBatchWithEnforcedBatchSize(messageSender, brokeredMessages);
         }
 
         EntityInfo GetAddress(DispatchOptions dispatchOptions)
@@ -66,11 +69,44 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
+        async Task SendBatchWithEnforcedBatchSize(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend)
+        {
+            var chunk = new List<BrokeredMessage>();
+            long batchSize = 0;
+
+            foreach (var message in messagesToSend)
+            {
+                GuardMessageSize(message);
+
+                if ((batchSize + message.Size) > maximuMessageSizeInKilobytes * 1024)
+                {
+                    if (chunk.Any())
+                    {
+                        var chunk1 = chunk;
+                        await messageSender.RetryOnThrottle(s => s.SendBatchAsync(chunk1), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle);
+                    }
+
+                    chunk = new List<BrokeredMessage> { message };
+                    batchSize = message.Size;
+                }
+                else
+                {
+                    chunk.Add(message);
+                    batchSize += message.Size;
+                }
+            }
+
+            if (chunk.Any())
+            {
+                await messageSender.RetryOnThrottle(s => s.SendBatchAsync(chunk), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle);
+            }
+        }
+
         void GuardMessageSize(BrokeredMessage brokeredMessage)
         {
-            if (brokeredMessage.Size > 256 * 1024)
+            if (brokeredMessage.Size > maximuMessageSizeInKilobytes * 1024)
             {
-                throw new MessageTooLargeException($"The message with id {brokeredMessage.MessageId} is larger that the maximum message size allowed by Azure ServiceBus, consider using the databus instead");
+                throw new MessageTooLargeException($"The message with id {brokeredMessage.MessageId} is larger that the maximum message size allowed by Azure ServiceBus, consider using the databus feature.");
             }
         }
     }

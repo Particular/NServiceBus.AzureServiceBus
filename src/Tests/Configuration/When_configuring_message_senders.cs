@@ -42,5 +42,16 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.AreEqual(10, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle));
         }
+
+        [Test]
+        public void Should_be_able_to_set_maximum_message_size_in_kilobytes()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            var connectivitySettings = extensions.Connectivity().MessageSenders().MaximuMessageSizeInKilobytes(200);
+
+            Assert.AreEqual(200, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes));
+        }
     }
 }

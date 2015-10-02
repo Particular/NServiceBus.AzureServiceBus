@@ -36,5 +36,12 @@ namespace NServiceBus
 
             return this;
         }
+
+        public AzureServiceBusMessageSenderSettings MaximuMessageSizeInKilobytes(int sizeInKilobytes)
+        {
+            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes, sizeInKilobytes);
+
+            return this;
+        }
     }
 }
