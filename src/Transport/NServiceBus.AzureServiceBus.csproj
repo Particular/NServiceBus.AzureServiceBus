@@ -82,6 +82,7 @@
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualizationStrategy.cs" />
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
+    <Compile Include="Seam\Batcher.cs" />
     <Compile Include="Seam\Dispatcher.cs" />
     <Compile Include="Seam\MessagePump.cs" />
     <Compile Include="Receiving\ReceiveContext.cs" />

@@ -147,7 +147,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var received = false;
             var completeCalled = false;
 
-            topologyOperator.OnIncomingMessage((message, context) =>
+            topologyOperator.OnIncomingMessage(async (message, context) =>
             {
                 received = true;
 
@@ -162,6 +162,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     return Task.FromResult(true);
                 });
 
+                await Task.Delay(1).ConfigureAwait(false);
                 throw new Exception("Something went wrong");
             });
             topologyOperator.OnError(exception =>
@@ -208,7 +209,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var received = false;
             var errorOccured = false;
 
-            topologyOperator.OnIncomingMessage((message, context) =>
+            topologyOperator.OnIncomingMessage(async (message, context) =>
             {
                 received = true;
 
@@ -221,6 +222,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     return Task.FromResult(true);
                 });
 
+                await Task.Delay(1).ConfigureAwait(false);
                 throw new Exception("Something went wrong");
             });
             topologyOperator.OnError(exception =>
@@ -276,8 +278,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 var ctx = (BrokeredMessageReceiveContext)context;
 
-                ctx.OnComplete.Add(() =>
+                ctx.OnComplete.Add(async () =>
                 {
+                    await Task.Delay(1).ConfigureAwait(false);
                     throw new Exception("Something went wrong");
                 });
 
@@ -394,10 +397,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             var received = false;
             var errorOccured = false;
 
-            topologyOperator.OnIncomingMessage((message, context) =>
+            topologyOperator.OnIncomingMessage(async (message, context) =>
             {
                 received = true;
-
+                await Task.Delay(1).ConfigureAwait(false);
                 throw new Exception("Something went wrong");
             });
             topologyOperator.OnError(exception =>
@@ -459,8 +462,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 var ctx = (BrokeredMessageReceiveContext)context;
 
-                ctx.OnComplete.Add(() =>
+                ctx.OnComplete.Add(async () =>
                 {
+                    await Task.Delay(1).ConfigureAwait(false);
                     throw new Exception("Something went wrong");
                 });
 

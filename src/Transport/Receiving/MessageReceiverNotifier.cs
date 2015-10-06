@@ -51,7 +51,7 @@ namespace NServiceBus.AzureServiceBus
             options.ExceptionReceived += OptionsOnExceptionReceived;
         }
 
-        async void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
+        void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
             // todo respond appropriately
 
@@ -64,10 +64,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 logger.InfoFormat("OptionsOnExceptionReceived invoked, action: {0}, exception: {1}", exceptionReceivedEventArgs.Action, exceptionReceivedEventArgs.Exception);
 
-                if (error != null)
-                {
-                    await error(exceptionReceivedEventArgs.Exception);
-                }
+                error?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
             }
         }
         
@@ -82,14 +79,14 @@ namespace NServiceBus.AzureServiceBus
                 throw new Exception(string.Format("MessageReceiverNotifier did not get a MessageReceiver instance for entity path {0}, this is probably due to a misconfiguration of the topology", path));
             }
 
-            internalReceiver.OnMessageAsync(async message => await ProcessMessage(message), options);
+            internalReceiver.OnMessageAsync(message => ProcessMessage(message), options);
 
             IsRunning = true;
 
             return Task.FromResult(true);
         }
 
-        async Task ProcessMessage(BrokeredMessage message)
+        Task ProcessMessage(BrokeredMessage message)
         {
             var incomingMessage = brokeredMessageConverter.Convert(message);
             var context = new BrokeredMessageReceiveContext()
@@ -100,54 +97,52 @@ namespace NServiceBus.AzureServiceBus
                 ReceiveMode = internalReceiver.Mode,
                 OnComplete = new List<Func<Task>>()
             };
-            await incoming(incomingMessage, context) //invoke pipeline
+            return incoming(incomingMessage, context).ContinueWith(task =>
+            {
+                if (task.Exception != null)
+                {
+                    return Abandon(message, task);
+                }
 
-            //processing success, invoke completion callbacks
-            .ContinueWith(async task => await InvokeCompletionCallbacks(message, context), TaskContinuationOptions.OnlyOnRanToCompletion)
+                return InvokeCompletionCallbacks(message, context);
 
-            //processing failure: error handler is called for us, just abandon brokeredmessage
-            .ContinueWith(async t => await Abandon(message, t), TaskContinuationOptions.OnlyOnFaulted);
+            }).Unwrap(); //invoke pipeline
 
         }
 
-        async Task InvokeCompletionCallbacks(BrokeredMessage message, BrokeredMessageReceiveContext context)
+        Task InvokeCompletionCallbacks(BrokeredMessage message, BrokeredMessageReceiveContext context)
         {
             //// call completion callbacks
-            var tasksToComplete = context.OnComplete.Select(async toComplete => await toComplete()).ToList();
+            var tasksToComplete = context.OnComplete.Select(toComplete => toComplete()).ToList();
 
-            var completeTask = Task.WhenAll(tasksToComplete);
-            
-#pragma warning disable 4014
-            //completion success: complete brokeredmessage
-            completeTask.ContinueWith(async t => await Complete(message), TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.AttachedToParent);
-            //completion failure: call error handler & abandon brokeredmessage
-            completeTask.ContinueWith(async t => await Abandon(message, t), TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.AttachedToParent);
-#pragma warning restore 4014
+            return Task.WhenAll(tasksToComplete).ContinueWith(task =>
+            {
+                if (task.Exception != null)
+                {
+                    return Abandon(message, task);
+                }
 
-            await completeTask;
+                return Complete(message);
+            }).Unwrap();
         }
 
-        async Task Abandon(BrokeredMessage message, Task t)
+        Task Abandon(BrokeredMessage message, Task t)
         {
             logger.InfoFormat("Exceptions occured OnComplete, exception: {0}", t.Exception);
 
             if (error != null)
             {
-                await error(t.Exception);
+                return error(t.Exception);
             }
 
-            await message.AbandonAsync();
-            //message.Abandon();
+            return message.AbandonAsync();
         }
 
-        async Task Complete(BrokeredMessage message)
+        Task Complete(BrokeredMessage message)
         {
             logger.InfoFormat("Completing brokered message");
 
-            await message.CompleteAsync();
-            //message.Complete();
-
-            //return TaskEx.Completed;
+            return message.CompleteAsync();
         }
 
         public async Task Stop()
