@@ -5,11 +5,11 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.DeliveryConstraints;
-    using NServiceBus.Routing;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
+    using DeliveryConstraints;
+    using Routing;
+    using Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 

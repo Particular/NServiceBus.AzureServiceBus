@@ -1,5 +1,8 @@
 namespace NServiceBus.AzureServiceBus
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
 
     /// <summary>
@@ -20,5 +23,10 @@ namespace NServiceBus.AzureServiceBus
         //TODO: replace by EntityInfo object
         public string EntityPath { get; set; }
         public string ConnectionString { get; set; }
+
+        // Dispatcher needs to compare this with requested consistency guarantees, cannot do default (postponed) dispatch if there is no completion step (ReceiveAndDelete)
+        public ReceiveMode ReceiveMode { get; set; }
+
+        public IList<Func<Task>> OnComplete { get; set; }
     }
 }

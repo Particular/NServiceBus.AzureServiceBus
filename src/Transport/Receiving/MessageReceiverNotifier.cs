@@ -1,6 +1,8 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
@@ -41,7 +43,7 @@ namespace NServiceBus.AzureServiceBus
 
             options = new OnMessageOptions
             {
-                AutoComplete = true,
+                AutoComplete = false,
                 AutoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
                 MaxConcurrentCalls = maximumConcurrency
             };
@@ -80,21 +82,72 @@ namespace NServiceBus.AzureServiceBus
                 throw new Exception(string.Format("MessageReceiverNotifier did not get a MessageReceiver instance for entity path {0}, this is probably due to a misconfiguration of the topology", path));
             }
 
-            internalReceiver.OnMessageAsync(message =>
-            {
-                var incomingMessage = brokeredMessageConverter.Convert(message);
-                var context = new BrokeredMessageReceiveContext()
-                {
-                    BrokeredMessage = message,
-                    EntityPath = path,
-                    ConnectionString = connstring
-                };
-                return incoming(incomingMessage, context);
-            }, options);
+            internalReceiver.OnMessageAsync(async message => await ProcessMessage(message), options);
 
             IsRunning = true;
 
             return Task.FromResult(true);
+        }
+
+        async Task ProcessMessage(BrokeredMessage message)
+        {
+            var incomingMessage = brokeredMessageConverter.Convert(message);
+            var context = new BrokeredMessageReceiveContext()
+            {
+                BrokeredMessage = message,
+                EntityPath = path,
+                ConnectionString = connstring,
+                ReceiveMode = internalReceiver.Mode,
+                OnComplete = new List<Func<Task>>()
+            };
+            await incoming(incomingMessage, context) //invoke pipeline
+
+            //processing success, invoke completion callbacks
+            .ContinueWith(async task => await InvokeCompletionCallbacks(message, context), TaskContinuationOptions.OnlyOnRanToCompletion)
+
+            //processing failure: error handler is called for us, just abandon brokeredmessage
+            .ContinueWith(async t => await Abandon(message, t), TaskContinuationOptions.OnlyOnFaulted);
+
+        }
+
+        async Task InvokeCompletionCallbacks(BrokeredMessage message, BrokeredMessageReceiveContext context)
+        {
+            //// call completion callbacks
+            var tasksToComplete = context.OnComplete.Select(async toComplete => await toComplete()).ToList();
+
+            var completeTask = Task.WhenAll(tasksToComplete);
+            
+#pragma warning disable 4014
+            //completion success: complete brokeredmessage
+            completeTask.ContinueWith(async t => await Complete(message), TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.AttachedToParent);
+            //completion failure: call error handler & abandon brokeredmessage
+            completeTask.ContinueWith(async t => await Abandon(message, t), TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.AttachedToParent);
+#pragma warning restore 4014
+
+            await completeTask;
+        }
+
+        async Task Abandon(BrokeredMessage message, Task t)
+        {
+            logger.InfoFormat("Exceptions occured OnComplete, exception: {0}", t.Exception);
+
+            if (error != null)
+            {
+                await error(t.Exception);
+            }
+
+            await message.AbandonAsync();
+            //message.Abandon();
+        }
+
+        async Task Complete(BrokeredMessage message)
+        {
+            logger.InfoFormat("Completing brokered message");
+
+            await message.CompleteAsync();
+            //message.Complete();
+
+            //return TaskEx.Completed;
         }
 
         public async Task Stop()
