@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using NServiceBus.Extensibility;
     using NServiceBus.Logging;
     using NServiceBus.Transports;
 
@@ -15,7 +16,7 @@ namespace NServiceBus.AzureServiceBus
             batcher = new Batcher(routeOutgoingMessages);
         }
 
-        public Task Dispatch(IEnumerable<TransportOperation> outgoingMessages)
+        public Task Dispatch(IEnumerable<TransportOperation> outgoingMessages, ReadOnlyContextBag context)
         {
             return batcher.SendInBatches(outgoingMessages);
         }

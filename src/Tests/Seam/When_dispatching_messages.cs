@@ -8,6 +8,7 @@
     using AzureServiceBus;
     using AzureServiceBus.Addressing;
     using DeliveryConstraints;
+    using NServiceBus.Extensibility;
     using Routing;
     using Settings;
     using NServiceBus.Transports;
@@ -44,8 +45,8 @@
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
             var outgoingMessage3 = new OutgoingMessage("Id-3", new Dictionary<string, string>(), bytes);
             var outgoingMessage4 = new OutgoingMessage("Id-4", new Dictionary<string, string>(), bytes);
-            var dispatchOptions1 = new DispatchOptions(new DirectToTargetDestination("MyQueue"), null, Enumerable.Empty<DeliveryConstraint>());
-            var dispatchOptions2 = new DispatchOptions(new DirectToTargetDestination("MyQueue2"), null, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions1 = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions2 = new DispatchOptions(new DirectToTargetDestination("MyQueue2"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
             //// perform the test
             var dispatcher = new Dispatcher(router);
@@ -53,7 +54,7 @@
             {
                 new TransportOperation(outgoingMessage1, dispatchOptions1), new TransportOperation(outgoingMessage2, dispatchOptions1), //batch #1
                 new TransportOperation(outgoingMessage3, dispatchOptions2), new TransportOperation(outgoingMessage4, dispatchOptions2), //batch #2
-            });
+            }, new ContextBag());
 
             //validate
             var queue = await namespaceManager.GetQueueAsync("myqueue");
@@ -91,8 +92,8 @@
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
             var outgoingMessage3 = new OutgoingMessage("Id-3", new Dictionary<string, string>(), bytes);
             var outgoingMessage4 = new OutgoingMessage("Id-4", new Dictionary<string, string>(), bytes);
-            var dispatchOptions1 = new DispatchOptions(new DirectToTargetDestination("MyQueue"), null, Enumerable.Empty<DeliveryConstraint>());
-            var dispatchOptions2 = new DispatchOptions(new DirectToTargetDestination("MyQueue2"), null, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions1 = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions2 = new DispatchOptions(new DirectToTargetDestination("MyQueue2"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
             //// perform the test
             var dispatcher = new Dispatcher(router);
@@ -102,7 +103,7 @@
             {
                 new TransportOperation(outgoingMessage1, dispatchOptions1), new TransportOperation(outgoingMessage2, dispatchOptions1), //batch #1
                 new TransportOperation(outgoingMessage3, dispatchOptions2), new TransportOperation(outgoingMessage4, dispatchOptions2), //batch #2
-            }), Throws.Exception.TypeOf<AggregateException>());
+            }, new ContextBag()), Throws.Exception.TypeOf<AggregateException>());
 
             //cleanup 
             await namespaceManager.DeleteQueueAsync("myqueue");
