@@ -92,6 +92,16 @@ namespace NServiceBus.AzureServiceBus
             };
         }
 
+        public TopologyDefinition Determine(Purpose sending, Type eventType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TopologyDefinition Determine(Purpose sending, string destination)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<SubscriptionInfo> Subscribe(Type eventType)
         {
             throw new NotSupportedException("The current topology does not support azure servicebus subscriptions");

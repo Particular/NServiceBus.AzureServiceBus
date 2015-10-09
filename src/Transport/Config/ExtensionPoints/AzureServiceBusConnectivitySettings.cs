@@ -20,5 +20,14 @@
 
             return this;
         }
+
+        public AzureServiceBusConnectivitySettings SendViaReceiveQueueIfPossible(bool sendViaReceiveQueueIfPossible)
+        {
+            _settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueueIfPossible, sendViaReceiveQueueIfPossible);
+
+            return this;
+
+
+        }
     }
 }

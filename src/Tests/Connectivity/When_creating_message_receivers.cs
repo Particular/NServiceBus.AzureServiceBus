@@ -90,6 +90,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 throw new NotImplementedException();
             }
+
+            public Task<IMessageSender> CreateMessageSenderAsync(string entitypath, string viaEntityPath)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         class FakeMessageReceiver : IMessageReceiver

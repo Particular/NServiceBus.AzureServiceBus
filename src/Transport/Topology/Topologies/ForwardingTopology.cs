@@ -86,6 +86,15 @@ namespace NServiceBus.AzureServiceBus
                 Entities = entities
             };
         }
+        public TopologyDefinition Determine(Purpose sending, Type eventType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TopologyDefinition Determine(Purpose sending, string destination)
+        {
+            throw new NotImplementedException();
+        }
 
         void BuildTopicBundles(NamespaceInfo[] namespaces, ISanitizationStrategy sanitizationStrategy)
         {

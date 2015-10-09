@@ -13,7 +13,7 @@ namespace NServiceBus.AzureServiceBus
 
     public class DefaultOutgoingMessageRouter : IRouteOutgoingMessages
     {
-        readonly IAddressingStrategy addressingStrategy;
+        readonly ITopology topology;
         readonly IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter;
         readonly IManageClientEntityLifeCycle senders;
 
@@ -21,9 +21,9 @@ namespace NServiceBus.AzureServiceBus
         TimeSpan backOffTimeOnThrottle;
         int maximuMessageSizeInKilobytes;
 
-        public DefaultOutgoingMessageRouter(IAddressingStrategy addressingStrategy, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageClientEntityLifeCycle senders, ReadOnlySettings settings)
+        public DefaultOutgoingMessageRouter(ITopology topology, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageClientEntityLifeCycle senders, ReadOnlySettings settings)
         {
-            this.addressingStrategy = addressingStrategy;
+            this.topology = topology;
             this.outgoingMessageConverter = outgoingMessageConverter;
             this.senders = senders;
 
@@ -34,26 +34,31 @@ namespace NServiceBus.AzureServiceBus
 
         public async Task RouteAsync(OutgoingMessage message, DispatchOptions dispatchOptions)
         {
-            var address = GetAddress(dispatchOptions);
+            var addresses = GetAddresses(dispatchOptions);
 
-            var messageSender = (IMessageSender)senders.Get(address.Path, address.Namespace.ConnectionString);
+            foreach (var address in addresses)
+            {
+                var messageSender = (IMessageSender) senders.Get(address.Path, address.Namespace.ConnectionString);
 
-            var brokeredMessage = outgoingMessageConverter.Convert(message, dispatchOptions);
-            await messageSender.RetryOnThrottle(s => s.SendAsync(brokeredMessage), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle);
+                var brokeredMessage = outgoingMessageConverter.Convert(message, dispatchOptions);
+                await messageSender.RetryOnThrottle(s => s.SendAsync(brokeredMessage), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle);
+            }
         }
 
         public async Task RouteBatchAsync(IEnumerable<OutgoingMessage> messages, DispatchOptions dispatchOptions)
         {
-            var address = GetAddress(dispatchOptions);
+            var addresses = GetAddresses(dispatchOptions);
+            foreach (var address in addresses)
+            {
+                var messageSender = (IMessageSender)senders.Get(address.Path, address.Namespace.ConnectionString);
 
-            var messageSender = (IMessageSender)senders.Get(address.Path, address.Namespace.ConnectionString);
+                var brokeredMessages = outgoingMessageConverter.Convert(messages, dispatchOptions);
 
-            var brokeredMessages = outgoingMessageConverter.Convert(messages, dispatchOptions);
-
-            await SendBatchWithEnforcedBatchSize(messageSender, brokeredMessages);
+                await SendBatchWithEnforcedBatchSize(messageSender, brokeredMessages);
+            }
         }
 
-        EntityInfo GetAddress(DispatchOptions dispatchOptions)
+        IEnumerable<EntityInfo> GetAddresses(DispatchOptions dispatchOptions)
         {
             var directRouting = dispatchOptions.RoutingStrategy as DirectToTargetDestination;
 
@@ -61,11 +66,11 @@ namespace NServiceBus.AzureServiceBus
             {
                 var toAllSubscribers = (ToAllSubscribers)dispatchOptions.RoutingStrategy;
 
-                return addressingStrategy.GetEntitiesForPublishing(toAllSubscribers.EventType).FirstOrDefault();
+                return topology.Determine(Purpose.Sending, toAllSubscribers.EventType).Entities;
             }
             else // send
             {
-                return addressingStrategy.GetEntitiesForSending(directRouting.Destination).FirstOrDefault();
+                return topology.Determine(Purpose.Sending, directRouting.Destination).Entities;
             }
         }
 

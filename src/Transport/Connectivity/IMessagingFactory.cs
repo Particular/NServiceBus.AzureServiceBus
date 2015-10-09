@@ -8,5 +8,7 @@ namespace NServiceBus.AzureServiceBus
         Task<IMessageReceiver> CreateMessageReceiverAsync(string entitypath, ReceiveMode receiveMode);
 
         Task<IMessageSender> CreateMessageSenderAsync(string entitypath);
+
+        Task<IMessageSender> CreateMessageSenderAsync(string entitypath, string viaEntityPath);
     }
 }

@@ -7,7 +7,6 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System.Threading.Tasks;
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
-    using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.DeliveryConstraints;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
@@ -40,7 +39,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             //// perform the test
 
             var router = new DefaultOutgoingMessageRouter(
-                new FakeAddressingStrategy(), //TODO: Is this the same as IProvideDynamicRouting?
+                new FakeTopology(),
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
 
@@ -81,7 +80,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             //// perform the test
 
             var router = new DefaultOutgoingMessageRouter(
-                new FakeAddressingStrategy(), //TODO: Is this the same as IProvideDynamicRouting?
+                new FakeTopology(),
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
 
@@ -122,7 +121,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             //// perform the test
 
             var router = new DefaultOutgoingMessageRouter(
-                new FakeAddressingStrategy(), //TODO: Is this the same as IProvideDynamicRouting?
+                new FakeTopology(), 
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
 
@@ -163,7 +162,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             //// perform the test
 
             var router = new DefaultOutgoingMessageRouter(
-                new FakeAddressingStrategy(), //TODO: Is this the same as IProvideDynamicRouting?
+                new FakeTopology(), 
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
 
@@ -178,23 +177,51 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueueAsync("myqueue");
         }
 
-        public class FakeAddressingStrategy : IAddressingStrategy
+        public class FakeTopology : ITopology
         {
-            public EntityInfo[] GetEntitiesForPublishing(Type eventType)
+            public void InitializeSettings()
             {
                 throw new NotImplementedException();
             }
 
-            public EntityInfo[] GetEntitiesForSending(string destination)
+            public void InitializeContainer()
             {
-                return new[]
+                throw new NotImplementedException();
+            }
+
+            public TopologyDefinition Determine(Purpose purpose)
+            {
+                throw new NotImplementedException();
+            }
+
+            public TopologyDefinition Determine(Purpose sending, Type eventType)
+            {
+                throw new NotImplementedException();
+            }
+
+            public TopologyDefinition Determine(Purpose sending, string destination)
+            {
+                return new TopologyDefinition()
                 {
-                    new EntityInfo
+                    Entities = new[]
                     {
-                        Path = destination,
-                        Namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active)
+                        new EntityInfo
+                        {
+                            Path = destination,
+                            Namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active)
+                        }
                     }
                 };
+            }
+
+            public IEnumerable<SubscriptionInfo> Subscribe(Type eventType)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype)
+            {
+                throw new NotImplementedException();
             }
         }
     }

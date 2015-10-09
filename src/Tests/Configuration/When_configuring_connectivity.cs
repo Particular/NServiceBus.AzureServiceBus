@@ -44,5 +44,15 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.AreEqual(4, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
         }
+
+        public void Should_be_able_to_set_whether_send_via_receive_queue_should_be_considered()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            var connectivitySettings = extensions.Connectivity().SendViaReceiveQueueIfPossible(false);
+
+            Assert.AreEqual(false, connectivitySettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueueIfPossible));
+        }
     }
 }

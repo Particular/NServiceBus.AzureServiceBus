@@ -12,8 +12,7 @@ namespace NServiceBus.AzureServiceBus
     /// </summary>
     public abstract class ReceiveContext
     {
-        
-
+        public IList<Func<Task>> OnComplete { get; set; }
     }
 
     public class BrokeredMessageReceiveContext : ReceiveContext
@@ -26,7 +25,6 @@ namespace NServiceBus.AzureServiceBus
 
         // Dispatcher needs to compare this with requested consistency guarantees, cannot do default (postponed) dispatch if there is no completion step (ReceiveAndDelete)
         public ReceiveMode ReceiveMode { get; set; }
-
-        public IList<Func<Task>> OnComplete { get; set; }
+        
     }
 }

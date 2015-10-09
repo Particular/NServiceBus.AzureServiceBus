@@ -6,7 +6,6 @@
     using System.Text;
     using System.Threading.Tasks;
     using AzureServiceBus;
-    using AzureServiceBus.Addressing;
     using DeliveryConstraints;
     using NServiceBus.Extensibility;
     using Routing;
@@ -32,7 +31,7 @@
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingMessageRouter(new FakeAddressingStrategy(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
+            var router = new DefaultOutgoingMessageRouter(new FakeTopology(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -49,7 +48,7 @@
             var dispatchOptions2 = new DispatchOptions(new DirectToTargetDestination("MyQueue2"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
             //// perform the test
-            var dispatcher = new Dispatcher(router);
+            var dispatcher = new Dispatcher(router, settings);
             await dispatcher.Dispatch(new []
             {
                 new TransportOperation(outgoingMessage1, dispatchOptions1), new TransportOperation(outgoingMessage2, dispatchOptions1), //batch #1
@@ -80,7 +79,7 @@
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingMessageRouter(new FakeAddressingStrategy(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
+            var router = new DefaultOutgoingMessageRouter(new FakeTopology(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -96,7 +95,7 @@
             var dispatchOptions2 = new DispatchOptions(new DirectToTargetDestination("MyQueue2"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
             //// perform the test
-            var dispatcher = new Dispatcher(router);
+            var dispatcher = new Dispatcher(router, settings);
 
             //validate
             Assert.That(async () => await dispatcher.Dispatch(new[]
@@ -110,23 +109,52 @@
         }
 
 
-        class FakeAddressingStrategy : IAddressingStrategy
+        class FakeTopology : ITopology
         {
-            public EntityInfo[] GetEntitiesForPublishing(Type eventType)
+
+            public void InitializeSettings()
             {
                 throw new NotImplementedException();
             }
 
-            public EntityInfo[] GetEntitiesForSending(string destination)
+            public void InitializeContainer()
             {
-                return new[]
+                throw new NotImplementedException();
+            }
+
+            public TopologyDefinition Determine(Purpose purpose)
+            {
+                throw new NotImplementedException();
+            }
+
+            public TopologyDefinition Determine(Purpose sending, Type eventType)
+            {
+                throw new NotImplementedException();
+            }
+
+            public TopologyDefinition Determine(Purpose sending, string destination)
+            {
+                return new TopologyDefinition
                 {
-                    new EntityInfo
+                    Entities = new[]
                     {
-                        Path = destination,
-                        Namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active)
+                        new EntityInfo
+                        {
+                            Path = destination,
+                            Namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active)
+                        }
                     }
                 };
+            }
+
+            public IEnumerable<SubscriptionInfo> Subscribe(Type eventType)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype)
+            {
+                throw new NotImplementedException();
             }
         }
 

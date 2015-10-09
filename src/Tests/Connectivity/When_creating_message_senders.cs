@@ -87,6 +87,11 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 return Task.FromResult<IMessageSender>(new FakeMessageSender());
             }
+
+            public Task<IMessageSender> CreateMessageSenderAsync(string entitypath, string viaEntityPath)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         class FakeMessageSender : IMessageSender

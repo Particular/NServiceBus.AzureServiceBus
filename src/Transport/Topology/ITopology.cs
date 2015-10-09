@@ -27,8 +27,11 @@
         /// Creates the topology definition, called when settings are set
         /// </summary>
         TopologyDefinition Determine(Purpose purpose);
+        TopologyDefinition Determine(Purpose sending, Type eventType);
+        TopologyDefinition Determine(Purpose sending, string destination);
 
         IEnumerable<SubscriptionInfo> Subscribe(Type eventType);
         IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype);
+        
     }
 }

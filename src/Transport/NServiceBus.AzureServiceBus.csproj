@@ -77,7 +77,6 @@
   <ItemGroup>
     <Compile Include="Addressing\Composition\Strategies\FlatCompositionStrategy.cs" />
     <Compile Include="Addressing\Composition\Strategies\HierarchyCompositionStrategy.cs" />
-    <Compile Include="Addressing\IAddressingStrategy.cs" />
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualizationStrategy.cs" />
