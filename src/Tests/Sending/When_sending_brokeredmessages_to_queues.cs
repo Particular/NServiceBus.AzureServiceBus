@@ -29,7 +29,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await creator.CreateAsync("myqueue", namespaceManager);
 
             // perform the test
-            var sender = (IMessageSender) await messageSenderCreator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
+            var sender = await messageSenderCreator.CreateAsync("myqueue", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             //validate

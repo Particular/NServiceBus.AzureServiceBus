@@ -23,7 +23,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new ClientEntityLifeCycleManager(messageReceiverCreator, settings);
+            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
@@ -55,7 +55,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new ClientEntityLifeCycleManager(messageReceiverCreator, settings);
+            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
@@ -91,7 +91,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new ClientEntityLifeCycleManager(messageReceiverCreator, settings);
+            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
@@ -100,7 +100,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await creator.CreateAsync("myqueue", namespaceManager);
 
             // put a message on the queue
-            var sender = (IMessageSender) await messageSenderCreator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
+            var sender = await messageSenderCreator.CreateAsync("myqueue", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             // perform the test

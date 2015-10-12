@@ -50,7 +50,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
-            var sender = (IMessageSender) await senderFactory.CreateAsync("sales", AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             await Task.WhenAny(completed.WaitOne(), error.WaitOne());
@@ -114,7 +114,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
-            var sender = (IMessageSender)await senderFactory.CreateAsync("sales", AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             await Task.WhenAny(completed.WaitOne(), error.WaitOne());
@@ -177,7 +177,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
-            var sender = (IMessageSender)await senderFactory.CreateAsync("sales", AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             await Task.WhenAny(completed.WaitOne(), error.WaitOne());
@@ -239,7 +239,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
-            var sender = (IMessageSender)await senderFactory.CreateAsync("sales", AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             await Task.WhenAny(completed.WaitOne(), error.WaitOne());
@@ -302,7 +302,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
-            var sender = (IMessageSender)await senderFactory.CreateAsync("sales", AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             await Task.WhenAny(completed.WaitOne(), error.WaitOne());
@@ -358,7 +358,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
-            var sender = (IMessageSender)await senderFactory.CreateAsync("sales", AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             await Task.WhenAny(completed.WaitOne(), error.WaitOne());
@@ -417,7 +417,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
-            var sender = (IMessageSender)await senderFactory.CreateAsync("sales", AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             await Task.WhenAny(completed.WaitOne(), error.WaitOne());
@@ -484,7 +484,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
-            var sender = (IMessageSender)await senderFactory.CreateAsync("sales", AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             await Task.WhenAny(completed.WaitOne(), error.WaitOne());

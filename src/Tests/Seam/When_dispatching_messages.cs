@@ -17,7 +17,6 @@
     [Category("AzureServiceBus")]
     public class When_dispatching_messages
     {
-
         [Test]
         public async Task Should_dispatch_multiple_batches()
         {
@@ -30,7 +29,7 @@
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
+            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
             var router = new DefaultOutgoingMessageRouter(new FakeTopology(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
@@ -78,7 +77,7 @@
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
+            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
             var router = new DefaultOutgoingMessageRouter(new FakeTopology(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
@@ -157,6 +156,5 @@
                 throw new NotImplementedException();
             }
         }
-
     }
 }

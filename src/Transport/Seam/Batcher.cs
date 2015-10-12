@@ -7,19 +7,22 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using NServiceBus.Logging;
     using NServiceBus.Routing;
+    using NServiceBus.Settings;
     using NServiceBus.Transports;
 
     class Batcher
     {
         ILog logger = LogManager.GetLogger<Batcher>();
         readonly IRouteOutgoingMessages routeOutgoingMessages;
+        readonly ReadOnlySettings settings;
 
-        public Batcher(IRouteOutgoingMessages routeOutgoingMessages)
+        public Batcher(IRouteOutgoingMessages routeOutgoingMessages, ReadOnlySettings settings)
         {
             this.routeOutgoingMessages = routeOutgoingMessages;
+            this.settings = settings;
         }
 
-        internal async Task SendInBatches(IEnumerable<TransportOperation> outgoingMessages)
+        internal async Task SendInBatches(IEnumerable<TransportOperation> outgoingMessages, BrokeredMessageReceiveContext context)
         {
             var batches = outgoingMessages.GroupBy(x => new
             {
@@ -27,11 +30,20 @@ namespace NServiceBus.AzureServiceBus
             });
             var exceptions = new List<Exception>();
 
+            var sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+
             foreach (var batch in batches)
             {
                 try
                 {
-                    await routeOutgoingMessages.RouteBatchAsync(batch.Select(x => x.Message), batch.First().DispatchOptions);
+                    var routingOptions = new RoutingOptions
+                    {
+                        SendVia = sendVia,
+                        ViaEntityPath = context?.EntityPath,
+                        ViaConnectionString = context?.ConnectionString,
+                        DispatchOptions = batch.First().DispatchOptions
+                    };
+                    await routeOutgoingMessages.RouteBatchAsync(batch.Select(x => x.Message), routingOptions);
                 }
                 catch (Exception ex)
                 {
@@ -74,4 +86,6 @@ namespace NServiceBus.AzureServiceBus
             return sb.ToString();
         }
     }
+
+  
 }

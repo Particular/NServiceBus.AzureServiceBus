@@ -29,7 +29,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
+            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -48,7 +48,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
 
             
-            await router.RouteAsync(outgoingMessage, dispatchOptions);
+            await router.RouteAsync(outgoingMessage, new RoutingOptions {DispatchOptions = dispatchOptions});
 
             //validate
             var queue = await namespaceManager.GetQueueAsync("myqueue");
@@ -70,7 +70,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
+            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -89,7 +89,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
             var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
             
-            await router.RouteBatchAsync(new [] {outgoingMessage1, outgoingMessage2}, dispatchOptions);
+            await router.RouteBatchAsync(new [] {outgoingMessage1, outgoingMessage2}, new RoutingOptions { DispatchOptions = dispatchOptions });
 
             //validate
             var queue = await namespaceManager.GetQueueAsync("myqueue");
@@ -111,7 +111,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
+            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -130,7 +130,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
             var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
             
-            await router.RouteBatchAsync(new [] {outgoingMessage1, outgoingMessage2}, dispatchOptions);
+            await router.RouteBatchAsync(new [] {outgoingMessage1, outgoingMessage2}, new RoutingOptions { DispatchOptions = dispatchOptions });
 
             //validate
             var queue = await namespaceManager.GetQueueAsync("myqueue");
@@ -152,7 +152,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
+            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -171,7 +171,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
             //validate
-            Assert.That(async () => await router.RouteBatchAsync(new [] {outgoingMessage1}, dispatchOptions), Throws.Exception.TypeOf<MessageTooLargeException>());
+            Assert.That(async () => await router.RouteBatchAsync(new [] {outgoingMessage1}, new RoutingOptions { DispatchOptions = dispatchOptions }), Throws.Exception.TypeOf<MessageTooLargeException>());
 
             //cleanup 
             await namespaceManager.DeleteQueueAsync("myqueue");

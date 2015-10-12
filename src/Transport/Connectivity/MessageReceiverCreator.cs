@@ -5,7 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Settings;
 
-    class MessageReceiverCreator : ICreateClientEntities
+    class MessageReceiverCreator : ICreateMessageReceivers
     {
         readonly IManageMessagingFactoryLifeCycle _factories;
         readonly ReadOnlySettings _settings;
@@ -17,7 +17,7 @@ namespace NServiceBus.AzureServiceBus
         }
 
 
-        public async Task<IClientEntity> CreateAsync(string entitypath, string connectionstring)
+        public async Task<IMessageReceiver> CreateAsync(string entitypath, string connectionstring)
         {
             var factory = _factories.Get(connectionstring);
             var receiveMode = _settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);

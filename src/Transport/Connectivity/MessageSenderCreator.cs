@@ -4,7 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using Microsoft.ServiceBus;
     using NServiceBus.Settings;
 
-    class MessageSenderCreator : ICreateClientEntities
+    class MessageSenderCreator : ICreateMessageSenders
     {
         readonly IManageMessagingFactoryLifeCycle _factories;
         readonly ReadOnlySettings _settings;
@@ -16,11 +16,13 @@ namespace NServiceBus.AzureServiceBus
         }
 
 
-        public async Task<IClientEntity> CreateAsync(string entitypath, string connectionstring)
+        public async Task<IMessageSender> CreateAsync(string entitypath, string viaEntityPath, string connectionstring)
         {
             var factory = _factories.Get(connectionstring);
 
-            var sender = await factory.CreateMessageSenderAsync(entitypath);
+            var sender = viaEntityPath != null ? 
+                            await factory.CreateMessageSenderAsync(entitypath, viaEntityPath) : 
+                            await factory.CreateMessageSenderAsync(entitypath);
 
             if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy))
             {

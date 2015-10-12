@@ -22,7 +22,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new MessageSenderCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var sender = await creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
+            var sender = await creator.CreateAsync("myqueue", null, AzureServiceBusConnectionString.Value);
 
             Assert.IsTrue(factory.IsInvoked);
             Assert.IsInstanceOf<IMessageSender>(sender);
@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new MessageSenderCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var sender = (IMessageSender)await creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
+            var sender = await creator.CreateAsync("myqueue", null, AzureServiceBusConnectionString.Value);
 
             Assert.IsInstanceOf<NoRetry>(sender.RetryPolicy);
         }

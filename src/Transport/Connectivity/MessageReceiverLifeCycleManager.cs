@@ -4,19 +4,19 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Concurrent;
     using NServiceBus.Settings;
 
-    class ClientEntityLifeCycleManager : IManageClientEntityLifeCycle
+    class MessageReceiverLifeCycleManager : IManageMessageReceiverLifeCycle
     {
-        readonly ICreateClientEntities _factory;
+        readonly ICreateMessageReceivers _receiveFactory;
         int _numberOfReceiversPerEntity;
         ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>> MessageReceivers = new ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>>();
 
-        public ClientEntityLifeCycleManager(ICreateClientEntities factory, ReadOnlySettings settings)
+        public MessageReceiverLifeCycleManager(ICreateMessageReceivers receiveFactory, ReadOnlySettings settings)
         {
-            this._factory = factory;
+            this._receiveFactory = receiveFactory;
             this._numberOfReceiversPerEntity = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
         }
 
-        public IClientEntity Get(string entitypath, string connectionstring)
+        public IMessageReceiver Get(string entitypath, string connectionstring)
         {
             var buffer = MessageReceivers.GetOrAdd(entitypath, s => 
             {
@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus
                     var e = new EntityClientEntry();
                     lock (e.Mutex)
                     {
-                        e.ClientEntity = _factory.CreateAsync(entitypath, connectionstring).Result; //cannot await in lock statement
+                        e.ClientEntity = _receiveFactory.CreateAsync(entitypath, connectionstring).Result;
                     }
                     b.Put(e);
                 }
@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus
                 {
                     if (entry.ClientEntity.IsClosed)
                     {
-                        entry.ClientEntity = _factory.CreateAsync(entitypath, connectionstring).Result; //cannot await in lock statement
+                        entry.ClientEntity = _receiveFactory.CreateAsync(entitypath, connectionstring).Result;
                     }
                 }
             }
@@ -53,7 +53,7 @@ namespace NServiceBus.AzureServiceBus
         class EntityClientEntry
         {
             internal Object Mutex = new object();
-            internal IClientEntity ClientEntity;
+            internal IMessageReceiver ClientEntity;
         }
     }
 }

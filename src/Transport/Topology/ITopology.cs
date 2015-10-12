@@ -27,6 +27,8 @@
         /// Creates the topology definition, called when settings are set
         /// </summary>
         TopologyDefinition Determine(Purpose purpose);
+
+        //TODO: API feels quirky, don't like naming & fact that we inject purpose, purpose should be fixed here
         TopologyDefinition Determine(Purpose sending, Type eventType);
         TopologyDefinition Determine(Purpose sending, string destination);
 

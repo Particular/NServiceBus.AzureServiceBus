@@ -113,7 +113,7 @@ namespace NServiceBus.AzureServiceBus
         {
             public const string NumberOfClientsPerEntity = "AzureServiceBus.Connectivity.NumberOfClientsPerEntity";
 
-            public const string SendViaReceiveQueueIfPossible = "AzureServiceBus.Connectivity.SendViaReceiveQueueIfPossible";
+            public const string SendViaReceiveQueue = "AzureServiceBus.Connectivity.SendViaReceiveQueue";
 
 
             public static class MessageReceivers

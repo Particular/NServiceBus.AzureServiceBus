@@ -80,11 +80,15 @@
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualizationStrategy.cs" />
+    <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
+    <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
+    <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
     <Compile Include="Seam\Batcher.cs" />
     <Compile Include="Seam\Dispatcher.cs" />
     <Compile Include="Seam\MessagePump.cs" />
     <Compile Include="Receiving\ReceiveContext.cs" />
+    <Compile Include="Sending\RoutingOptions.cs" />
     <Compile Include="Topology\Purpose.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\ShardedNamespacePartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioningStrategy.cs" />
@@ -105,9 +109,9 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessageSenderSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessagingFactoriesSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSerializationSettings.cs" />
-    <Compile Include="Connectivity\ClientEntityLifeCycleManager.cs" />
+    <Compile Include="Connectivity\MessageReceiverLifeCycleManager.cs" />
     <Compile Include="Connectivity\IClientEntity.cs" />
-    <Compile Include="Connectivity\IManageClientEntityLifeCycle.cs" />
+    <Compile Include="Connectivity\IManageMessageReceiverLifeCycle.cs" />
     <Compile Include="Connectivity\IManageMessagingFactoryLifeCycle.cs" />
     <Compile Include="Connectivity\IManageNamespaceManagerLifeCycle.cs" />
     <Compile Include="Connectivity\IMessageReceiver.cs" />
@@ -161,7 +165,7 @@
     <Compile Include="Config\OldCode\OverrideMaxRetries.cs" />
     <Compile Include="Config\OldCode\QueueIndividualizer.cs" />
     <Compile Include="Config\WellKnownConfigurationKeys.cs" />
-    <Compile Include="Connectivity\ICreateClientEntities.cs" />
+    <Compile Include="Connectivity\ICreateMessageSenders.cs" />
     <Compile Include="Connectivity\ICreateMessagingFactories.cs" />
     <Compile Include="Creation\ICreateAzureServiceBusQueues.cs" />
     <Compile Include="Creation\ICreateAzureServiceBusTopics.cs" />

@@ -31,11 +31,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             await creator.CreateAsync("myqueue", namespaceManager);
 
             // put a message on the queue
-            var sender = (IMessageSender)await messageSenderCreator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
+            var sender = await messageSenderCreator.CreateAsync("myqueue", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
             // perform the test
-            var receiver = (IMessageReceiver) await messageReceiverCreator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
+            var receiver = await messageReceiverCreator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);

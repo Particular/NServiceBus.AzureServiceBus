@@ -4,6 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
     using Settings;
@@ -11,7 +12,7 @@ namespace NServiceBus.AzureServiceBus
 
     class MessageReceiverNotifier : INotifyIncomingMessages
     {
-        readonly IManageClientEntityLifeCycle clientEntities;
+        readonly IManageMessageReceiverLifeCycle clientEntities;
         readonly IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
         readonly ReadOnlySettings settings;
         IMessageReceiver internalReceiver;
@@ -24,7 +25,7 @@ namespace NServiceBus.AzureServiceBus
 
         ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
 
-        public MessageReceiverNotifier(IManageClientEntityLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
+        public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
@@ -72,7 +73,7 @@ namespace NServiceBus.AzureServiceBus
         {
             stopping = false;
 
-            internalReceiver = clientEntities.Get(path, connstring) as IMessageReceiver;
+            internalReceiver = clientEntities.Get(path, connstring);
 
             if (internalReceiver == null)
             {
@@ -112,17 +113,27 @@ namespace NServiceBus.AzureServiceBus
 
         Task InvokeCompletionCallbacks(BrokeredMessage message, BrokeredMessageReceiveContext context)
         {
+            // send via receive queue only works when wrapped in a scope
+            var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+            var scope = useTx ? new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled) : null;
+            
             //// call completion callbacks
             var tasksToComplete = context.OnComplete.Select(toComplete => toComplete()).ToList();
 
             return Task.WhenAll(tasksToComplete).ContinueWith(task =>
             {
-                if (task.Exception != null)
-                {
-                    return Abandon(message, task);
-                }
-
-                return Complete(message);
+                return task.Exception != null ? 
+                    Abandon(message, task).ContinueWith(t =>
+                    {
+                        logger.InfoFormat("Abandoned, disposing scope if present");
+                        scope?.Dispose();
+                    }, TaskContinuationOptions.ExecuteSynchronously) : 
+                    Complete(message).ContinueWith(t =>
+                    {
+                        logger.InfoFormat("Completed, completing scope if present");
+                        scope?.Complete();
+                        scope?.Dispose();
+                    }, TaskContinuationOptions.ExecuteSynchronously);
             }).Unwrap();
         }
 

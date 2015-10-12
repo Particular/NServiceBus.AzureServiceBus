@@ -33,7 +33,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var entityLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
+            var entityLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
             // create the queue
@@ -51,7 +51,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 for (var i = 0; i < 1000; i++)
                 {
-                    var sender = (IMessageSender) entityLifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
+                    var sender = entityLifecycleManager.Get("myqueue", null, AzureServiceBusConnectionString.Value);
                     tasks.Add(sender.RetryOnThrottle(s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
                     //await sender.SendAsync(new BrokeredMessage()).ConfigureAwait(false); // this is really slow
 
@@ -89,7 +89,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var entityLifecycleManager = new ClientEntityLifeCycleManager(messageSenderCreator, settings);
+            var entityLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
             // create the queue
@@ -112,7 +112,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     batch.Add(new BrokeredMessage());
                     counter++;
                 }
-                var sender = (IMessageSender)entityLifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
+                var sender = entityLifecycleManager.Get("myqueue", null, AzureServiceBusConnectionString.Value);
                 await sender.RetryOnThrottle(s => s.SendBatchAsync(batch), TimeSpan.FromSeconds(10), 5);
             }
            

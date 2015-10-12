@@ -39,7 +39,8 @@ namespace NServiceBus.AzureServiceBus
             container.Configure(typeof(MessagingFactoryLifeCycleManager), DependencyLifecycle.SingleInstance);
             container.Configure(typeof(MessageReceiverCreator), DependencyLifecycle.SingleInstance);
             container.Configure(typeof(MessageSenderCreator), DependencyLifecycle.SingleInstance);
-            container.Configure(typeof(ClientEntityLifeCycleManager), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessageReceiverLifeCycleManager), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessageSenderLifeCycleManager), DependencyLifecycle.SingleInstance);
             container.Configure(typeof(AzureServiceBusQueueCreator), DependencyLifecycle.SingleInstance);
             container.Configure(typeof(AzureServiceBusTopicCreator), DependencyLifecycle.SingleInstance);
             container.Configure(typeof(AzureServiceBusSubscriptionCreator), DependencyLifecycle.SingleInstance);
@@ -94,12 +95,24 @@ namespace NServiceBus.AzureServiceBus
 
         public TopologyDefinition Determine(Purpose sending, Type eventType)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("The current topology does not support publishing via azure servicebus directly");
         }
 
         public TopologyDefinition Determine(Purpose sending, string destination)
         {
-            throw new NotImplementedException();
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
+
+            var namespaces = partitioningStrategy.GetNamespaces(destination, sending).ToArray();
+
+            var destinationQueuePath = sanitizationStrategy.Sanitize(destination, EntityType.Queue);
+            var destinationQueues = namespaces.Select(n => new EntityInfo { Path = destinationQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
+
+            return new TopologyDefinition
+            {
+                Namespaces = namespaces,
+                Entities = destinationQueues
+            };
         }
 
         public IEnumerable<SubscriptionInfo> Subscribe(Type eventType)

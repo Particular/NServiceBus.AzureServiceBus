@@ -6,7 +6,6 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -15,13 +14,13 @@ namespace NServiceBus.AzureServiceBus
     {
         readonly ITopology topology;
         readonly IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter;
-        readonly IManageClientEntityLifeCycle senders;
+        readonly IManageMessageSenderLifeCycle senders;
 
         int maxRetryAttemptsOnThrottle;
         TimeSpan backOffTimeOnThrottle;
         int maximuMessageSizeInKilobytes;
 
-        public DefaultOutgoingMessageRouter(ITopology topology, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageClientEntityLifeCycle senders, ReadOnlySettings settings)
+        public DefaultOutgoingMessageRouter(ITopology topology, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings)
         {
             this.topology = topology;
             this.outgoingMessageConverter = outgoingMessageConverter;
@@ -32,39 +31,39 @@ namespace NServiceBus.AzureServiceBus
             maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes);
         }
 
-        public async Task RouteAsync(OutgoingMessage message, DispatchOptions dispatchOptions)
+        public async Task RouteAsync(OutgoingMessage message, RoutingOptions routingOptions)
         {
-            var addresses = GetAddresses(dispatchOptions);
+            var addresses = GetAddresses(routingOptions);
 
             foreach (var address in addresses)
             {
-                var messageSender = (IMessageSender) senders.Get(address.Path, address.Namespace.ConnectionString);
+                var messageSender = senders.Get(address.Path, routingOptions.ViaEntityPath, address.Namespace.ConnectionString);
 
-                var brokeredMessage = outgoingMessageConverter.Convert(message, dispatchOptions);
+                var brokeredMessage = outgoingMessageConverter.Convert(message, routingOptions.DispatchOptions);
                 await messageSender.RetryOnThrottle(s => s.SendAsync(brokeredMessage), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle);
             }
         }
 
-        public async Task RouteBatchAsync(IEnumerable<OutgoingMessage> messages, DispatchOptions dispatchOptions)
+        public async Task RouteBatchAsync(IEnumerable<OutgoingMessage> messages, RoutingOptions routingOptions)
         {
-            var addresses = GetAddresses(dispatchOptions);
+            var addresses = GetAddresses(routingOptions);
             foreach (var address in addresses)
             {
-                var messageSender = (IMessageSender)senders.Get(address.Path, address.Namespace.ConnectionString);
+                var messageSender = senders.Get(address.Path, routingOptions.ViaEntityPath, address.Namespace.ConnectionString);
 
-                var brokeredMessages = outgoingMessageConverter.Convert(messages, dispatchOptions);
+                var brokeredMessages = outgoingMessageConverter.Convert(messages, routingOptions.DispatchOptions);
 
                 await SendBatchWithEnforcedBatchSize(messageSender, brokeredMessages);
             }
         }
 
-        IEnumerable<EntityInfo> GetAddresses(DispatchOptions dispatchOptions)
+        IEnumerable<EntityInfo> GetAddresses(RoutingOptions routingOptions)
         {
-            var directRouting = dispatchOptions.RoutingStrategy as DirectToTargetDestination;
+            var directRouting = routingOptions.DispatchOptions.RoutingStrategy as DirectToTargetDestination;
 
             if (directRouting == null) // publish
             {
-                var toAllSubscribers = (ToAllSubscribers)dispatchOptions.RoutingStrategy;
+                var toAllSubscribers = (ToAllSubscribers)routingOptions.DispatchOptions.RoutingStrategy;
 
                 return topology.Determine(Purpose.Sending, toAllSubscribers.EventType).Entities;
             }

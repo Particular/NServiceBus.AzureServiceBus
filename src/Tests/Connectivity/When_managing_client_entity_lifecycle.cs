@@ -20,7 +20,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new InterceptedMessageReceiverCreator();
 
-            var lifecycleManager = new ClientEntityLifeCycleManager(creator, settings);
+            var lifecycleManager = new MessageReceiverLifeCycleManager(creator, settings);
 
             lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
 
@@ -34,7 +34,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new InterceptedMessageReceiverCreator();
 
-            var lifecycleManager = new ClientEntityLifeCycleManager(creator, settings);
+            var lifecycleManager = new MessageReceiverLifeCycleManager(creator, settings);
 
             var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
 
@@ -63,7 +63,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new InterceptedMessageReceiverCreator();
 
-            var lifecycleManager = new ClientEntityLifeCycleManager(creator, settings);
+            var lifecycleManager = new MessageReceiverLifeCycleManager(creator, settings);
 
             var first = (InterceptedMessageReceiver)lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
 
@@ -75,15 +75,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreNotEqual(first, second);
         }
 
-        class InterceptedMessageReceiverCreator : ICreateClientEntities
+        class InterceptedMessageReceiverCreator : ICreateMessageReceivers
         {
 
             public int InvocationCount = 0;
 
-            public Task<IClientEntity> CreateAsync(string entitypath, string connectionstring)
+            public Task<IMessageReceiver> CreateAsync(string entitypath, string connectionstring)
             {
                 InvocationCount++;
-                return Task.FromResult<IClientEntity>(new InterceptedMessageReceiver());
+                return Task.FromResult<IMessageReceiver>(new InterceptedMessageReceiver());
             }
 
         }
