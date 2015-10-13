@@ -141,12 +141,22 @@ namespace NServiceBus.AzureServiceBus
         {
             logger.InfoFormat("Exceptions occured OnComplete, exception: {0}", t.Exception);
 
-            if (error != null)
+            var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
+            
+            logger.InfoFormat("Abandoning brokered message");
+            return message.AbandonAsync().ContinueWith(task =>
             {
-                return error(t.Exception);
-            }
+                suppressScope.Complete();
 
-            return message.AbandonAsync();
+                if (error != null)
+                {
+                    return error(t.Exception);
+                }
+
+                return TaskEx.Completed;
+            }).Unwrap();
+
+            
         }
 
         Task Complete(BrokeredMessage message)

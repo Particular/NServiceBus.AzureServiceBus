@@ -38,6 +38,11 @@ namespace NServiceBus.AzureServiceBus
 
         }
 
+        public void OnError(Func<Exception, Task> func)
+        {
+            topologyOperator.OnError(func);
+        }
+
         public void Start(PushRuntimeSettings limitations)
         {
             var definition = topology.Determine(Purpose.Receiving);
