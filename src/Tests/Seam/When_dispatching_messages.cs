@@ -56,9 +56,9 @@
 
             //validate
             var queue = await namespaceManager.GetQueueAsync("myqueue");
-            Assert.IsTrue(queue.MessageCount == 2);
+            Assert.IsTrue(queue.MessageCount == 2, $"'myqueue' was expected to have 2 message, but it didn't ({queue.MessageCount} found)");
             queue = await namespaceManager.GetQueueAsync("myqueue2");
-            Assert.IsTrue(queue.MessageCount == 2);
+            Assert.IsTrue(queue.MessageCount == 2, $"'myqueue2' was expected to have 2 message, but it didn't ({queue.MessageCount} found)");
 
             //cleanup 
             await namespaceManager.DeleteQueueAsync("myqueue");

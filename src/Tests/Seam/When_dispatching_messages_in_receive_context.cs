@@ -81,14 +81,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await completed.WaitOne();
 
-            await Task.Delay(TimeSpan.FromSeconds(1)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
+            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // validate
             Assert.IsTrue(received);
 
             // check destination queue for dispatched message
             var queue = await namespaceManager.GetQueueAsync("myqueue");
-            Assert.IsTrue(queue.MessageCount == 1);
+            Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
 
             // cleanup 
             await pump.Stop();
@@ -166,7 +166,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await errored.WaitOne();
 
-            await Task.Delay(TimeSpan.FromSeconds(1)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
+            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // stop the pump so retries don't keep going
             await pump.Stop();
@@ -176,11 +176,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // check destination queue that message has indeed been dispatched
             var queue = await namespaceManager.GetQueueAsync("myqueue");
-            Assert.GreaterOrEqual(queue.MessageCount, 1);
+            Assert.GreaterOrEqual(queue.MessageCount, 1, "'myqueue' was expected to have 1 or more messages, but it didn't");
 
             // check origin queue that source message is still there
             queue = await namespaceManager.GetQueueAsync("sales");
-            Assert.AreEqual(1, queue.MessageCount);
+            Assert.AreEqual(1, queue.MessageCount, "'sales' was expected to have 1 message, but it didn't");
 
             // cleanup
             await Cleanup(container, "sales", "myqueue");
@@ -251,14 +251,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await completed.WaitOne();
 
-            await Task.Delay(TimeSpan.FromSeconds(1)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
+            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // validate
             Assert.IsTrue(received);
 
             // check destination queue for dispatched message
             var queue = await namespaceManager.GetQueueAsync("myqueue");
-            Assert.IsTrue(queue.MessageCount == 1);
+            Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
 
             // cleanup 
             await pump.Stop();
@@ -338,7 +338,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await errored.WaitOne();
 
-            await Task.Delay(TimeSpan.FromSeconds(1)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
+            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // stop the pump so retries don't keep going
             await pump.Stop();
@@ -348,11 +348,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // check destination queue that message has not been dispatched
             var queue = await namespaceManager.GetQueueAsync("myqueue");
-            Assert.AreEqual(0, queue.MessageCount);
+            Assert.AreEqual(0, queue.MessageCount, $"'myqueue' was expected to have no messages, but it did ({queue.MessageCount})");
 
             // check origin queue that source message is still there
             queue = await namespaceManager.GetQueueAsync("sales");
-            Assert.AreEqual(1, queue.MessageCount);
+            Assert.AreEqual(1, queue.MessageCount, "'sales' was expected to have 1 message, but it didn't");
 
             // cleanup
             await Cleanup(container, "sales", "myqueue");
@@ -440,7 +440,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await retried.WaitOne();
 
-            await Task.Delay(TimeSpan.FromSeconds(1)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
+            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // stop the pump so retries don't keep going
             await pump.Stop();
@@ -448,7 +448,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // validate
             var elapsed = secondTime - firstTime;
             Console.WriteLine("elapsed" + elapsed.TotalSeconds);
-            Assert.IsTrue(elapsed < TimeSpan.FromSeconds(29)); // 29 instead of 30 to accomodate for a little clock drift
+            Assert.IsTrue(elapsed < TimeSpan.FromSeconds(29)); // 29 instead of 30 to accommodate for a little clock drift
 
             // cleanup
             await Cleanup(container, "sales", "myqueue");

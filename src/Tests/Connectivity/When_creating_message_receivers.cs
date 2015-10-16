@@ -42,7 +42,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new MessageReceiverCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var receiver = (IMessageReceiver)await creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
+            var receiver = await creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
 
             Assert.AreEqual(ReceiveMode.ReceiveAndDelete, receiver.Mode);
             Assert.IsInstanceOf<NoRetry>(receiver.RetryPolicy);
