@@ -77,7 +77,7 @@ namespace NServiceBus.AzureServiceBus
 
             if (internalReceiver == null)
             {
-                throw new Exception(string.Format("MessageReceiverNotifier did not get a MessageReceiver instance for entity path {0}, this is probably due to a misconfiguration of the topology", path));
+                throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {path}, this is probably due to a misconfiguration of the topology");
             }
 
             internalReceiver.OnMessageAsync(message => ProcessMessage(message), options);
@@ -139,7 +139,7 @@ namespace NServiceBus.AzureServiceBus
 
         Task Abandon(BrokeredMessage message, Task t)
         {
-            logger.InfoFormat("Exceptions occured OnComplete, exception: {0}", t.Exception);
+            logger.Info($"Exceptions occured OnComplete, exception: {t.Exception}");
 
             var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
             

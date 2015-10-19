@@ -26,7 +26,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             }
             catch (Exception ex)
             {
-                Log.Fatal(string.Format("A fatal exception occured while trying to send a message, the exception was {0}", ex.Message), ex);
+                Log.Fatal($"A fatal exception occured while trying to send a message, the exception was {ex.Message}", ex);
             }
             enlistment.Done();
         }

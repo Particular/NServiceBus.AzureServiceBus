@@ -101,7 +101,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             }
             catch (Exception exception)
             {
-                throw new ApplicationException(string.Format("Could not build {0}", typeof(T)), exception);
+                throw new ApplicationException($"Could not build {typeof(T)}", exception);
             }
         }
 

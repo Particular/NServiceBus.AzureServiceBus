@@ -31,7 +31,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 // todo, outbox
                 catch (MessagingEntityDisabledException)
                 {
-                    logger.Warn(string.Format("Topic {0} is disabled", TopicClient.Path)); 
+                    logger.Warn($"Topic {TopicClient.Path} is disabled"); 
 
                     numRetries++;
 
@@ -46,7 +46,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 // back off when we're being throttled
                 catch (ServerBusyException ex)
                 {
-                    logger.Warn(string.Format("Server busy exception occured on topic {0}", TopicClient.Path), ex);
+                    logger.Warn($"Server busy exception occured on topic {TopicClient.Path}", ex);
 
                     numRetries++;
 
@@ -61,7 +61,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 // took to long, maybe we lost connection
                 catch (TimeoutException ex)
                 {
-                    logger.Warn(string.Format("Timeout exception occured on topic {0}", TopicClient.Path), ex);
+                    logger.Warn($"Timeout exception occured on topic {TopicClient.Path}", ex);
 
                     numRetries++;
 
@@ -76,7 +76,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 // connection lost
                 catch (MessagingCommunicationException ex)
                 {
-                    logger.Warn(string.Format("Messaging Communication Exception occured on topic {0}", TopicClient.Path), ex);
+                    logger.Warn($"Messaging Communication Exception occured on topic {TopicClient.Path}", ex);
 
                     numRetries++;
 
@@ -90,7 +90,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 }
                 catch (MessagingException ex)
                 {
-                    logger.Warn(string.Format("{1} Messaging Exception occured on topic {0}", TopicClient.Path, (ex.IsTransient ? "Transient" : "Non transient")), ex);
+                    logger.Warn($"{(ex.IsTransient ? "Transient" : "Non transient")} Messaging Exception occured on topic {TopicClient.Path}", ex);
 
                     numRetries++;
 
