@@ -30,29 +30,29 @@ namespace NServiceBus.AzureServiceBus
 
         public async Task Start(TopologyDefinition topologyDefinition, int maximumConcurrency)
         {
-            this.maxConcurrency = maximumConcurrency;
+            maxConcurrency = maximumConcurrency;
             topology = topologyDefinition;
 
             cancellationTokenSource = new CancellationTokenSource();
 
-            await StartNotifiersFor(topology.Entities, maxConcurrency);
+            await StartNotifiersFor(topology.Entities, maxConcurrency).ConfigureAwait(false);
         }
 
         public async Task Stop()
         {
             cancellationTokenSource.Cancel();
 
-            await StopNotifiersFor(topology.Entities);
+            await StopNotifiersFor(topology.Entities).ConfigureAwait(false);
         }
 
         public async Task Start(IEnumerable<EntityInfo> subscriptions)
         {
-            await StartNotifiersFor(subscriptions, maxConcurrency);
+            await StartNotifiersFor(subscriptions, maxConcurrency).ConfigureAwait(false);
         }
 
         public async Task Stop(IEnumerable<EntityInfo> subscriptions)
         {
-            await StopNotifiersFor(subscriptions);
+            await StopNotifiersFor(subscriptions).ConfigureAwait(false);
         }
 
         public void OnIncomingMessage(Func<IncomingMessage, ReceiveContext, Task> func)
@@ -78,7 +78,7 @@ namespace NServiceBus.AzureServiceBus
 
                 if (!notifier.IsRunning)
                 {
-                    await notifier.Start();
+                    await notifier.Start().ConfigureAwait(false);
                 }
                 else
                 {
@@ -113,7 +113,7 @@ namespace NServiceBus.AzureServiceBus
                 }
                 else
                 {
-                    await notifier.Stop();
+                    await notifier.Stop().ConfigureAwait(false);
                 }
             }
         }

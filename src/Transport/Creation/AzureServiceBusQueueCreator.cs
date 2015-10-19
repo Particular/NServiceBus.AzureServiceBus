@@ -50,22 +50,22 @@
             {
                 if (_settings.GetOrDefault<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 {
-                    if (!await ExistsAsync(namespaceManager, description.Path))
+                    if (!await ExistsAsync(namespaceManager, description.Path).ConfigureAwait(false))
                     {
-                        await namespaceManager.CreateQueueAsync(description);
+                        await namespaceManager.CreateQueueAsync(description).ConfigureAwait(false);
                         logger.InfoFormat("Queue '{0}' created", description.Path);
 
-                        await rememberExistence.AddOrUpdate(description.Path, s => Task.FromResult(true), (s, b) => Task.FromResult(true));
+                        await rememberExistence.AddOrUpdate(description.Path, s => Task.FromResult(true), (s, b) => Task.FromResult(true)).ConfigureAwait(false);
                     }
                     else
                     {
                         logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
                         logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
-                        var desc = await namespaceManager.GetQueueAsync(description.Path);
+                        var desc = await namespaceManager.GetQueueAsync(description.Path).ConfigureAwait(false);
                         if (!desc.AllMembersAreEqual(description))
                         {
                             logger.InfoFormat("Updating queue '{0}' with new description", description.Path);
-                            await namespaceManager.UpdateQueueAsync(description);
+                            await namespaceManager.UpdateQueueAsync(description).ConfigureAwait(false);
                         }
                     }
                 }
@@ -84,7 +84,7 @@
                 logger.InfoFormat("Timeout occurred on queue creation for '{0}' going to validate if it doesn't exist", description.Path);
 
                 // there is a chance that the timeout occurred, but the topic was still created, check again
-                if (!await ExistsAsync(namespaceManager, description.Path, removeCacheEntry: true))
+                if (!await ExistsAsync(namespaceManager, description.Path, removeCacheEntry: true).ConfigureAwait(false))
                 {
                     throw;
                 }
@@ -114,8 +114,8 @@
             var exists = await rememberExistence.GetOrAdd(key, async s =>
             {
                 logger.InfoFormat("Checking namespace for existence of the queue '{0}'", queuePath);
-                return await namespaceClient.QueueExistsAsync(key);
-            });
+                return await namespaceClient.QueueExistsAsync(key).ConfigureAwait(false);
+            }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the queue '{0}' {1}", queuePath, exists ? "exists" : "does not exist");
 

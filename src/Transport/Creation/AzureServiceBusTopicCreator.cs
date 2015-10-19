@@ -44,20 +44,21 @@
             {
                 if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 {
-                    if (!await ExistsAsync(topicPath, namespaceManager))
+                    if (!await ExistsAsync(topicPath, namespaceManager).ConfigureAwait(false))
                     {
-                        await namespaceManager.CreateTopicAsync(topicDescription);
+                        await namespaceManager.CreateTopicAsync(topicDescription).ConfigureAwait(false);
                         logger.InfoFormat("Topic '{0}' created", topicDescription.Path);
-                        await rememberExistence.AddOrUpdate(topicDescription.Path, notFoundTopicPath => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true));
+                        await rememberExistence.AddOrUpdate(topicDescription.Path, notFoundTopicPath => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
                     }
                     else
                     {
                         logger.InfoFormat("Topic '{0}' already exists, skipping creation", topicDescription.Path);
                         logger.InfoFormat("Checking if topic '{0}' needs to be updated", topicDescription.Path);
-                        if (!(await namespaceManager.GetTopicAsync(topicDescription.Path)).AllMembersAreEqual(topicDescription))
+                        var existingTopicDescription = await namespaceManager.GetTopicAsync(topicDescription.Path).ConfigureAwait(false);
+                        if (!existingTopicDescription.AllMembersAreEqual(topicDescription))
                         {
                             logger.InfoFormat("Updating topic '{0}' with new description", topicDescription.Path);
-                            await namespaceManager.UpdateTopicAsync(topicDescription);
+                            await namespaceManager.UpdateTopicAsync(topicDescription).ConfigureAwait(false);
                         }
                     }
                 }
@@ -76,7 +77,7 @@
                 logger.InfoFormat("Timeout occurred on topic creation for '{0}' going to validate if it doesn't exist", topicDescription.Path);
 
                 // there is a chance that the timeout occurred, but the topic was still created, check again
-                if (!await ExistsAsync(topicDescription.Path, namespaceManager, removeCacheEntry: true))
+                if (!await ExistsAsync(topicDescription.Path, namespaceManager, removeCacheEntry: true).ConfigureAwait(false))
                 {
                     throw;
                 }
@@ -112,7 +113,7 @@
             var exists = await rememberExistence.GetOrAdd(topicPath, async notFoundTopicPath =>
             {
                 logger.InfoFormat("Checking namespace for existence of the topic '{0}'", notFoundTopicPath);
-                return await namespaceClient.TopicExistsAsync(notFoundTopicPath);
+                return await namespaceClient.TopicExistsAsync(notFoundTopicPath).ConfigureAwait(false);
             });
 
             logger.InfoFormat("Determined, from cache, that the topic '{0}' {1}", topicPath, exists ? "exists" : "does not exist");

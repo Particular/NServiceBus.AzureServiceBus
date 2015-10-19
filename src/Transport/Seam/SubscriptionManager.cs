@@ -16,16 +16,16 @@ namespace NServiceBus.AzureServiceBus
             this.topologyOperator = topologyOperator;
         }
 
-        public async Task SubscribeAsync(Type eventType, ContextBag context)
+        public Task SubscribeAsync(Type eventType, ContextBag context)
         {
             var subscriptions = topology.Subscribe(eventType);
-            await topologyOperator.Start(subscriptions);
+            return topologyOperator.Start(subscriptions);
         }
 
-        public async Task UnsubscribeAsync(Type eventType, ContextBag context)
+        public Task UnsubscribeAsync(Type eventType, ContextBag context)
         {
             var subscriptions = topology.Unsubscribe(eventType);
-            await topologyOperator.Stop(subscriptions);
+            return topologyOperator.Stop(subscriptions);
         }
     }
 }

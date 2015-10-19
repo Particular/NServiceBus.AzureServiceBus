@@ -20,9 +20,9 @@ namespace NServiceBus.AzureServiceBus
         {
             var factory = _factories.Get(connectionstring);
 
-            var sender = viaEntityPath != null ? 
-                            await factory.CreateMessageSenderAsync(entitypath, viaEntityPath) : 
-                            await factory.CreateMessageSenderAsync(entitypath);
+            var sender = viaEntityPath != null 
+                ? await factory.CreateMessageSenderAsync(entitypath, viaEntityPath).ConfigureAwait(false)
+                : await factory.CreateMessageSenderAsync(entitypath).ConfigureAwait(false);
 
             if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy))
             {

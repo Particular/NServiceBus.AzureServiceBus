@@ -24,20 +24,20 @@ namespace NServiceBus.AzureServiceBus
             var queueCreator = (ICreateAzureServiceBusQueues)container.Build(typeof(ICreateAzureServiceBusQueues));
             foreach (var queue in queues)
             {
-                await queueCreator.CreateAsync(queue.Path, namespaces.Get(queue.Namespace.ConnectionString));
+                await queueCreator.CreateAsync(queue.Path, namespaces.Get(queue.Namespace.ConnectionString)).ConfigureAwait(false);
             }
 
             var topicCreator = (ICreateAzureServiceBusTopics)container.Build(typeof(ICreateAzureServiceBusTopics));
             foreach (var topic in topics)
             {
-                await topicCreator.CreateAsync(topic.Path, namespaces.Get(topic.Namespace.ConnectionString));
+                await topicCreator.CreateAsync(topic.Path, namespaces.Get(topic.Namespace.ConnectionString)).ConfigureAwait(false);
             }
 
             var subscriptionCreator = (ICreateAzureServiceBusSubscriptions)container.Build(typeof(ICreateAzureServiceBusSubscriptions));
             foreach (var subscription in subscriptions)
             {
                 var topic = subscription.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
-                await subscriptionCreator.CreateAsync(topic.Target.Path, subscription.Path, namespaces.Get(subscription.Namespace.ConnectionString));
+                await subscriptionCreator.CreateAsync(topic.Target.Path, subscription.Path, namespaces.Get(subscription.Namespace.ConnectionString)).ConfigureAwait(false);
             }
         }
     }

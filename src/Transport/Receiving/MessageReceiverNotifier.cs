@@ -170,7 +170,7 @@ namespace NServiceBus.AzureServiceBus
         {
             stopping = true;
 
-            await internalReceiver.CloseAsync();
+            await internalReceiver.CloseAsync().ConfigureAwait(false);
 
             IsRunning = false;
         }

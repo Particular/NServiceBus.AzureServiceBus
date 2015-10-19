@@ -43,7 +43,7 @@ namespace NServiceBus.AzureServiceBus
                         ViaConnectionString = context?.ConnectionString,
                         DispatchOptions = batch.First().DispatchOptions
                     };
-                    await routeOutgoingMessages.RouteBatchAsync(batch.Select(x => x.Message), routingOptions);
+                    await routeOutgoingMessages.RouteBatchAsync(batch.Select(x => x.Message), routingOptions).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

@@ -43,15 +43,15 @@ namespace NServiceBus.AzureServiceBus
             topologyOperator.OnError(func);
         }
 
-        public void Start(PushRuntimeSettings limitations)
+        public async void Start(PushRuntimeSettings limitations)
         {
             var definition = topology.Determine(Purpose.Receiving);
-            topologyOperator.Start(definition, limitations.MaxConcurrency);
+            await topologyOperator.Start(definition, limitations.MaxConcurrency).ConfigureAwait(false);
         }
 
         public async Task Stop()
         {
-            await topologyOperator.Stop();
+            await topologyOperator.Stop().ConfigureAwait(false);
         }
     }
 }

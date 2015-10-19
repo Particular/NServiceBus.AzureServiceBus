@@ -45,22 +45,23 @@
             {
                 if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 {
-                    if (!await ExistsAsync(topicPath, subscriptionName, namespaceManager))
+                    if (!await ExistsAsync(topicPath, subscriptionName, namespaceManager).ConfigureAwait(false))
                     {
-                        await namespaceManager.CreateSubscriptionAsync(subscriptionDescription);
+                        await namespaceManager.CreateSubscriptionAsync(subscriptionDescription).ConfigureAwait(false);
                         logger.InfoFormat("Subscription '{0}' created", subscriptionDescription.Name);
 
                         var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
-                        await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true));
+                        await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
                     }
                     else
                     {
                         logger.InfoFormat("Subscription '{0}' already exists, skipping creation", subscriptionDescription.Name);
                         logger.InfoFormat("Checking if subscription '{0}' needs to be updated", subscriptionDescription.Name);
-                        if (!(await namespaceManager.GetSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name)).AllMembersAreEqual(subscriptionDescription))
+                        var existingSubscriptionDescription = await namespaceManager.GetSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
+                        if (!existingSubscriptionDescription.AllMembersAreEqual(subscriptionDescription))
                         {
                             logger.InfoFormat("Updating subscription '{0}' with new description", subscriptionDescription.Name);
-                            await namespaceManager.UpdateSubscriptionAsync(subscriptionDescription);
+                            await namespaceManager.UpdateSubscriptionAsync(subscriptionDescription).ConfigureAwait(false);
                         }
                     }
                 }
@@ -79,7 +80,7 @@
                 logger.InfoFormat("Timeout occurred on subscription creation for topic '{0}' subscription name '{1}' going to validate if it doesn't exist", subscriptionDescription.TopicPath, subscriptionDescription.Name);
 
                 // there is a chance that the timeout occured, but the topic was still created, check again
-                if (!await ExistsAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name, namespaceManager, removeCacheEntry: true))
+                if (!await ExistsAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name, namespaceManager, removeCacheEntry: true).ConfigureAwait(false))
                 {
                     throw;
                 }
@@ -88,8 +89,7 @@
             }
             catch (MessagingException ex)
             {
-                var loggedMessage = string.Format("{0} {1} occured on subscription '{2}' creation for topic '{3}", 
-                    (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name, subscriptionDescription.Name, subscriptionDescription.TopicPath);
+                var loggedMessage = $"{(ex.IsTransient ? "Transient" : "Non transient")} {ex.GetType().Name} occured on subscription '{subscriptionDescription.Name}' creation for topic '{subscriptionDescription.TopicPath}";
 
                 if (!ex.IsTransient)
                 {
@@ -119,8 +119,8 @@
             var exists = await rememberExistence.GetOrAdd(key, async notFoundKey =>
             {
                 logger.InfoFormat("Checking namespace for existence of subscription '{0}' for the topic '{1}'", subscriptionName, topicPath);
-                return await namespaceClient.SubscriptionExistsAsync(topicPath, notFoundKey);
-            });
+                return await namespaceClient.SubscriptionExistsAsync(topicPath, notFoundKey).ConfigureAwait(false);
+            }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the subscription '{0}' {1}", subscriptionName, exists ? "exists" : "does not exist");
 

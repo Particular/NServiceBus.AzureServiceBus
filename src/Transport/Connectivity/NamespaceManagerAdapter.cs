@@ -14,49 +14,43 @@ namespace NServiceBus.AzureServiceBus
             _manager = manager;
         }
 
-        public NamespaceManagerSettings Settings
+        public NamespaceManagerSettings Settings => _manager.Settings;
+
+        public Uri Address => _manager.Address;
+
+        public Task CreateQueueAsync(QueueDescription description)
         {
-            get { return _manager.Settings; }
+            return _manager.CreateQueueAsync(description);
         }
 
-        public Uri Address
+        public Task UpdateQueueAsync(QueueDescription description)
         {
-            get { return _manager.Address; }
+            return _manager.UpdateQueueAsync(description);
         }
 
-        public async Task CreateQueueAsync(QueueDescription description)
+        public Task<QueueDescription> GetQueueAsync(string path)
         {
-            await _manager.CreateQueueAsync(description);
+            return _manager.GetQueueAsync(path);
         }
 
-        public async Task UpdateQueueAsync(QueueDescription description)
+        public Task<bool> QueueExistsAsync(string path)
         {
-            await _manager.UpdateQueueAsync(description);
-        }
-
-        public async Task<QueueDescription> GetQueueAsync(string path)
-        {
-            return await _manager.GetQueueAsync(path);
-        }
-
-        public async Task<bool> QueueExistsAsync(string path)
-        {
-            return await _manager.QueueExistsAsync(path);
+            return _manager.QueueExistsAsync(path);
         }
 
         public async Task<TopicDescription> CreateTopicAsync(TopicDescription topicDescription)
         {
-            return await _manager.CreateTopicAsync(topicDescription);
+            return await _manager.CreateTopicAsync(topicDescription).ConfigureAwait(false);
         }
 
         public async Task DeleteQueueAsync(string path)
         {
-            await _manager.DeleteQueueAsync(path);
+            await _manager.DeleteQueueAsync(path).ConfigureAwait(false);
         }
 
-        public async Task DeleteTopicAsync(string path)
+        public Task DeleteTopicAsync(string path)
         {
-            await _manager.DeleteTopicAsync(path);
+            return _manager.DeleteTopicAsync(path);
         }
 
         public Task<bool> SubscriptionExistsAsync(string topicPath, string subscriptionName)
@@ -64,39 +58,39 @@ namespace NServiceBus.AzureServiceBus
             return _manager.SubscriptionExistsAsync(topicPath, subscriptionName);
         }
 
-        public async Task<SubscriptionDescription> CreateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
+        public Task<SubscriptionDescription> CreateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
         {
-            return await _manager.CreateSubscriptionAsync(subscriptionDescription);
+            return _manager.CreateSubscriptionAsync(subscriptionDescription);
         }
 
-        public async Task<SubscriptionDescription> GetSubscriptionAsync(string topicPath, string subscriptionName)
+        public Task<SubscriptionDescription> GetSubscriptionAsync(string topicPath, string subscriptionName)
         {
-            return await _manager.GetSubscriptionAsync(topicPath, subscriptionName);
+            return _manager.GetSubscriptionAsync(topicPath, subscriptionName);
         }
 
-        public async Task<SubscriptionDescription> UpdateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
+        public Task<SubscriptionDescription> UpdateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
         {
-            return await _manager.UpdateSubscriptionAsync(subscriptionDescription);
+            return _manager.UpdateSubscriptionAsync(subscriptionDescription);
         }
 
-        public async Task<TopicDescription> UpdateTopicAsync(TopicDescription topicDescription)
+        public Task<TopicDescription> UpdateTopicAsync(TopicDescription topicDescription)
         {
-            return await _manager.UpdateTopicAsync(topicDescription);
+            return _manager.UpdateTopicAsync(topicDescription);
         }
 
-        public async Task<bool> TopicExistsAsync(string path)
+        public Task<bool> TopicExistsAsync(string path)
         {
-            return await _manager.TopicExistsAsync(path);
+            return _manager.TopicExistsAsync(path);
         }
 
-        public async Task<TopicDescription> GetTopicAsync(string path)
+        public Task<TopicDescription> GetTopicAsync(string path)
         {
-            return await _manager.GetTopicAsync(path);
+            return _manager.GetTopicAsync(path);
         }
 
-        public async Task DeleteSubsciptionAsync(string topicPath, string subscriptionName)
+        public Task DeleteSubscriptionAsync(string topicPath, string subscriptionName)
         {
-            await _manager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            return _manager.DeleteSubscriptionAsync(topicPath, subscriptionName);
         }
     }
 }

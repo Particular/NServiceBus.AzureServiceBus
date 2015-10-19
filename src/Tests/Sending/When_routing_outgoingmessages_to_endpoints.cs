@@ -52,7 +52,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             //validate
             var queue = await namespaceManager.GetQueueAsync("myqueue");
-            Assert.IsTrue(queue.MessageCount > 0);
+            Assert.IsTrue(queue.MessageCount > 0, "expected to have messages in the queue, but there were no messages");
 
             //cleanup 
             await namespaceManager.DeleteQueueAsync("myqueue");

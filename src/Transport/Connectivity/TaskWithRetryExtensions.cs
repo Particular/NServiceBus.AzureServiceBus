@@ -21,8 +21,8 @@ namespace NServiceBus.AzureServiceBus
                 {
                     logger.Warn($"We are throttled, backing off for {delay.TotalSeconds} seconds (attempt {retryAttempts + 1}/{maxRetryAttempts}).");
 
-                    await Task.Delay(delay);
-                    await sender.RetryOnThrottle(action, delay, maxRetryAttempts, ++retryAttempts);
+                    await Task.Delay(delay).ConfigureAwait(false);
+                    await sender.RetryOnThrottle(action, delay, maxRetryAttempts, ++retryAttempts).ConfigureAwait(false);
                 }
                 else if (executedTask.IsFaulted)
                 {

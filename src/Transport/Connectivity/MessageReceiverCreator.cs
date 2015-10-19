@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus
 
         public MessageReceiverCreator(IManageMessagingFactoryLifeCycle factories, ReadOnlySettings settings)
         {
-            this._factories = factories;
+            _factories = factories;
             _settings = settings;
         }
 
@@ -22,7 +22,7 @@ namespace NServiceBus.AzureServiceBus
             var factory = _factories.Get(connectionstring);
             var receiveMode = _settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
-            var receiver = await factory.CreateMessageReceiverAsync(entitypath, receiveMode);
+            var receiver = await factory.CreateMessageReceiverAsync(entitypath, receiveMode).ConfigureAwait(false);
 
             if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount))
             {
