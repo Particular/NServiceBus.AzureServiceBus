@@ -5,9 +5,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
     using Config;
     using Settings;
 
-    static class NamingConventions
+    public static class NamingConventions
     {
-        internal static Func<ReadOnlySettings, Type, string, bool, string> QueueNamingConvention
+        public static Func<ReadOnlySettings, Type, string, bool, string> QueueNamingConvention
         {
             get
             {
@@ -60,7 +60,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
             return false;
         }
 
-        internal static Func<ReadOnlySettings, Type, string, string> SubscriptionNamingConvention
+        public static Func<ReadOnlySettings, Type, string, string> SubscriptionNamingConvention
         {
             get
             {
@@ -71,7 +71,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
             }
         }
 
-        internal static Func<ReadOnlySettings, Type, string, string> SubscriptionFullNamingConvention
+        public static Func<ReadOnlySettings, Type, string, string> SubscriptionFullNamingConvention
         {
             get
             {
@@ -103,7 +103,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
             return subscriptionName; 
         }
 
-        internal static Func<ReadOnlySettings, Type, string, string> TopicNamingConvention
+        public static Func<ReadOnlySettings, Type, string, string> TopicNamingConvention
         {
             get
             {
@@ -121,7 +121,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
             }
         }
 
-        internal static Func<ReadOnlySettings, Address, Address> PublisherAddressConvention
+        public static Func<ReadOnlySettings, Address, Address> PublisherAddressConvention
         {
             get
             {
@@ -129,12 +129,12 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
             }
         }
 
-        internal static Func<ReadOnlySettings, Address, Address> PublisherAddressConventionForSubscriptions
+        public static Func<ReadOnlySettings, Address, Address> PublisherAddressConventionForSubscriptions
         {
             get { return PublisherAddressConvention; }
         }
 
-        internal static Func<ReadOnlySettings, Address, bool, Address> QueueAddressConvention
+        public static Func<ReadOnlySettings, Address, bool, Address> QueueAddressConvention
         {
             get
             {
