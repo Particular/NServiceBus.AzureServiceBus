@@ -27,16 +27,16 @@
 
         public FailOverMode Mode { get; set; }
 
-        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, Purpose purpose)
+        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
-            if(purpose == Purpose.Sending)
+            if(partitioningIntent == PartitioningIntent.Sending)
             {
                 yield return Mode == FailOverMode.Primary 
                 ? new NamespaceInfo(_connectionstrings.First(), NamespaceMode.Active)
                 : new NamespaceInfo(_connectionstrings.Last(), NamespaceMode.Active);
             }
 
-            if (purpose == Purpose.Creating || purpose == Purpose.Receiving)
+            if (partitioningIntent == PartitioningIntent.Creating || partitioningIntent == PartitioningIntent.Receiving)
             {
                 yield return new NamespaceInfo(_connectionstrings.First(), Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
                 yield return new NamespaceInfo(_connectionstrings.Last(), Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);

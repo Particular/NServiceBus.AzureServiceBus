@@ -25,7 +25,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(1, strategy.GetNamespaces("endpoint1", Purpose.Sending).Count());
+            Assert.AreEqual(1, strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).Count());
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", Purpose.Creating).Count());
+            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating).Count());
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", Purpose.Receiving).Count());
+            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", PartitioningIntent.Receiving).Count());
         }
 
         [Test]
@@ -81,9 +81,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             for (var i = 0; i < 2; i++)
             {
-                Assert.AreEqual(new NamespaceInfo(primary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", Purpose.Sending).First());
-                Assert.AreEqual(new NamespaceInfo(secondary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", Purpose.Sending).First());
-                Assert.AreEqual(new NamespaceInfo(tertiary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", Purpose.Sending).First());
+                Assert.AreEqual(new NamespaceInfo(primary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+                Assert.AreEqual(new NamespaceInfo(secondary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+                Assert.AreEqual(new NamespaceInfo(tertiary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
             }
         }
         

@@ -57,15 +57,15 @@ namespace NServiceBus.AzureServiceBus
 
         public TopologySection DetermineReceiveResources()
         {
-            return Determine(Purpose.Receiving);
+            return Determine(PartitioningIntent.Receiving);
         }
 
         public TopologySection DetermineResourcesToCreate()
         {
-            return Determine(Purpose.Creating);
+            return Determine(PartitioningIntent.Creating);
         }
 
-        private TopologySection Determine(Purpose purpose)
+        private TopologySection Determine(PartitioningIntent partitioningIntent)
         {
             // computes the topology
 
@@ -74,7 +74,7 @@ namespace NServiceBus.AzureServiceBus
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
 
-            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), purpose).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), partitioningIntent).ToArray();
 
             var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
             var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
@@ -152,7 +152,7 @@ namespace NServiceBus.AzureServiceBus
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
             var endpointName = settings.Get<EndpointName>();
-            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), Purpose.Creating).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
             var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
 
             var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Subscription);

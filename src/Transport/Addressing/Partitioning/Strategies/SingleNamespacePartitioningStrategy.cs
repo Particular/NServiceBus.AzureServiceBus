@@ -30,7 +30,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _connectionstring = connectionstrings.First();
         }
 
-        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, Purpose purpose)
+        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
             yield return new NamespaceInfo(_connectionstring, NamespaceMode.Active);
         }

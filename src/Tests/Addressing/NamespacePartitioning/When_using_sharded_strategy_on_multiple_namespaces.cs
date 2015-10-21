@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var strategy = new ShardedNamespacePartitioningStrategy(settings);
             strategy.SetShardingRule(() => i);
 
-            Assert.AreEqual(1, strategy.GetNamespaces("endpoint1", Purpose.Sending).Count());
+            Assert.AreEqual(1, strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).Count());
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var strategy = new ShardedNamespacePartitioningStrategy(settings);
             strategy.SetShardingRule(() => i);
 
-            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", Purpose.Creating).Count());
+            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating).Count());
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var strategy = new ShardedNamespacePartitioningStrategy(settings);
             strategy.SetShardingRule(() => i);
 
-            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", Purpose.Receiving).Count());
+            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", PartitioningIntent.Receiving).Count());
         }
 
         [Test]
@@ -87,7 +87,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             
             for (i = 0; i < 3; i++)
             {
-                Assert.AreEqual(new NamespaceInfo(buckets[i], NamespaceMode.Active), strategy.GetNamespaces("endpoint1", Purpose.Sending).First());
+                Assert.AreEqual(new NamespaceInfo(buckets[i], NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
             }
         }
 

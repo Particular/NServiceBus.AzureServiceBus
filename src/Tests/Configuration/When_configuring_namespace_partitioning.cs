@@ -37,7 +37,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         class MyNamespacePartitioningStrategy : INamespacePartitioningStrategy
         {
-            public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, Purpose purpose)
+            public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
             {
                 throw new NotImplementedException(); // not relevant for the test
             }

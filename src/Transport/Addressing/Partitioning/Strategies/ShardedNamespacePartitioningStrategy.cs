@@ -31,7 +31,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _shardingRule = rule;
         }
 
-        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointname, Purpose purpose)
+        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointname, PartitioningIntent partitioningIntent)
         {
             if (_shardingRule ==  null)
             {
@@ -40,12 +40,12 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
             var index = _shardingRule();
 
-            if (purpose == Purpose.Sending)
+            if (partitioningIntent == PartitioningIntent.Sending)
             {
                 yield return new NamespaceInfo(_connectionstrings[index], NamespaceMode.Active);
             }
 
-            if (purpose == Purpose.Creating || purpose == Purpose.Receiving)
+            if (partitioningIntent == PartitioningIntent.Creating || partitioningIntent == PartitioningIntent.Receiving)
             {
                 for (var i = 0; i < _connectionstrings.Count; i++)
                 {

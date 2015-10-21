@@ -28,14 +28,14 @@ namespace NServiceBus.AzureServiceBus.Addressing
             }
         }
 
-        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, Purpose purpose)
+        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
-            if (purpose == Purpose.Sending)
+            if (partitioningIntent == PartitioningIntent.Sending)
             {
                 yield return new NamespaceInfo(_connectionstrings.Get(), NamespaceMode.Active);    
             }
 
-            if (purpose == Purpose.Receiving || purpose == Purpose.Creating)
+            if (partitioningIntent == PartitioningIntent.Receiving || partitioningIntent == PartitioningIntent.Creating)
             {
                 var mode = NamespaceMode.Active;
                 for(var i = 0; i < _connectionstrings.Size; i++)
