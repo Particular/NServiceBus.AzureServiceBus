@@ -94,12 +94,38 @@ namespace NServiceBus.AzureServiceBus
 
         public TopologySection DeterminePublishDestination(Type eventType)
         {
-            throw new NotImplementedException();
+            var endpointName = settings.Get<EndpointName>();
+
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
+
+            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Sending).ToArray();
+
+            var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", EntityType.Topic);
+            var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
+            
+            return new TopologySection
+            {
+                Namespaces = namespaces,
+                Entities = topics
+            };
         }
 
         public TopologySection DetermineSendDestination(string destination)
         {
-            throw new NotImplementedException();
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
+
+            var namespaces = partitioningStrategy.GetNamespaces(destination, PartitioningIntent.Sending).ToArray();
+
+            var inputQueuePath = sanitizationStrategy.Sanitize(destination, EntityType.Queue);
+            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
+
+            return new TopologySection
+            {
+                Namespaces = namespaces,
+                Entities = inputQueues
+            };
         }
 
         public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
