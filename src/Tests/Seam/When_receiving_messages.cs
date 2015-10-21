@@ -95,7 +95,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // create the topology
             var topologyCreator = (ICreateTopology)container.Build(typeof(TopologyCreator));
-            await topologyCreator.Create(topology.Determine(Purpose.Creating));
+            await topologyCreator.Create(topology.DetermineResourcesToCreate());
             return topology;
         }
     }

@@ -45,7 +45,7 @@ namespace NServiceBus.AzureServiceBus
 
         public async void Start(PushRuntimeSettings limitations)
         {
-            var definition = topology.Determine(Purpose.Receiving);
+            var definition = topology.DetermineReceiveResources();
             await topologyOperator.Start(definition, limitations.MaxConcurrency).ConfigureAwait(false);
         }
 

@@ -23,17 +23,14 @@
         /// </summary>
         void InitializeContainer();
 
-        /// <summary>
-        /// Creates the topology definition, called when settings are set
-        /// </summary>
-        TopologyDefinition Determine(Purpose purpose);
+        TopologySection DetermineReceiveResources();
+        TopologySection DetermineResourcesToCreate();
 
-        //TODO: API feels quirky, don't like naming & fact that we inject purpose, purpose should be fixed here
-        TopologyDefinition Determine(Purpose sending, Type eventType);
-        TopologyDefinition Determine(Purpose sending, string destination);
+        TopologySection DeterminePublishDestination(Type eventType);
+        TopologySection DetermineSendDestination(string destination);
 
-        IEnumerable<SubscriptionInfo> Subscribe(Type eventType);
-        IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype);
+        TopologySection DetermineResourcesToSubscribeTo(Type eventType);
+        TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype);
         
     }
 }

@@ -25,7 +25,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             topology.InitializeSettings();
             topology.InitializeContainer();
-            var definition = topology.Determine(Purpose.Creating);
+            var definition = topology.DetermineResourcesToCreate();
 
             var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
@@ -48,7 +48,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             topology.InitializeSettings();
             topology.InitializeContainer();
-            var definition = topology.Determine(Purpose.Creating);
+            var definition = topology.DetermineResourcesToCreate();
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == connectionstring));
         }
@@ -70,7 +70,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             topology.InitializeSettings();
             topology.InitializeContainer();
-            var definition = topology.Determine(Purpose.Creating);
+            var definition = topology.DetermineResourcesToCreate();
 
             var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == connectionstring && ei.Path.StartsWith("bundle-"));
 
@@ -96,11 +96,11 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             topology.InitializeSettings();
             topology.InitializeContainer();
-            topology.Determine(Purpose.Creating);
+            topology.DetermineResourcesToCreate();
 
-            var subscriptionInfos = topology.Subscribe(typeof(SomeEvent));
+            var section = topology.DetermineResourcesToSubscribeTo(typeof(SomeEvent));
 
-            Assert.That(subscriptionInfos.Count(), Is.EqualTo(2));
+            Assert.That(section.Entities.Count(), Is.EqualTo(2));
             // TODO: need to verify that subscription is done on each topic
         }
 

@@ -186,7 +186,7 @@
     <Compile Include="Topology\MetaModel\NamespaceMode.cs" />
     <Compile Include="Topology\MetaModel\SqlSubscriptionFilter.cs" />
     <Compile Include="Topology\MetaModel\SubscriptionInfo.cs" />
-    <Compile Include="Topology\MetaModel\TopologyDefinition.cs" />
+    <Compile Include="Topology\MetaModel\TopologySection.cs" />
     <Compile Include="Topology\Topologies\BasicTopology.cs" />
     <Compile Include="Topology\TopologyCreator.cs" />
     <Compile Include="Topology\TopologyOperator.cs" />

@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public class TopologyDefinition
+    public class TopologySection
     {
         public IEnumerable<NamespaceInfo> Namespaces { get; set; }
         public IEnumerable<EntityInfo> Entities { get; set; }

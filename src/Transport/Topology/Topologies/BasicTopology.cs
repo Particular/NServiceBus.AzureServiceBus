@@ -66,7 +66,17 @@ namespace NServiceBus.AzureServiceBus
             container.Configure(validationStrategyType, DependencyLifecycle.InstancePerCall);
         }
 
-        public TopologyDefinition Determine(Purpose purpose)
+        public TopologySection DetermineReceiveResources()
+        {
+            return Determine(Purpose.Receiving);
+        }
+
+        public TopologySection DetermineResourcesToCreate()
+        {
+            return Determine(Purpose.Creating);
+        }
+
+        private TopologySection Determine(Purpose purpose)
         {
             // computes the topology
 
@@ -86,41 +96,41 @@ namespace NServiceBus.AzureServiceBus
 
             var entities = inputQueues.ToArray();
 
-            return new TopologyDefinition
+            return new TopologySection
             {
                 Namespaces = namespaces,
                 Entities = entities
             };
         }
 
-        public TopologyDefinition Determine(Purpose sending, Type eventType)
+        public TopologySection DeterminePublishDestination(Type eventType)
         {
             throw new NotSupportedException("The current topology does not support publishing via azure servicebus directly");
         }
 
-        public TopologyDefinition Determine(Purpose sending, string destination)
+        public TopologySection DetermineSendDestination(string destination)
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
 
-            var namespaces = partitioningStrategy.GetNamespaces(destination, sending).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(destination, Purpose.Sending).ToArray();
 
             var destinationQueuePath = sanitizationStrategy.Sanitize(destination, EntityType.Queue);
             var destinationQueues = namespaces.Select(n => new EntityInfo { Path = destinationQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
 
-            return new TopologyDefinition
+            return new TopologySection
             {
                 Namespaces = namespaces,
                 Entities = destinationQueues
             };
         }
 
-        public IEnumerable<SubscriptionInfo> Subscribe(Type eventType)
+        public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
         {
             throw new NotSupportedException("The current topology does not support azure servicebus subscriptions");
         }
 
-        public IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype)
+        public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
         {
             throw new NotSupportedException("The current topology does not support azure servicebus subscriptions");
         }

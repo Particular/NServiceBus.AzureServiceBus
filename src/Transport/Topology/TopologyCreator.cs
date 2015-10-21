@@ -15,7 +15,7 @@ namespace NServiceBus.AzureServiceBus
             this.namespaces = namespaces;
         }
 
-        public async Task Create(TopologyDefinition topology)
+        public async Task Create(TopologySection topology)
         {
             var queues = topology.Entities.Where(e => e.Type == EntityType.Queue);
             var topics = topology.Entities.Where(e => e.Type == EntityType.Topic);

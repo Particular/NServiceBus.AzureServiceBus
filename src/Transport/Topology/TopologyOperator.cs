@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus
     {
         readonly IContainer container;
 
-        TopologyDefinition topology;
+        TopologySection topology;
 
         Func<IncomingMessage, ReceiveContext, Task> onMessage;
         Func<Exception, Task> onError;
@@ -28,10 +28,10 @@ namespace NServiceBus.AzureServiceBus
             this.container = container;
         }
 
-        public async Task Start(TopologyDefinition topologyDefinition, int maximumConcurrency)
+        public async Task Start(TopologySection topologySection, int maximumConcurrency)
         {
             maxConcurrency = maximumConcurrency;
-            topology = topologyDefinition;
+            topology = topologySection;
 
             cancellationTokenSource = new CancellationTokenSource();
 

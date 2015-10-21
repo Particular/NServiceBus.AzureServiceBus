@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             topology.InitializeSettings();
             topology.InitializeContainer();
-            var definition = topology.Determine(Purpose.Creating);
+            var definition = topology.DetermineResourcesToCreate();
 
             var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
@@ -49,7 +49,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             topology.InitializeSettings();
             topology.InitializeContainer();
-            var definition = topology.Determine(Purpose.Creating);
+            var definition = topology.DetermineResourcesToCreate();
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == connectionstring));
         }
@@ -68,7 +68,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             topology.InitializeSettings();
             topology.InitializeContainer();
             
-            Assert.Throws<NotSupportedException>(() => topology.Subscribe(typeof(MyEvent)));
+            Assert.Throws<NotSupportedException>(() => topology.DetermineResourcesToSubscribeTo(typeof(MyEvent)));
         }
 
         [Test]
@@ -86,7 +86,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             topology.InitializeContainer();
 
 
-            Assert.Throws<NotSupportedException>(() => topology.Unsubscribe(typeof(MyEvent)));
+            Assert.Throws<NotSupportedException>(() => topology.DetermineResourcesToUnsubscribeFrom(typeof(MyEvent)));
         }
 
         class MyEvent

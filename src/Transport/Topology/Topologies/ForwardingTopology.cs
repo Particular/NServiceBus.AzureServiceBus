@@ -13,7 +13,7 @@ namespace NServiceBus.AzureServiceBus
         readonly SettingsHolder settings;
         readonly IContainer container;
 
-        readonly ConcurrentDictionary<Type, List<SubscriptionInfo>> subscriptions = new ConcurrentDictionary<Type, List<SubscriptionInfo>>();
+        readonly ConcurrentDictionary<Type, TopologySection> subscriptions = new ConcurrentDictionary<Type, TopologySection>();
         readonly List<EntityInfo> topics = new List<EntityInfo>();
 
         public ForwardingTopology(SettingsHolder settings, IContainer container)
@@ -55,7 +55,17 @@ namespace NServiceBus.AzureServiceBus
             container.Configure(validationStrategyType, DependencyLifecycle.InstancePerCall);
         }
 
-        public TopologyDefinition Determine(Purpose purpose)
+        public TopologySection DetermineReceiveResources()
+        {
+            return Determine(Purpose.Receiving);
+        }
+
+        public TopologySection DetermineResourcesToCreate()
+        {
+            return Determine(Purpose.Creating);
+        }
+
+        private TopologySection Determine(Purpose purpose)
         {
             // computes the topology
 
@@ -80,18 +90,18 @@ namespace NServiceBus.AzureServiceBus
 
             var entities = inputQueues.Concat(topics).ToArray();
 
-            return new TopologyDefinition
+            return new TopologySection
             {
                 Namespaces = namespaces,
                 Entities = entities
             };
         }
-        public TopologyDefinition Determine(Purpose sending, Type eventType)
+        public TopologySection DeterminePublishDestination(Type eventType)
         {
             throw new NotImplementedException();
         }
 
-        public TopologyDefinition Determine(Purpose sending, string destination)
+        public TopologySection DetermineSendDestination(string destination)
         {
             throw new NotImplementedException();
         }
@@ -112,7 +122,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        public IEnumerable<SubscriptionInfo> Subscribe(Type eventType)
+        public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
         {
             if (!subscriptions.ContainsKey(eventType))
             {
@@ -122,19 +132,23 @@ namespace NServiceBus.AzureServiceBus
             return (subscriptions[eventType]);
         }
 
-        public IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype)
+        public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
         {
-            List<SubscriptionInfo> result;
+            TopologySection result;
 
             if (!subscriptions.TryRemove(eventtype, out result))
             {
-                result = new List<SubscriptionInfo>();
+                result = new TopologySection
+                {
+                    Entities = new List<SubscriptionInfo>(),
+                    Namespaces = new List<NamespaceInfo>()
+                };
             }
 
             return result;
         }
 
-        List<SubscriptionInfo> BuildSubscriptionHierarchy(Type eventType)
+        TopologySection BuildSubscriptionHierarchy(Type eventType)
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
             var endpointName = settings.Get<EndpointName>();
@@ -181,7 +195,11 @@ namespace NServiceBus.AzureServiceBus
                     return sub;
                 }));
             }
-            return subs;
+            return new TopologySection()
+            {
+                Entities = subs,
+                Namespaces = namespaces
+            };
         }
     }
 }

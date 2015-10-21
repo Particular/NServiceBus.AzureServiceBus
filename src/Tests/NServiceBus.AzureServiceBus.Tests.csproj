@@ -143,6 +143,7 @@
     <Compile Include="Topology\Computation\When_computing_BasicTopology.cs" />
     <Compile Include="Topology\Computation\When_computing_StandardTopology.cs" />
     <Compile Include="Topology\Operation\When_operating_BasicTopology.cs" />
+    <Compile Include="Topology\Sending\When_sending_through_BasicTopology.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

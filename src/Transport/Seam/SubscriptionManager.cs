@@ -18,14 +18,14 @@ namespace NServiceBus.AzureServiceBus
 
         public Task SubscribeAsync(Type eventType, ContextBag context)
         {
-            var subscriptions = topology.Subscribe(eventType);
-            return topologyOperator.Start(subscriptions);
+            var section = topology.DetermineResourcesToSubscribeTo(eventType);
+            return topologyOperator.Start(section.Entities);
         }
 
         public Task UnsubscribeAsync(Type eventType, ContextBag context)
         {
-            var subscriptions = topology.Unsubscribe(eventType);
-            return topologyOperator.Stop(subscriptions);
+            var section = topology.DetermineResourcesToUnsubscribeFrom(eventType);
+            return topologyOperator.Stop(section.Entities);
         }
     }
 }

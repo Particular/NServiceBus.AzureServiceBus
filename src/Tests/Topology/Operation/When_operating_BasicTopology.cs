@@ -46,7 +46,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.Determine(Purpose.Receiving), 1);
+            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -110,7 +110,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.Determine(Purpose.Receiving), 1);
+            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -173,7 +173,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.Determine(Purpose.Receiving), 1);
+            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -235,7 +235,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.Determine(Purpose.Receiving), 1);
+            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -298,7 +298,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.Determine(Purpose.Receiving), 1);
+            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -354,7 +354,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.Determine(Purpose.Receiving), 1);
+            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -413,7 +413,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.Determine(Purpose.Receiving), 1);
+            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -480,7 +480,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.Determine(Purpose.Receiving), 1);
+            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -528,7 +528,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the topology
             var topologyCreator = (ICreateTopology) container.Build(typeof(TopologyCreator));
-            await topologyCreator.Create(topology.Determine(Purpose.Creating));
+            await topologyCreator.Create(topology.DetermineResourcesToCreate());
             return topology;
         }
     }

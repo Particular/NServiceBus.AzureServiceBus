@@ -17,7 +17,7 @@
     {
         //invoked for static parts of the topology
 
-        Task Start(TopologyDefinition topology, int maximumConcurrency);
+        Task Start(TopologySection topology, int maximumConcurrency);
         Task Stop();
 
         //invoked whenever subscriptions are added or removed

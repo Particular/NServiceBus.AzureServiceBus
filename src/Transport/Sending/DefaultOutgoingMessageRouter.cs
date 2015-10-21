@@ -65,11 +65,11 @@ namespace NServiceBus.AzureServiceBus
             {
                 var toAllSubscribers = (ToAllSubscribers)routingOptions.DispatchOptions.RoutingStrategy;
 
-                return topology.Determine(Purpose.Sending, toAllSubscribers.EventType).Entities;
+                return topology.DeterminePublishDestination(toAllSubscribers.EventType).Entities;
             }
             else // send
             {
-                return topology.Determine(Purpose.Sending, directRouting.Destination).Entities;
+                return topology.DetermineSendDestination(directRouting.Destination).Entities;
             }
         }
 

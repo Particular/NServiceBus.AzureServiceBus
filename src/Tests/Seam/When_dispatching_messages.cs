@@ -121,19 +121,24 @@
                 throw new NotImplementedException();
             }
 
-            public TopologyDefinition Determine(Purpose purpose)
+            public TopologySection DetermineReceiveResources()
             {
                 throw new NotImplementedException();
             }
 
-            public TopologyDefinition Determine(Purpose sending, Type eventType)
+            public TopologySection DetermineResourcesToCreate()
+            {
+                throw new NotImplementedException();
+            }
+            
+            public TopologySection DeterminePublishDestination(Type eventType)
             {
                 throw new NotImplementedException();
             }
 
-            public TopologyDefinition Determine(Purpose sending, string destination)
+            public TopologySection DetermineSendDestination(string destination)
             {
-                return new TopologyDefinition
+                return new TopologySection
                 {
                     Entities = new[]
                     {
@@ -146,12 +151,12 @@
                 };
             }
 
-            public IEnumerable<SubscriptionInfo> Subscribe(Type eventType)
+            public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
             {
                 throw new NotImplementedException();
             }
 
-            public IEnumerable<SubscriptionInfo> Unsubscribe(Type eventtype)
+            public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
             {
                 throw new NotImplementedException();
             }
