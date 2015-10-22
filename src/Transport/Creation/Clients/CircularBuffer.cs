@@ -14,6 +14,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         private T[] buffer;
 
         private object syncRoot;
+        private object bufferLock = new object();
 
         public CircularBuffer(int capacity)
             : this(capacity, false)
@@ -116,10 +117,13 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             if (!AllowOverflow && size == capacity)
                 throw new InvalidOperationException("Overflow is not allowed");
 
-            buffer[tail] = item;
-            if (++tail == capacity)
-                tail = 0;
-            size++;
+            lock (bufferLock)
+            {
+                buffer[tail] = item;
+                if (++tail == capacity)
+                    tail = 0;
+                size++;
+            }
         }
 
         public void Skip(int count)
@@ -162,11 +166,14 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             if (size == 0)
                 throw new InvalidOperationException("Buffer is empty");
 
-            var item = buffer[head];
-            if (++head == capacity)
-                head = 0;
+            lock (bufferLock)
+            {
+                var item = buffer[head];
+                if (++head == capacity)
+                    head = 0;
 
-            return item;
+                return item;
+            }
         }
 
         public void CopyTo(T[] array)
