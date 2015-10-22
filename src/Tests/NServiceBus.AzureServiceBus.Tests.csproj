@@ -51,9 +51,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="When_creating_subscriptions_on_servicebus_topics.cs" />
     <Compile Include="When_determining_subscription_names.cs" />
-    <Compile Include="When_determining_subscription_name.cs" />
-    <Compile Include="When_determining_subscription_name_for_non_scaled_out_endpoint.cs" />
-    <Compile Include="When_determining_subscription_name_for_scaled_out_endpoint.cs" />
     <Compile Include="When_getting_items_from_circular_buffer.cs" />
     <Compile Include="When_parsing_connectionstrings.cs" />
     <Compile Include="When_putting_items_into_circular_buffer.cs" />
