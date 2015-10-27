@@ -19,7 +19,7 @@ namespace NServiceBus.AzureServiceBus
             batcher = new Batcher(routeOutgoingMessages, settings);
         }
 
-        public Task Dispatch(IEnumerable<TransportOperation> outgoingMessages, ReadOnlyContextBag context)
+        public Task Dispatch(IEnumerable<TransportOperation> outgoingMessages, ContextBag context)
         {
             ReceiveContext receiveContext;
             

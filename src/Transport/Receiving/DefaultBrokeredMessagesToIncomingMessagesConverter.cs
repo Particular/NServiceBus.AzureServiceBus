@@ -7,8 +7,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Settings;
-    using NServiceBus.Transports;
-
+    
     class DefaultBrokeredMessagesToIncomingMessagesConverter : IConvertBrokeredMessagesToIncomingMessages
     {
         readonly ReadOnlySettings settings;
@@ -18,7 +17,7 @@ namespace NServiceBus.AzureServiceBus
             this.settings = settings;
         }
 
-        public IncomingMessage Convert(BrokeredMessage brokeredMessage)
+        public IncomingMessageDetails Convert(BrokeredMessage brokeredMessage)
         {
             var headers = brokeredMessage.Properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
 
@@ -57,13 +56,7 @@ namespace NServiceBus.AzureServiceBus
                 headers[Headers.TimeToBeReceived] = brokeredMessage.TimeToLive.ToString("c", CultureInfo.InvariantCulture);
             }
 
-            return new IncomingMessage(brokeredMessage.MessageId, headers, rawBody);
+            return new IncomingMessageDetails(brokeredMessage.MessageId, headers, rawBody);
         }
-    }
-
-    public enum SupportedBrokeredMessageBodyTypes
-    {
-        ByteArray,
-        Stream
     }
 }

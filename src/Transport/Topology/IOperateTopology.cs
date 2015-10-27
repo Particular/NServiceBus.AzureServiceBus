@@ -3,8 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using NServiceBus.Transports;
-
+    
     /// <summary>
     /// Operational aspects of running on top of the topology
     /// Takes care of the topology and it's specific state at runtime
@@ -27,7 +26,7 @@
 
         // callback when there is a new message available, or an error occurs
 
-        void OnIncomingMessage(Func<IncomingMessage, ReceiveContext, Task> func);
+        void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func);
 
         void OnError(Func<Exception, Task> func);
     }

@@ -45,7 +45,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
+            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
 
             
             await router.RouteAsync(outgoingMessage, new RoutingOptions {DispatchOptions = dispatchOptions});
@@ -87,7 +87,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
             
             await router.RouteBatchAsync(new [] {outgoingMessage1, outgoingMessage2}, new RoutingOptions { DispatchOptions = dispatchOptions });
 
@@ -128,7 +128,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var bytes = Enumerable.Range(0, 250 * 1024).Select(x => (byte) (x%256)).ToArray();
             var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
             
             await router.RouteBatchAsync(new [] {outgoingMessage1, outgoingMessage2}, new RoutingOptions { DispatchOptions = dispatchOptions });
 
@@ -168,7 +168,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes) * 1024).Select(x => (byte) (x%256)).ToArray();
             var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
             //validate
             Assert.That(async () => await router.RouteBatchAsync(new [] {outgoingMessage1}, new RoutingOptions { DispatchOptions = dispatchOptions }), Throws.Exception.TypeOf<MessageTooLargeException>());

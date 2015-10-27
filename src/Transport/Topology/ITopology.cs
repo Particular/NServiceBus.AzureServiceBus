@@ -1,7 +1,6 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
-    using System.Collections.Generic;
 
     // a topology is responsible to determine what the underlying physical topology in asb looks like
     // This includes, which namespaces are to be used

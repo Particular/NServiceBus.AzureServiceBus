@@ -33,7 +33,7 @@ namespace NServiceBus.AzureServiceBus
 
                 context.Set(receiveContext);
 
-                return pipeline(new PushContext(incoming, context));
+                return pipeline(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, context));
             });
 
         }

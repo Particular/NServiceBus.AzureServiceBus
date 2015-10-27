@@ -6,7 +6,6 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading;
     using System.Threading.Tasks;
     using ObjectBuilder.Common;
-    using Transports;
 
     public class TopologyOperator : IOperateTopology
     {
@@ -14,7 +13,7 @@ namespace NServiceBus.AzureServiceBus
 
         TopologySection topology;
 
-        Func<IncomingMessage, ReceiveContext, Task> onMessage;
+        Func<IncomingMessageDetails, ReceiveContext, Task> onMessage;
         Func<Exception, Task> onError;
 
         ConcurrentDictionary<EntityInfo, INotifyIncomingMessages> notifiers = new ConcurrentDictionary<EntityInfo, INotifyIncomingMessages>();
@@ -55,7 +54,7 @@ namespace NServiceBus.AzureServiceBus
             await StopNotifiersFor(subscriptions).ConfigureAwait(false);
         }
 
-        public void OnIncomingMessage(Func<IncomingMessage, ReceiveContext, Task> func)
+        public void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func)
         {
             onMessage = func;
         }

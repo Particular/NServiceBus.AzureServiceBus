@@ -8,8 +8,7 @@ namespace NServiceBus.AzureServiceBus
     using Microsoft.ServiceBus.Messaging;
     using Logging;
     using Settings;
-    using Transports;
-
+    
     class MessageReceiverNotifier : INotifyIncomingMessages
     {
         readonly IManageMessageReceiverLifeCycle clientEntities;
@@ -17,7 +16,7 @@ namespace NServiceBus.AzureServiceBus
         readonly ReadOnlySettings settings;
         IMessageReceiver internalReceiver;
         OnMessageOptions options;
-        Func<IncomingMessage, ReceiveContext, Task> incoming;
+        Func<IncomingMessageDetails, ReceiveContext, Task> incoming;
         Func<Exception, Task> error;
         string path;
         string connstring;
@@ -35,7 +34,7 @@ namespace NServiceBus.AzureServiceBus
         public bool IsRunning { get; private set; }
         public int RefCount { get; set; }
 
-        public void Initialize(string entitypath, string connectionstring, Func<IncomingMessage, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
+        public void Initialize(string entitypath, string connectionstring, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
         {
             this.incoming = callback;
             this.error = errorCallback;

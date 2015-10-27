@@ -59,13 +59,13 @@ namespace NServiceBus.AzureServiceBus
 
         IEnumerable<EntityInfo> GetAddresses(RoutingOptions routingOptions)
         {
-            var directRouting = routingOptions.DispatchOptions.RoutingStrategy as DirectToTargetDestination;
+            var directRouting = routingOptions.DispatchOptions.AddressTag as UnicastAddressTag;
 
             if (directRouting == null) // publish
             {
-                var toAllSubscribers = (ToAllSubscribers)routingOptions.DispatchOptions.RoutingStrategy;
+                var toAllSubscribers = (MulticastAddressTag)routingOptions.DispatchOptions.AddressTag;
 
-                return topology.DeterminePublishDestination(toAllSubscribers.EventType).Entities;
+                return topology.DeterminePublishDestination(toAllSubscribers.MessageType).Entities;
             }
             else // send
             {

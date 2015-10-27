@@ -71,14 +71,14 @@ namespace NServiceBus.AzureServiceBus
         {
             var sb = new StringBuilder();
 
-            var strategy = dispatchOptions.RoutingStrategy as DirectToTargetDestination;
+            var strategy = dispatchOptions.AddressTag as UnicastAddressTag;
             if (strategy != null)
             {
                 sb.Append($"DirectToTargetDestination-{strategy.Destination}");
             }
-            else // ToAllSubscribers
+            else // multicast
             {
-                sb.Append($"ToAllSubscribers;-{(dispatchOptions.RoutingStrategy as ToAllSubscribers).EventType}");
+                sb.Append($"ToAllSubscribers;-{(dispatchOptions.AddressTag as MulticastAddressTag).MessageType}");
             }
 
             sb.Append($"--RequiredDispatchConsistency-{dispatchOptions.RequiredDispatchConsistency}");

@@ -43,8 +43,8 @@
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
             var outgoingMessage3 = new OutgoingMessage("Id-3", new Dictionary<string, string>(), bytes);
             var outgoingMessage4 = new OutgoingMessage("Id-4", new Dictionary<string, string>(), bytes);
-            var dispatchOptions1 = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
-            var dispatchOptions2 = new DispatchOptions(new DirectToTargetDestination("MyQueue2"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions1 = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions2 = new DispatchOptions(new UnicastAddressTag("MyQueue2"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
             //// perform the test
             var dispatcher = new Dispatcher(router, settings);
@@ -90,8 +90,8 @@
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
             var outgoingMessage3 = new OutgoingMessage("Id-3", new Dictionary<string, string>(), bytes);
             var outgoingMessage4 = new OutgoingMessage("Id-4", new Dictionary<string, string>(), bytes);
-            var dispatchOptions1 = new DispatchOptions(new DirectToTargetDestination("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
-            var dispatchOptions2 = new DispatchOptions(new DirectToTargetDestination("MyQueue2"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions1 = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+            var dispatchOptions2 = new DispatchOptions(new UnicastAddressTag("MyQueue2"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
             //// perform the test
             var dispatcher = new Dispatcher(router, settings);

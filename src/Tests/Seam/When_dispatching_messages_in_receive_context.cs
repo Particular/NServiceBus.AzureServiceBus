@@ -8,7 +8,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Tests;
-    using NServiceBus.ConsistencyGuarantees;
     using NServiceBus.DeliveryConstraints;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
@@ -55,7 +54,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+                var dispatchOptions = new DispatchOptions(new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(() =>
@@ -69,7 +68,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     new TransportOperation(outgoingMessage, dispatchOptions)
                 }, context.Context); // makes sure the context propagates
 
-            }, new PushSettings("sales", "error", false, ConsistencyGuarantee.AtLeastOnce));
+            }, new PushSettings("sales", "error", false, TransactionSupport.MultiQueue));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -139,7 +138,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+                var dispatchOptions = new DispatchOptions(new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(async () =>
@@ -154,7 +153,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     new TransportOperation(outgoingMessage, dispatchOptions)
                 }, context.Context);
 
-            }, new PushSettings("sales", "error", false, ConsistencyGuarantee.AtLeastOnce));
+            }, new PushSettings("sales", "error", false, TransactionSupport.MultiQueue));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -225,7 +224,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+                var dispatchOptions = new DispatchOptions(new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(() =>
@@ -239,7 +238,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     new TransportOperation(outgoingMessage, dispatchOptions)
                 }, context.Context); // makes sure the context propagates
 
-            }, new PushSettings("sales", "error", false, ConsistencyGuarantee.AtLeastOnce));
+            }, new PushSettings("sales", "error", false, TransactionSupport.MultiQueue));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -311,7 +310,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+                var dispatchOptions = new DispatchOptions(new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(async () =>
@@ -326,7 +325,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     new TransportOperation(outgoingMessage, dispatchOptions)
                 }, context.Context); 
 
-            }, new PushSettings("sales", "error", false, ConsistencyGuarantee.AtLeastOnce));
+            }, new PushSettings("sales", "error", false, TransactionSupport.MultiQueue));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -413,7 +412,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             {
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                var dispatchOptions = new DispatchOptions(new DirectToTargetDestination("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+                var dispatchOptions = new DispatchOptions(new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(async () =>
@@ -428,7 +427,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     new TransportOperation(outgoingMessage, dispatchOptions)
                 }, context.Context);
 
-            }, new PushSettings("sales", "error", false, ConsistencyGuarantee.AtLeastOnce));
+            }, new PushSettings("sales", "error", false, TransactionSupport.MultiQueue));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));

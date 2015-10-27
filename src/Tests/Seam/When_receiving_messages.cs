@@ -5,7 +5,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Tests;
-    using NServiceBus.ConsistencyGuarantees;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
@@ -40,7 +39,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 completed.Set();
 
                 return Task.FromResult(true);
-            }, new PushSettings("sales", "error", false, ConsistencyGuarantee.AtLeastOnce));
+            }, new PushSettings("sales", "error", false, TransactionSupport.SingleQueue));
 
 
             // how to propagate error's to the core, or should they be handled by us?
