@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using AzureServiceBus;
     using DeliveryConstraints;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Extensibility;
     using Routing;
     using Settings;
@@ -101,7 +102,7 @@
             {
                 new TransportOperation(outgoingMessage1, dispatchOptions1), new TransportOperation(outgoingMessage2, dispatchOptions1), //batch #1
                 new TransportOperation(outgoingMessage3, dispatchOptions2), new TransportOperation(outgoingMessage4, dispatchOptions2), //batch #2
-            }, new ContextBag()), Throws.Exception.TypeOf<AggregateException>());
+            }, new ContextBag()), Throws.Exception);
 
             //cleanup 
             await namespaceManager.DeleteQueueAsync("myqueue");
