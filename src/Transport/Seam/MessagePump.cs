@@ -44,10 +44,11 @@ namespace NServiceBus.AzureServiceBus
         }
 
         // TODO: should be Task Start(PushRuntimeSettings limitations)
-        public async void Start(PushRuntimeSettings limitations)
+        public void Start(PushRuntimeSettings limitations)
         {
             var definition = topology.DetermineReceiveResources();
-            await topologyOperator.Start(definition, limitations.MaxConcurrency).ConfigureAwait(false);
+            topologyOperator.Start(definition, limitations.MaxConcurrency)
+                .GetAwaiter().GetResult();
         }
 
         public Task Stop()

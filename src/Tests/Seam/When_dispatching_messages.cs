@@ -7,7 +7,6 @@
     using System.Threading.Tasks;
     using AzureServiceBus;
     using DeliveryConstraints;
-    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Extensibility;
     using Routing;
     using Settings;
