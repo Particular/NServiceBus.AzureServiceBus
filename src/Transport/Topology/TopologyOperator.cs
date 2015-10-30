@@ -27,31 +27,31 @@ namespace NServiceBus.AzureServiceBus
             this.container = container;
         }
 
-        public async Task Start(TopologySection topologySection, int maximumConcurrency)
+        public Task Start(TopologySection topologySection, int maximumConcurrency)
         {
             maxConcurrency = maximumConcurrency;
             topology = topologySection;
 
             cancellationTokenSource = new CancellationTokenSource();
 
-            await StartNotifiersFor(topology.Entities, maxConcurrency).ConfigureAwait(false);
+            return StartNotifiersFor(topology.Entities, maxConcurrency);
         }
 
-        public async Task Stop()
+        public Task Stop()
         {
             cancellationTokenSource.Cancel();
 
-            await StopNotifiersFor(topology.Entities).ConfigureAwait(false);
+            return StopNotifiersFor(topology.Entities);
         }
 
-        public async Task Start(IEnumerable<EntityInfo> subscriptions)
+        public Task Start(IEnumerable<EntityInfo> subscriptions)
         {
-            await StartNotifiersFor(subscriptions, maxConcurrency).ConfigureAwait(false);
+            return StartNotifiersFor(subscriptions, maxConcurrency);
         }
 
-        public async Task Stop(IEnumerable<EntityInfo> subscriptions)
+        public Task Stop(IEnumerable<EntityInfo> subscriptions)
         {
-            await StopNotifiersFor(subscriptions).ConfigureAwait(false);
+            return StopNotifiersFor(subscriptions);
         }
 
         public void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func)

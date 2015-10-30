@@ -25,14 +25,14 @@ namespace NServiceBus.AzureServiceBus
             set { _sender.RetryPolicy = value; }
         }
 
-        public async Task SendAsync(BrokeredMessage message)
+        public Task SendAsync(BrokeredMessage message)
         {
-          await _sender.SendAsync(message).ConfigureAwait(false);
+          return _sender.SendAsync(message);
         }
 
-        public async Task SendBatchAsync(IEnumerable<BrokeredMessage> messages)
+        public Task SendBatchAsync(IEnumerable<BrokeredMessage> messages)
         {
-            await _sender.SendBatchAsync(messages).ConfigureAwait(false);
+            return _sender.SendBatchAsync(messages);
         }
 
         public Task CloseAsync()

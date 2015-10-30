@@ -5,6 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Logging;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
@@ -22,49 +23,47 @@ namespace NServiceBus.AzureServiceBus
             this.settings = settings;
         }
 
-        internal async Task SendInBatches(IEnumerable<TransportOperation> outgoingMessages, BrokeredMessageReceiveContext context)
+        internal Task SendInBatches(IEnumerable<TransportOperation> outgoingMessages, BrokeredMessageReceiveContext context)
         {
             var batches = outgoingMessages.GroupBy(x => new
             {
                 Hash = ComputeGroupIdFor(x.DispatchOptions)
             });
-            var exceptions = new List<Exception>();
+            var tasks = new List<Task>();
 
             var sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
 
             foreach (var batch in batches)
             {
-                try
+                var routingOptions = new RoutingOptions
                 {
-                    var routingOptions = new RoutingOptions
+                    SendVia = sendVia,
+                    ViaEntityPath = context?.EntityPath,
+                    ViaConnectionString = context?.ConnectionString,
+                    DispatchOptions = batch.First().DispatchOptions
+                };
+
+                var givenTask = routeOutgoingMessages.RouteBatchAsync(batch.Select(x => x.Message), routingOptions);
+                givenTask.ContinueWith(task =>
+                {
+                    task.Exception?.Handle(exception =>
                     {
-                        SendVia = sendVia,
-                        ViaEntityPath = context?.EntityPath,
-                        ViaConnectionString = context?.ConnectionString,
-                        DispatchOptions = batch.First().DispatchOptions
-                    };
-                    await routeOutgoingMessages.RouteBatchAsync(batch.Select(x => x.Message), routingOptions).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", batch.Select(x => x.Message.MessageId));
-                    logger.Error(message, ex);
+                        if (exception is MessagingEntityNotFoundException)
+                        {
+                            logger.Error($"Entity '{context.EntityPath}' does not exist.");
+                        }
 
-                    exceptions.Add(ex);
-                }
+                        var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", batch.Select(x => x.Message.MessageId));
+                        logger.Error(message, exception);
+
+                        return false;
+                    });
+                });
+
+                tasks.Add(givenTask);
             }
 
-            if (exceptions.Any())
-            {
-                throw new AggregateException(exceptions);
-            }
-
-            // How do we handle exceptions here?
-            //   TimeoutException
-            //   InvalidOperationException
-            //   MessagingException
-            //   ?? MessagingEntityNotFoundException => core only knows about QueueNotFoundException, what if this is a topic?
-            //  if different types of exceptions where raised for several batches, what do we do?
+            return Task.WhenAll(tasks.ToArray());
         }
 
         string ComputeGroupIdFor(DispatchOptions dispatchOptions)
