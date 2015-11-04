@@ -49,7 +49,24 @@ namespace NServiceBus.AzureServiceBus
                     {
                         if (exception is MessagingEntityNotFoundException)
                         {
-                            logger.Error($"Entity '{context.EntityPath}' does not exist.");
+                            // Sending Via
+                            if (routingOptions.ViaEntityPath != null)
+                            {
+                                logger.Error($"Entity '{routingOptions.SendVia}' does not exist.");
+                            }
+                            else // immediately sent case
+                            {
+                                var commandStrategy = routingOptions.DispatchOptions.AddressTag as UnicastAddressTag;
+                                if (commandStrategy != null)
+                                {
+                                    logger.Error($"Entity '{commandStrategy.Destination}' does not exist.");
+                                }
+                                else // MulticastAddressTag
+                                {
+                                    // TODO: event destination entity depends on the topology used. What do we log here to help users?
+                                    //(routingOptions.DispatchOptions.AddressTag as MulticastAddressTag).MessageType
+                                }
+                            }
                         }
 
                         var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", batch.Select(x => x.Message.MessageId));
