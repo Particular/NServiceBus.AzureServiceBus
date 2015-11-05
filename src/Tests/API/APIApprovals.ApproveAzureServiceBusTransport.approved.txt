@@ -142,13 +142,13 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
     
     public class static NamingConventions
     {
-        public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, NServiceBus.Address> PublisherAddressConvention { get; }
-        public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, NServiceBus.Address> PublisherAddressConventionForSubscriptions { get; }
-        public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, bool, NServiceBus.Address> QueueAddressConvention { get; }
-        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, bool, string> QueueNamingConvention { get; }
-        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, string> SubscriptionFullNamingConvention { get; }
-        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, string> SubscriptionNamingConvention { get; }
-        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, string> TopicNamingConvention { get; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, NServiceBus.Address> PublisherAddressConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, NServiceBus.Address> PublisherAddressConventionForSubscriptions { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, bool, NServiceBus.Address> QueueAddressConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, bool, string> QueueNamingConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, string> SubscriptionFullNamingConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, string> SubscriptionNamingConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, string> TopicNamingConvention { get; set; }
     }
 }
 namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.Transports

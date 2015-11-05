@@ -9,24 +9,24 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
     {
         public static Func<ReadOnlySettings, Type, string, bool, string> QueueNamingConvention
         {
-            get
-            {
-                return (settings, messagetype, queueName, doNotIndividualize) =>
-                {
-                    var configSection = settings != null ? settings.GetConfigSection<AzureServiceBusQueueConfig>() : null;
-
-                    queueName = SanitizeEntityName(queueName);
-
-                    if (queueName.Length >= 283) // 290 - a spot for the "-" & 6 digits for the individualizer
-                        queueName = new DeterministicGuidBuilder().Build(queueName).ToString();
-
-                    if (!doNotIndividualize && ShouldIndividualize(configSection, settings))
-                        queueName = QueueIndividualizer.Individualize(queueName);
-
-                    return queueName;
-                };
-            }
+            get { return defaultQueueNamingConvention; }
+            set { defaultQueueNamingConvention = value; }
         }
+
+        static Func<ReadOnlySettings, Type, string, bool, string> defaultQueueNamingConvention = (settings, messagetype, queueName, doNotIndividualize) =>
+        {
+            var configSection = settings != null ? settings.GetConfigSection<AzureServiceBusQueueConfig>() : null;
+
+            queueName = SanitizeEntityName(queueName);
+
+            if (queueName.Length >= 283) // 290 - a spot for the "-" & 6 digits for the individualizer
+                queueName = new DeterministicGuidBuilder().Build(queueName).ToString();
+
+            if (!doNotIndividualize && ShouldIndividualize(configSection, settings))
+                queueName = QueueIndividualizer.Individualize(queueName);
+
+            return queueName;
+        };
 
         static string SanitizeEntityName(string queueName)
         {
@@ -62,25 +62,25 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
 
         public static Func<ReadOnlySettings, Type, string, string> SubscriptionNamingConvention
         {
-            get
-            {
-                return (settings, eventType, endpointName) =>
-                {
-                    return BuildSubscriptionName(settings, endpointName, eventType, e => e.Name);
-                };
-            }
+            get { return defaultSubscriptionNamingConvention; }
+            set { defaultSubscriptionNamingConvention = value; }
         }
+
+        private static Func<ReadOnlySettings, Type, string, string> defaultSubscriptionNamingConvention = (settings, eventType, endpointName) =>
+        {
+            return BuildSubscriptionName(settings, endpointName, eventType, e => e.Name);
+        };
 
         public static Func<ReadOnlySettings, Type, string, string> SubscriptionFullNamingConvention
         {
-            get
-            {
-                return (settings, eventType, endpointName) =>
-                {
-                    return BuildSubscriptionName(settings, endpointName, eventType, e => e.FullName);
-                };
-            }
+            get { return defaultSubscriptionFullNamingConvention; }
+            set { defaultSubscriptionFullNamingConvention = value; }
         }
+
+        private static Func<ReadOnlySettings, Type, string, string> defaultSubscriptionFullNamingConvention = (settings, eventType, endpointName) =>
+        {
+            return BuildSubscriptionName(settings, endpointName, eventType, e => e.FullName);
+        };
 
         private static string BuildSubscriptionName(ReadOnlySettings settings, string endpointName, Type eventType, Func<Type, string> eventTypeNameBuilder)
         {
@@ -105,41 +105,42 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
 
         public static Func<ReadOnlySettings, Type, string, string> TopicNamingConvention
         {
-            get
-            {
-                return (settings, messagetype, endpointname) =>
-                {
-                    var name = endpointname;
-
-                    name = SanitizeEntityName(name);
-
-                    if (name.Length >= 290)
-                        name = new DeterministicGuidBuilder().Build(name).ToString();
-
-                    return name;
-                };
-            }
+            get { return defaultTopicNamingConvention; }
+            set { defaultTopicNamingConvention = value; }
         }
+
+        private static Func<ReadOnlySettings, Type, string, string> defaultTopicNamingConvention = (settings, messagetype, endpointname) =>
+        {
+            var name = endpointname;
+
+            name = SanitizeEntityName(name);
+
+            if (name.Length >= 290)
+                name = new DeterministicGuidBuilder().Build(name).ToString();
+
+            return name;
+        };
 
         public static Func<ReadOnlySettings, Address, Address> PublisherAddressConvention
         {
-            get
-            {
-                return (settings, address) => Address.Parse(TopicNamingConvention(settings, null, address.Queue + ".events") + "@" + address.Machine);
-            }
+            get { return defaultPublisherAddressConvention; }
+            set { defaultPublisherAddressConvention = value; }
         }
+
+        private static Func<ReadOnlySettings, Address, Address> defaultPublisherAddressConvention = (settings, address) => Address.Parse(TopicNamingConvention(settings, null, address.Queue + ".events") + "@" + address.Machine);
 
         public static Func<ReadOnlySettings, Address, Address> PublisherAddressConventionForSubscriptions
         {
             get { return PublisherAddressConvention; }
+            set { PublisherAddressConvention = value; }
         }
 
         public static Func<ReadOnlySettings, Address, bool, Address> QueueAddressConvention
         {
-            get
-            {
-                return (settings, address, doNotIndividualize) => Address.Parse(QueueNamingConvention(settings, null, address.Queue, doNotIndividualize) + "@" + address.Machine);
-            }
+            get { return defaultQueueAddressConvention; }
+            set { defaultQueueAddressConvention = value; }
         }
+
+        private static Func<ReadOnlySettings, Address, bool, Address> defaultQueueAddressConvention = (settings, address, doNotIndividualize) => Address.Parse(QueueNamingConvention(settings, null, address.Queue, doNotIndividualize) + "@" + address.Machine);
     }
 }
