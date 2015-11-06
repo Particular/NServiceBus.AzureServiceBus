@@ -20,7 +20,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            
+
             extensions.Connectivity()
                 .NumberOfClientsPerEntity(5)
                 .MessagingFactories()
@@ -52,7 +52,8 @@ namespace NServiceBus.AzureServiceBus.Tests
                 for (var i = 0; i < 1000; i++)
                 {
                     var sender = entityLifecycleManager.Get("myqueue", null, AzureServiceBusConnectionString.Value);
-                    tasks.Add(sender.RetryOnThrottle(s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
+                    //                    tasks.Add(sender.RetryOnThrottle(s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
+                    tasks.Add(sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
                     //await sender.SendAsync(new BrokeredMessage()).ConfigureAwait(false); // this is really slow
 
                     counter++;
@@ -63,7 +64,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await Task.WhenAll(tasks);
             sw.Stop();
             Console.WriteLine("Sending {1} messages took {0} milliseconds", sw.ElapsedMilliseconds, counter);
-            Assert.IsTrue(sw.ElapsedMilliseconds < TimeSpan.FromMinutes(1).TotalMilliseconds );
+            Assert.IsTrue(sw.ElapsedMilliseconds < TimeSpan.FromMinutes(1).TotalMilliseconds);
 
             //cleanup 
             await namespaceManager.DeleteQueueAsync("myqueue");
@@ -104,6 +105,8 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var counter = 0;
 
+            var tasks = new List<Task>();
+
             for (var j = 0; j < 10; j++)
             {
                 var batch = new List<BrokeredMessage>();
@@ -113,9 +116,9 @@ namespace NServiceBus.AzureServiceBus.Tests
                     counter++;
                 }
                 var sender = entityLifecycleManager.Get("myqueue", null, AzureServiceBusConnectionString.Value);
-                await sender.RetryOnThrottle(s => s.SendBatchAsync(batch), TimeSpan.FromSeconds(10), 5);
+                tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatchAsync(batch), TimeSpan.FromSeconds(10), 5));
             }
-           
+            await Task.WhenAll(tasks);
 
             //validate
             sw.Stop();

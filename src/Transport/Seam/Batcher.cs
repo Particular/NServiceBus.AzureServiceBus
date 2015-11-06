@@ -1,10 +1,10 @@
 namespace NServiceBus.AzureServiceBus
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Logging;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
@@ -42,44 +42,51 @@ namespace NServiceBus.AzureServiceBus
                     DispatchOptions = batch.First().DispatchOptions
                 };
 
-                var givenTask = routeOutgoingMessages.RouteBatchAsync(batch.Select(x => x.Message), routingOptions);
-                givenTask.ContinueWith(task =>
-                {
-                    task.Exception?.Handle(exception =>
-                    {
-                        if (exception is MessagingEntityNotFoundException)
-                        {
-                            // Sending Via
-                            if (routingOptions.ViaEntityPath != null)
-                            {
-                                logger.Error($"Entity '{routingOptions.SendVia}' does not exist.");
-                            }
-                            else // immediately sent case
-                            {
-                                var commandStrategy = routingOptions.DispatchOptions.AddressTag as UnicastAddressTag;
-                                if (commandStrategy != null)
-                                {
-                                    logger.Error($"Entity '{commandStrategy.Destination}' does not exist.");
-                                }
-                                else // MulticastAddressTag
-                                {
-                                    // TODO: event destination entity depends on the topology used. What do we log here to help users?
-                                    //(routingOptions.DispatchOptions.AddressTag as MulticastAddressTag).MessageType
-                                }
-                            }
-                        }
-
-                        var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", batch.Select(x => x.Message.MessageId));
-                        logger.Error(message, exception);
-
-                        return false;
-                    });
-                });
+                var givenTask = RouteOutBatchesAndLogExceptions(batch, routingOptions);
 
                 tasks.Add(givenTask);
             }
 
             return Task.WhenAll(tasks.ToArray());
+        }
+
+        private async Task RouteOutBatchesAndLogExceptions(IEnumerable<TransportOperation> batch, RoutingOptions routingOptions)
+        {
+            try
+            {
+                await routeOutgoingMessages.RouteBatchAsync(batch.Select(x => x.Message), routingOptions).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                // ASB team promissed to fix this issue - verify that
+//                if (exception is MessagingEntityNotFoundException)
+//                {
+//                    // Sending Via
+//                    if (routingOptions.ViaEntityPath != null)
+//                    {
+//                        logger.Error($"Entity '{routingOptions.SendVia}' does not exist.");
+//                    }
+//                    else // immediately sent case
+//                    {
+//                        var commandStrategy = routingOptions.DispatchOptions.AddressTag as UnicastAddressTag;
+//                        if (commandStrategy != null)
+//                        {
+//                            logger.Error($"Entity '{commandStrategy.Destination}' does not exist.");
+//                        }
+//                        else // MulticastAddressTag
+//                        {
+//                            // TODO: event destination entity depends on the topology used. What do we log here to help users?
+//                            //(routingOptions.DispatchOptions.AddressTag as MulticastAddressTag).MessageType
+//                        }
+//                    }
+//                }
+//                else
+//                {
+                    var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", batch.Select(x => x.Message.MessageId));
+                    logger.Error(message, exception);
+//                }
+                throw;
+            }
         }
 
         string ComputeGroupIdFor(DispatchOptions dispatchOptions)
@@ -102,5 +109,5 @@ namespace NServiceBus.AzureServiceBus
         }
     }
 
-  
+
 }

@@ -50,7 +50,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 error.Set();
             };
-            receiver.OnMessageAsync(message =>
+            receiver.OnMessage(message =>
             {
                 received = true;
 

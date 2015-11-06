@@ -110,7 +110,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             public ReceiveMode Mode { get; internal set; }
 
-            public void OnMessageAsync(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
+            public void OnMessage(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
             {
                 throw new NotImplementedException();
             }

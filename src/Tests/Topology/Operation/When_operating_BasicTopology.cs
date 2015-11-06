@@ -46,7 +46,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -60,7 +60,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsNull(ex);
 
             // cleanup 
-            await topologyOperator.Stop();
+            await topologyOperator.StopAsync();
 
             await Cleanup(container, "sales");
         }
@@ -110,7 +110,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -125,7 +125,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsNull(ex);
 
             // cleanup 
-            await topologyOperator.Stop();
+            await topologyOperator.StopAsync();
 
             await Cleanup(container, "sales");
         }
@@ -173,7 +173,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -187,7 +187,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsFalse(completeCalled);
 
             // cleanup 
-            await topologyOperator.Stop();
+            await topologyOperator.StopAsync();
 
             await Cleanup(container, "sales");
         }
@@ -235,7 +235,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -249,7 +249,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(errorOccured);
 
             // cleanup 
-            await topologyOperator.Stop();
+            await topologyOperator.StopAsync();
 
             await Cleanup(container, "sales");
         }
@@ -298,7 +298,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -310,11 +310,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             // validate
             Assert.IsTrue(received);
             Assert.IsTrue(errorOccured);
-            Assert.AreEqual("One or more errors occurred.", ex.Message);
-            Assert.AreEqual("Something went wrong", ex.InnerException.Message);
+            Assert.AreEqual("Something went wrong", ex.Message);
 
             // cleanup 
-            await topologyOperator.Stop();
+            await topologyOperator.StopAsync();
 
             await Cleanup(container, "sales");
         }
@@ -354,7 +353,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -375,7 +374,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual(0, queueDescription.MessageCount);
 
             // cleanup
-            await topologyOperator.Stop();
+            await topologyOperator.StopAsync();
              
             await Cleanup(container, "sales");
         }
@@ -413,7 +412,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -434,7 +433,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual(1, queueDescription.MessageCount);
 
             // cleanup 
-            await topologyOperator.Stop();
+            await topologyOperator.StopAsync();
 
             await Cleanup(container, "sales");
         }
@@ -480,7 +479,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            await topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
@@ -501,7 +500,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual(1, queueDescription.MessageCount);
 
             // cleanup 
-            await topologyOperator.Stop();
+            await topologyOperator.StopAsync();
 
             await Cleanup(container, "sales");
         }

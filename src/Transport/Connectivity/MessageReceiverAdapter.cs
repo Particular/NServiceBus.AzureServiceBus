@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBus
             get { return _receiver.Mode; }
         }
 
-        public void OnMessageAsync(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
+        public void OnMessage(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
         {
             _receiver.OnMessageAsync(callback, options);
         }

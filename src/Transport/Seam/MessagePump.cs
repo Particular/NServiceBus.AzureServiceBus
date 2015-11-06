@@ -9,7 +9,7 @@ namespace NServiceBus.AzureServiceBus
     {
         ITopology topology;
         IOperateTopology topologyOperator;
-        Func<PushContext, Task> pipeline;
+        Func<PushContext, Task> messagePump;
 
         public MessagePump(ITopology topology, IOperateTopology topologyOperator)
         {
@@ -17,9 +17,9 @@ namespace NServiceBus.AzureServiceBus
             this.topologyOperator = topologyOperator;
         }
 
-        public void Init(Func<PushContext, Task> pipe, PushSettings settings)
+        public void Init(Func<PushContext, Task> pump, PushSettings settings)
         {
-            pipeline = pipe;
+            messagePump = pump;
 
             //TODO: integrate these
             //settings.ErrorQueue
@@ -33,7 +33,7 @@ namespace NServiceBus.AzureServiceBus
 
                 context.Set(receiveContext);
 
-                return pipeline(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, context));
+                return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, context));
             });
 
         }
@@ -43,17 +43,15 @@ namespace NServiceBus.AzureServiceBus
             topologyOperator.OnError(func);
         }
 
-        // TODO: should be Task Start(PushRuntimeSettings limitations)
         public void Start(PushRuntimeSettings limitations)
         {
             var definition = topology.DetermineReceiveResources();
-            topologyOperator.Start(definition, limitations.MaxConcurrency)
-                .GetAwaiter().GetResult();
+            topologyOperator.Start(definition, limitations.MaxConcurrency);
         }
 
         public Task Stop()
         {
-            return topologyOperator.Stop();
+            return topologyOperator.StopAsync();
         }
     }
 }

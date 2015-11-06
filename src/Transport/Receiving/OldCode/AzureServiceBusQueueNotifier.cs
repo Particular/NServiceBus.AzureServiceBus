@@ -43,7 +43,7 @@
 //            SafeBeginReceive();
 //        }
 
-//        public void Stop()
+//        public void StopAsync()
 //        {
 //            cancelRequested = true;
 //        }
@@ -54,7 +54,7 @@
 //            {
 //                if (QueueClient.IsClosed)
 //                {
-//                    Stop();
+//                    StopAsync();
 //                    OnFaulted();
 //                    return;
 //                }
@@ -105,7 +105,7 @@
 //            catch (OperationCanceledException ex)
 //            {
 //                logger.Fatal(string.Format("Operation cancelled exception occured on receive for queue {0}, faulting this notifier", QueueClient.Path), ex);
-//                Stop();
+//                StopAsync();
 //                OnFaulted();
 //            }
 //            finally
@@ -125,7 +125,7 @@
 //                catch (OperationCanceledException ex)
 //                {
 //                    logger.Fatal(string.Format("Operation cancelled exception occured on receive for queue {0}, faulting this notifier", QueueClient.Path), ex);
-//                    Stop();
+//                    StopAsync();
 //                    OnFaulted();
 //                }
 //            }

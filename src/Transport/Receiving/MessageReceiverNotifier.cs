@@ -16,13 +16,13 @@ namespace NServiceBus.AzureServiceBus
         readonly ReadOnlySettings settings;
         IMessageReceiver internalReceiver;
         OnMessageOptions options;
-        Func<IncomingMessageDetails, ReceiveContext, Task> incoming;
-        Func<Exception, Task> error;
+        Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
+        Func<Exception, Task> errorCallback;
         string path;
         string connstring;
         bool stopping = false;
 
-        ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
+        static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
 
         public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
@@ -36,8 +36,8 @@ namespace NServiceBus.AzureServiceBus
 
         public void Initialize(string entitypath, string connectionstring, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
         {
-            this.incoming = callback;
-            this.error = errorCallback;
+            this.incomingCallback = callback;
+            this.errorCallback = errorCallback;
             this.path = entitypath;
             this.connstring = connectionstring;
 
@@ -64,11 +64,11 @@ namespace NServiceBus.AzureServiceBus
             {
                 logger.InfoFormat("OptionsOnExceptionReceived invoked, action: {0}, exception: {1}", exceptionReceivedEventArgs.Action, exceptionReceivedEventArgs.Exception);
 
-                error?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
+                errorCallback?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
             }
         }
         
-        public Task Start()
+        public void Start()
         {
             stopping = false;
 
@@ -79,14 +79,12 @@ namespace NServiceBus.AzureServiceBus
                 throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {path}, this is probably due to a misconfiguration of the topology");
             }
 
-            internalReceiver.OnMessageAsync(message => ProcessMessage(message), options);
+            internalReceiver.OnMessage(message => ProcessMessage(message), options);
 
             IsRunning = true;
-
-            return Task.FromResult(true);
         }
 
-        Task ProcessMessage(BrokeredMessage message)
+        async Task ProcessMessage(BrokeredMessage message)
         {
             var incomingMessage = brokeredMessageConverter.Convert(message);
             var context = new BrokeredMessageReceiveContext()
@@ -97,65 +95,59 @@ namespace NServiceBus.AzureServiceBus
                 ReceiveMode = internalReceiver.Mode,
                 OnComplete = new List<Func<Task>>()
             };
-            return incoming(incomingMessage, context).ContinueWith(task =>
+
+            try
             {
-                if (task.Exception != null)
-                {
-                    return Abandon(message, task);
-                }
-
-                return InvokeCompletionCallbacks(message, context);
-
-            }).Unwrap(); //invoke pipeline
-
+                await incomingCallback(incomingMessage, context).ConfigureAwait(false);
+                await InvokeCompletionCallbacksAsync(message, context).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                await AbandonAsync(message, exception).ConfigureAwait(false);
+            }
         }
 
-        Task InvokeCompletionCallbacks(BrokeredMessage message, BrokeredMessageReceiveContext context)
+        async Task InvokeCompletionCallbacksAsync(BrokeredMessage message, BrokeredMessageReceiveContext context)
         {
             // send via receive queue only works when wrapped in a scope
             var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
-            var scope = useTx ? new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled) : null;
-            
-            //// call completion callbacks
-            var tasksToComplete = context.OnComplete.Select(toComplete => toComplete()).ToList();
-
-            return Task.WhenAll(tasksToComplete).ContinueWith(task =>
+            using (dynamic scope = useTx ? (dynamic) new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled) : new NoopTransaction())
             {
-                return task.Exception != null ? 
-                    Abandon(message, task).ContinueWith(t =>
-                    {
-                        logger.InfoFormat("Abandoned, disposing scope if present");
-                        scope?.Dispose();
-                    }, TaskContinuationOptions.ExecuteSynchronously) : 
-                    Complete(message).ContinueWith(t =>
-                    {
-                        logger.InfoFormat("Completed, completing scope if present");
-                        scope?.Complete();
-                        scope?.Dispose();
-                    }, TaskContinuationOptions.ExecuteSynchronously);
-            }).Unwrap();
+                await Task.WhenAll(context.OnComplete.Select(toComplete => toComplete()).ToList()).ConfigureAwait(false);
+                await Complete(message).ConfigureAwait(false);
+                logger.InfoFormat("Completed, completing scope if present");
+                scope.Complete();
+            }
         }
 
-        Task Abandon(BrokeredMessage message, Task t)
+        sealed class NoopTransaction : IDisposable
         {
-            logger.Info($"Exceptions occured OnComplete, exception: {t.Exception}");
-
-            var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
-            
-            logger.InfoFormat("Abandoning brokered message");
-            return message.AbandonAsync().ContinueWith(task =>
+            public void Dispose()
             {
+            }
+
+            public void Complete()
+            {
+            }
+        }
+
+        async Task AbandonAsync(BrokeredMessage message, Exception exception)
+        {
+            logger.Info($"Exceptions occured OnComplete, exception: {exception}");
+
+            using (var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
+            {
+                logger.InfoFormat("Abandoning brokered message");
+
+                await message.AbandonAsync().ConfigureAwait(false);
+
                 suppressScope.Complete();
+            }
 
-                if (error != null)
-                {
-                    return error(t.Exception);
-                }
-
-                return TaskEx.Completed;
-            }).Unwrap();
-
-            
+            if (errorCallback != null)
+            {
+                await errorCallback(exception).ConfigureAwait(false);
+            }
         }
 
         Task Complete(BrokeredMessage message)
@@ -165,7 +157,7 @@ namespace NServiceBus.AzureServiceBus
             return message.CompleteAsync();
         }
 
-        public async Task Stop()
+        public async Task StopAsync()
         {
             stopping = true;
 

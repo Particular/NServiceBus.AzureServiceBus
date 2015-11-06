@@ -7,7 +7,7 @@
 //    {
 //        void Start(Action<BrokeredMessage> tryProcessMessage, Action<Exception> errorProcessingMessage);
 
-//        void Stop();
+//        void StopAsync();
 
 //        event EventHandler Faulted;
 

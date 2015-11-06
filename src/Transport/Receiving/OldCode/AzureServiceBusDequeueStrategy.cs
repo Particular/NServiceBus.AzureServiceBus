@@ -206,11 +206,11 @@
 //        /// <summary>
 //        ///     Stops the dequeuing of messages.
 //        /// </summary>
-//        public virtual void Stop()
+//        public virtual void StopAsync()
 //        {
 //            foreach (var notifier in notifiers.Values)
 //            {
-//                notifier.Stop();
+//                notifier.StopAsync();
 //            }
 
 //            notifiers.Clear();
@@ -261,7 +261,7 @@
 //            if (notifiers.TryRemove(key, out toRemove))
 //            {
 //                toRemove.Faulted -= NotifierFaulted;
-//                toRemove.Stop();
+//                toRemove.StopAsync();
 //                if (eventType != null)
 //                {
 //                    logger.InfoFormat("Stopped tracking new notifier for event type {0}, address {1}", eventType.Name, original.ToString());

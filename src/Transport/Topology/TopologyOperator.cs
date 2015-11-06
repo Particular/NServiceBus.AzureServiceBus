@@ -27,29 +27,29 @@ namespace NServiceBus.AzureServiceBus
             this.container = container;
         }
 
-        public Task Start(TopologySection topologySection, int maximumConcurrency)
+        public void Start(TopologySection topologySection, int maximumConcurrency)
         {
             maxConcurrency = maximumConcurrency;
             topology = topologySection;
 
             cancellationTokenSource = new CancellationTokenSource();
 
-            return StartNotifiersFor(topology.Entities, maxConcurrency);
+            StartNotifiersFor(topology.Entities, maxConcurrency);
         }
 
-        public Task Stop()
+        public Task StopAsync()
         {
             cancellationTokenSource.Cancel();
 
             return StopNotifiersFor(topology.Entities);
         }
 
-        public Task Start(IEnumerable<EntityInfo> subscriptions)
+        public void Start(IEnumerable<EntityInfo> subscriptions)
         {
-            return StartNotifiersFor(subscriptions, maxConcurrency);
+            StartNotifiersFor(subscriptions, maxConcurrency);
         }
 
-        public Task Stop(IEnumerable<EntityInfo> subscriptions)
+        public Task StopAsync(IEnumerable<EntityInfo> subscriptions)
         {
             return StopNotifiersFor(subscriptions);
         }
@@ -64,7 +64,7 @@ namespace NServiceBus.AzureServiceBus
             onError = func;
         }
 
-        async Task StartNotifiersFor(IEnumerable<EntityInfo> entities, int maximumConcurrency)
+        void StartNotifiersFor(IEnumerable<EntityInfo> entities, int maximumConcurrency)
         {
             foreach (var entity in entities)
             {
@@ -77,7 +77,7 @@ namespace NServiceBus.AzureServiceBus
 
                 if (!notifier.IsRunning)
                 {
-                    await notifier.Start().ConfigureAwait(false);
+                    notifier.Start();
                 }
                 else
                 {
@@ -112,7 +112,7 @@ namespace NServiceBus.AzureServiceBus
                 }
                 else
                 {
-                    await notifier.Stop().ConfigureAwait(false);
+                    await notifier.StopAsync().ConfigureAwait(false);
                 }
             }
         }

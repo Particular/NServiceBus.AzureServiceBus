@@ -246,7 +246,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // send message to local queue
             var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
-            await sender.SendAsync(new BrokeredMessage());
+            await sender.SendAsync(new BrokeredMessage {MessageId = "id-init"});
 
             await completed.WaitOne();
 

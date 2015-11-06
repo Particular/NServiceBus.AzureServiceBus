@@ -16,13 +16,13 @@
     {
         //invoked for static parts of the topology
 
-        Task Start(TopologySection topology, int maximumConcurrency);
-        Task Stop();
+        void Start(TopologySection topology, int maximumConcurrency);
+        Task StopAsync();
 
         //invoked whenever subscriptions are added or removed
 
-        Task Start(IEnumerable<EntityInfo> subscriptions);
-        Task Stop(IEnumerable<EntityInfo> subscriptions);
+        void Start(IEnumerable<EntityInfo> subscriptions);
+        Task StopAsync(IEnumerable<EntityInfo> subscriptions);
 
         // callback when there is a new message available, or an error occurs
 

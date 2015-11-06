@@ -40,7 +40,7 @@ namespace NServiceBus.AzureServiceBus
                 var messageSender = senders.Get(address.Path, routingOptions.ViaEntityPath, address.Namespace.ConnectionString);
 
                 var brokeredMessage = outgoingMessageConverter.Convert(message, routingOptions.DispatchOptions);
-                await messageSender.RetryOnThrottle(s => s.SendAsync(brokeredMessage), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                await messageSender.RetryOnThrottleAsync(s => s.SendAsync(brokeredMessage), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
             }
         }
 
@@ -87,7 +87,7 @@ namespace NServiceBus.AzureServiceBus
                     if (chunk.Any())
                     {
                         var chunk1 = chunk;
-                        await messageSender.RetryOnThrottle(s => s.SendBatchAsync(chunk1), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                        await messageSender.RetryOnThrottleAsync(s => s.SendBatchAsync(chunk1), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
                     }
 
                     chunk = new List<BrokeredMessage> { message };
@@ -102,7 +102,7 @@ namespace NServiceBus.AzureServiceBus
 
             if (chunk.Any())
             {
-                await messageSender.RetryOnThrottle(s => s.SendBatchAsync(chunk), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                await messageSender.RetryOnThrottleAsync(s => s.SendBatchAsync(chunk), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
             }
         }
 

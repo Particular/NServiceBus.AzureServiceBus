@@ -9,26 +9,26 @@ namespace NServiceBus.AzureServiceBus
     {
         static ILog logger = LogManager.GetLogger(typeof(TaskWithRetryExtensions));
 
-        public static Task RetryOnThrottle(this IMessageSender sender, Func<IMessageSender, Task> action, TimeSpan delay, int maxRetryAttempts, int retryAttempts = 0)
+        public static async Task RetryOnThrottleAsync(this IMessageSender sender, Func<IMessageSender, Task> action, TimeSpan delay, int maxRetryAttempts, int retryAttempts = 0)
         {
-            var task = action(sender);
-
-            return task.ContinueWith(async executedTask =>
+            try
             {
-                var serverBusy = executedTask.Exception?.InnerException as ServerBusyException; // We might need to use ExceptionDispatchInfo
-
-                if (serverBusy != null && retryAttempts < maxRetryAttempts)
+                await action(sender).ConfigureAwait(false);
+            }
+            catch (ServerBusyException)
+            {
+                if (retryAttempts < maxRetryAttempts)
                 {
                     logger.Warn($"We are throttled, backing off for {delay.TotalSeconds} seconds (attempt {retryAttempts + 1}/{maxRetryAttempts}).");
 
                     await Task.Delay(delay).ConfigureAwait(false);
-                    await sender.RetryOnThrottle(action, delay, maxRetryAttempts, ++retryAttempts).ConfigureAwait(false);
+                    await sender.RetryOnThrottleAsync(action, delay, maxRetryAttempts, ++retryAttempts).ConfigureAwait(false);
                 }
-                else if (executedTask.IsFaulted)
+                else
                 {
-                    throw executedTask.Exception.InnerException;
+                    throw;
                 }
-            }).Unwrap();
+            }
         }
     }
 }

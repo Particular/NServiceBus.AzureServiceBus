@@ -36,8 +36,8 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, (message, context) => Task.FromResult(true), null, 10);
 
-            await notifier.Start();
-            await notifier.Stop();
+            notifier.Start();
+            await notifier.StopAsync();
 
             //cleanup 
             await namespaceManager.DeleteQueueAsync("myqueue");
@@ -68,11 +68,11 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, (message, context) => Task.FromResult(true), null, 10);
 
-            await notifier.Start();
-            await notifier.Stop();
+            notifier.Start();
+            await notifier.StopAsync();
 
-            await notifier.Start();
-            await notifier.Stop();
+            notifier.Start();
+            await notifier.StopAsync();
 
             //cleanup 
             await namespaceManager.DeleteQueueAsync("myqueue");
@@ -129,7 +129,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 return Task.FromResult(true);
             }, 1);
 
-            await notifier.Start();
+            notifier.Start();
 
             await Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
@@ -138,7 +138,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsNull(ex);
 
             //cleanup 
-            await notifier.Stop();
+            await notifier.StopAsync();
             await namespaceManager.DeleteQueueAsync("myqueue");
         }
     }

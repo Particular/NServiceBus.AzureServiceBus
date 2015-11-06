@@ -31,7 +31,7 @@
 //            SafeBeginReceive();
 //        }
 
-//        public void Stop()
+//        public void StopAsync()
 //        {
 //            cancelRequested = true;
 //        }
@@ -50,7 +50,7 @@
 //            {
 //                if (SubscriptionClient.IsClosed)
 //                {
-//                    Stop();
+//                    StopAsync();
 //                    OnFaulted();
 //                    return;
 //                }
@@ -104,7 +104,7 @@
 //            catch (OperationCanceledException ex)
 //            {
 //                logger.Fatal(string.Format("Operation cancelled exception occured on receive for subscription {0}, most likely due to a closed channel, faulting this notifier", SubscriptionClient.Name), ex);
-//                Stop();
+//                StopAsync();
 //                OnFaulted();
 //            }
 //            finally
@@ -124,7 +124,7 @@
 //                catch (OperationCanceledException ex)
 //                {
 //                    logger.Fatal(string.Format("Operation cancelled exception occured on receive for subscription {0}, faulting this notifier", SubscriptionClient.Name), ex);
-//                    Stop();
+//                    StopAsync();
 //                    OnFaulted();
 //                }
 //            }
