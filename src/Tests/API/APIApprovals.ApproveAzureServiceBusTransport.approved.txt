@@ -140,8 +140,15 @@
 namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEndpoint
 {
     
+    public enum EntityType
+    {
+        Queue = 0,
+        Topic = 1,
+        Subscription = 2,
+    }
     public class static NamingConventions
     {
+        public static System.Func<string, NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEndpoint.EntityType, string> EntitySanitizationConvention { get; set; }
         public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, NServiceBus.Address> PublisherAddressConvention { get; set; }
         public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, NServiceBus.Address> PublisherAddressConventionForSubscriptions { get; set; }
         public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, bool, NServiceBus.Address> QueueAddressConvention { get; set; }

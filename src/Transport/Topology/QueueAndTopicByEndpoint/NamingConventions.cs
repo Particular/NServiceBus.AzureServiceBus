@@ -17,7 +17,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
         {
             var configSection = settings != null ? settings.GetConfigSection<AzureServiceBusQueueConfig>() : null;
 
-            queueName = SanitizeEntityName(queueName);
+            queueName = SanitizeEntityName(queueName, EntityType.Queue);
 
             if (queueName.Length >= 283) // 290 - a spot for the "-" & 6 digits for the individualizer
                 queueName = new DeterministicGuidBuilder().Build(queueName).ToString();
@@ -28,14 +28,23 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
             return queueName;
         };
 
-        static string SanitizeEntityName(string queueName)
+        static string SanitizeEntityName(string queueName, EntityType entityType)
         {
-            //*Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores */
-
-            var rgx = new Regex(@"[^a-zA-Z0-9\-._]");
-            var n = rgx.Replace(queueName, "");
-            return n;
+            return EntitySanitizationConvention(queueName, entityType);
         }
+
+        public static Func<string, EntityType, string> EntitySanitizationConvention 
+        {
+            get { return defaultEntitySanitizationConvention;  }
+            set { defaultEntitySanitizationConvention = value; } 
+        }
+
+        static Func<string, EntityType, string> defaultEntitySanitizationConvention = (name, entityPath) =>
+        {
+            // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (_)
+            var rgx = new Regex(@"[^a-zA-Z0-9\-._]");
+            return rgx.Replace(name, "");
+        };
 
         static bool ShouldIndividualize(AzureServiceBusQueueConfig configSection, ReadOnlySettings settings)
         {
@@ -86,7 +95,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
         {
             var subscriptionName = eventType != null ? endpointName + "." + eventTypeNameBuilder(eventType) : endpointName;
 
-            subscriptionName = SanitizeEntityName(subscriptionName);
+            subscriptionName = SanitizeEntityName(subscriptionName, EntityType.Subscription);
 
             if (subscriptionName.Length >= 50)
                 subscriptionName = new DeterministicGuidBuilder().Build(subscriptionName).ToString();
@@ -113,7 +122,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
         {
             var name = endpointname;
 
-            name = SanitizeEntityName(name);
+            name = SanitizeEntityName(name, EntityType.Topic);
 
             if (name.Length >= 290)
                 name = new DeterministicGuidBuilder().Build(name).ToString();
@@ -143,4 +152,12 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEnd
 
         private static Func<ReadOnlySettings, Address, bool, Address> defaultQueueAddressConvention = (settings, address, doNotIndividualize) => Address.Parse(QueueNamingConvention(settings, null, address.Queue, doNotIndividualize) + "@" + address.Machine);
     }
+
+         public enum EntityType
+        {
+            Queue,
+            Topic,
+            Subscription
+        }
+
 }
