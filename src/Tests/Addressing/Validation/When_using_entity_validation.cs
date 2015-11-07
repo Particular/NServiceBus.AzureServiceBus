@@ -146,5 +146,31 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.IsFalse(validation.IsValid(illegalCharacterSubscriptionName, EntityType.Subscription));
         }
+
+        [TestCase("illegal/queue/")]
+        [TestCase("/illegal/queue")]
+        [TestCase("/illegal/queue/")]
+        public void Namespaces_do_not_allows_queues_with_leading_or_trailing_slashes(string queuePath)
+        {
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
+
+            Assert.IsFalse(validation.IsValid(queuePath, EntityType.Queue));
+        }
+
+        [TestCase("illegal/topic/")]
+        [TestCase("/illegal/topic")]
+        [TestCase("/illegal/topic/")]
+        public void Namespaces_do_not_allows_topics_with_leading_or_trailing_slashes(string topicPath)
+        {
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
+
+            Assert.IsFalse(validation.IsValid(topicPath, EntityType.Topic));
+        }
     }
 }

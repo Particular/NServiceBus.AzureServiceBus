@@ -16,7 +16,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
         public bool IsValid(string entityPath, EntityType entityType)
         {
             /*Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/) */
-            var topicQueueNameRegex = new Regex(@"^[0-9A-Za-z_\.\-\/]+$");
+            var topicQueueNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$");
             /*Except for subscriptions, these cannot contain slashes (/) */
             var subscriptionNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
             var valid = true;
