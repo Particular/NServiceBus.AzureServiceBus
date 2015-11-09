@@ -14,8 +14,21 @@ namespace NServiceBus.AzureServiceBus.Addressing
         public string Sanitize(string entityPath, EntityType entityType)
         {
             // remove invalid characters
-            var rgx = new Regex(@"[^a-zA-Z0-9\-\._\/]");
-            entityPath = rgx.Replace(entityPath, "");
+
+            if (entityType == EntityType.Queue || entityType == EntityType.Topic)
+            {
+                var regexQueueAndTopicValidCharacters = new Regex(@"[^a-zA-Z0-9\-\._\/]");
+                var regexLeadingAndTrailingForwardSlashes = new Regex(@"^\/|\/$");
+
+                entityPath = regexQueueAndTopicValidCharacters.Replace(entityPath, "");
+                entityPath = regexLeadingAndTrailingForwardSlashes.Replace(entityPath, "");
+            }
+
+            if (entityType == EntityType.Subscription || entityType == EntityType.EventHub)
+            {
+                var rgx = new Regex(@"[^a-zA-Z0-9\-\._]");
+                entityPath = rgx.Replace(entityPath, "");
+            }
 
             if (!_validationStrategy.IsValid(entityPath, entityType))
             {

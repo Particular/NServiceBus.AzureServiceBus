@@ -7,25 +7,51 @@ namespace NServiceBus.AzureServiceBus.Tests
     [Category("AzureServiceBus")]
     public class When_sanitizing_entity_names_by_adjusting
     {
-        [Test]
-        public void Valid_entity_names_are_returned_as_is()
+        [TestCase("validendpoint", EntityType.Queue)]
+        [TestCase("valid/endpoint", EntityType.Queue)]
+        [TestCase("valid123", EntityType.Queue)]
+        [TestCase("valid-1", EntityType.Queue)]
+        [TestCase("valid_1", EntityType.Queue)]
+        [TestCase("valid.1", EntityType.Queue)]
+        [TestCase("validendpoint", EntityType.Topic)]
+        [TestCase("valid/endpoint", EntityType.Topic)]
+        [TestCase("valid123", EntityType.Topic)]
+        [TestCase("valid-1", EntityType.Topic)]
+        [TestCase("valid_1", EntityType.Topic)]
+        [TestCase("valid.1", EntityType.Topic)]
+        [TestCase("validendpoint", EntityType.Subscription)]
+        [TestCase("valid123", EntityType.Subscription)]
+        [TestCase("valid-1", EntityType.Subscription)]
+        [TestCase("valid_1", EntityType.Subscription)]
+        [TestCase("valid.1", EntityType.Subscription)]
+
+        public void Valid_entity_names_are_returned_as_is(string endpointName, EntityType entityType)
         {
             var validation = new ValidationMock();
             var sanitization = new AdjustmentSanitizationStrategy(validation);
-            var endpointname = "validendpoint";
-
-            Assert.AreEqual(endpointname, sanitization.Sanitize(endpointname, EntityType.Queue));
+            var sanitizedName = sanitization.Sanitize(endpointName, entityType);
+            Assert.AreEqual(endpointName, sanitizedName);
         }
 
-        [Test]
-        public void Invalid_entity_names_will_be_stripped_from_illegal_characters()
+        [TestCase("endpoint$name", "endpointname", EntityType.Queue)]
+        [TestCase("/endpoint/name", "endpoint/name", EntityType.Queue)]
+        [TestCase("endpoint/name/", "endpoint/name", EntityType.Queue)]
+        [TestCase("/endpoint/name/", "endpoint/name", EntityType.Queue)]
+        [TestCase("endpoint$name", "endpointname", EntityType.Topic)]
+        [TestCase("/endpoint/name", "endpoint/name", EntityType.Topic)]
+        [TestCase("endpoint/name/", "endpoint/name", EntityType.Topic)]
+        [TestCase("/endpoint/name/", "endpoint/name", EntityType.Topic)]
+        [TestCase("endpoint$name", "endpointname", EntityType.Subscription)]
+        [TestCase("/endpoint/name", "endpointname", EntityType.Subscription)]
+        [TestCase("endpoint/name/", "endpointname", EntityType.Subscription)]
+        [TestCase("/endpoint/name/", "endpointname", EntityType.Subscription)]
+        public void Invalid_entity_names_will_be_stripped_from_illegal_characters(string endpointName, string expectedEndpointName, EntityType entityType)
         {
             var validation = new ValidationMock();
             var sanitization = new AdjustmentSanitizationStrategy(validation);
-            var endpointname = "endpoint$name";
-            var sanitized = "endpointname";
+            var sanitizedResult = sanitization.Sanitize(endpointName, entityType);
 
-            Assert.AreEqual(sanitized, sanitization.Sanitize(endpointname, EntityType.Queue));
+            Assert.AreEqual(expectedEndpointName, sanitizedResult);
         }
 
         [Test]

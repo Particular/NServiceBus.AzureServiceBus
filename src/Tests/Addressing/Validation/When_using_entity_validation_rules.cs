@@ -6,7 +6,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_using_entity_validation
+    public class When_using_entity_validation_rules
     {
         const string validEntityName = "rw3pSH5zk5aQahkzt-E_U0aPf6KbXpWMZ7vnRFb/8/AAptt5Gp6YVt3rSnWwREBx3-BgnqNw9ol-Rn.wFRTFR1UzoCuHZM443EqKvSt-fzpMHPusH8rm4OQeiBCwBRVDA29rLC6RlOBZ4Xs_h415HW2lAdOPR6j4L-CaaVkfnDO2-9bjUTAGCDKs6jWYmgoCYMBx6x5PS_e0nRT05S_J78qd3SOKWTM-YjVj9fwQZ9xG2x02uCW-XIh0siprJp9c3jLE";
         const string tooLongEntityName = "rw3pSH5zk5aQahkzt-E_U0aPf6KbXpWMZ7vnRFb/8/AAptt5Gp6YVt3rSnWwREBx3-BgnqNw9ol-Rn.wFRTFR1UzoCuHZM443EqKvSt-fzpMHPusH8rm4OQeiBCwBRVDA29rLC6RlOBZ4Xs_h415HW2lAdOPR6j4L-CaaVkfnDO2-9bjUTAGCDKs6jWYmgoCYMBx6x5PS_e0nRT05S_J78qd3SOKWTM-YjVj9fwQZ9xG2x02uCW-XIh0siprJp9c3jLETooLong";
@@ -59,6 +59,18 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsFalse(validation.IsValid(illegalCharacterEntityName, EntityType.Queue));
         }
 
+        [TestCase("/" + validEntityName)]
+        [TestCase(validEntityName + "/")]
+        public void Namespaces_do_not_allows_queues_with_leading_or_trailing_slash(string entityPath)
+        {
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
+
+            Assert.IsFalse(validation.IsValid(entityPath, EntityType.Queue));
+        }
+
         [Test]
         public void Namespaces_allow_topics_with_paths_up_to_260_characters()
         {
@@ -101,6 +113,18 @@ namespace NServiceBus.AzureServiceBus.Tests
             var validation = new EntityNameValidationRules(settingsHolder);
 
             Assert.IsFalse(validation.IsValid(illegalCharacterEntityName, EntityType.Queue));
+        }
+
+        [TestCase("/" + validEntityName)]
+        [TestCase(validEntityName + "/")]
+        public void Namespaces_do_not_allow_topics_with_leading_or_trailing_slash(string entityPath)
+        {
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
+
+            Assert.IsFalse(validation.IsValid(entityPath, EntityType.Queue));
         }
 
         [Test]

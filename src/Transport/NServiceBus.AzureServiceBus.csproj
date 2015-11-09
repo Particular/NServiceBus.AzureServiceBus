@@ -80,6 +80,8 @@
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualizationStrategy.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitizationV6Strategy.cs" />
+    <Compile Include="Addressing\Validation\Strategies\EntityNameValidationV6Rules.cs" />
     <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />

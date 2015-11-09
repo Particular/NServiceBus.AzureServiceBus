@@ -3,6 +3,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Azure.WindowsAzureServiceBus.Tests;
@@ -64,6 +65,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             await Task.WhenAll(tasks);
             sw.Stop();
             Console.WriteLine("Sending {1} messages took {0} milliseconds", sw.ElapsedMilliseconds, counter);
+            var faulted = tasks.Count(task => task.IsFaulted);
+            Console.WriteLine("Total of {0} msgs / second", (((double)(10000 - faulted)) / sw.ElapsedMilliseconds) * 1000);
+
             Assert.IsTrue(sw.ElapsedMilliseconds < TimeSpan.FromMinutes(1).TotalMilliseconds);
 
             //cleanup 
@@ -123,6 +127,8 @@ namespace NServiceBus.AzureServiceBus.Tests
             //validate
             sw.Stop();
             Console.WriteLine("Sending {1} messages took {0} milliseconds", sw.ElapsedMilliseconds, counter);
+            var faulted = tasks.Count(task => task.IsFaulted);
+            Console.WriteLine("Total of {0} msgs / second", (((double)(10000 - faulted)) / sw.ElapsedMilliseconds) * 1000);
             Assert.IsTrue(sw.ElapsedMilliseconds < TimeSpan.FromMinutes(1).TotalMilliseconds);
 
             //cleanup 
