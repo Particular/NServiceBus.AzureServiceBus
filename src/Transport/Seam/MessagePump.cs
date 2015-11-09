@@ -49,7 +49,7 @@ namespace NServiceBus.AzureServiceBus
             topologyOperator.Start(definition, limitations.MaxConcurrency);
         }
 
-        public Task Stop()
+        public Task StopAsync()
         {
             return topologyOperator.StopAsync();
         }

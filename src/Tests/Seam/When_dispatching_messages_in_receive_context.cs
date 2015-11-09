@@ -90,7 +90,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
 
             // cleanup 
-            await pump.Stop();
+            await pump.StopAsync();
 
             await Cleanup(container, "sales", "myqueue");
         }
@@ -168,7 +168,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // stop the pump so retries don't keep going
-            await pump.Stop();
+            await pump.StopAsync();
 
             // validate
             Assert.IsTrue(received);
@@ -260,7 +260,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
 
             // cleanup 
-            await pump.Stop();
+            await pump.StopAsync();
 
             await Cleanup(container, "sales", "myqueue");
         }
@@ -340,7 +340,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // stop the pump so retries don't keep going
-            await pump.Stop();
+            await pump.StopAsync();
 
             // validate
             Assert.IsTrue(received);
@@ -442,7 +442,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // stop the pump so retries don't keep going
-            await pump.Stop();
+            await pump.StopAsync();
 
             // validate
             var elapsed = secondTime - firstTime;
