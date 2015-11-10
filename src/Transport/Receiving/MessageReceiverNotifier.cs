@@ -133,7 +133,7 @@ namespace NServiceBus.AzureServiceBus
 
         async Task AbandonAsync(BrokeredMessage message, Exception exception)
         {
-            logger.Info($"Exceptions occured OnComplete, exception: {exception}");
+            logger.Info($"Exceptions occurred OnComplete, exception: {exception}");
 
             using (var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
