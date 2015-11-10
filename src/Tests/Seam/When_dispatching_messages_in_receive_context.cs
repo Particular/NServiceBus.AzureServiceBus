@@ -250,14 +250,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await completed.WaitOne();
 
-            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
+            await Task.Delay(TimeSpan.FromSeconds(5)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // validate
             Assert.IsTrue(received);
 
             // check destination queue for dispatched message
             var queue = await namespaceManager.GetQueueAsync("myqueue");
-            Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
+            var count = queue.MessageCount;
+            Assert.IsTrue(count == 1, "'myqueue' was expected to have 1 message, but it had " + count + " instead");
 
             // cleanup 
             await pump.StopAsync();

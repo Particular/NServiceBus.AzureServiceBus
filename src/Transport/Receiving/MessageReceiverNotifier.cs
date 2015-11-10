@@ -111,23 +111,12 @@ namespace NServiceBus.AzureServiceBus
         {
             // send via receive queue only works when wrapped in a scope
             var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
-            using (dynamic scope = useTx ? (dynamic) new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled) : new NoopTransaction())
+            using (var scope = useTx ? new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled) : null)
             {
                 await Task.WhenAll(context.OnComplete.Select(toComplete => toComplete()).ToList()).ConfigureAwait(false);
                 await Complete(message).ConfigureAwait(false);
                 logger.InfoFormat("Completed, completing scope if present");
-                scope.Complete();
-            }
-        }
-
-        sealed class NoopTransaction : IDisposable
-        {
-            public void Dispose()
-            {
-            }
-
-            public void Complete()
-            {
+                scope?.Complete();
             }
         }
 
