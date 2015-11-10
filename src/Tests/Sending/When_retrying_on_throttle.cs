@@ -19,7 +19,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var tasks = new List<Task>();
 
-            tasks.Add(sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
+            tasks.Add(sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
 
             await Task.WhenAll(tasks);
 
@@ -35,7 +35,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             sender.ExceptionToThrow = i => { throw new NotSupportedException(); };
           
             //validate
-            Assert.Throws<NotSupportedException>(async () => await sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
+            Assert.Throws<NotSupportedException>(async () => await sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
             Assert.IsTrue(sender.IsInvoked);
             Assert.AreEqual(1, sender.InvocationCount);
         }
@@ -46,7 +46,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var sender = new FakeMessageSender();
             sender.ExceptionToThrow = i => { throw new ServerBusyException("Sorry, don't feel like serving you right now"); };
 
-            Assert.Throws<ServerBusyException>(async () => await sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(1), 5));
+            Assert.Throws<ServerBusyException>(async () => await sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(1), 5));
 
             Assert.IsTrue(sender.IsInvoked);
             Assert.AreEqual(6, sender.InvocationCount); // 6 = initial invocation + 5 retries
@@ -58,7 +58,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var sender = new FakeMessageSender();
             sender.ExceptionToThrow = i => { if (i < 4) { throw new ServerBusyException("Sorry, don't feel like serving you right now"); } };
 
-            await sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(1), 5);
+            await sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(1), 5);
 
             Assert.IsTrue(sender.IsInvoked);
             Assert.AreEqual(4, sender.InvocationCount); // 4 = initial invocation + 3 retries
@@ -73,7 +73,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var sw = new Stopwatch();
             sw.Start();
 
-            Assert.Throws<ServerBusyException>(async () => await sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(5), 1));
+            Assert.Throws<ServerBusyException>(async () => await sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(5), 1));
 
             sw.Stop();
 

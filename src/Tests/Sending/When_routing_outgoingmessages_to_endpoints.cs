@@ -48,7 +48,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
 
             
-            await router.RouteAsync(outgoingMessage, new RoutingOptions {DispatchOptions = dispatchOptions});
+            await router.RouteBatchAsync(new[] { outgoingMessage }, new RoutingOptions {DispatchOptions = dispatchOptions});
 
             //validate
             var queue = await namespaceManager.GetQueueAsync("myqueue");

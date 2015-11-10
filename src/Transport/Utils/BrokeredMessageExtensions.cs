@@ -2,17 +2,19 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 {
     using Logging;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
 
     static class BrokeredMessageExtensions
     {
-        public static bool SafeComplete(this BrokeredMessage msg)
+        public static async Task<bool> SafeCompleteAsync(this BrokeredMessage msg)
         {
             try
             {
-                msg.Complete();
-
+                await msg.CompleteAsync();
                 return true;
             }
             catch (MessageLockLostException ex)
@@ -44,12 +46,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             return false;
         }
 
-        public static bool SafeAbandon(this BrokeredMessage msg)
+        public static async Task<bool> SafeAbandonAsync(this BrokeredMessage msg)
         {
             try
             {
-                msg.Abandon();
-
+                await msg.AbandonAsync();
                 return true;
             }
             catch (MessageLockLostException ex)
@@ -87,6 +88,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             clone.MessageId = toSend.MessageId;
             toSend = clone;
             return toSend;
+        }
+
+        public static IEnumerable<BrokeredMessage> CloneWithMessageId(this IEnumerable<BrokeredMessage> toSend)
+        {
+            return toSend.Select(message => message.CloneWithMessageId());
         }
 
         static ILog Log = LogManager.GetLogger(typeof(BrokeredMessageExtensions));

@@ -215,8 +215,8 @@
     <Compile Include="Creation\OldCode\Resources\ICreateSubscriptions.cs" />
     <Compile Include="Creation\OldCode\Resources\SubscriptionAlreadyInUseException.cs" />
     <Compile Include="Receiving\OldCode\RetriableReceiveExceptionHandling.cs" />
-    <Compile Include="Publishing\AzureServiceBusTopicPublisher.cs" />
-    <Compile Include="Publishing\IPublishBrokeredMessages.cs" />
+    <Compile Include="Publishing\OldCode\AzureServiceBusTopicPublisher.cs" />
+    <Compile Include="Publishing\OldCode\IPublishBrokeredMessages.cs" />
     <Compile Include="Sending\OldCode\AzureServiceBusQueueSender.cs" />
     <Compile Include="Sending\OldCode\ISendBrokeredMessages.cs" />
     <Compile Include="Sending\OldCode\MessageTooLargeException.cs" />
@@ -232,7 +232,7 @@
     <Compile Include="Sending\OldCode\AzureServiceBusDispatcher.cs" />
     <Compile Include="Receiving\OldCode\AzureServiceBusQueueNotifier.cs" />
     <Compile Include="Receiving\OldCode\AzureServiceBusSubscriptionNotifier.cs" />
-    <Compile Include="Publishing\AzureServiceBusPublisher.cs" />
+    <Compile Include="Publishing\OldCode\AzureServiceBusPublisher.cs" />
     <Compile Include="Seam\SubscriptionManager.cs" />
     <Compile Include="Utils\BrokeredMessageConverter.cs" />
     <Compile Include="Utils\BrokeredMessageExtensions.cs" />

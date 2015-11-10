@@ -9,11 +9,13 @@ namespace NServiceBus.AzureServiceBus
     {
         static ILog logger = LogManager.GetLogger(typeof(TaskWithRetryExtensions));
 
-        public static async Task RetryOnThrottleAsync(this IMessageSender sender, Func<IMessageSender, Task> action, TimeSpan delay, int maxRetryAttempts, int retryAttempts = 0)
+        public static async Task RetryOnThrottleAsync(this IMessageSender sender, Func<IMessageSender, Task> action, Func<IMessageSender, Task> retryAction, TimeSpan delay, int maxRetryAttempts, int retryAttempts = 0)
         {
             try
             {
-                await action(sender).ConfigureAwait(false);
+                // upon retries have to use new BrokeredMessage instances
+                var actionToTake = retryAttempts == 0 ? action : retryAction;
+                await actionToTake(sender).ConfigureAwait(false);
             }
             catch (ServerBusyException)
             {
@@ -22,7 +24,7 @@ namespace NServiceBus.AzureServiceBus
                     logger.Warn($"We are throttled, backing off for {delay.TotalSeconds} seconds (attempt {retryAttempts + 1}/{maxRetryAttempts}).");
 
                     await Task.Delay(delay).ConfigureAwait(false);
-                    await sender.RetryOnThrottleAsync(action, delay, maxRetryAttempts, ++retryAttempts).ConfigureAwait(false);
+                    await sender.RetryOnThrottleAsync(action, retryAction, delay, maxRetryAttempts, ++retryAttempts).ConfigureAwait(false);
                 }
                 else
                 {

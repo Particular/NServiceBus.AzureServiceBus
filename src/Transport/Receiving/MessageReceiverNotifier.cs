@@ -7,6 +7,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using Settings;
     
     class MessageReceiverNotifier : INotifyIncomingMessages
@@ -128,7 +129,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 logger.InfoFormat("Abandoning brokered message");
 
-                await message.AbandonAsync().ConfigureAwait(false);
+                await message.SafeAbandonAsync().ConfigureAwait(false);
 
                 suppressScope.Complete();
             }
@@ -143,7 +144,7 @@ namespace NServiceBus.AzureServiceBus
         {
             logger.InfoFormat("Completing brokered message");
 
-            return message.CompleteAsync();
+            return message.SafeCompleteAsync();
         }
 
         public async Task StopAsync()
