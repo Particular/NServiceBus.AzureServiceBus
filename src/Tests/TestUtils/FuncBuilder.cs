@@ -3,175 +3,231 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Reflection;
     using NServiceBus.ObjectBuilder;
     using NServiceBus.ObjectBuilder.Common;
 
-    public class FuncBuilder : IBuilder,IContainer
+    public class FuncBuilder : IBuilder, IConfigureComponents
     {
-        IList<Tuple<Type, Func<object>>> funcs = new List<Tuple<Type, Func<object>>>();
+        /// <summary>
+        /// The container that will be used to create objects and configure components.
+        /// </summary>
+        private IContainer container;
 
-        public FuncBuilder()
+        public FuncBuilder(IContainer container)
         {
-            Register<IContainer>(() => this);
+            this.container = container;
+            container.RegisterSingleton(typeof(IBuilder), this);
         }
 
-        public void Dispose()
+        public IComponentConfig ConfigureComponent(Type concreteComponent, DependencyLifecycle instanceLifecycle)
         {
+            container.Configure(concreteComponent, instanceLifecycle);
 
-        }
-        public void Register<T>() where T : new()
-        {
-            Register(typeof(T), ()=> new T());
+            return new ComponentConfig(concreteComponent, container);
         }
 
-        public void Register(Type t)
+        public IComponentConfig<T> ConfigureComponent<T>(DependencyLifecycle instanceLifecycle)
         {
-            Register(t, DetermineFunc(t));
-        }
-        public void Register<T>(Func<object> func)
-        {
-            Register(typeof(T), func);
+            container.Configure(typeof(T), instanceLifecycle);
+
+            return new ComponentConfig<T>(container);
         }
 
-        public void Register(Type t, Func<object> func)
+        public IComponentConfig<T> ConfigureComponent<T>(Func<T> componentFactory, DependencyLifecycle instanceLifecycle)
         {
-            funcs.Add(new Tuple<Type, Func<object>>(t, func));
+            container.Configure(componentFactory, instanceLifecycle);
+
+            return new ComponentConfig<T>(container);
         }
 
-        public object Build(Type typeToBuild)
+        public IComponentConfig<T> ConfigureComponent<T>(Func<IBuilder, T> componentFactory, DependencyLifecycle instanceLifecycle)
         {
-            try
-            {
-                var fn = funcs.FirstOrDefault(f => typeToBuild.IsAssignableFrom(f.Item1));
-          
-                if (fn == null)
-                {
-                    var @interface = typeToBuild.GetInterfaces().FirstOrDefault();
-                    if (@interface != null)
-                    {
-                        fn = funcs.FirstOrDefault(f => @interface.IsAssignableFrom(f.Item1));
-                    }
-                }
+            container.Configure(() => componentFactory(this), instanceLifecycle);
 
-                object result;
-
-                if (fn != null)
-                {
-                    result = fn.Item2();                    
-                }
-                else
-                {
-                    result = Activator.CreateInstance(typeToBuild);
-                }
-
-                //enable property injection
-                var propertyInfos = result.GetType().GetProperties().Where(pi => pi.CanWrite).Where(pi => pi.PropertyType != result.GetType());
-                var propsWithoutFuncs = propertyInfos
-                    .Select(p => p.PropertyType)
-                    .Intersect(funcs.Select(f => f.Item1)).ToList();
-
-                propsWithoutFuncs.ForEach(propertyTypeToSet => propertyInfos.First(p => p.PropertyType == propertyTypeToSet)
-                    .SetValue(result, Build(propertyTypeToSet), null));
-
-                return result;
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to build type: " + typeToBuild,ex);
-            }
+            return new ComponentConfig<T>(container);
         }
 
-        public IContainer BuildChildContainer()
+        public IConfigureComponents ConfigureProperty<T>(Expression<Func<T, object>> property, object value)
         {
-            throw new NotImplementedException();
+            var prop = Reflect<T>.GetProperty(property);
+
+            return ((IConfigureComponents)this).ConfigureProperty<T>(prop.Name, value);
         }
 
-        public IBuilder CreateChildBuilder()
+        public IConfigureComponents ConfigureProperty<T>(string propertyName, object value)
         {
+            container.ConfigureProperty(typeof(T), propertyName, value);
+
             return this;
         }
 
-        public T Build<T>()
+        IConfigureComponents IConfigureComponents.RegisterSingleton(Type lookupType, object instance)
         {
-            try
-            {
-                return (T) Build(typeof(T));
-            }
-            catch (Exception exception)
-            {
-                throw new ApplicationException($"Could not build {typeof(T)}", exception);
-            }
+            container.RegisterSingleton(lookupType, instance);
+            return this;
         }
 
-        public IEnumerable<T> BuildAll<T>()
+        public IConfigureComponents RegisterSingleton<T>(T instance)
         {
-            return funcs.Where(f => f.Item1 == typeof(T))
-                .Select(f => (T)f.Item2())
-                .ToList();
+            container.RegisterSingleton(typeof(T), instance);
+            return this;
         }
 
-        public IEnumerable<object> BuildAll(Type typeToBuild)
+        public bool HasComponent<T>()
         {
-            return funcs.Where(f => f.Item1 == typeToBuild)
-                .Select(f => f.Item2())
-                .ToList();
-        }
-
-        public void Configure(Type component, DependencyLifecycle dependencyLifecycle)
-        {
-            Register(component);
-        }
-
-        public void Configure<T>(Func<T> component, DependencyLifecycle dependencyLifecycle)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ConfigureProperty(Type component, string property, object value)
-        {
-            
-        }
-
-        public void RegisterSingleton(Type lookupType, object instance)
-        {
-            Register(lookupType,()=>instance);
+            return container.HasComponent(typeof(T));
         }
 
         public bool HasComponent(Type componentType)
         {
-            throw new NotImplementedException();
+            return container.HasComponent(componentType);
         }
 
-        public void Release(object instance)
+
+        public IBuilder CreateChildBuilder()
         {
-            
+            return new FuncBuilder
+            (
+                container.BuildChildContainer()
+            );
+        }
+
+        public void Dispose()
+        {
+            //Injected at compile time
+        }
+
+        void DisposeManaged()
+        {
+            container?.Dispose();
+        }
+
+        public T Build<T>()
+        {
+            return (T)container.Build(typeof(T));
+        }
+
+        public object Build(Type typeToBuild)
+        {
+            return container.Build(typeToBuild);
+        }
+
+        IEnumerable<object> IBuilder.BuildAll(Type typeToBuild)
+        {
+            return container.BuildAll(typeToBuild);
+        }
+
+        void IBuilder.Release(object instance)
+        {
+            container.Release(instance);
+        }
+
+        public IEnumerable<T> BuildAll<T>()
+        {
+            return container.BuildAll(typeof(T)).Cast<T>();
         }
 
         public void BuildAndDispatch(Type typeToBuild, Action<object> action)
         {
-            var obj = Build(typeToBuild);
-
-            action(obj);
+            var o = container.Build(typeToBuild);
+            action(o);
         }
+    }
 
-        private Func<object> DetermineFunc(Type type)
+    class ComponentConfig : IComponentConfig
+    {
+        Type component;
+        IContainer container;
+
+        public ComponentConfig(Type component, IContainer container)
         {
-            var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
-                .OrderByDescending(c => c.GetParameters().Count())
-                .FirstOrDefault();
-
-            if (constructor == null)
-                return () => Activator.CreateInstance(type);
-
-            return () =>
-            {
-                var args = constructor.GetParameters().Select(p => Build(p.ParameterType)).ToArray();
-
-                return Activator.CreateInstance(type, args, null);
-            };
-
+            this.component = component;
+            this.container = container;
         }
+
+        IComponentConfig IComponentConfig.ConfigureProperty(string name, object value)
+        {
+            container.ConfigureProperty(component, name, value);
+
+            return this;
+        }
+    }
+
+    class ComponentConfig<T> : ComponentConfig, IComponentConfig<T>
+    {
+        public ComponentConfig(IContainer container) : base(typeof(T), container)
+        {
+        }
+
+        IComponentConfig<T> IComponentConfig<T>.ConfigureProperty(Expression<Func<T, object>> property, object value)
+        {
+            var prop = Reflect<T>.GetProperty(property);
+
+            ((IComponentConfig)this).ConfigureProperty(prop.Name, value);
+
+            return this;
+        }
+    }
+
+    static class Reflect<TTarget>
+    {
+        public static PropertyInfo GetProperty(Expression<Func<TTarget, object>> property)
+        {
+            var info = GetMemberInfo(property, false) as PropertyInfo;
+            if (info == null) throw new ArgumentException("Member is not a property");
+
+            return info;
+        }
+
+        internal static List<TTarget> GetEnumValues()
+        {
+            return Enum.GetValues(typeof(TTarget))
+                .Cast<TTarget>()
+                .ToList();
+        }
+
+        public static PropertyInfo GetProperty(Expression<Func<TTarget, object>> property, bool checkForSingleDot)
+        {
+            return GetMemberInfo(property, checkForSingleDot) as PropertyInfo;
+        }
+
+        static MemberInfo GetMemberInfo(Expression member, bool checkForSingleDot)
+        {
+            if (member == null) throw new ArgumentNullException("member");
+
+            var lambda = member as LambdaExpression;
+            if (lambda == null) throw new ArgumentException("Not a lambda expression", "member");
+
+            MemberExpression memberExpr = null;
+
+            // The Func<TTarget, object> we use returns an object, so first statement can be either 
+            // a cast (if the field/property does not return an object) or the direct member access.
+            if (lambda.Body.NodeType == ExpressionType.Convert)
+            {
+                // The cast is an unary expression, where the operand is the 
+                // actual member access expression.
+                memberExpr = ((UnaryExpression)lambda.Body).Operand as MemberExpression;
+            }
+            else if (lambda.Body.NodeType == ExpressionType.MemberAccess)
+            {
+                memberExpr = lambda.Body as MemberExpression;
+            }
+
+            if (memberExpr == null) throw new ArgumentException("Not a member access", "member");
+
+            if (checkForSingleDot)
+            {
+                if (memberExpr.Expression is ParameterExpression)
+                {
+                    return memberExpr.Member;
+                }
+                throw new ArgumentException("Argument passed contains more than a single dot which is not allowed: " + member, "member");
+            }
+
+            return memberExpr.Member;
+        }
+
     }
 }

@@ -7,7 +7,9 @@
     using System.Threading.Tasks;
     using AzureServiceBus;
     using DeliveryConstraints;
+    using NServiceBus.AzureServiceBus.Tests;
     using NServiceBus.Extensibility;
+    using NServiceBus.ObjectBuilder;
     using Routing;
     using Settings;
     using NServiceBus.Transports;
@@ -30,7 +32,7 @@
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingMessageRouter(new FakeTopology(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
+            var router = new DefaultOutgoingMessageRouter(new FakeTopology(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new FuncBuilder(new FuncContainer()));
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -78,7 +80,7 @@
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingMessageRouter(new FakeTopology(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
+            var router = new DefaultOutgoingMessageRouter(new FakeTopology(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new FuncBuilder(new FuncContainer()));
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -110,15 +112,18 @@
 
         class FakeTopology : ITopology
         {
-
-            public void InitializeSettings()
+            public void InitializeSettings(SettingsHolder settings)
             {
                 throw new NotImplementedException();
             }
 
-            public void InitializeContainer()
+            public void InitializeContainer(IConfigureComponents container)
             {
                 throw new NotImplementedException();
+            }
+
+            public void UseBuilder(IBuilder builder)
+            {
             }
 
             public TopologySection DetermineReceiveResources()

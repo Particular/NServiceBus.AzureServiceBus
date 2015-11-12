@@ -11,7 +11,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Determines_the_namespace_from_partitioning_strategy()
         {
-            var container = new FuncBuilder();
+            var container = new FuncContainer();
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -21,10 +21,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new StandardTopology(settings, container);
+            var topology = new StandardTopology();
 
-            topology.InitializeSettings();
-            topology.InitializeContainer();
+            topology.InitializeSettings(settings);
+            topology.InitializeContainer(new FuncBuilder(container));
+            topology.UseBuilder(new FuncBuilder(container));
             var definition = topology.DetermineResourcesToCreate();
 
             var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
@@ -34,7 +35,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Determines_there_should_be_a_queue_with_same_name_as_endpointname()
         {
-            var container = new FuncBuilder();
+            var container = new FuncContainer();
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -44,10 +45,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new StandardTopology(settings, container);
+            var topology = new StandardTopology();
 
-            topology.InitializeSettings();
-            topology.InitializeContainer();
+            topology.InitializeSettings(settings);
+            topology.InitializeContainer(new FuncBuilder(container));
+            topology.UseBuilder(new FuncBuilder(container));
             var definition = topology.DetermineResourcesToCreate();
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == connectionstring));
@@ -56,7 +58,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Determines_there_should_be_a_topic_with_same_name_as_endpointname_followed_by_dot_events()
         {
-            var container = new FuncBuilder();
+            var container = new FuncContainer();
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -66,10 +68,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new StandardTopology(settings, container);
+            var topology = new StandardTopology();
 
-            topology.InitializeSettings();
-            topology.InitializeContainer();
+            topology.InitializeSettings(settings);
+            topology.InitializeContainer(new FuncBuilder(container));
+            topology.UseBuilder(new FuncBuilder(container));
             var definition = topology.DetermineResourcesToCreate();
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales.events" && ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == connectionstring ));

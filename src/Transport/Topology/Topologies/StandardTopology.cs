@@ -5,24 +5,19 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using Addressing;
-    using ObjectBuilder.Common;
+    using NServiceBus.ObjectBuilder;
     using Settings;
 
     public class StandardTopology : ITopology
     {
-        readonly SettingsHolder settings;
-        readonly IContainer container;
+        private SettingsHolder settings;
+        private IBuilder builder;
 
         readonly ConcurrentDictionary<Type, TopologySection> subscriptions = new ConcurrentDictionary<Type, TopologySection>();
 
-        public StandardTopology(SettingsHolder settings, IContainer container)
+        public void InitializeSettings(SettingsHolder s)
         {
-            this.settings = settings;
-            this.container = container;
-        }
-
-        public void InitializeSettings()
-        {
+            this.settings = s;
             // apply all configuration defaults
             new DefaultConfigurationValues().Apply(settings);
             // ensures settings are present/correct
@@ -33,23 +28,28 @@ namespace NServiceBus.AzureServiceBus
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(EntityNameValidationRules));
         }
 
-        public void InitializeContainer()
+        public void InitializeContainer(IConfigureComponents container)
         {
             // configures container
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
-            container.Configure(compositionStrategyType, DependencyLifecycle.InstancePerCall);
+            container.ConfigureComponent(compositionStrategyType, DependencyLifecycle.InstancePerCall);
 
             var individualizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
-            container.Configure(individualizationStrategyType, DependencyLifecycle.InstancePerCall);
+            container.ConfigureComponent(individualizationStrategyType, DependencyLifecycle.InstancePerCall);
 
             var partitioningStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
-            container.Configure(partitioningStrategyType, DependencyLifecycle.InstancePerCall);
+            container.ConfigureComponent(partitioningStrategyType, DependencyLifecycle.InstancePerCall);
 
             var sanitizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            container.Configure(sanitizationStrategyType, DependencyLifecycle.InstancePerCall);
+            container.ConfigureComponent(sanitizationStrategyType, DependencyLifecycle.InstancePerCall);
 
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
-            container.Configure(validationStrategyType, DependencyLifecycle.InstancePerCall);
+            container.ConfigureComponent(validationStrategyType, DependencyLifecycle.InstancePerCall);
+        }
+
+        public void UseBuilder(IBuilder builder)
+        {
+            this.builder = builder;
         }
 
         public TopologySection DetermineReceiveResources()
@@ -68,8 +68,8 @@ namespace NServiceBus.AzureServiceBus
 
             var endpointName = settings.Get<EndpointName>();
 
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
-            var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
+            var partitioningStrategy = (INamespacePartitioningStrategy)builder.Build(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)builder.Build(typeof(ISanitizationStrategy));
             
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), partitioningIntent).ToArray();
 
@@ -96,8 +96,8 @@ namespace NServiceBus.AzureServiceBus
         {
             var endpointName = settings.Get<EndpointName>();
 
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
-            var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
+            var partitioningStrategy = (INamespacePartitioningStrategy)builder.Build(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)builder.Build(typeof(ISanitizationStrategy));
 
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Sending).ToArray();
 
@@ -113,8 +113,8 @@ namespace NServiceBus.AzureServiceBus
 
         public TopologySection DetermineSendDestination(string destination)
         {
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
-            var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
+            var partitioningStrategy = (INamespacePartitioningStrategy)builder.Build(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)builder.Build(typeof(ISanitizationStrategy));
 
             var namespaces = partitioningStrategy.GetNamespaces(destination, PartitioningIntent.Sending).ToArray();
 
@@ -140,10 +140,10 @@ namespace NServiceBus.AzureServiceBus
 
         TopologySection BuildSubscriptionHierarchy(Type eventType)
         {
-            var partitioningStrategy = (INamespacePartitioningStrategy) container.Build(typeof(INamespacePartitioningStrategy));
+            var partitioningStrategy = (INamespacePartitioningStrategy)builder.Build(typeof(INamespacePartitioningStrategy));
             var endpointName = settings.Get<EndpointName>();
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
-            var sanitizationStrategy = (ISanitizationStrategy) container.Build(typeof(ISanitizationStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)builder.Build(typeof(ISanitizationStrategy));
 
             var topicPaths = DetermineTopicsFor(eventType);
             var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Subscription);

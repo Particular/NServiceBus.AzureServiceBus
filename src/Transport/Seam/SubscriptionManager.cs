@@ -3,6 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Threading.Tasks;
     using Extensibility;
+    using NServiceBus.ObjectBuilder;
     using Transports;
 
     class SubscriptionManager : IManageSubscriptions
@@ -10,9 +11,10 @@ namespace NServiceBus.AzureServiceBus
         readonly ITopology topology; // responsible for providing the metadata about the subscription (what in case of EH?)
         readonly IOperateTopology topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
 
-        public SubscriptionManager(ITopology topology, IOperateTopology topologyOperator)
+        public SubscriptionManager(ITopology topology, IOperateTopology topologyOperator, IBuilder builder)
         {
             this.topology = topology;
+            topology.UseBuilder(builder);
             this.topologyOperator = topologyOperator;
         }
 

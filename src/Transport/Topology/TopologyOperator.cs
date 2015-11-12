@@ -5,11 +5,11 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using ObjectBuilder.Common;
-
+    using NServiceBus.ObjectBuilder;
+    
     public class TopologyOperator : IOperateTopology
     {
-        readonly IContainer container;
+        readonly IBuilder builder;
 
         TopologySection topology;
 
@@ -22,9 +22,9 @@ namespace NServiceBus.AzureServiceBus
 
         int maxConcurrency;
 
-        public TopologyOperator(IContainer container)
+        public TopologyOperator(IBuilder builder)
         {
-            this.container = container;
+            this.builder = builder;
         }
 
         public void Start(TopologySection topologySection, int maximumConcurrency)
@@ -91,7 +91,7 @@ namespace NServiceBus.AzureServiceBus
         {
             if (type == EntityType.Queue || type == EntityType.Subscription)
             {
-                return (INotifyIncomingMessages)container.Build(typeof(MessageReceiverNotifier));
+                return (INotifyIncomingMessages)builder.Build(typeof(MessageReceiverNotifier));
             }
 
             throw new NotSupportedException("Entity type " + type + " not supported");
