@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Determines_that_sends_go_to_a_single_queue()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = SetupBasicTopology(container, "sales");
 
@@ -27,14 +27,14 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Determines_that_direct_publishing_is_not_supported()
         {
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = SetupBasicTopology(container, "sales");
 
             Assert.Throws<NotSupportedException>(() => topology.DeterminePublishDestination(typeof(object)));
         }
         
-        BasicTopology SetupBasicTopology(FuncBuilder container, string enpointname)
+        BasicTopology SetupBasicTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -42,10 +42,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new BasicTopology(settings, container);
+            var topology = new BasicTopology();
 
-            topology.InitializeSettings();
-            topology.InitializeContainer();
+            topology.InitializeSettings(settings);
+            topology.InitializeContainer(null, container);
 
             return topology;
         }

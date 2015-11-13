@@ -13,7 +13,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Determines_that_sends_go_to_a_single_queue()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = SetupStandardTopology(container, "sales");
 
@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Determines_that_sends_go_to_a_single_topic_owned_by_the_endpoint()
         {
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = SetupStandardTopology(container, "sales");
 
@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(destination.Entities.Single().Path == "sales.events");
         }
 
-        StandardTopology SetupStandardTopology(FuncBuilder container, string enpointname)
+        StandardTopology SetupStandardTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -44,10 +44,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new StandardTopology(settings, container);
+            var topology = new StandardTopology();
 
-            topology.InitializeSettings();
-            topology.InitializeContainer();
+            topology.InitializeSettings(settings);
+            topology.InitializeContainer(null, container);
 
             return topology;
         }

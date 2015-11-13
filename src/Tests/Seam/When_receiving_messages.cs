@@ -17,12 +17,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         public async Task Pushes_received_message_into_pipeline()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = await SetupBasicTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
             var pump = new MessagePump(topology, topologyOperator);
 
@@ -56,7 +56,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -72,14 +72,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await Cleanup(container, "sales");
         }
 
-        static async Task Cleanup(FuncBuilder container, string enpointname)
+        static async Task Cleanup(TransportPartsContainer container, string enpointname)
         {
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await namespaceManager.DeleteQueueAsync(enpointname);
         }
 
-        async Task<BasicTopology> SetupBasicTopology(FuncBuilder container, string enpointname)
+        async Task<BasicTopology> SetupBasicTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -87,14 +87,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new BasicTopology(settings, container);
+            var topology = new BasicTopology();
 
-            topology.InitializeSettings();
-            topology.InitializeContainer();
+            topology.InitializeSettings(settings);
+            topology.InitializeContainer(null, container);
 
             // create the topology
-            var topologyCreator = (ICreateTopology)container.Build(typeof(TopologyCreator));
-            await topologyCreator.Create(topology.DetermineResourcesToCreate());
+            var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
+            await topologyCreator.CreateAsync(topology.DetermineResourcesToCreate());
             return topology;
         }
     }

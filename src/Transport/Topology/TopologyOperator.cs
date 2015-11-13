@@ -5,11 +5,10 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using ObjectBuilder.Common;
 
     public class TopologyOperator : IOperateTopology
     {
-        readonly IContainer container;
+        readonly ITransportPartsContainer container;
 
         TopologySection topology;
 
@@ -22,7 +21,7 @@ namespace NServiceBus.AzureServiceBus
 
         int maxConcurrency;
 
-        public TopologyOperator(IContainer container)
+        public TopologyOperator(ITransportPartsContainer container)
         {
             this.container = container;
         }
@@ -41,7 +40,7 @@ namespace NServiceBus.AzureServiceBus
         {
             cancellationTokenSource.Cancel();
 
-            return StopNotifiersFor(topology.Entities);
+            return StopNotifiersForAsync(topology.Entities);
         }
 
         public void Start(IEnumerable<EntityInfo> subscriptions)
@@ -51,7 +50,7 @@ namespace NServiceBus.AzureServiceBus
 
         public Task StopAsync(IEnumerable<EntityInfo> subscriptions)
         {
-            return StopNotifiersFor(subscriptions);
+            return StopNotifiersForAsync(subscriptions);
         }
 
         public void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func)
@@ -91,13 +90,13 @@ namespace NServiceBus.AzureServiceBus
         {
             if (type == EntityType.Queue || type == EntityType.Subscription)
             {
-                return (INotifyIncomingMessages)container.Build(typeof(MessageReceiverNotifier));
+                return (INotifyIncomingMessages)container.Resolve(typeof(MessageReceiverNotifier));
             }
 
             throw new NotSupportedException("Entity type " + type + " not supported");
         }
 
-        async Task StopNotifiersFor(IEnumerable<EntityInfo> entities)
+        async Task StopNotifiersForAsync(IEnumerable<EntityInfo> entities)
         {
             foreach (var entity in entities)
             {

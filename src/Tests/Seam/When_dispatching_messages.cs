@@ -8,6 +8,7 @@
     using AzureServiceBus;
     using DeliveryConstraints;
     using NServiceBus.Extensibility;
+    using NServiceBus.ObjectBuilder;
     using Routing;
     using Settings;
     using NServiceBus.Transports;
@@ -110,13 +111,12 @@
 
         class FakeTopology : ITopology
         {
-
-            public void InitializeSettings()
+            public void InitializeSettings(SettingsHolder settings)
             {
                 throw new NotImplementedException();
             }
 
-            public void InitializeContainer()
+            public void InitializeContainer(IConfigureComponents container, ITransportPartsContainer transportPartsContainer)
             {
                 throw new NotImplementedException();
             }

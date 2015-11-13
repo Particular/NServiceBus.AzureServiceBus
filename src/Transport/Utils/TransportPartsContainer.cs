@@ -1,34 +1,41 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using NServiceBus.ObjectBuilder;
-    using NServiceBus.ObjectBuilder.Common;
 
-    public class FuncBuilder : IBuilder,IContainer
+    public class TransportPartsContainer : ITransportPartsContainer
     {
         IList<Tuple<Type, Func<object>>> funcs = new List<Tuple<Type, Func<object>>>();
 
-        public FuncBuilder()
+        public TransportPartsContainer()
         {
-            Register<IContainer>(() => this);
+            Register<IRegisterTransportParts>(() => this);
+            Register<IResolveTransportParts>(() => this);
         }
 
-        public void Dispose()
+        public void Register<T>()
         {
-
-        }
-        public void Register<T>() where T : new()
-        {
-            Register(typeof(T), ()=> new T());
+            Register(typeof(T));
         }
 
         public void Register(Type t)
         {
             Register(t, DetermineFunc(t));
         }
+
+        public void RegisterSingleton<T>()
+        {
+            RegisterSingleton(typeof(T));
+        }
+
+        public void RegisterSingleton(Type t)
+        {
+            var i = DetermineFunc(t)();
+            Register(t, () => i);
+        }
+
         public void Register<T>(Func<object> func)
         {
             Register(typeof(T), func);
@@ -39,7 +46,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             funcs.Add(new Tuple<Type, Func<object>>(t, func));
         }
 
-        public object Build(Type typeToBuild)
+        public object Resolve(Type typeToBuild)
         {
             try
             {
@@ -72,7 +79,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     .Intersect(funcs.Select(f => f.Item1)).ToList();
 
                 propsWithoutFuncs.ForEach(propertyTypeToSet => propertyInfos.First(p => p.PropertyType == propertyTypeToSet)
-                    .SetValue(result, Build(propertyTypeToSet), null));
+                    .SetValue(result, Resolve(propertyTypeToSet), null));
 
                 return result;
 
@@ -83,21 +90,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             }
         }
 
-        public IContainer BuildChildContainer()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IBuilder CreateChildBuilder()
-        {
-            return this;
-        }
-
-        public T Build<T>()
+        public T Resolve<T>()
         {
             try
             {
-                return (T) Build(typeof(T));
+                return (T) Resolve(typeof(T));
             }
             catch (Exception exception)
             {
@@ -105,55 +102,18 @@ namespace NServiceBus.AzureServiceBus.Tests
             }
         }
 
-        public IEnumerable<T> BuildAll<T>()
+        public IEnumerable<T> ResolveAll<T>()
         {
             return funcs.Where(f => f.Item1 == typeof(T))
                 .Select(f => (T)f.Item2())
                 .ToList();
         }
 
-        public IEnumerable<object> BuildAll(Type typeToBuild)
+        public IEnumerable<object> ResolveAll(Type typeToBuild)
         {
             return funcs.Where(f => f.Item1 == typeToBuild)
                 .Select(f => f.Item2())
                 .ToList();
-        }
-
-        public void Configure(Type component, DependencyLifecycle dependencyLifecycle)
-        {
-            Register(component);
-        }
-
-        public void Configure<T>(Func<T> component, DependencyLifecycle dependencyLifecycle)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ConfigureProperty(Type component, string property, object value)
-        {
-            
-        }
-
-        public void RegisterSingleton(Type lookupType, object instance)
-        {
-            Register(lookupType,()=>instance);
-        }
-
-        public bool HasComponent(Type componentType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Release(object instance)
-        {
-            
-        }
-
-        public void BuildAndDispatch(Type typeToBuild, Action<object> action)
-        {
-            var obj = Build(typeToBuild);
-
-            action(obj);
         }
 
         private Func<object> DetermineFunc(Type type)
@@ -167,7 +127,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             return () =>
             {
-                var args = constructor.GetParameters().Select(p => Build(p.ParameterType)).ToArray();
+                var args = constructor.GetParameters().Select(p => Resolve(p.ParameterType)).ToArray();
 
                 return Activator.CreateInstance(type, args, null);
             };

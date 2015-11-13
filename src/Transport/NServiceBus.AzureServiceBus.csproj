@@ -86,6 +86,7 @@
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
+    <Compile Include="Utils\IRegisterTransportParts.cs" />
     <Compile Include="Receiving\IncomingMessageDetails.cs" />
     <Compile Include="Receiving\SupportedBrokeredMessageBodyTypes.cs" />
     <Compile Include="Seam\Batcher.cs" />
@@ -252,6 +253,9 @@
     <Compile Include="Receiving\OldCode\ReceiveResourceManager.cs" />
     <Compile Include="Sending\OldCode\SendResourceManager.cs" />
     <Compile Include="TaskEx.cs" />
+    <Compile Include="Utils\IResolveTransportParts.cs" />
+    <Compile Include="Utils\ITransportPartsContainer.cs" />
+    <Compile Include="Utils\TransportPartsContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -80,12 +80,12 @@ namespace NServiceBus.AzureServiceBus
                 throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {path}, this is probably due to a misconfiguration of the topology");
             }
 
-            internalReceiver.OnMessage(message => ProcessMessage(message), options);
+            internalReceiver.OnMessage(message => ProcessMessageAsync(message), options);
 
             IsRunning = true;
         }
 
-        async Task ProcessMessage(BrokeredMessage message)
+        async Task ProcessMessageAsync(BrokeredMessage message)
         {
             var incomingMessage = brokeredMessageConverter.Convert(message);
             var context = new BrokeredMessageReceiveContext()

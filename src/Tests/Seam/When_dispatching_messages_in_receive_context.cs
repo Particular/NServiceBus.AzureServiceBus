@@ -24,24 +24,24 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var completed = new AsyncAutoResetEvent(false);
 
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
 
             // setup a basic topology for testing
             var topology = await SetupBasicTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
             var pump = new MessagePump(topology, topologyOperator);
             
             // setup the dispatching side of things
-            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Build(typeof(IManageMessageSenderLifeCycle));
+            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Resolve(typeof(IManageMessageSenderLifeCycle));
             var router = new DefaultOutgoingMessageRouter(topology, new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
             var dispatcher = new Dispatcher(router, settings);
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues)container.Build(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await creator.CreateAsync("myqueue", namespaceManager);
 
@@ -74,7 +74,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to local queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -101,24 +101,24 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var errored = new AsyncAutoResetEvent(false);
 
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
 
             // setup a basic topology for testing
             var topology = await SetupBasicTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Build(typeof(IManageMessageSenderLifeCycle));
+            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Resolve(typeof(IManageMessageSenderLifeCycle));
             var router = new DefaultOutgoingMessageRouter(topology, new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
             var dispatcher = new Dispatcher(router, settings);
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues)container.Build(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await creator.CreateAsync("myqueue", namespaceManager);
 
@@ -159,7 +159,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to local queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -192,7 +192,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var completed = new AsyncAutoResetEvent(false);
 
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Connectivity().SendViaReceiveQueue(true);
@@ -201,17 +201,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupBasicTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Build(typeof(IManageMessageSenderLifeCycle));
+            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Resolve(typeof(IManageMessageSenderLifeCycle));
             var router = new DefaultOutgoingMessageRouter(topology, new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
             var dispatcher = new Dispatcher(router, settings);
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues)container.Build(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await creator.CreateAsync("myqueue", namespaceManager);
 
@@ -244,7 +244,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to local queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage {MessageId = "id-init"});
 
@@ -272,7 +272,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var errored = new AsyncAutoResetEvent(false);
 
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Connectivity().SendViaReceiveQueue(true);
@@ -281,17 +281,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupBasicTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Build(typeof(IManageMessageSenderLifeCycle));
+            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Resolve(typeof(IManageMessageSenderLifeCycle));
             var router = new DefaultOutgoingMessageRouter(topology, new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
             var dispatcher = new Dispatcher(router, settings);
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues)container.Build(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await creator.CreateAsync("myqueue", namespaceManager);
 
@@ -332,7 +332,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to local queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -367,7 +367,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var secondTime = DateTime.MaxValue;
 
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Connectivity().SendViaReceiveQueue(true);
@@ -376,17 +376,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupBasicTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Build(typeof(IManageMessageSenderLifeCycle));
+            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Resolve(typeof(IManageMessageSenderLifeCycle));
             var router = new DefaultOutgoingMessageRouter(topology, new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
             var dispatcher = new Dispatcher(router, settings);
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues)container.Build(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await creator.CreateAsync("myqueue", namespaceManager);
 
@@ -434,7 +434,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to local queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -454,9 +454,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await Cleanup(container, "sales", "myqueue");
         }
 
-        static async Task Cleanup(FuncBuilder container, params string[] endpointnames)
+        static async Task Cleanup(TransportPartsContainer container, params string[] endpointnames)
         {
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
 
             foreach (var endpointname in endpointnames)
@@ -465,21 +465,21 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             }
         }
 
-        async Task<BasicTopology> SetupBasicTopology(FuncBuilder container, string enpointname, SettingsHolder settings)
+        async Task<BasicTopology> SetupBasicTopology(TransportPartsContainer container, string enpointname, SettingsHolder settings)
         {
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new BasicTopology(settings, container);
+            var topology = new BasicTopology();
 
-            topology.InitializeSettings();
-            topology.InitializeContainer();
+            topology.InitializeSettings(settings);
+            topology.InitializeContainer(null, container);
 
             // create the topology
-            var topologyCreator = (ICreateTopology)container.Build(typeof(TopologyCreator));
-            await topologyCreator.Create(topology.DetermineResourcesToCreate());
+            var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
+            await topologyCreator.CreateAsync(topology.DetermineResourcesToCreate());
             return topology;
         }
     }

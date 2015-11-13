@@ -15,12 +15,12 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Receives_incoming_messages_from_endpoint_queue()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = await SetupBasicTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -49,7 +49,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -69,12 +69,12 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Calls_completion_callbacks_before_completing()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = await SetupBasicTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -113,7 +113,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -134,12 +134,12 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Does_not_call_completion_when_error_during_processing()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = await SetupBasicTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -176,7 +176,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -196,12 +196,12 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Calls_on_error_when_error_during_processing()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = await SetupBasicTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -238,7 +238,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -258,12 +258,12 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Calls_on_error_when_error_during_completion()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = await SetupBasicTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -301,7 +301,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -322,12 +322,12 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Completes_incoming_message_when_successfully_received()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = await SetupBasicTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -356,7 +356,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -368,7 +368,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
 
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             var queueDescription = await namespaceManager.GetQueueAsync("sales");
             Assert.AreEqual(0, queueDescription.MessageCount);
@@ -383,12 +383,12 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Aborts_incoming_message_when_error_during_processing()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = await SetupBasicTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -415,7 +415,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -427,7 +427,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
 
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             var queueDescription = await namespaceManager.GetQueueAsync("sales");
             Assert.AreEqual(1, queueDescription.MessageCount);
@@ -442,12 +442,12 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Aborts_incoming_message_when_error_during_completion()
         {
             // setting up the environment
-            var container = new FuncBuilder();
+            var container = new TransportPartsContainer();
 
             var topology = await SetupBasicTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -482,7 +482,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             topologyOperator.Start(topology.DetermineReceiveResources(), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Build(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
             await sender.SendAsync(new BrokeredMessage());
 
@@ -494,7 +494,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
 
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             var queueDescription = await namespaceManager.GetQueueAsync("sales");
             Assert.AreEqual(1, queueDescription.MessageCount);
@@ -505,14 +505,14 @@ namespace NServiceBus.AzureServiceBus.Tests
             await Cleanup(container, "sales");
         }
 
-        static async Task Cleanup(FuncBuilder container, string enpointname)
+        static async Task Cleanup(TransportPartsContainer container, string enpointname)
         {
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Build(typeof(IManageNamespaceManagerLifeCycle));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await namespaceManager.DeleteQueueAsync(enpointname);
         }
 
-        async Task<BasicTopology> SetupBasicTopology(FuncBuilder container, string enpointname)
+        async Task<BasicTopology> SetupBasicTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -520,14 +520,14 @@ namespace NServiceBus.AzureServiceBus.Tests
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new BasicTopology(settings, container);
+            var topology = new BasicTopology();
 
-            topology.InitializeSettings();
-            topology.InitializeContainer();
+            topology.InitializeSettings(settings);
+            topology.InitializeContainer(null, container);
 
             // create the topology
-            var topologyCreator = (ICreateTopology) container.Build(typeof(TopologyCreator));
-            await topologyCreator.Create(topology.DetermineResourcesToCreate());
+            var topologyCreator = (ICreateTopology) container.Resolve(typeof(TopologyCreator));
+            await topologyCreator.CreateAsync(topology.DetermineResourcesToCreate());
             return topology;
         }
     }

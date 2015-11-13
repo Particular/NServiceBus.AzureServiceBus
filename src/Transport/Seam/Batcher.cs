@@ -42,7 +42,7 @@ namespace NServiceBus.AzureServiceBus
                     DispatchOptions = batch.First().DispatchOptions
                 };
 
-                var givenTask = RouteOutBatchesAndLogExceptions(batch, routingOptions);
+                var givenTask = RouteOutBatchesAndLogExceptionsAsync(batch, routingOptions);
 
                 tasks.Add(givenTask);
             }
@@ -50,7 +50,7 @@ namespace NServiceBus.AzureServiceBus
             return Task.WhenAll(tasks.ToArray());
         }
 
-        private async Task RouteOutBatchesAndLogExceptions(IEnumerable<TransportOperation> batch, RoutingOptions routingOptions)
+        private async Task RouteOutBatchesAndLogExceptionsAsync(IEnumerable<TransportOperation> batch, RoutingOptions routingOptions)
         {
             try
             {

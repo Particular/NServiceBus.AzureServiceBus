@@ -3,7 +3,6 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using FakeItEasy;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;

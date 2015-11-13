@@ -2,7 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.DelayedDelivery;
+    using NServiceBus.Features;
     using NServiceBus.Performance.TimeToBeReceived;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -17,7 +19,7 @@
 
         protected override void ConfigureForSending(TransportSendingConfigurationContext context)
         {
-            throw new NotImplementedException();
+            //context.SetDispatcherFactory();
         }
 
         public override IEnumerable<Type> GetSupportedDeliveryConstraints()
@@ -71,5 +73,44 @@
         }
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
+    }
+
+    public class AzureServiceBusTransportConfigurator : Feature
+    {
+        ITopology topology;
+        ITransportPartsContainer container = new TransportPartsContainer();
+
+        internal AzureServiceBusTransportConfigurator()
+        {
+            EnableByDefault();
+            //DependsOn<UnicastBus>();
+            //DependsOn<Receiving>();
+            //RegisterStartupTask<SomeStartupTask>();
+            Defaults(settings =>
+            {
+                settings.SetDefault(WellKnownConfigurationKeys.Topology.Implementation, typeof(StandardTopology));
+
+                //if the user had set another topology the the default, it will be resolved
+                var topologyType = settings.Get<Type>(WellKnownConfigurationKeys.Topology.Implementation);
+                topology = (ITopology)Activator.CreateInstance(topologyType);
+                topology.InitializeSettings(settings);
+            });
+        }
+
+        protected override void Setup(FeatureConfigurationContext context)
+        {
+            //context.Container //can only register
+            //context.Pipeline //can extend
+            //context.Settings //cannot change
+            topology.InitializeContainer(context.Container, container);
+        }
+
+        //class SomeStartupTask : FeatureStartupTask
+        //{
+        //    protected override Task OnStart(IBusContext context)
+        //    {
+        //        return Task.FromResult(true);
+        //    }
+        //}
     }
 }

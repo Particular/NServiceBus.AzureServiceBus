@@ -8,6 +8,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NServiceBus.DeliveryConstraints;
+    using NServiceBus.ObjectBuilder;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -179,12 +180,12 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         public class FakeTopology : ITopology
         {
-            public void InitializeSettings()
+            public void InitializeSettings(SettingsHolder settings)
             {
                 throw new NotImplementedException();
             }
 
-            public void InitializeContainer()
+            public void InitializeContainer(IConfigureComponents container, ITransportPartsContainer transportPartsContainer)
             {
                 throw new NotImplementedException();
             }

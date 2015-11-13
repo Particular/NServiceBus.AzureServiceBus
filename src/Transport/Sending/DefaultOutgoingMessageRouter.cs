@@ -40,7 +40,7 @@ namespace NServiceBus.AzureServiceBus
 
                 var brokeredMessages = outgoingMessageConverter.Convert(messages, routingOptions.DispatchOptions);
 
-                await SendBatchWithEnforcedBatchSize(messageSender, brokeredMessages).ConfigureAwait(false); 
+                await SendBatchWithEnforcedBatchSizeAsync(messageSender, brokeredMessages).ConfigureAwait(false); 
             }
         }
 
@@ -60,7 +60,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task SendBatchWithEnforcedBatchSize(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend)
+        async Task SendBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend)
         {
             var chunk = new List<BrokeredMessage>();
             long batchSize = 0;
