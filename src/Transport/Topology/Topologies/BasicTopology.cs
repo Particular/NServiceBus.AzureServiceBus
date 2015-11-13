@@ -3,18 +3,22 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Linq;
     using Addressing;
-    using NServiceBus.ObjectBuilder;
+    using ObjectBuilder.Common;
     using Settings;
 
     public class BasicTopology : ITopology
     {
-        private SettingsHolder settings;
-        private IBuilder builder;
+        readonly SettingsHolder settings;
+        readonly IContainer container;
 
-        public void InitializeSettings(SettingsHolder s)
+        public BasicTopology(SettingsHolder settings, IContainer container)
         {
-            this.settings = s;
+            this.settings = settings;
+            this.container = container;
+        }
 
+        public void InitializeSettings()
+        {
             // apply all configuration defaults
             new DefaultConfigurationValues().Apply(settings);
             // ensures settings are present/correct
@@ -25,48 +29,41 @@ namespace NServiceBus.AzureServiceBus
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(EntityNameValidationRules));
         }
 
-        public void InitializeContainer(IConfigureComponents container)
+        public void InitializeContainer()
         {
             // runtime components
-            container.ConfigureComponent(typeof(NamespaceManagerCreator), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(NamespaceManagerLifeCycleManager), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(MessagingFactoryCreator), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(MessagingFactoryLifeCycleManager), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(MessageReceiverCreator), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(MessageSenderCreator), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(MessageReceiverLifeCycleManager), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(MessageSenderLifeCycleManager), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(AzureServiceBusQueueCreator), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(AzureServiceBusTopicCreator), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(AzureServiceBusSubscriptionCreator), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(DefaultBrokeredMessagesToIncomingMessagesConverter), DependencyLifecycle.InstancePerCall);
-            container.ConfigureComponent(typeof(TopologyCreator), DependencyLifecycle.InstancePerCall);
-            container.ConfigureComponent(typeof(TopologyOperator), DependencyLifecycle.SingleInstance);
-            container.ConfigureComponent(typeof(MessageReceiverNotifier), DependencyLifecycle.InstancePerCall);
+            container.Configure(typeof(NamespaceManagerCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(NamespaceManagerLifeCycleManager), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessagingFactoryCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessagingFactoryLifeCycleManager), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessageReceiverCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessageSenderCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessageReceiverLifeCycleManager), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessageSenderLifeCycleManager), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(AzureServiceBusQueueCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(AzureServiceBusTopicCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(AzureServiceBusSubscriptionCreator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(DefaultBrokeredMessagesToIncomingMessagesConverter), DependencyLifecycle.InstancePerCall);
+            container.Configure(typeof(TopologyCreator), DependencyLifecycle.InstancePerCall);
+            container.Configure(typeof(TopologyOperator), DependencyLifecycle.SingleInstance);
+            container.Configure(typeof(MessageReceiverNotifier), DependencyLifecycle.InstancePerCall);
 
             // strategies
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
-            container.ConfigureComponent(compositionStrategyType, DependencyLifecycle.InstancePerCall);
+            container.Configure(compositionStrategyType, DependencyLifecycle.InstancePerCall);
 
             var individualizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
-            container.ConfigureComponent(individualizationStrategyType, DependencyLifecycle.InstancePerCall);
+            container.Configure(individualizationStrategyType, DependencyLifecycle.InstancePerCall);
 
             var partitioningStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
-            container.ConfigureComponent(partitioningStrategyType, DependencyLifecycle.InstancePerCall);
+            container.Configure(partitioningStrategyType, DependencyLifecycle.InstancePerCall);
 
             var sanitizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            container.ConfigureComponent(sanitizationStrategyType, DependencyLifecycle.InstancePerCall);
+            container.Configure(sanitizationStrategyType, DependencyLifecycle.InstancePerCall);
 
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
-            container.ConfigureComponent(validationStrategyType, DependencyLifecycle.InstancePerCall);
+            container.Configure(validationStrategyType, DependencyLifecycle.InstancePerCall);
         }
-
-        public void UseBuilder(IBuilder builder)
-        {
-            this.builder = builder;
-        }
-
-        
 
         public TopologySection DetermineReceiveResources()
         {
@@ -84,8 +81,8 @@ namespace NServiceBus.AzureServiceBus
 
             var endpointName = settings.Get<EndpointName>();
 
-            var partitioningStrategy = (INamespacePartitioningStrategy)builder.Build(typeof(INamespacePartitioningStrategy));
-            var sanitizationStrategy = (ISanitizationStrategy)builder.Build(typeof(ISanitizationStrategy));
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
 
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), partitioningIntent).ToArray();
 
@@ -112,8 +109,8 @@ namespace NServiceBus.AzureServiceBus
 
         public TopologySection DetermineSendDestination(string destination)
         {
-            var partitioningStrategy = (INamespacePartitioningStrategy)builder.Build(typeof(INamespacePartitioningStrategy));
-            var sanitizationStrategy = (ISanitizationStrategy)builder.Build(typeof(ISanitizationStrategy));
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Build(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)container.Build(typeof(ISanitizationStrategy));
 
             var namespaces = partitioningStrategy.GetNamespaces(destination, PartitioningIntent.Sending).ToArray();
 
@@ -136,6 +133,5 @@ namespace NServiceBus.AzureServiceBus
         {
             throw new NotSupportedException("The current topology does not support azure servicebus subscriptions");
         }
-
     }
 }

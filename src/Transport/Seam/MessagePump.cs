@@ -3,7 +3,6 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Threading.Tasks;
     using Extensibility;
-    using NServiceBus.ObjectBuilder;
     using Transports;
 
     class MessagePump : IPushMessages
@@ -12,10 +11,9 @@ namespace NServiceBus.AzureServiceBus
         IOperateTopology topologyOperator;
         Func<PushContext, Task> messagePump;
 
-        public MessagePump(ITopology topology, IOperateTopology topologyOperator, IBuilder builder)
+        public MessagePump(ITopology topology, IOperateTopology topologyOperator)
         {
             this.topology = topology;
-            topology.UseBuilder(builder);
             this.topologyOperator = topologyOperator;
         }
 

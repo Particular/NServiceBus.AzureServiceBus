@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Determines_the_namespace_from_partitioning_strategy()
         {
-            var container = new FuncContainer();
+            var container = new FuncBuilder();
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -22,11 +22,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new BasicTopology();
+            var topology = new BasicTopology(settings, container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(new FuncBuilder(container));
-            topology.UseBuilder(new FuncBuilder(container));
+            topology.InitializeSettings();
+            topology.InitializeContainer();
             var definition = topology.DetermineResourcesToCreate();
 
             var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
@@ -36,7 +35,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Determines_there_should_be_a_queue_with_same_name_as_endpointname()
         {
-            var container = new FuncContainer();
+            var container = new FuncBuilder();
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -46,12 +45,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new BasicTopology();
+            var topology = new BasicTopology(settings, container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(new FuncBuilder(container));
-            topology.UseBuilder(new FuncBuilder(container));
-
+            topology.InitializeSettings();
+            topology.InitializeContainer();
             var definition = topology.DetermineResourcesToCreate();
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == connectionstring));
@@ -60,35 +57,34 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Does_not_support_subscribing()
         {
-            var container = new FuncContainer();
+            var container = new FuncBuilder();
 
             var settings = new SettingsHolder();
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             container.Register(typeof(SettingsHolder), () => settings);
            
-            var topology = new BasicTopology();
+            var topology = new BasicTopology(settings, container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(new FuncBuilder(container));
-            topology.UseBuilder(new FuncBuilder(container));
-
+            topology.InitializeSettings();
+            topology.InitializeContainer();
+            
             Assert.Throws<NotSupportedException>(() => topology.DetermineResourcesToSubscribeTo(typeof(MyEvent)));
         }
 
         [Test]
         public void Does_not_support_unsubscribing()
         {
-            var container = new FuncContainer();
+            var container = new FuncBuilder();
 
             var settings = new SettingsHolder();
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             container.Register(typeof(SettingsHolder), () => settings);
 
-            var topology = new BasicTopology();
+            var topology = new BasicTopology(settings, container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(new FuncBuilder(container));
-            topology.UseBuilder(new FuncBuilder(container));
+            topology.InitializeSettings();
+            topology.InitializeContainer();
+
 
             Assert.Throws<NotSupportedException>(() => topology.DetermineResourcesToUnsubscribeFrom(typeof(MyEvent)));
         }

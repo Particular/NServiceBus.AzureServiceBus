@@ -143,7 +143,6 @@
     <Compile Include="Sending\When_routing_outgoingmessages_to_endpoints.cs" />
     <Compile Include="Sending\When_sending_brokeredmessages_to_queues.cs" />
     <Compile Include="TestUtils\FuncBuilder.cs" />
-    <Compile Include="TestUtils\FuncContainer.cs" />
     <Compile Include="Topology\MetaModel\When_SqlSubscriptionFilter_is_serializing_an_event.cs" />
     <Compile Include="Topology\Computation\When_computing_ForwardingTopology.cs" />
     <Compile Include="Topology\Computation\When_computing_BasicTopology.cs" />

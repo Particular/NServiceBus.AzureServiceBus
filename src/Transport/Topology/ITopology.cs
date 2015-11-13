@@ -1,8 +1,6 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
-    using NServiceBus.ObjectBuilder;
-    using NServiceBus.Settings;
 
     // a topology is responsible to determine what the underlying physical topology in asb looks like
     // This includes, which namespaces are to be used
@@ -17,17 +15,12 @@
         /// <summary>
         /// Properly initializes configuration, called while settings can still be changed
         /// </summary>
-        void InitializeSettings(SettingsHolder settings);
+        void InitializeSettings();
 
         /// <summary>
         /// Properly sets up the container, called when settings are set
         /// </summary>
-        void InitializeContainer(IConfigureComponents container);
-
-        /// <summary>
-        /// Sets the builder to use for resolving strategies
-        /// </summary>
-        void UseBuilder(IBuilder builder);
+        void InitializeContainer();
 
         TopologySection DetermineReceiveResources();
         TopologySection DetermineResourcesToCreate();

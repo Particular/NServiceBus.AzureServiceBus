@@ -6,7 +6,6 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
-    using NServiceBus.ObjectBuilder;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -21,11 +20,9 @@ namespace NServiceBus.AzureServiceBus
         TimeSpan backOffTimeOnThrottle;
         int maximuMessageSizeInKilobytes;
 
-        public DefaultOutgoingMessageRouter(ITopology topology, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings, IBuilder builder)
+        public DefaultOutgoingMessageRouter(ITopology topology, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings)
         {
             this.topology = topology;
-            topology.UseBuilder(builder);
-
             this.outgoingMessageConverter = outgoingMessageConverter;
             this.senders = senders;
 

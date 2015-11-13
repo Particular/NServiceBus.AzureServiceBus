@@ -13,7 +13,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Determines_that_sends_go_to_a_single_queue()
         {
             // setting up the environment
-            var container = new FuncContainer();
+            var container = new FuncBuilder();
 
             var topology = SetupForwardingTopology(container, "sales");
 
@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Determines_that_sends_can_go_to_any_topic_that_belongs_to_a_bundle()
         {
-            var container = new FuncContainer();
+            var container = new FuncBuilder();
 
             var topology = SetupForwardingTopology(container, "sales");
 
@@ -37,7 +37,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(destination.Entities.First().Path.StartsWith("bundle"));
         }
 
-        ForwardingTopology SetupForwardingTopology(FuncContainer container, string enpointname)
+        ForwardingTopology SetupForwardingTopology(FuncBuilder container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -45,11 +45,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new ForwardingTopology();
+            var topology = new ForwardingTopology(settings, container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(new FuncBuilder(container));
-            topology.UseBuilder(new FuncBuilder(container));
+            topology.InitializeSettings();
+            topology.InitializeContainer();
 
             return topology;
         }

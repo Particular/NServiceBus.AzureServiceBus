@@ -8,7 +8,6 @@ namespace NServiceBus.AzureServiceBus.Tests
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NServiceBus.DeliveryConstraints;
-    using NServiceBus.ObjectBuilder;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -42,7 +41,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var router = new DefaultOutgoingMessageRouter(
                 new FakeTopology(),
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
-                clientLifecycleManager, settings, new FuncBuilder(new FuncContainer()));
+                clientLifecycleManager, settings);
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes);
@@ -83,7 +82,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var router = new DefaultOutgoingMessageRouter(
                 new FakeTopology(),
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
-                clientLifecycleManager, settings, new FuncBuilder(new FuncContainer()));
+                clientLifecycleManager, settings);
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
@@ -124,7 +123,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var router = new DefaultOutgoingMessageRouter(
                 new FakeTopology(), 
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
-                clientLifecycleManager, settings, new FuncBuilder(new FuncContainer()));
+                clientLifecycleManager, settings);
 
             var bytes = Enumerable.Range(0, 250 * 1024).Select(x => (byte) (x%256)).ToArray();
             var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
@@ -165,7 +164,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var router = new DefaultOutgoingMessageRouter(
                 new FakeTopology(), 
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
-                clientLifecycleManager, settings, new FuncBuilder(new FuncContainer()));
+                clientLifecycleManager, settings);
 
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes) * 1024).Select(x => (byte) (x%256)).ToArray();
             var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
@@ -180,18 +179,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         public class FakeTopology : ITopology
         {
-            public void InitializeSettings(SettingsHolder settings)
+            public void InitializeSettings()
             {
                 throw new NotImplementedException();
             }
 
-            public void InitializeContainer(IConfigureComponents container)
+            public void InitializeContainer()
             {
                 throw new NotImplementedException();
-            }
-
-            public void UseBuilder(IBuilder builder)
-            {
             }
 
             public TopologySection DetermineReceiveResources()

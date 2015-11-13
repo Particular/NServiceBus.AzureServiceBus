@@ -94,24 +94,20 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             public Action<int> ExceptionToThrow { get; set; }
 
-            public Task SendAsync(BrokeredMessage message)
+            public async Task SendAsync(BrokeredMessage message)
             {
                 IsInvoked = true;
                 InvocationCount++;
 
                 ExceptionToThrow?.Invoke(InvocationCount);
-
-                return TaskEx.Completed;
             }
 
-            public Task SendBatchAsync(IEnumerable<BrokeredMessage> messages)
+            public async Task SendBatchAsync(IEnumerable<BrokeredMessage> messages)
             {
                 IsInvoked = true;
                 InvocationCount++;
 
                 ExceptionToThrow?.Invoke(InvocationCount);
-
-                return TaskEx.Completed;
             }
         }
     }

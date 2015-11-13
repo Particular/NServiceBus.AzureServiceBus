@@ -17,14 +17,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         public async Task Pushes_received_message_into_pipeline()
         {
             // setting up the environment
-            var container = new FuncContainer();
+            var container = new FuncBuilder();
 
             var topology = await SetupBasicTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Build(typeof(TopologyOperator));
 
-            var pump = new MessagePump(topology, topologyOperator, new FuncBuilder(container));
+            var pump = new MessagePump(topology, topologyOperator);
 
             var completed = new AsyncAutoResetEvent(false);
             //var error = new AsyncAutoResetEvent(false);
@@ -72,14 +72,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await Cleanup(container, "sales");
         }
 
-        static async Task Cleanup(FuncContainer container, string enpointname)
+        static async Task Cleanup(FuncBuilder container, string enpointname)
         {
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Build(typeof(IManageNamespaceManagerLifeCycle));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await namespaceManager.DeleteQueueAsync(enpointname);
         }
 
-        async Task<BasicTopology> SetupBasicTopology(FuncContainer container, string enpointname)
+        async Task<BasicTopology> SetupBasicTopology(FuncBuilder container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -87,11 +87,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new BasicTopology();
+            var topology = new BasicTopology(settings, container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(new FuncBuilder(container));
-            topology.UseBuilder(new FuncBuilder(container));
+            topology.InitializeSettings();
+            topology.InitializeContainer();
 
             // create the topology
             var topologyCreator = (ICreateTopology)container.Build(typeof(TopologyCreator));

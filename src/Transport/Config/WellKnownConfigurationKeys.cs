@@ -5,8 +5,6 @@ namespace NServiceBus.AzureServiceBus
     {
         public static class Topology
         {
-            public const string Implementation = "AzureServiceBus.Settings.Topology.Implementation";
-
             public static class Resources
             {
                 public static class Queues
