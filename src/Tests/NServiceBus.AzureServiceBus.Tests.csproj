@@ -121,6 +121,7 @@
     <Compile Include="Seam\When_dispatching_messages_in_receive_context.cs" />
     <Compile Include="Seam\When_receiving_messages.cs" />
     <Compile Include="Sending\When_retrying_on_throttle.cs" />
+    <Compile Include="Sending\When_routing_outgoingmessages_to_endpoints_with_retries.cs" />
     <Compile Include="TestUtils\ConnectionString.cs" />
     <Compile Include="Connectivity\When_creating_message_senders.cs" />
     <Compile Include="Connectivity\When_creating_message_receivers.cs" />
