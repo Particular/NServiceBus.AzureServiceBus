@@ -18,7 +18,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_routing_outgoingmessages_to_endpoints_with_retries
     {
         [Test]
-        public async Task Should_use_cloned_original_brokered_messages_on_retries()
+        public void Should_use_cloned_original_brokered_messages_on_retries()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -54,7 +54,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var router = new DefaultOutgoingMessageRouter(
                 topology,
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), 
-                clientLifecycleManager, settings, new FuncBuilder(new FuncContainer()));
+                clientLifecycleManager, settings);
 
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[] {});
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
