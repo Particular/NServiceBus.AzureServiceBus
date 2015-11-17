@@ -38,7 +38,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 var messageSender = senders.Get(address.Path, routingOptions.ViaEntityPath, address.Namespace.ConnectionString);
 
-                var brokeredMessages = outgoingMessageConverter.Convert(messages, routingOptions.DispatchOptions);
+                var brokeredMessages = outgoingMessageConverter.Convert(messages, routingOptions);
 
                 await SendBatchWithEnforcedBatchSizeAsync(messageSender, brokeredMessages).ConfigureAwait(false); 
             }

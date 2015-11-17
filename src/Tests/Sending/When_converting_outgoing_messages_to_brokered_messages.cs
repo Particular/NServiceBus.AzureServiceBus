@@ -26,9 +26,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             var bytes = Encoding.UTF8.GetBytes("Whatever");
 
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
+            var routingOptions = new RoutingOptions
+            {
+                DispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>())
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions);
+            var brokeredMessage = converter.Convert(outgoingMessage, routingOptions);
 
             var body = Encoding.UTF8.GetString(brokeredMessage.GetBody<byte[]>());
 
@@ -49,9 +52,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             var bytes = Encoding.UTF8.GetBytes("Whatever");
 
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
+            var routingOptions = new RoutingOptions
+            {
+                DispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>())
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions);
+            var brokeredMessage = converter.Convert(outgoingMessage, routingOptions);
 
             var sr = new StreamReader(brokeredMessage.GetBody<Stream>());
             var body = sr.ReadToEnd();
@@ -68,9 +74,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             var converter = new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings);
 
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
+            var routingOptions = new RoutingOptions
+            {
+                DispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>())
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions);
+            var brokeredMessage = converter.Convert(outgoingMessage, routingOptions);
 
             Assert.IsTrue(brokeredMessage.MessageId == "SomeId");
         }
@@ -89,9 +98,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             };
 
             var outgoingMessage = new OutgoingMessage("SomeId", headers, new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
+            var routingOptions = new RoutingOptions
+            {
+                DispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>())
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions);
+            var brokeredMessage = converter.Convert(outgoingMessage, routingOptions);
 
             Assert.IsTrue(brokeredMessage.Properties.ContainsKey("MyHeader"));
             Assert.AreEqual("MyValue", brokeredMessage.Properties["MyHeader"]);
@@ -111,9 +123,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             var delay = new DelayDeliveryWith(TimeSpan.FromDays(1));
 
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>() { delay });
+            var routingOptions = new RoutingOptions
+            {
+                DispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint> { delay })
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions);
+            var brokeredMessage = converter.Convert(outgoingMessage, routingOptions);
 
             Assert.IsTrue(brokeredMessage.ScheduledEnqueueTimeUtc == now.AddDays(1));
 
@@ -133,9 +148,13 @@ namespace NServiceBus.AzureServiceBus.Tests
             var delay = new DoNotDeliverBefore(now.AddDays(2));
 
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>() { delay });
+            var routingOptions = new RoutingOptions
+            {
+                DispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint> {delay})
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions);
+
+            var brokeredMessage = converter.Convert(outgoingMessage, routingOptions);
 
             Assert.IsTrue(brokeredMessage.ScheduledEnqueueTimeUtc == now.AddDays(2));
 
@@ -156,9 +175,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             };
 
             var outgoingMessage = new OutgoingMessage("SomeId", headers, new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
+            var routingOptions = new RoutingOptions
+            {
+                DispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>())
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions);
+            var brokeredMessage = converter.Convert(outgoingMessage, routingOptions);
 
             Assert.IsTrue(brokeredMessage.TimeToLive == ttl);
         }
@@ -177,9 +199,13 @@ namespace NServiceBus.AzureServiceBus.Tests
             };
 
             var outgoingMessage = new OutgoingMessage("SomeId", headers, new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
+            var routingOptions = new RoutingOptions
+            {
+                DispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>())
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions);
+
+            var brokeredMessage = converter.Convert(outgoingMessage, routingOptions);
 
             Assert.IsTrue(brokeredMessage.CorrelationId == correlationId);
         }
@@ -198,11 +224,35 @@ namespace NServiceBus.AzureServiceBus.Tests
             };
 
             var outgoingMessage = new OutgoingMessage("SomeId", headers, new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
+            var routingOptions = new RoutingOptions
+            {
+                DispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>())
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions);
+            var brokeredMessage = converter.Convert(outgoingMessage, routingOptions);
 
             Assert.IsTrue(brokeredMessage.ReplyTo == replyto);
+        }
+
+        [Test]
+        public void Should_set_ViaPartitionKey_if_partition_key_is_available_and_sending_via_option_is_enabled()
+        {
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings);
+
+            var partitionKey = "partitionkey";
+            var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]);
+            var routingOptions = new RoutingOptions
+            {
+                DispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>()),
+                SendVia = true,
+                ViaPartitionKey = partitionKey
+            };
+
+            var brokeredMessage = converter.Convert(outgoingMessage, routingOptions);
+
+            Assert.IsTrue(brokeredMessage.ViaPartitionKey == partitionKey);
         }
     }
 }

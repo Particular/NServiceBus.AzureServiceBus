@@ -39,7 +39,8 @@ namespace NServiceBus.AzureServiceBus
                     SendVia = sendVia,
                     ViaEntityPath = context?.EntityPath,
                     ViaConnectionString = context?.ConnectionString,
-                    DispatchOptions = batch.First().DispatchOptions
+                    DispatchOptions = batch.First().DispatchOptions,
+                    ViaPartitionKey = context?.IncomingBrokeredMessage.PartitionKey
                 };
 
                 var givenTask = RouteOutBatchesAndLogExceptionsAsync(batch, routingOptions);

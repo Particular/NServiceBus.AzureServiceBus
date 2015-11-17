@@ -19,19 +19,19 @@ namespace NServiceBus.AzureServiceBus
             this.settings = settings;
         }
 
-        public IEnumerable<BrokeredMessage> Convert(IEnumerable<OutgoingMessage> outgoingMessages, DispatchOptions dispatchOptions)
+        public IEnumerable<BrokeredMessage> Convert(IEnumerable<OutgoingMessage> outgoingMessages, RoutingOptions routingOptions)
         {
-            return outgoingMessages.Select(message => Convert(message, dispatchOptions));
+            return outgoingMessages.Select(message => Convert(message, routingOptions));
         }
 
-        public BrokeredMessage Convert(OutgoingMessage outgoingMessage, DispatchOptions dispatchOptions)
+        public BrokeredMessage Convert(OutgoingMessage outgoingMessage, RoutingOptions routingOptions)
         {
             var brokeredMessage = CreateBrokeredMessage(outgoingMessage);
             brokeredMessage.MessageId = outgoingMessage.MessageId;
 
             CopyHeaders(outgoingMessage, brokeredMessage);
 
-            ApplyDeliveryConstraints(brokeredMessage, dispatchOptions);
+            ApplyDeliveryConstraints(brokeredMessage, routingOptions.DispatchOptions);
 
             ApplyTimeToLive(outgoingMessage, brokeredMessage);
 
@@ -39,7 +39,17 @@ namespace NServiceBus.AzureServiceBus
 
             SetReplyToAddress(outgoingMessage, brokeredMessage);
 
+            SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(brokeredMessage, routingOptions);
+
             return brokeredMessage;
+        }
+
+        private void SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(BrokeredMessage brokeredMessage, RoutingOptions routingOptions)
+        {
+            if (routingOptions.SendVia && routingOptions.ViaPartitionKey != null)
+            {
+                brokeredMessage.ViaPartitionKey = routingOptions.ViaPartitionKey;
+            }
         }
 
         void SetReplyToAddress(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
