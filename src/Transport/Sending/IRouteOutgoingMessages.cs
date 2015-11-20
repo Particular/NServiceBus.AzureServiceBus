@@ -6,6 +6,6 @@ namespace NServiceBus.AzureServiceBus
 
     public interface IRouteOutgoingMessages
     {
-        Task RouteBatchAsync(IEnumerable<OutgoingMessage> messages, RoutingOptions routingOptions);
+        Task RouteBatch(IEnumerable<OutgoingMessage> messages, RoutingOptions routingOptions);
     }
 }

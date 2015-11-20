@@ -10,21 +10,21 @@ namespace NServiceBus.AzureServiceBus
         NamespaceManagerSettings Settings { get; }
         Uri Address { get; }
 
-        Task CreateQueueAsync(QueueDescription description);
-        Task UpdateQueueAsync(QueueDescription description);
-        Task DeleteQueueAsync(string path);
-        Task<QueueDescription> GetQueueAsync(string path);
-        Task<bool> QueueExistsAsync(string path);
+        Task CreateQueue(QueueDescription description);
+        Task UpdateQueue(QueueDescription description);
+        Task DeleteQueue(string path);
+        Task<QueueDescription> GetQueue(string path);
+        Task<bool> QueueExists(string path);
 
-        Task<TopicDescription> CreateTopicAsync(TopicDescription topicDescription);
-        Task<TopicDescription> GetTopicAsync(string path);
-        Task<TopicDescription> UpdateTopicAsync(TopicDescription topicDescription);
-        Task<bool> TopicExistsAsync(string path);
-        Task DeleteTopicAsync(string path);
+        Task<TopicDescription> CreateTopic(TopicDescription topicDescription);
+        Task<TopicDescription> GetTopic(string path);
+        Task<TopicDescription> UpdateTopic(TopicDescription topicDescription);
+        Task<bool> TopicExists(string path);
+        Task DeleteTopic(string path);
 
-        Task<bool> SubscriptionExistsAsync(string topicPath, string subscriptionName);
-        Task<SubscriptionDescription> CreateSubscriptionAsync(SubscriptionDescription subscriptionDescription);
-        Task<SubscriptionDescription> GetSubscriptionAsync(string topicPath, string subscriptionName);
-        Task<SubscriptionDescription> UpdateSubscriptionAsync(SubscriptionDescription subscriptionDescription);
+        Task<bool> SubscriptionExists(string topicPath, string subscriptionName);
+        Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription);
+        Task<SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName);
+        Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription);
     }
 }

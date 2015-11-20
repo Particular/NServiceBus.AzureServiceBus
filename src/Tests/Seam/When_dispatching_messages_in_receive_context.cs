@@ -43,7 +43,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // setup the test
             var received = false;
@@ -75,8 +75,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to local queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
-            await sender.SendAsync(new BrokeredMessage());
+            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            await sender.Send(new BrokeredMessage());
 
             await completed.WaitOne();
 
@@ -86,7 +86,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(received);
 
             // check destination queue for dispatched message
-            var queue = await namespaceManager.GetQueueAsync("myqueue");
+            var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
 
             // cleanup 
@@ -120,7 +120,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // setup the test
             var received = false;
@@ -160,8 +160,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to local queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
-            await sender.SendAsync(new BrokeredMessage());
+            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            await sender.Send(new BrokeredMessage());
 
             await errored.WaitOne();
 
@@ -174,11 +174,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(received);
 
             // check destination queue that message has indeed been dispatched
-            var queue = await namespaceManager.GetQueueAsync("myqueue");
+            var queue = await namespaceManager.GetQueue("myqueue");
             Assert.GreaterOrEqual(queue.MessageCount, 1, "'myqueue' was expected to have 1 or more messages, but it didn't");
 
             // check origin queue that source message is still there
-            queue = await namespaceManager.GetQueueAsync("sales");
+            queue = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(1, queue.MessageCount, "'sales' was expected to have 1 message, but it didn't");
 
             // cleanup
@@ -213,7 +213,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // setup the test
             var received = false;
@@ -245,8 +245,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to local queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
-            await sender.SendAsync(new BrokeredMessage {MessageId = "id-init"});
+            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            await sender.Send(new BrokeredMessage {MessageId = "id-init"});
 
             await completed.WaitOne();
 
@@ -256,7 +256,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(received);
 
             // check destination queue for dispatched message
-            var queue = await namespaceManager.GetQueueAsync("myqueue");
+            var queue = await namespaceManager.GetQueue("myqueue");
             var count = queue.MessageCount;
             Assert.IsTrue(count == 1, "'myqueue' was expected to have 1 message, but it had " + count + " instead");
 
@@ -293,7 +293,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // setup the test
             var received = false;
@@ -333,8 +333,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to local queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
-            await sender.SendAsync(new BrokeredMessage());
+            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            await sender.Send(new BrokeredMessage());
 
             await errored.WaitOne();
 
@@ -347,11 +347,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(received);
 
             // check destination queue that message has not been dispatched
-            var queue = await namespaceManager.GetQueueAsync("myqueue");
+            var queue = await namespaceManager.GetQueue("myqueue");
             Assert.AreEqual(0, queue.MessageCount, $"'myqueue' was expected to have no messages, but it did ({queue.MessageCount})");
 
             // check origin queue that source message is still there
-            queue = await namespaceManager.GetQueueAsync("sales");
+            queue = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(1, queue.MessageCount, "'sales' was expected to have 1 message, but it didn't");
 
             // cleanup
@@ -388,7 +388,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // setup the test
             pump.OnError(exception =>
@@ -435,8 +435,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to local queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
-            await sender.SendAsync(new BrokeredMessage());
+            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            await sender.Send(new BrokeredMessage());
 
             await retried.WaitOne();
 
@@ -461,7 +461,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             foreach (var endpointname in endpointnames)
             {
-                await namespaceManager.DeleteQueueAsync(endpointname);
+                await namespaceManager.DeleteQueue(endpointname);
             }
         }
 
@@ -479,7 +479,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // create the topology
             var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
-            await topologyCreator.CreateAsync(topology.DetermineResourcesToCreate());
+            await topologyCreator.Create(topology.DetermineResourcesToCreate());
             return topology;
         }
     }

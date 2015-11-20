@@ -5,6 +5,6 @@
 
     public interface ICreateAzureServiceBusTopics
     {
-        Task<TopicDescription> CreateAsync(string topicPath, INamespaceManager namespaceManager);
+        Task<TopicDescription> Create(string topicPath, INamespaceManager namespaceManager);
     }
 }

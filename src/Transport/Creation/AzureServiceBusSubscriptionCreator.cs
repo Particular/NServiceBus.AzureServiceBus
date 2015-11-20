@@ -37,7 +37,7 @@
             }
         }
 
-        public async Task<SubscriptionDescription> CreateAsync(string topicPath, string subscriptionName, INamespaceManager namespaceManager)
+        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, INamespaceManager namespaceManager)
         {
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
 
@@ -47,7 +47,7 @@
                 {
                     if (!await ExistsAsync(topicPath, subscriptionName, namespaceManager).ConfigureAwait(false))
                     {
-                        await namespaceManager.CreateSubscriptionAsync(subscriptionDescription).ConfigureAwait(false);
+                        await namespaceManager.CreateSubscription(subscriptionDescription).ConfigureAwait(false);
                         logger.InfoFormat("Subscription '{0}' created", subscriptionDescription.Name);
 
                         var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
@@ -57,11 +57,11 @@
                     {
                         logger.InfoFormat("Subscription '{0}' already exists, skipping creation", subscriptionDescription.Name);
                         logger.InfoFormat("Checking if subscription '{0}' needs to be updated", subscriptionDescription.Name);
-                        var existingSubscriptionDescription = await namespaceManager.GetSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
+                        var existingSubscriptionDescription = await namespaceManager.GetSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
                         if (!existingSubscriptionDescription.AllMembersAreEqual(subscriptionDescription))
                         {
                             logger.InfoFormat("Updating subscription '{0}' with new description", subscriptionDescription.Name);
-                            await namespaceManager.UpdateSubscriptionAsync(subscriptionDescription).ConfigureAwait(false);
+                            await namespaceManager.UpdateSubscription(subscriptionDescription).ConfigureAwait(false);
                         }
                     }
                 }
@@ -119,7 +119,7 @@
             var exists = await rememberExistence.GetOrAdd(key, async notFoundKey =>
             {
                 logger.InfoFormat("Checking namespace for existence of subscription '{0}' for the topic '{1}'", subscriptionName, topicPath);
-                return await namespaceClient.SubscriptionExistsAsync(topicPath, notFoundKey).ConfigureAwait(false);
+                return await namespaceClient.SubscriptionExists(topicPath, notFoundKey).ConfigureAwait(false);
             }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the subscription '{0}' {1}", subscriptionName, exists ? "exists" : "does not exist");

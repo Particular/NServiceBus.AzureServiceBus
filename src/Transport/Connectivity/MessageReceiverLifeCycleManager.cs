@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus
                     var e = new EntityClientEntry();
                     lock (e.Mutex)
                     {
-                        e.ClientEntity = _receiveFactory.CreateAsync(entitypath, connectionstring).Result;
+                        e.ClientEntity = _receiveFactory.Create(entitypath, connectionstring).Result;
                     }
                     b.Put(e);
                 }
@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus
                 {
                     if (entry.ClientEntity.IsClosed)
                     {
-                        entry.ClientEntity = _receiveFactory.CreateAsync(entitypath, connectionstring).Result;
+                        entry.ClientEntity = _receiveFactory.Create(entitypath, connectionstring).Result;
                     }
                 }
             }

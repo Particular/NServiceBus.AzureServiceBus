@@ -17,12 +17,12 @@ namespace NServiceBus.AzureServiceBus
         }
 
 
-        public async Task<IMessageReceiver> CreateAsync(string entitypath, string connectionstring)
+        public async Task<IMessageReceiver> Create(string entitypath, string connectionstring)
         {
             var factory = _factories.Get(connectionstring);
             var receiveMode = _settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
-            var receiver = await factory.CreateMessageReceiverAsync(entitypath, receiveMode).ConfigureAwait(false);
+            var receiver = await factory.CreateMessageReceiver(entitypath, receiveMode).ConfigureAwait(false);
 
             if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount))
             {

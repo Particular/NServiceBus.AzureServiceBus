@@ -35,7 +35,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             //// perform the test
 
@@ -49,14 +49,14 @@ namespace NServiceBus.AzureServiceBus.Tests
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
 
             
-            await router.RouteBatchAsync(new[] { outgoingMessage }, new RoutingOptions {DispatchOptions = dispatchOptions});
+            await router.RouteBatch(new[] { outgoingMessage }, new RoutingOptions {DispatchOptions = dispatchOptions});
 
             //validate
-            var queue = await namespaceManager.GetQueueAsync("myqueue");
+            var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount > 0, "expected to have messages in the queue, but there were no messages");
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             //// perform the test
 
@@ -90,14 +90,14 @@ namespace NServiceBus.AzureServiceBus.Tests
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
             
-            await router.RouteBatchAsync(new [] {outgoingMessage1, outgoingMessage2}, new RoutingOptions { DispatchOptions = dispatchOptions });
+            await router.RouteBatch(new [] {outgoingMessage1, outgoingMessage2}, new RoutingOptions { DispatchOptions = dispatchOptions });
 
             //validate
-            var queue = await namespaceManager.GetQueueAsync("myqueue");
+            var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount == 2);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -117,7 +117,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             //// perform the test
 
@@ -131,14 +131,14 @@ namespace NServiceBus.AzureServiceBus.Tests
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
             
-            await router.RouteBatchAsync(new [] {outgoingMessage1, outgoingMessage2}, new RoutingOptions { DispatchOptions = dispatchOptions });
+            await router.RouteBatch(new [] {outgoingMessage1, outgoingMessage2}, new RoutingOptions { DispatchOptions = dispatchOptions });
 
             //validate
-            var queue = await namespaceManager.GetQueueAsync("myqueue");
+            var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount == 2);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -158,7 +158,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             //// perform the test
 
@@ -172,10 +172,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
             //validate
-            Assert.That(async () => await router.RouteBatchAsync(new [] {outgoingMessage1}, new RoutingOptions { DispatchOptions = dispatchOptions }), Throws.Exception.TypeOf<MessageTooLargeException>());
+            Assert.That(async () => await router.RouteBatch(new [] {outgoingMessage1}, new RoutingOptions { DispatchOptions = dispatchOptions }), Throws.Exception.TypeOf<MessageTooLargeException>());
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         public class FakeTopology : ITopology

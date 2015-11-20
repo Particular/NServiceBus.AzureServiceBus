@@ -21,7 +21,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new MessageReceiverCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var receiver = await creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
+            var receiver = await creator.Create("myqueue", AzureServiceBusConnectionString.Value);
 
             Assert.IsTrue(factory.IsInvoked);
             Assert.IsInstanceOf<IMessageReceiver>(receiver);
@@ -42,7 +42,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new MessageReceiverCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var receiver = await creator.CreateAsync("myqueue", AzureServiceBusConnectionString.Value);
+            var receiver = await creator.Create("myqueue", AzureServiceBusConnectionString.Value);
 
             Assert.AreEqual(ReceiveMode.ReceiveAndDelete, receiver.Mode);
             Assert.IsInstanceOf<NoRetry>(receiver.RetryPolicy);
@@ -79,19 +79,19 @@ namespace NServiceBus.AzureServiceBus.Tests
                 set { throw new NotImplementedException(); }
             }
 
-            public Task<IMessageReceiver> CreateMessageReceiverAsync(string entitypath, ReceiveMode receiveMode)
+            public Task<IMessageReceiver> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
             {
                 IsInvoked = true;
 
                 return Task.FromResult<IMessageReceiver>(new FakeMessageReceiver() { Mode = receiveMode });
             }
 
-            public Task<IMessageSender> CreateMessageSenderAsync(string entitypath)
+            public Task<IMessageSender> CreateMessageSender(string entitypath)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IMessageSender> CreateMessageSenderAsync(string entitypath, string viaEntityPath)
+            public Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath)
             {
                 throw new NotImplementedException();
             }

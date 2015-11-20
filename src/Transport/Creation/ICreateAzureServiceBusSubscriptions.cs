@@ -5,6 +5,6 @@
 
     public interface ICreateAzureServiceBusSubscriptions
     {
-        Task<SubscriptionDescription> CreateAsync(string topicPath, string subscriptionName, INamespaceManager namespaceManager);
+        Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, INamespaceManager namespaceManager);
     }
 }

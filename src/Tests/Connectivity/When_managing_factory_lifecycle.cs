@@ -105,17 +105,17 @@ namespace NServiceBus.AzureServiceBus.Tests
                 set { throw new System.NotImplementedException(); }
             }
 
-            public Task<IMessageReceiver> CreateMessageReceiverAsync(string entitypath, ReceiveMode receiveMode)
+            public Task<IMessageReceiver> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
             {
                 throw new System.NotImplementedException();
             }
 
-            public Task<IMessageSender> CreateMessageSenderAsync(string entitypath)
+            public Task<IMessageSender> CreateMessageSender(string entitypath)
             {
                 throw new System.NotImplementedException();
             }
 
-            public Task<IMessageSender> CreateMessageSenderAsync(string entitypath, string viaEntityPath)
+            public Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath)
             {
                 throw new System.NotImplementedException();
             }

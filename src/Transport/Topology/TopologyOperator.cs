@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBus
             StartNotifiersFor(topology.Entities, maxConcurrency);
         }
 
-        public Task StopAsync()
+        public Task Stop()
         {
             cancellationTokenSource.Cancel();
 
@@ -48,7 +48,7 @@ namespace NServiceBus.AzureServiceBus
             StartNotifiersFor(subscriptions, maxConcurrency);
         }
 
-        public Task StopAsync(IEnumerable<EntityInfo> subscriptions)
+        public Task Stop(IEnumerable<EntityInfo> subscriptions)
         {
             return StopNotifiersForAsync(subscriptions);
         }
@@ -111,7 +111,7 @@ namespace NServiceBus.AzureServiceBus
                 }
                 else
                 {
-                    await notifier.StopAsync().ConfigureAwait(false);
+                    await notifier.Stop().ConfigureAwait(false);
                 }
             }
         }

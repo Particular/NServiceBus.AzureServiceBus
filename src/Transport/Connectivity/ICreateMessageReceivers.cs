@@ -4,6 +4,6 @@ namespace NServiceBus.AzureServiceBus
 
     public interface ICreateMessageReceivers
     {
-        Task<IMessageReceiver> CreateAsync(string entitypath, string connectionstring);
+        Task<IMessageReceiver> Create(string entitypath, string connectionstring);
     }
 }

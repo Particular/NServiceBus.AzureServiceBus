@@ -36,8 +36,8 @@
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
-            await creator.CreateAsync("myqueue2", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
+            await creator.Create("myqueue2", namespaceManager);
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
@@ -56,14 +56,14 @@
             }, new ContextBag());
 
             //validate
-            var queue = await namespaceManager.GetQueueAsync("myqueue");
+            var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount == 2, $"'myqueue' was expected to have 2 message, but it didn't ({queue.MessageCount} found)");
-            queue = await namespaceManager.GetQueueAsync("myqueue2");
+            queue = await namespaceManager.GetQueue("myqueue2");
             Assert.IsTrue(queue.MessageCount == 2, $"'myqueue2' was expected to have 2 message, but it didn't ({queue.MessageCount} found)");
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
-            await namespaceManager.DeleteQueueAsync("myqueue2");
+            await namespaceManager.DeleteQueue("myqueue");
+            await namespaceManager.DeleteQueue("myqueue2");
         }
 
         [Test]
@@ -84,7 +84,7 @@
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
@@ -105,7 +105,7 @@
             }, new ContextBag()), Throws.Exception);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
 

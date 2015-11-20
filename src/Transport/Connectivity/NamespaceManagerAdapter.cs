@@ -18,72 +18,72 @@ namespace NServiceBus.AzureServiceBus
 
         public Uri Address => _manager.Address;
 
-        public Task CreateQueueAsync(QueueDescription description)
+        public Task CreateQueue(QueueDescription description)
         {
             return _manager.CreateQueueAsync(description);
         }
 
-        public Task UpdateQueueAsync(QueueDescription description)
+        public Task UpdateQueue(QueueDescription description)
         {
             return _manager.UpdateQueueAsync(description);
         }
 
-        public Task<QueueDescription> GetQueueAsync(string path)
+        public Task<QueueDescription> GetQueue(string path)
         {
             return _manager.GetQueueAsync(path);
         }
 
-        public Task<bool> QueueExistsAsync(string path)
+        public Task<bool> QueueExists(string path)
         {
             return _manager.QueueExistsAsync(path);
         }
 
-        public async Task<TopicDescription> CreateTopicAsync(TopicDescription topicDescription)
+        public async Task<TopicDescription> CreateTopic(TopicDescription topicDescription)
         {
             return await _manager.CreateTopicAsync(topicDescription).ConfigureAwait(false);
         }
 
-        public async Task DeleteQueueAsync(string path)
+        public async Task DeleteQueue(string path)
         {
             await _manager.DeleteQueueAsync(path).ConfigureAwait(false);
         }
 
-        public Task DeleteTopicAsync(string path)
+        public Task DeleteTopic(string path)
         {
             return _manager.DeleteTopicAsync(path);
         }
 
-        public Task<bool> SubscriptionExistsAsync(string topicPath, string subscriptionName)
+        public Task<bool> SubscriptionExists(string topicPath, string subscriptionName)
         {
             return _manager.SubscriptionExistsAsync(topicPath, subscriptionName);
         }
 
-        public Task<SubscriptionDescription> CreateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
+        public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription)
         {
             return _manager.CreateSubscriptionAsync(subscriptionDescription);
         }
 
-        public Task<SubscriptionDescription> GetSubscriptionAsync(string topicPath, string subscriptionName)
+        public Task<SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName)
         {
             return _manager.GetSubscriptionAsync(topicPath, subscriptionName);
         }
 
-        public Task<SubscriptionDescription> UpdateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
+        public Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription)
         {
             return _manager.UpdateSubscriptionAsync(subscriptionDescription);
         }
 
-        public Task<TopicDescription> UpdateTopicAsync(TopicDescription topicDescription)
+        public Task<TopicDescription> UpdateTopic(TopicDescription topicDescription)
         {
             return _manager.UpdateTopicAsync(topicDescription);
         }
 
-        public Task<bool> TopicExistsAsync(string path)
+        public Task<bool> TopicExists(string path)
         {
             return _manager.TopicExistsAsync(path);
         }
 
-        public Task<TopicDescription> GetTopicAsync(string path)
+        public Task<TopicDescription> GetTopic(string path)
         {
             return _manager.GetTopicAsync(path);
         }

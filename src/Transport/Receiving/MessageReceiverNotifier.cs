@@ -147,7 +147,7 @@ namespace NServiceBus.AzureServiceBus
             return message.SafeCompleteAsync();
         }
 
-        public async Task StopAsync()
+        public async Task Stop()
         {
             stopping = true;
 

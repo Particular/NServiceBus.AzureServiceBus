@@ -9,6 +9,6 @@ namespace NServiceBus.AzureServiceBus
 
     public interface ICreateTopology
     {
-        Task CreateAsync(TopologySection topology);
+        Task Create(TopologySection topology);
     }
 }

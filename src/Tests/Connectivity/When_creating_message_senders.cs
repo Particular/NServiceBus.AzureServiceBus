@@ -22,7 +22,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new MessageSenderCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var sender = await creator.CreateAsync("myqueue", null, AzureServiceBusConnectionString.Value);
+            var sender = await creator.Create("myqueue", null, AzureServiceBusConnectionString.Value);
 
             Assert.IsTrue(factory.IsInvoked);
             Assert.IsInstanceOf<IMessageSender>(sender);
@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new MessageSenderCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
-            var sender = await creator.CreateAsync("myqueue", null, AzureServiceBusConnectionString.Value);
+            var sender = await creator.Create("myqueue", null, AzureServiceBusConnectionString.Value);
 
             Assert.IsInstanceOf<NoRetry>(sender.RetryPolicy);
         }
@@ -76,19 +76,19 @@ namespace NServiceBus.AzureServiceBus.Tests
                 set { throw new NotImplementedException(); }
             }
 
-            public Task<IMessageReceiver> CreateMessageReceiverAsync(string entitypath, ReceiveMode receiveMode)
+            public Task<IMessageReceiver> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IMessageSender> CreateMessageSenderAsync(string entitypath)
+            public Task<IMessageSender> CreateMessageSender(string entitypath)
             {
                 IsInvoked = true;
 
                 return Task.FromResult<IMessageSender>(new FakeMessageSender());
             }
 
-            public Task<IMessageSender> CreateMessageSenderAsync(string entitypath, string viaEntityPath)
+            public Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath)
             {
                 throw new NotImplementedException();
             }
@@ -106,12 +106,12 @@ namespace NServiceBus.AzureServiceBus.Tests
                 get; set;
             }
 
-            public Task SendAsync(BrokeredMessage message)
+            public Task Send(BrokeredMessage message)
             {
                 throw new NotImplementedException();
             }
 
-            public Task SendBatchAsync(IEnumerable<BrokeredMessage> messages)
+            public Task SendBatch(IEnumerable<BrokeredMessage> messages)
             {
                 throw new NotImplementedException();
             }

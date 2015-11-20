@@ -5,6 +5,6 @@ namespace NServiceBus.AzureServiceBus
 
     public interface ICreateAzureServiceBusQueues
     {
-        Task<QueueDescription> CreateAsync(string queuePath, INamespaceManager namespaceManager);
+        Task<QueueDescription> Create(string queuePath, INamespaceManager namespaceManager);
     }
 }

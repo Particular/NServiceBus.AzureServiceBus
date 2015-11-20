@@ -42,7 +42,7 @@
             }
         }
 
-        public async Task<QueueDescription> CreateAsync(string queuePath, INamespaceManager namespaceManager)
+        public async Task<QueueDescription> Create(string queuePath, INamespaceManager namespaceManager)
         {
             var description = _descriptionFactory(queuePath, _settings);
 
@@ -52,7 +52,7 @@
                 {
                     if (!await ExistsAsync(namespaceManager, description.Path).ConfigureAwait(false))
                     {
-                        await namespaceManager.CreateQueueAsync(description).ConfigureAwait(false);
+                        await namespaceManager.CreateQueue(description).ConfigureAwait(false);
                         logger.InfoFormat("Queue '{0}' created", description.Path);
 
                         await rememberExistence.AddOrUpdate(description.Path, s => Task.FromResult(true), (s, b) => Task.FromResult(true)).ConfigureAwait(false);
@@ -61,11 +61,11 @@
                     {
                         logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
                         logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
-                        var desc = await namespaceManager.GetQueueAsync(description.Path).ConfigureAwait(false);
+                        var desc = await namespaceManager.GetQueue(description.Path).ConfigureAwait(false);
                         if (!desc.AllMembersAreEqual(description))
                         {
                             logger.InfoFormat("Updating queue '{0}' with new description", description.Path);
-                            await namespaceManager.UpdateQueueAsync(description).ConfigureAwait(false);
+                            await namespaceManager.UpdateQueue(description).ConfigureAwait(false);
                         }
                     }
                 }
@@ -114,7 +114,7 @@
             var exists = await rememberExistence.GetOrAdd(key, async s =>
             {
                 logger.InfoFormat("Checking namespace for existence of the queue '{0}'", queuePath);
-                return await namespaceClient.QueueExistsAsync(key).ConfigureAwait(false);
+                return await namespaceClient.QueueExists(key).ConfigureAwait(false);
             }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the queue '{0}' {1}", queuePath, exists ? "exists" : "does not exist");

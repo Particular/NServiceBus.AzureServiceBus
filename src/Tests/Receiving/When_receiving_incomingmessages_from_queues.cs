@@ -29,7 +29,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
@@ -37,10 +37,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, (message, context) => Task.FromResult(true), null, 10);
 
             notifier.Start();
-            await notifier.StopAsync();
+            await notifier.Stop();
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
@@ -69,13 +69,13 @@ namespace NServiceBus.AzureServiceBus.Tests
             notifier.Initialize("myqueue", AzureServiceBusConnectionString.Value, (message, context) => Task.FromResult(true), null, 10);
 
             notifier.Start();
-            await notifier.StopAsync();
+            await notifier.Stop();
 
             notifier.Start();
-            await notifier.StopAsync();
+            await notifier.Stop();
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -97,11 +97,11 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // put a message on the queue
-            var sender = await messageSenderCreator.CreateAsync("myqueue", null, AzureServiceBusConnectionString.Value);
-            await sender.SendAsync(new BrokeredMessage());
+            var sender = await messageSenderCreator.Create("myqueue", null, AzureServiceBusConnectionString.Value);
+            await sender.Send(new BrokeredMessage());
 
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
@@ -138,8 +138,8 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsNull(ex);
 
             //cleanup 
-            await notifier.StopAsync();
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await notifier.Stop();
+            await namespaceManager.DeleteQueue("myqueue");
         }
     }
 }

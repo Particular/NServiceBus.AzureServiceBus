@@ -31,7 +31,7 @@ namespace NServiceBus.AzureServiceBus
             maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes);
         }
 
-        public async Task RouteBatchAsync(IEnumerable<OutgoingMessage> messages, RoutingOptions routingOptions)
+        public async Task RouteBatch(IEnumerable<OutgoingMessage> messages, RoutingOptions routingOptions)
         {
             var addresses = GetAddresses(routingOptions);
             foreach (var address in addresses)
@@ -74,7 +74,7 @@ namespace NServiceBus.AzureServiceBus
                     if (chunk.Any())
                     {
                         var currentChunk = chunk;
-                        await messageSender.RetryOnThrottleAsync(s => s.SendBatchAsync(currentChunk), s => s.SendBatchAsync(currentChunk.CloneWithMessageId()), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                        await messageSender.RetryOnThrottleAsync(s => s.SendBatch(currentChunk), s => s.SendBatch(currentChunk.CloneWithMessageId()), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
                     }
 
                     chunk = new List<BrokeredMessage> { message };
@@ -89,7 +89,7 @@ namespace NServiceBus.AzureServiceBus
 
             if (chunk.Any())
             {
-                await messageSender.RetryOnThrottleAsync(s => s.SendBatchAsync(chunk), s => s.SendBatchAsync(chunk.CloneWithMessageId()), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                await messageSender.RetryOnThrottleAsync(s => s.SendBatch(chunk), s => s.SendBatch(chunk.CloneWithMessageId()), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
             }
         }
 

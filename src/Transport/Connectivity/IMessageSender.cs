@@ -6,8 +6,8 @@ namespace NServiceBus.AzureServiceBus
 
     public interface IMessageSender : IClientEntity
     {
-        Task SendAsync(BrokeredMessage message);
+        Task Send(BrokeredMessage message);
 
-        Task SendBatchAsync(IEnumerable<BrokeredMessage> messages);
+        Task SendBatch(IEnumerable<BrokeredMessage> messages);
     }
 }

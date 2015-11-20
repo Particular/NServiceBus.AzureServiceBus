@@ -19,11 +19,11 @@
             var numberOfRetries = 0;
             var totalAttempts = 0;
 
-            A.CallTo(() => messageSender.SendAsync(message))
+            A.CallTo(() => messageSender.Send(message))
                 .Invokes(() => totalAttempts++)
                 .Throws(new ServerBusyException("busy, come later"));
 
-            Assert.That(async () => await messageSender.RetryOnThrottleAsync(s => s.SendAsync(message), s => s.SendAsync(message), TimeSpan.Zero, numberOfRetries), Throws.TypeOf<ServerBusyException>());
+            Assert.That(async () => await messageSender.RetryOnThrottleAsync(s => s.Send(message), s => s.Send(message), TimeSpan.Zero, numberOfRetries), Throws.TypeOf<ServerBusyException>());
             Assert.AreEqual(1, totalAttempts);
         }
 
@@ -35,11 +35,11 @@
             var numberOfRetries = 3;
             var totalAttempts = 0;
 
-            A.CallTo(() => messageSender.SendAsync(message))
+            A.CallTo(() => messageSender.Send(message))
                 .Invokes(() => totalAttempts++)
                 .Throws(new ServerBusyException("busy, come later"));
 
-            Assert.That(async () => await messageSender.RetryOnThrottleAsync(s => s.SendAsync(message), s => s.SendAsync(message), TimeSpan.Zero, numberOfRetries), Throws.TypeOf<ServerBusyException>());
+            Assert.That(async () => await messageSender.RetryOnThrottleAsync(s => s.Send(message), s => s.Send(message), TimeSpan.Zero, numberOfRetries), Throws.TypeOf<ServerBusyException>());
             Assert.AreEqual(1 + numberOfRetries, totalAttempts);
         }
 
@@ -49,10 +49,10 @@
             var messageSender = A.Fake<IMessageSender>();
             var brokeredMessage = new BrokeredMessage();
 
-            A.CallTo(() => messageSender.SendAsync(brokeredMessage))
+            A.CallTo(() => messageSender.Send(brokeredMessage))
                 .ReturnsNextFromSequence(Task.Run(() => { throw new ServerBusyException("busy, come later"); }), TaskEx.Completed);
 
-            await messageSender.RetryOnThrottleAsync(s => s.SendAsync(brokeredMessage), s => s.SendAsync(brokeredMessage), TimeSpan.Zero, 1);
+            await messageSender.RetryOnThrottleAsync(s => s.Send(brokeredMessage), s => s.Send(brokeredMessage), TimeSpan.Zero, 1);
         }
     }
 }

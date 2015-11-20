@@ -63,72 +63,72 @@ namespace NServiceBus.AzureServiceBus.Tests
                 get { throw new NotImplementedException(); }
             }
 
-            public Task CreateQueueAsync(QueueDescription description)
+            public Task CreateQueue(QueueDescription description)
             {
                 throw new NotImplementedException();
             }
 
-            public Task UpdateQueueAsync(QueueDescription description)
+            public Task UpdateQueue(QueueDescription description)
             {
                 throw new NotImplementedException();
             }
 
-            public Task DeleteQueueAsync(string path)
+            public Task DeleteQueue(string path)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<QueueDescription> GetQueueAsync(string path)
+            public Task<QueueDescription> GetQueue(string path)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<bool> QueueExistsAsync(string path)
+            public Task<bool> QueueExists(string path)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<TopicDescription> CreateTopicAsync(TopicDescription topicDescription)
+            public Task<TopicDescription> CreateTopic(TopicDescription topicDescription)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<TopicDescription> GetTopicAsync(string path)
+            public Task<TopicDescription> GetTopic(string path)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<TopicDescription> UpdateTopicAsync(TopicDescription topicDescription)
+            public Task<TopicDescription> UpdateTopic(TopicDescription topicDescription)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<bool> TopicExistsAsync(string path)
+            public Task<bool> TopicExists(string path)
             {
                 throw new NotImplementedException();
             }
 
-            public Task DeleteTopicAsync(string path)
+            public Task DeleteTopic(string path)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<bool> SubscriptionExistsAsync(string topicPath, string subscriptionName)
+            public Task<bool> SubscriptionExists(string topicPath, string subscriptionName)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<SubscriptionDescription> CreateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
+            public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<SubscriptionDescription> GetSubscriptionAsync(string topicPath, string subscriptionName)
+            public Task<SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<SubscriptionDescription> UpdateSubscriptionAsync(SubscriptionDescription subscriptionDescription)
+            public Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription)
             {
                 throw new NotImplementedException();
             }

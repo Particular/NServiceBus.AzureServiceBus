@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus
         public Task UnsubscribeAsync(Type eventType, ContextBag context)
         {
             var section = topology.DetermineResourcesToUnsubscribeFrom(eventType);
-            return topologyOperator.StopAsync(section.Entities);
+            return topologyOperator.Stop(section.Entities);
         }
     }
 }

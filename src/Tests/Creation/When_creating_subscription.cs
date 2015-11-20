@@ -18,9 +18,9 @@
         public void TopicSetup()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            if (!namespaceManager.TopicExistsAsync(topicPath).Result)
+            if (!namespaceManager.TopicExists(topicPath).Result)
             {
-                namespaceManager.CreateTopicAsync(new TopicDescription(topicPath)).Wait();
+                namespaceManager.CreateTopic(new TopicDescription(topicPath)).Wait();
             }
         }
 
@@ -28,7 +28,7 @@
         public void TopicCleanUp()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            namespaceManager.DeleteTopicAsync(topicPath).Wait();        
+            namespaceManager.DeleteTopic(topicPath).Wait();        
         }
 
         [Test]
@@ -44,9 +44,9 @@
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
-            await creator.CreateAsync(topicPath, subsciptionName, namespaceManager);
+            await creator.Create(topicPath, subsciptionName, namespaceManager);
 
-            Assert.IsFalse(await namespaceManager.TopicExistsAsync(subsciptionName));
+            Assert.IsFalse(await namespaceManager.TopicExists(subsciptionName));
         }
 
         [Test]
@@ -57,9 +57,9 @@
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
             const string subsciptionName = "sub1";
-            var subscriptionDescription = await creator.CreateAsync(topicPath, subsciptionName, namespaceManager);
+            var subscriptionDescription = await creator.Create(topicPath, subsciptionName, namespaceManager);
 
-            Assert.IsTrue(await namespaceManager.SubscriptionExistsAsync(topicPath, subsciptionName));
+            Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subsciptionName));
             Assert.AreEqual(TimeSpan.MaxValue, subscriptionDescription.AutoDeleteOnIdle);
             Assert.AreEqual(TimeSpan.MaxValue, subscriptionDescription.DefaultMessageTimeToLive);
             Assert.AreEqual(TimeSpan.FromMilliseconds(30000), subscriptionDescription.LockDuration);
@@ -92,9 +92,9 @@
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
-            var foundDescription = await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            var foundDescription = await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            Assert.IsTrue(await namespaceManager.SubscriptionExistsAsync(topicPath, subscriptionName));
+            Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
             Assert.AreEqual(subscriptionDescription, foundDescription);
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
@@ -114,8 +114,8 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub3";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.AreEqual(autoDeleteTime, foundDescription.AutoDeleteOnIdle);
 
@@ -136,9 +136,9 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub4";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.AreEqual(timeToLive, foundDescription.DefaultMessageTimeToLive);
 
@@ -158,9 +158,9 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub5";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.IsFalse(foundDescription.EnableBatchedOperations);
 
@@ -180,9 +180,9 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub6";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.IsTrue(foundDescription.EnableDeadLetteringOnFilterEvaluationExceptions);
 
@@ -202,9 +202,9 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub7";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.IsTrue(foundDescription.EnableDeadLetteringOnMessageExpiration);
 
@@ -225,9 +225,9 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub8";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.AreEqual(lockDuration, foundDescription.LockDuration);
 
@@ -248,9 +248,9 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub9";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.AreEqual(deliveryCount, foundDescription.MaxDeliveryCount);
 
@@ -270,9 +270,9 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub10";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.IsTrue(foundDescription.RequiresSession);
 
@@ -285,7 +285,7 @@
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
-            var topicToForwardTo = await topicCreator.CreateAsync("topic2forward2", namespaceManager);
+            var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
 
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -296,14 +296,14 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub11";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.That(foundDescription.ForwardTo.EndsWith(topicToForwardTo.Path));
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-            await namespaceManager.DeleteTopicAsync(topicToForwardTo.Path);
+            await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
 
         [Test]
@@ -312,7 +312,7 @@
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
-            var topicToForwardTo = await topicCreator.CreateAsync("topic2forward2", namespaceManager);
+            var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
 
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -323,14 +323,14 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub12";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.That(foundDescription.ForwardTo.EndsWith(topicToForwardTo.Path));
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-            await namespaceManager.DeleteTopicAsync(topicToForwardTo.Path);
+            await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
         
         [Test]
@@ -339,7 +339,7 @@
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
-            var topicToForwardTo = await topicCreator.CreateAsync("topic2forward2", namespaceManager);
+            var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
 
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -350,14 +350,14 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub13";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.That(foundDescription.ForwardDeadLetteredMessagesTo.EndsWith(topicToForwardTo.Path));
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-            await namespaceManager.DeleteTopicAsync(topicToForwardTo.Path);
+            await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
 
         [Test]
@@ -366,7 +366,7 @@
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
-            var topicToForwardTo = await topicCreator.CreateAsync("topic2forward2", namespaceManager);
+            var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
 
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -377,14 +377,14 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
             const string subscriptionName = "sub14";
-            await creator.CreateAsync(topicPath, subscriptionName, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, namespaceManager);
 
-            var foundDescription = await namespaceManager.GetSubscriptionAsync(topicPath, subscriptionName);
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.That(foundDescription.ForwardDeadLetteredMessagesTo.EndsWith(topicToForwardTo.Path));
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-            await namespaceManager.DeleteTopicAsync(topicToForwardTo.Path);
+            await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
 
         // todo: test exception handling and edge cases

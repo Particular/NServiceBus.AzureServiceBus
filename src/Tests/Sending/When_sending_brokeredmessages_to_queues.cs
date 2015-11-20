@@ -26,18 +26,18 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var sender = await messageSenderCreator.CreateAsync("myqueue", null, AzureServiceBusConnectionString.Value);
-            await sender.SendAsync(new BrokeredMessage());
+            var sender = await messageSenderCreator.Create("myqueue", null, AzureServiceBusConnectionString.Value);
+            await sender.Send(new BrokeredMessage());
 
             //validate
-            var queue = await namespaceManager.GetQueueAsync("myqueue");
+            var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount > 0);
             
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
     }
 }

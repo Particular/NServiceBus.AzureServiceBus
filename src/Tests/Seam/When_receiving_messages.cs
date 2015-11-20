@@ -57,8 +57,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.CreateAsync("sales", null, AzureServiceBusConnectionString.Value);
-            await sender.SendAsync(new BrokeredMessage());
+            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            await sender.Send(new BrokeredMessage());
 
             await completed.WaitOne(); // Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
@@ -76,7 +76,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         {
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
-            await namespaceManager.DeleteQueueAsync(enpointname);
+            await namespaceManager.DeleteQueue(enpointname);
         }
 
         async Task<BasicTopology> SetupBasicTopology(TransportPartsContainer container, string enpointname)
@@ -94,7 +94,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // create the topology
             var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
-            await topologyCreator.CreateAsync(topology.DetermineResourcesToCreate());
+            await topologyCreator.Create(topology.DetermineResourcesToCreate());
             return topology;
         }
     }

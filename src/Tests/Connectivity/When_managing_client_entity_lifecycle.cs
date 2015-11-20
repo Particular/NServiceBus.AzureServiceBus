@@ -80,7 +80,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             public int InvocationCount = 0;
 
-            public Task<IMessageReceiver> CreateAsync(string entitypath, string connectionstring)
+            public Task<IMessageReceiver> Create(string entitypath, string connectionstring)
             {
                 InvocationCount++;
                 return Task.FromResult<IMessageReceiver>(new InterceptedMessageReceiver());

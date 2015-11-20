@@ -40,7 +40,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // perform the test
 
@@ -54,7 +54,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 for (var i = 0; i < 1000; i++)
                 {
                     var sender = entityLifecycleManager.Get("myqueue", null, AzureServiceBusConnectionString.Value);
-                    tasks.Add(sender.RetryOnThrottleAsync(s => s.SendAsync(new BrokeredMessage()), s => s.SendAsync(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
+                    tasks.Add(sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
 
                     counter++;
                 }
@@ -70,7 +70,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(sw.ElapsedMilliseconds < TimeSpan.FromMinutes(1).TotalMilliseconds);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
             // perform the test
 
@@ -119,7 +119,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     counter++;
                 }
                 var sender = entityLifecycleManager.Get("myqueue", null, AzureServiceBusConnectionString.Value);
-                tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatchAsync(batch), s => s.SendBatchAsync(batch.CloneWithMessageId()), TimeSpan.FromSeconds(10), 5));
+                tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatch(batch), s => s.SendBatch(batch.CloneWithMessageId()), TimeSpan.FromSeconds(10), 5));
             }
             await Task.WhenAll(tasks);
 
@@ -131,7 +131,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(sw.ElapsedMilliseconds < TimeSpan.FromMinutes(1).TotalMilliseconds);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
     }
 }

@@ -51,7 +51,7 @@ namespace NServiceBus.AzureServiceBus
 
         public Task StopAsync()
         {
-            return topologyOperator.StopAsync();
+            return topologyOperator.Stop();
         }
     }
 }

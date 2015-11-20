@@ -54,7 +54,7 @@ namespace NServiceBus.AzureServiceBus
         {
             try
             {
-                await routeOutgoingMessages.RouteBatchAsync(batch.Select(x => x.Message), routingOptions).ConfigureAwait(false);
+                await routeOutgoingMessages.RouteBatch(batch.Select(x => x.Message), routingOptions).ConfigureAwait(false);
             }
             catch (Exception exception)
             {

@@ -5,10 +5,10 @@ namespace NServiceBus.AzureServiceBus
 
     public interface IMessagingFactory : IClientEntity
     {
-        Task<IMessageReceiver> CreateMessageReceiverAsync(string entitypath, ReceiveMode receiveMode);
+        Task<IMessageReceiver> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode);
 
-        Task<IMessageSender> CreateMessageSenderAsync(string entitypath);
+        Task<IMessageSender> CreateMessageSender(string entitypath);
 
-        Task<IMessageSender> CreateMessageSenderAsync(string entitypath, string viaEntityPath);
+        Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath);
     }
 }

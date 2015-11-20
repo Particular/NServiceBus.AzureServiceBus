@@ -46,7 +46,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             A.CallTo(() => clientLifecycleManager.Get(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored))
                 .Returns(messageSender);
 
-            A.CallTo(() => messageSender.SendBatchAsync(A<IEnumerable<BrokeredMessage>>._))
+            A.CallTo(() => messageSender.SendBatch(A<IEnumerable<BrokeredMessage>>._))
                 .Invokes((IEnumerable<BrokeredMessage> received) => usedMessages.Add(received.First()))
                 .Throws(new ServerBusyException("busy"));
 
@@ -58,7 +58,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[] {});
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
 
-            Assert.That(async () => await router.RouteBatchAsync(new[] { outgoingMessage }, new RoutingOptions {DispatchOptions = dispatchOptions}), Throws.Exception);
+            Assert.That(async () => await router.RouteBatch(new[] { outgoingMessage }, new RoutingOptions {DispatchOptions = dispatchOptions}), Throws.Exception);
             Assert.AreNotSame(usedMessages[0], usedMessages[1], "retried message should be a clone and not the original BrokeredMessage");
         }
     }

@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBus
             this.namespaces = namespaces;
         }
 
-        public async Task CreateAsync(TopologySection topology)
+        public async Task Create(TopologySection topology)
         {
             var queues = topology.Entities.Where(e => e.Type == EntityType.Queue).ToList();
             var topics = topology.Entities.Where(e => e.Type == EntityType.Topic).ToList();
@@ -25,7 +25,7 @@ namespace NServiceBus.AzureServiceBus
                 var queueCreator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
                 foreach (var queue in queues)
                 {
-                    await queueCreator.CreateAsync(queue.Path, namespaces.Get(queue.Namespace.ConnectionString)).ConfigureAwait(false);
+                    await queueCreator.Create(queue.Path, namespaces.Get(queue.Namespace.ConnectionString)).ConfigureAwait(false);
                 }
             }
 
@@ -34,7 +34,7 @@ namespace NServiceBus.AzureServiceBus
                 var topicCreator = (ICreateAzureServiceBusTopics)container.Resolve(typeof(ICreateAzureServiceBusTopics));
                 foreach (var topic in topics)
                 {
-                    await topicCreator.CreateAsync(topic.Path, namespaces.Get(topic.Namespace.ConnectionString)).ConfigureAwait(false);
+                    await topicCreator.Create(topic.Path, namespaces.Get(topic.Namespace.ConnectionString)).ConfigureAwait(false);
                 }
             }
 
@@ -44,7 +44,7 @@ namespace NServiceBus.AzureServiceBus
                 foreach (var subscription in subscriptions)
                 {
                     var topic = subscription.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
-                    await subscriptionCreator.CreateAsync(topic.Target.Path, subscription.Path, namespaces.Get(subscription.Namespace.ConnectionString)).ConfigureAwait(false);
+                    await subscriptionCreator.Create(topic.Target.Path, subscription.Path, namespaces.Get(subscription.Namespace.ConnectionString)).ConfigureAwait(false);
                 }
             }
         }

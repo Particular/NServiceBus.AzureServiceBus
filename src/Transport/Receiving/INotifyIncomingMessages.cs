@@ -12,6 +12,6 @@ namespace NServiceBus.AzureServiceBus
         void Initialize(string entitypath, string connectionstring, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency);
 
         void Start();
-        Task StopAsync();
+        Task Stop();
     }
 }

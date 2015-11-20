@@ -20,15 +20,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             //make sure there is no leftover from previous test
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
 
             settings.Set("Transport.CreateQueues", false);
             
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            Assert.IsFalse(await namespaceManager.QueueExistsAsync("myqueue"));
+            Assert.IsFalse(await namespaceManager.QueueExists("myqueue"));
         }
 
         [Test]
@@ -44,13 +44,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            var description = await creator.CreateAsync("myqueue", namespaceManager);
+            var description = await creator.Create("myqueue", namespaceManager);
 
-            Assert.IsTrue(await namespaceManager.QueueExistsAsync("myqueue"));
+            Assert.IsTrue(await namespaceManager.QueueExists("myqueue"));
             Assert.AreEqual(descriptionToUse, description);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // needs to be created with different settings as it cannot forward to itself obviously
             var originalsettings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var originalcreator = new AzureServiceBusQueueCreator(originalsettings);
-            await originalcreator.CreateAsync("myotherqueue", namespaceManager);
+            await originalcreator.Create("myotherqueue", namespaceManager);
 
             // actual test
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -72,15 +72,15 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.IsTrue(real.ForwardTo.EndsWith("myotherqueue"));
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
-            await namespaceManager.DeleteQueueAsync("myotherqueue");
+            await namespaceManager.DeleteQueue("myqueue");
+            await namespaceManager.DeleteQueue("myotherqueue");
         }
 
         [Test]
@@ -95,18 +95,18 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myotherqueue", namespaceManager);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myotherqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
-            var forwardReal = await namespaceManager.GetQueueAsync("myotherqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
+            var forwardReal = await namespaceManager.GetQueue("myotherqueue");
 
             Assert.IsTrue(real.ForwardTo.EndsWith("myotherqueue"));
             Assert.IsTrue(string.IsNullOrEmpty(forwardReal.ForwardTo));
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
-            await namespaceManager.DeleteQueueAsync("myotherqueue");
+            await namespaceManager.DeleteQueue("myqueue");
+            await namespaceManager.DeleteQueue("myotherqueue");
         }
 
         [Test]
@@ -118,7 +118,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // needs to be created with different settings as it cannot forward to itself obviously
             var originalsettings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var originalcreator = new AzureServiceBusQueueCreator(originalsettings);
-            await originalcreator.CreateAsync("myotherqueue", namespaceManager);
+            await originalcreator.Create("myotherqueue", namespaceManager);
 
             // actual test
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -128,15 +128,15 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.IsTrue(real.ForwardDeadLetteredMessagesTo.EndsWith("myotherqueue"));
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
-            await namespaceManager.DeleteQueueAsync("myotherqueue");
+            await namespaceManager.DeleteQueue("myqueue");
+            await namespaceManager.DeleteQueue("myotherqueue");
         }
 
         [Test]
@@ -151,18 +151,18 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myotherqueue", namespaceManager);
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myotherqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
-            var forwardReal = await namespaceManager.GetQueueAsync("myotherqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
+            var forwardReal = await namespaceManager.GetQueue("myotherqueue");
 
             Assert.IsTrue(real.ForwardDeadLetteredMessagesTo.EndsWith("myotherqueue"));
             Assert.IsTrue(string.IsNullOrEmpty(forwardReal.ForwardDeadLetteredMessagesTo));
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
-            await namespaceManager.DeleteQueueAsync("myotherqueue");
+            await namespaceManager.DeleteQueue("myqueue");
+            await namespaceManager.DeleteQueue("myotherqueue");
         }
 
         [Test]
@@ -177,14 +177,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.IsTrue(real.EnableExpress);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -199,14 +199,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.AreEqual(TimeSpan.FromDays(1), real.AutoDeleteOnIdle);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -215,7 +215,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             //make sure any previously created queues with this name are removed as the EnablePartitioning cannot be updated
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -224,14 +224,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.IsTrue(real.EnablePartitioning);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -246,14 +246,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.IsFalse(real.EnableBatchedOperations);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -268,14 +268,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.AreEqual(10, real.MaxDeliveryCount);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -290,14 +290,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.AreEqual(TimeSpan.FromMinutes(20), real.DuplicateDetectionHistoryTimeWindow);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -312,14 +312,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.IsTrue(real.EnableDeadLetteringOnMessageExpiration);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         public async Task Properly_sets_DefaultMessageTimeToLive_on_the_created_entity()
@@ -333,14 +333,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.AreEqual(TimeSpan.FromDays(1), real.DefaultMessageTimeToLive);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         public async Task Properly_sets_RequiresSession_on_the_created_entity()
@@ -348,7 +348,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             //make sure any existing queue is cleaned up as the RequiresSession property cannot be changed on existing queues
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -357,14 +357,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.IsTrue(real.RequiresSession);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         public async Task Properly_sets_RequiresDuplicateDetection_on_the_created_entity()
@@ -378,14 +378,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.IsTrue(real.RequiresDuplicateDetection);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         public async Task Properly_sets_MaxSizeInMegabytes_on_the_created_entity()
@@ -399,14 +399,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.AreEqual(3072, real.MaxSizeInMegabytes);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         public async Task Properly_sets_LockDuration_on_the_created_entity()
@@ -420,14 +420,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.AreEqual(TimeSpan.FromMinutes(5), real.LockDuration);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
 
         public async Task Properly_sets_SupportOrdering_on_the_created_entity()
@@ -441,14 +441,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            await creator.CreateAsync("myqueue", namespaceManager);
+            await creator.Create("myqueue", namespaceManager);
 
-            var real = await namespaceManager.GetQueueAsync("myqueue");
+            var real = await namespaceManager.GetQueue("myqueue");
 
             Assert.IsTrue(real.SupportOrdering);
 
             //cleanup 
-            await namespaceManager.DeleteQueueAsync("myqueue");
+            await namespaceManager.DeleteQueue("myqueue");
         }
     }
 
