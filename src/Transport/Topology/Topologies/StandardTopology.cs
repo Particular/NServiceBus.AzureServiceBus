@@ -10,13 +10,7 @@ namespace NServiceBus.AzureServiceBus
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
 
-        internal StandardTopology()
-        {
-            container = new TransportPartsContainer();
-            //DependsOn<UnicastBus>();
-            //DependsOn<Receiving>();
-            Defaults(ApplyDefaults);
-        }
+        public StandardTopology() : this(new TransportPartsContainer()){}
 
         internal StandardTopology(ITransportPartsContainer container)
         {
