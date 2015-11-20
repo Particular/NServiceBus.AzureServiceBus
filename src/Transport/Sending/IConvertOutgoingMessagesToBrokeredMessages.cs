@@ -6,7 +6,7 @@ namespace NServiceBus.AzureServiceBus
 
     public interface IConvertOutgoingMessagesToBrokeredMessages
     {
-        BrokeredMessage Convert(OutgoingMessage outgoingMessage, DispatchOptions dispatchOptions);
-        IEnumerable<BrokeredMessage> Convert(IEnumerable<OutgoingMessage> outgoingMessages, DispatchOptions dispatchOptions);
+        BrokeredMessage Convert(OutgoingMessage outgoingMessage, RoutingOptions routingOptions);
+        IEnumerable<BrokeredMessage> Convert(IEnumerable<OutgoingMessage> outgoingMessages, RoutingOptions routingOptions);
     }
 }

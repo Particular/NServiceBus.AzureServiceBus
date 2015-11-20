@@ -17,7 +17,7 @@ namespace NServiceBus.AzureServiceBus
 
     public class BrokeredMessageReceiveContext : ReceiveContext
     {
-        public BrokeredMessage BrokeredMessage { get; set; }
+        public BrokeredMessage IncomingBrokeredMessage { get; set; }
 
         //TODO: replace by EntityInfo object
         public string EntityPath { get; set; }

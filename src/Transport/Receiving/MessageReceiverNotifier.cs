@@ -90,7 +90,7 @@ namespace NServiceBus.AzureServiceBus
             var incomingMessage = brokeredMessageConverter.Convert(message);
             var context = new BrokeredMessageReceiveContext()
             {
-                BrokeredMessage = message,
+                IncomingBrokeredMessage = message,
                 EntityPath = path,
                 ConnectionString = connstring,
                 ReceiveMode = internalReceiver.Mode,
