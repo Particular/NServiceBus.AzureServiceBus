@@ -4,10 +4,10 @@
 
 //    public class AzureServiceBusTopologyCreator: NServiceBus.Transports.ICreateQueues
 //    {
-//        ITopology topology;
+//        ITopologySectionManager topology;
 //        ILog logger = LogManager.GetLogger(typeof(AzureServiceBusTopologyCreator));
 
-//        public AzureServiceBusTopologyCreator(ITopology topology)
+//        public AzureServiceBusTopologyCreator(ITopologySectionManager topology)
 //        {
 //            this.topology = topology;
 //        }

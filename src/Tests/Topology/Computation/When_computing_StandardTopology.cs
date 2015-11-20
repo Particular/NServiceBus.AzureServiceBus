@@ -21,11 +21,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new StandardTopology();
-
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
-            var definition = topology.DetermineResourcesToCreate();
+            var definition = DetermineResourcesToCreate(settings, container);
 
             var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
@@ -44,11 +40,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new StandardTopology();
-
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
-            var definition = topology.DetermineResourcesToCreate();
+            var definition = DetermineResourcesToCreate(settings, container);
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == connectionstring));
         }
@@ -66,13 +58,23 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new StandardTopology();
-
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
-            var definition = topology.DetermineResourcesToCreate();
+            var definition = DetermineResourcesToCreate(settings, container);
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales.events" && ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == connectionstring ));
         }
+
+        private static TopologySection DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)
+        {
+            var topology = new StandardTopology(container);
+
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
+
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+
+            var definition = sectionManager.DetermineResourcesToCreate();
+            return definition;
+        }
     }
+
 }

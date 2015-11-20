@@ -18,7 +18,7 @@
 //    /// </summary>
 //    class AzureServiceBusDequeueStrategy : IDequeueMessages
 //    {
-//        ITopology topology;
+//        ITopologySectionManager topology;
 //        readonly CriticalError criticalError;
 //        Address address;
 //        TransactionSettings settings;
@@ -33,7 +33,7 @@
 
 //        ILog logger = LogManager.GetLogger(typeof(AzureServiceBusDequeueStrategy));
 
-//        public AzureServiceBusDequeueStrategy(ITopology topology, CriticalError criticalError)
+//        public AzureServiceBusDequeueStrategy(ITopologySectionManager topology, CriticalError criticalError)
 //        {
 //            this.topology = topology;
 //            this.criticalError = criticalError;

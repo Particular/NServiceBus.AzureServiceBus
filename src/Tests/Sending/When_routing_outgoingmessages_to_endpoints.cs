@@ -40,7 +40,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             //// perform the test
 
             var router = new DefaultOutgoingMessageRouter(
-                new FakeTopology(),
+                new FakeTopologySectionManager(),
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
 
@@ -81,7 +81,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             //// perform the test
 
             var router = new DefaultOutgoingMessageRouter(
-                new FakeTopology(),
+                new FakeTopologySectionManager(),
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
 
@@ -122,7 +122,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             //// perform the test
 
             var router = new DefaultOutgoingMessageRouter(
-                new FakeTopology(), 
+                new FakeTopologySectionManager(), 
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
 
@@ -163,7 +163,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             //// perform the test
 
             var router = new DefaultOutgoingMessageRouter(
-                new FakeTopology(), 
+                new FakeTopologySectionManager(), 
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
 
@@ -178,7 +178,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueue("myqueue");
         }
 
-        public class FakeTopology : ITopology
+        public class FakeTopologySectionManager : ITopologySectionManager
         {
             public void InitializeSettings(SettingsHolder settings)
             {

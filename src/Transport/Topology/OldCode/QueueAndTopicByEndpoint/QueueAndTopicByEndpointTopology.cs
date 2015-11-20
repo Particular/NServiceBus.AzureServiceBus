@@ -13,7 +13,7 @@
 //    /// publishes through a topic per endpoint, 
 //    /// receives on both it's own queue &amp; subscriptions per datatype
 //    /// </summary>
-//    class QueueAndTopicByEndpointTopology : ITopology
+//    class QueueAndTopicByEndpointTopology : ITopologySectionManager
 //    {
 //        Configure config;
 //        IManageMessagingFactoriesLifecycle messagingFactories;

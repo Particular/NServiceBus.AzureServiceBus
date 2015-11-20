@@ -7,13 +7,13 @@ namespace NServiceBus.AzureServiceBus
 
     class MessagePump : IPushMessages
     {
-        ITopology topology;
+        ITopologySectionManager topologySectionManager;
         IOperateTopology topologyOperator;
         Func<PushContext, Task> messagePump;
 
-        public MessagePump(ITopology topology, IOperateTopology topologyOperator)
+        public MessagePump(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
         {
-            this.topology = topology;
+            this.topologySectionManager = topologySectionManager;
             this.topologyOperator = topologyOperator;
         }
 
@@ -45,7 +45,7 @@ namespace NServiceBus.AzureServiceBus
 
         public void Start(PushRuntimeSettings limitations)
         {
-            var definition = topology.DetermineReceiveResources();
+            var definition = topologySectionManager.DetermineReceiveResources();
             topologyOperator.Start(definition, limitations.MaxConcurrency);
         }
 

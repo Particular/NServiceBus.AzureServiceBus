@@ -34,7 +34,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.Throws<NotSupportedException>(() => topology.DeterminePublishDestination(typeof(object)));
         }
         
-        BasicTopology SetupBasicTopology(TransportPartsContainer container, string enpointname)
+        ITopologySectionManager SetupBasicTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -42,12 +42,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new BasicTopology();
+            var topology = new BasicTopology(container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            return topology;
+            return container.Resolve<ITopologySectionManager>();
         }
     }
 }

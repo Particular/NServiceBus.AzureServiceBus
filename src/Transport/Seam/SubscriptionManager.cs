@@ -7,25 +7,25 @@ namespace NServiceBus.AzureServiceBus
 
     class SubscriptionManager : IManageSubscriptions
     {
-        readonly ITopology topology; // responsible for providing the metadata about the subscription (what in case of EH?)
+        readonly ITopologySectionManager topologySectionManager; // responsible for providing the metadata about the subscription (what in case of EH?)
         readonly IOperateTopology topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
 
-        public SubscriptionManager(ITopology topology, IOperateTopology topologyOperator)
+        public SubscriptionManager(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
         {
-            this.topology = topology;
+            this.topologySectionManager = topologySectionManager;
             this.topologyOperator = topologyOperator;
         }
 
         public Task SubscribeAsync(Type eventType, ContextBag context)
         {
-            var section = topology.DetermineResourcesToSubscribeTo(eventType);
+            var section = topologySectionManager.DetermineResourcesToSubscribeTo(eventType);
             topologyOperator.Start(section.Entities);
             return TaskEx.Completed;
         }
 
         public Task UnsubscribeAsync(Type eventType, ContextBag context)
         {
-            var section = topology.DetermineResourcesToUnsubscribeFrom(eventType);
+            var section = topologySectionManager.DetermineResourcesToUnsubscribeFrom(eventType);
             return topologyOperator.Stop(section.Entities);
         }
     }
@@ -46,16 +46,16 @@ namespace NServiceBus.AzureServiceBus
 //    class AzureServiceBusTopicSubscriptionManager : IManageSubscriptions
 //    {
 //        Configure config;
-//        ITopology topology;
+//        ITopologySectionManager topologySectionManager;
 //        public IMessageMapper MessageMapper { get; set; }
 //        public StaticMessageRouter MessageRouter { get; set; }
 
 //        ILog logger = LogManager.GetLogger(typeof(AzureServiceBusTopicSubscriptionManager));
 
-//        public AzureServiceBusTopicSubscriptionManager(Configure config, ITopology topology)
+//        public AzureServiceBusTopicSubscriptionManager(Configure config, ITopologySectionManager topologySectionManager)
 //        {
 //            this.config = config;
-//            this.topology = topology;
+//            this.topologySectionManager = topologySectionManager;
 //        }
 
 //        public void Subscribe(Type eventType, Address original)
@@ -99,7 +99,7 @@ namespace NServiceBus.AzureServiceBus
 //        {
 //            logger.InfoFormat("Creating a new notifier for event type {0}, address {1}", eventType.Name, original.ToString());
 
-//            var notifier = topology.Subscribe(eventType, original);
+//            var notifier = topologySectionManager.Subscribe(eventType, original);
 //            notifier.Faulted += (sender, args) =>
 //            {
 //                strategy.RemoveNotifier(eventType, original);
@@ -144,7 +144,7 @@ namespace NServiceBus.AzureServiceBus
 
 //            var notifier = strategy.GetNotifier(eventType, original);
 
-//            topology.Unsubscribe(notifier);
+//            topologySectionManager.Unsubscribe(notifier);
 
 //            strategy.RemoveNotifier(eventType, original);
 //        }

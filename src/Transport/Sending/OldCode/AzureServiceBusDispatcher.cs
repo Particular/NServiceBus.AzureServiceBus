@@ -19,10 +19,10 @@
 
 //    class AzureServiceBusDispatcher : IDispatchMessages //ISendMessages, IDeferMessages
 //    {
-//        ITopology topology;
+//        ITopologySectionManager topology;
 //        ConditionalWeakTable<IncomingMessage, ConcurrentDictionary<string, List<OutgoingMessage>>> batchTrackingContext;
 
-//        public AzureServiceBusDispatcher(ITopology topology, Configure config)
+//        public AzureServiceBusDispatcher(ITopologySectionManager topology, Configure config)
 //        {
 //            this.topology = topology;
 //            batchTrackingContext = new ConditionalWeakTable<IncomingMessage, ConcurrentDictionary<string, List<OutgoingMessage>>>();

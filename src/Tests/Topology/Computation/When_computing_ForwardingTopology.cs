@@ -21,12 +21,13 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new ForwardingTopology();
+            var topology = new ForwardingTopology(container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            var definition = topology.DetermineResourcesToCreate();
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var definition = sectionManager.DetermineResourcesToCreate();
 
             var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
@@ -45,12 +46,13 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new ForwardingTopology();
+            var topology = new ForwardingTopology(container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            var definition = topology.DetermineResourcesToCreate();
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var definition = sectionManager.DetermineResourcesToCreate();
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == connectionstring));
         }
@@ -68,11 +70,13 @@ namespace NServiceBus.AzureServiceBus.Tests
             const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new ForwardingTopology();
+            var topology = new ForwardingTopology(container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
-            var definition = topology.DetermineResourcesToCreate();
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
+
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var definition = sectionManager.DetermineResourcesToCreate();
 
             var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == connectionstring && ei.Path.StartsWith("bundle-"));
 
@@ -94,13 +98,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new ForwardingTopology();
+            var topology = new ForwardingTopology(container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
-            topology.DetermineResourcesToCreate();
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            var section = topology.DetermineResourcesToSubscribeTo(typeof(SomeEvent));
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+            sectionManager.DetermineResourcesToCreate();
+
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeEvent));
 
             Assert.That(section.Entities.Count(), Is.EqualTo(2));
             // TODO: need to verify that subscription is done on each topic

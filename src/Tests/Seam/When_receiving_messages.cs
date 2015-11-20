@@ -79,7 +79,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await namespaceManager.DeleteQueue(enpointname);
         }
 
-        async Task<BasicTopology> SetupBasicTopology(TransportPartsContainer container, string enpointname)
+        async Task<ITopologySectionManager> SetupBasicTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -87,15 +87,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new BasicTopology();
+            var topology = new BasicTopology(container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            // create the topology
+            // create the topologySectionManager
             var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
-            await topologyCreator.Create(topology.DetermineResourcesToCreate());
-            return topology;
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate());
+            return sectionManager;
         }
     }
 }

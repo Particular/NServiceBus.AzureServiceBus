@@ -2,9 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using NServiceBus.AzureServiceBus;
     using NServiceBus.DelayedDelivery;
-    using NServiceBus.Features;
     using NServiceBus.Performance.TimeToBeReceived;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -35,14 +33,14 @@
         public override TransactionSupport GetTransactionSupport()
         {
             // TODO: need to test this and see when invoked from the core
-            // TODO: decision is based on type of Topology (BasicTopology doesn't have pub/sub).
+            // TODO: decision is based on type of Topology (BasicTopologySectionManager doesn't have pub/sub).
             // TODO: need configuration object here to make the decision
             return TransactionSupport.MultiQueue;
         }
 
         public override IManageSubscriptions GetSubscriptionManager()
         {
-            // TODO: decision is based on type of Topology (BasicTopology doesn't have pub/sub).
+            // TODO: decision is based on type of Topology (BasicTopologySectionManager doesn't have pub/sub).
             // TODO: need configuration object here to make the decision
             throw new NotImplementedException();
         }
@@ -66,51 +64,14 @@
 
         public override OutboundRoutingPolicy GetOutboundRoutingPolicy(ReadOnlySettings settings)
         {
-            // TODO: decision is based on type of Topology (BasicTopology doesn't have pub/sub).
+            // TODO: decision is based on type of Topology (BasicTopologySectionManager doesn't have pub/sub).
             // TODO: need a container here
-            // return new OutboundRoutingPolicy(OutboundRoutingType.DirectSend, OutboundRoutingType.DirectSend, OutboundRoutingType.DirectSend); // BasicTopology
-            return new OutboundRoutingPolicy(OutboundRoutingType.DirectSend, OutboundRoutingType.IndirectPublish, OutboundRoutingType.DirectSend); // StandardTopology
+            // return new OutboundRoutingPolicy(OutboundRoutingType.DirectSend, OutboundRoutingType.DirectSend, OutboundRoutingType.DirectSend); // BasicTopologySectionManager
+            return new OutboundRoutingPolicy(OutboundRoutingType.DirectSend, OutboundRoutingType.IndirectPublish, OutboundRoutingType.DirectSend); // StandardTopologySectionManager
         }
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
     }
 
-    public class AzureServiceBusTransportConfigurator : Feature
-    {
-        ITopology topology;
-        ITransportPartsContainer container = new TransportPartsContainer();
-
-        internal AzureServiceBusTransportConfigurator()
-        {
-            EnableByDefault();
-            //DependsOn<UnicastBus>();
-            //DependsOn<Receiving>();
-            //RegisterStartupTask<SomeStartupTask>();
-            Defaults(settings =>
-            {
-                settings.SetDefault(WellKnownConfigurationKeys.Topology.Implementation, typeof(StandardTopology));
-
-                //if the user had set another topology the the default, it will be resolved
-                var topologyType = settings.Get<Type>(WellKnownConfigurationKeys.Topology.Implementation);
-                topology = (ITopology)Activator.CreateInstance(topologyType);
-                topology.InitializeSettings(settings);
-            });
-        }
-
-        protected override void Setup(FeatureConfigurationContext context)
-        {
-            //context.Container //can only register
-            //context.Pipeline //can extend
-            //context.Settings //cannot change
-            topology.InitializeContainer(context.Container, container);
-        }
-
-        //class SomeStartupTask : FeatureStartupTask
-        //{
-        //    protected override Task OnStart(IBusContext context)
-        //    {
-        //        return Task.FromResult(true);
-        //    }
-        //}
-    }
+    
 }

@@ -22,12 +22,13 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new BasicTopology();
+            var topology = new BasicTopology(container);
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
-            var definition = topology.DetermineResourcesToCreate();
-
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var definition = sectionManager.DetermineResourcesToCreate();
+           
             var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
         }
@@ -45,11 +46,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
-            var topology = new BasicTopology();
+            var topology = new BasicTopology(container);
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
-            var definition = topology.DetermineResourcesToCreate();
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var definition = sectionManager.DetermineResourcesToCreate();
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == connectionstring));
         }
@@ -62,13 +64,14 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             container.Register(typeof(SettingsHolder), () => settings);
-           
-            var topology = new BasicTopology();
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
+            var topology = new BasicTopology(container);
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            Assert.Throws<NotSupportedException>(() => topology.DetermineResourcesToSubscribeTo(typeof(MyEvent)));
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+
+            Assert.Throws<NotSupportedException>(() => sectionManager.DetermineResourcesToSubscribeTo(typeof(MyEvent)));
         }
 
         [Test]
@@ -80,15 +83,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             container.Register(typeof(SettingsHolder), () => settings);
 
-            var topology = new BasicTopology();
+            var topology = new BasicTopology(container);
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
+            var sectionManager = container.Resolve<ITopologySectionManager>();
 
-
-            Assert.Throws<NotSupportedException>(() => topology.DetermineResourcesToUnsubscribeFrom(typeof(MyEvent)));
+            Assert.Throws<NotSupportedException>(() => sectionManager.DetermineResourcesToUnsubscribeFrom(typeof(MyEvent)));
         }
-
+     
         class MyEvent
         {
         }

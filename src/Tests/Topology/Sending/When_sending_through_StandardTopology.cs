@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(destination.Entities.Single().Path == "sales.events");
         }
 
-        StandardTopology SetupStandardTopology(TransportPartsContainer container, string enpointname)
+        ITopologySectionManager SetupStandardTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -44,12 +44,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new StandardTopology();
+            var topology = new StandardTopology(container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            return topology;
+            return container.Resolve<ITopologySectionManager>();
         }
 
         class SomeMessageType

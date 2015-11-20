@@ -24,7 +24,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messageSenderSettings = new AzureServiceBusMessageSenderSettings(settings).BackOffTimeOnThrottle(TimeSpan.Zero);
             messageSenderSettings.RetryAttemptsOnThrottle(1);
 
-            var topology = A.Fake<ITopology>();
+            var topology = A.Fake<ITopologySectionManager>();
             var clientLifecycleManager = A.Fake<IManageMessageSenderLifeCycle>();
             var messageSender = A.Fake<IMessageSender>();
 

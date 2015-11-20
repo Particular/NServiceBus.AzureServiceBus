@@ -3,7 +3,7 @@
 //    using System;
 //    using Settings;
 
-//    public interface ITopology
+//    public interface ITopologySectionManager
 //    {
 //        void Initialize(ReadOnlySettings setting);
 

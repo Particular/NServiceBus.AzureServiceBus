@@ -8,9 +8,9 @@
 //    class AzureServiceBusPublisher : IPublishMessages
 //    {
 //        Configure config;
-//        ITopology topology;
+//        ITopologySectionManager topology;
 
-//        public AzureServiceBusPublisher(Configure config, ITopology topology)
+//        public AzureServiceBusPublisher(Configure config, ITopologySectionManager topology)
 //        {
 //            this.config = config;
 //            this.topology = topology;

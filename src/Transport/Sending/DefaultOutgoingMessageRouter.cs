@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus
 
     public class DefaultOutgoingMessageRouter : IRouteOutgoingMessages
     {
-        readonly ITopology topology;
+        readonly ITopologySectionManager topologySectionManager;
         readonly IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter;
         readonly IManageMessageSenderLifeCycle senders;
 
@@ -20,9 +20,9 @@ namespace NServiceBus.AzureServiceBus
         TimeSpan backOffTimeOnThrottle;
         int maximuMessageSizeInKilobytes;
 
-        public DefaultOutgoingMessageRouter(ITopology topology, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings)
+        public DefaultOutgoingMessageRouter(ITopologySectionManager topologySectionManager, IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings)
         {
-            this.topology = topology;
+            this.topologySectionManager = topologySectionManager;
             this.outgoingMessageConverter = outgoingMessageConverter;
             this.senders = senders;
 
@@ -52,11 +52,11 @@ namespace NServiceBus.AzureServiceBus
             {
                 var toAllSubscribers = (MulticastAddressTag)routingOptions.DispatchOptions.AddressTag;
 
-                return topology.DeterminePublishDestination(toAllSubscribers.MessageType).Entities;
+                return topologySectionManager.DeterminePublishDestination(toAllSubscribers.MessageType).Entities;
             }
             else // send
             {
-                return topology.DetermineSendDestination(directRouting.Destination).Entities;
+                return topologySectionManager.DetermineSendDestination(directRouting.Destination).Entities;
             }
         }
 

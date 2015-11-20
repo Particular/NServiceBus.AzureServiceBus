@@ -37,7 +37,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(destination.Entities.First().Path.StartsWith("bundle"));
         }
 
-        ForwardingTopology SetupForwardingTopology(TransportPartsContainer container, string enpointname)
+        ITopologySectionManager SetupForwardingTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -45,12 +45,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
-            var topology = new ForwardingTopology();
+            var topology = new ForwardingTopology(container);
 
-            topology.InitializeSettings(settings);
-            topology.InitializeContainer(null, container);
+            topology.ApplyDefaults(settings);
+            topology.InitializeContainer(settings);
 
-            return topology;
+            return container.Resolve<ITopologySectionManager>();
         }
 
         class SomeMessageType
