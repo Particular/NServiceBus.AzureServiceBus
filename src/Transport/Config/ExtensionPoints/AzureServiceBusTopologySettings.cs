@@ -3,7 +3,6 @@
     using System;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Features;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
@@ -14,7 +13,7 @@
         {
         }
 
-        public AzureServiceBusTopologySettings Use<T>() where T : Feature, ITopology, new()
+        public AzureServiceBusTopologySettings Use<T>() where T : ITopology, new()
         {
             var settings = this.GetSettings();
             var transportDefinition = settings.Get<TransportDefinition>() as AzureServiceBusTransport;
@@ -22,7 +21,6 @@
             if (transportDefinition != null)
             {
                 var topology = Activator.CreateInstance<T>();
-                //topology.Enable()
                 transportDefinition.Topology = topology;
             }
 
