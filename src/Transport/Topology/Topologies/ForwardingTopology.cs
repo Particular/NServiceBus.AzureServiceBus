@@ -2,10 +2,9 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Features;
     using NServiceBus.Settings;
 
-    public class ForwardingTopology : Feature
+    public class ForwardingTopology : ITopology
     {
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
@@ -15,18 +14,6 @@ namespace NServiceBus.AzureServiceBus
         internal ForwardingTopology(ITransportPartsContainer container)
         {
             this.container = container;
-
-            //DependsOn<UnicastBus>();
-            //DependsOn<Receiving>();
-            Defaults(ApplyDefaults);
-        }
-        
-        protected override void Setup(FeatureConfigurationContext context)
-        {
-            //context.Container //can only register
-            //context.Pipeline //can extend
-            //context.Settings //cannot change
-            InitializeContainer(context.Settings);
         }
 
         public void ApplyDefaults(SettingsHolder settings)
@@ -44,7 +31,7 @@ namespace NServiceBus.AzureServiceBus
             topologySectionManager = new ForwardingTopologySectionManager(settings, container);
         }
 
-        public void InitializeContainer(ReadOnlySettings settings)
+        public void InitializeContainer(SettingsHolder settings)
         {
             // runtime components
             container.Register<ITopologySectionManager>(() => topologySectionManager);

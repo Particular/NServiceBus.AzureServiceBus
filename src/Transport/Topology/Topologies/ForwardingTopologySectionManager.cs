@@ -31,37 +31,6 @@ namespace NServiceBus.AzureServiceBus
             return Determine(PartitioningIntent.Creating);
         }
 
-        private TopologySection Determine(PartitioningIntent partitioningIntent)
-        {
-            // computes the topologySectionManager
-
-            var endpointName = settings.Get<EndpointName>();
-            
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
-
-            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), partitioningIntent).ToArray();
-
-            var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
-            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
-
-            if (!topics.Any())
-            {
-                BuildTopicBundles(namespaces, sanitizationStrategy);
-            }
-
-            //TODO: core has a a list of queues as well, which I suppose includes ErrorQ & AuditQ
-            // integrate those correctly into the topologySectionManager
-            // settings.Get<QueueBindings>()
-
-            var entities = inputQueues.Concat(topics).ToArray();
-
-            return new TopologySection
-            {
-                Namespaces = namespaces,
-                Entities = entities
-            };
-        }
         public TopologySection DeterminePublishDestination(Type eventType)
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
@@ -96,22 +65,6 @@ namespace NServiceBus.AzureServiceBus
                 Namespaces = namespaces,
                 Entities = inputQueues
             };
-        }
-
-        void BuildTopicBundles(NamespaceInfo[] namespaces, ISanitizationStrategy sanitizationStrategy)
-        {
-            var numberOfEntitiesInBundle = settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
-            var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
-
-            for (var i = 1; i <= numberOfEntitiesInBundle; i++)
-            {
-                topics.AddRange(namespaces.Select(n => new EntityInfo
-                {
-                    Path = sanitizationStrategy.Sanitize(bundlePrefix + i, EntityType.Topic),
-                    Type = EntityType.Topic,
-                    Namespace = n
-                }));
-            }
         }
 
         public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
@@ -191,6 +144,54 @@ namespace NServiceBus.AzureServiceBus
             {
                 Entities = subs,
                 Namespaces = namespaces
+            };
+        }
+        
+        void BuildTopicBundles(NamespaceInfo[] namespaces, ISanitizationStrategy sanitizationStrategy)
+        {
+            var numberOfEntitiesInBundle = settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
+            var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
+
+            for (var i = 1; i <= numberOfEntitiesInBundle; i++)
+            {
+                topics.AddRange(namespaces.Select(n => new EntityInfo
+                {
+                    Path = sanitizationStrategy.Sanitize(bundlePrefix + i, EntityType.Topic),
+                    Type = EntityType.Topic,
+                    Namespace = n
+                }));
+            }
+        }
+        
+        private TopologySection Determine(PartitioningIntent partitioningIntent)
+        {
+            // computes the topologySectionManager
+
+            var endpointName = settings.Get<EndpointName>();
+
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
+
+            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), partitioningIntent).ToArray();
+
+            var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
+            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
+
+            if (!topics.Any())
+            {
+                BuildTopicBundles(namespaces, sanitizationStrategy);
+            }
+
+            //TODO: core has a a list of queues as well, which I suppose includes ErrorQ & AuditQ
+            // integrate those correctly into the topologySectionManager
+            // settings.Get<QueueBindings>()
+
+            var entities = inputQueues.Concat(topics).ToArray();
+
+            return new TopologySection
+            {
+                Namespaces = namespaces,
+                Entities = entities
             };
         }
     }

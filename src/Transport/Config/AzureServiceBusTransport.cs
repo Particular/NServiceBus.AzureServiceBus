@@ -2,7 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.DelayedDelivery;
+    using NServiceBus.Features;
     using NServiceBus.Performance.TimeToBeReceived;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -11,13 +13,13 @@
     {
         protected override void ConfigureForReceiving(TransportReceivingConfigurationContext context)
         {
-            //context.SetQueueCreatorFactory();
-            //context.SetMessagePumpFactory();
+            //context.SetQueueCreatorFactory(Topology.GetQueueCreatorFactory());
+            //context.SetMessagePumpFactory(Topology.GetMessagePumpFactory());
         }
 
         protected override void ConfigureForSending(TransportSendingConfigurationContext context)
         {
-            //context.SetDispatcherFactory();
+            //context.SetDispatcherFactory(Topology.GetDispatcherFactory());
         }
 
         public override IEnumerable<Type> GetSupportedDeliveryConstraints()
@@ -33,14 +35,14 @@
         public override TransactionSupport GetTransactionSupport()
         {
             // TODO: need to test this and see when invoked from the core
-            // TODO: decision is based on type of Topology (BasicTopologySectionManager doesn't have pub/sub).
+            // TODO: decision is based on type of Topology (BasicTopology doesn't have pub/sub).
             // TODO: need configuration object here to make the decision
             return TransactionSupport.MultiQueue;
         }
 
         public override IManageSubscriptions GetSubscriptionManager()
         {
-            // TODO: decision is based on type of Topology (BasicTopologySectionManager doesn't have pub/sub).
+            // TODO: decision is based on type of Topology (BasicTopology doesn't have pub/sub).
             // TODO: need configuration object here to make the decision
             throw new NotImplementedException();
         }
@@ -71,7 +73,41 @@
         }
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
+
+        internal ITopology Topology { get; set; }
     }
 
-    
+    public class ConfigureTransport : Feature
+    {
+        private AzureServiceBusTransport transportDefinition;
+        private SettingsHolder settings { get; set; }
+
+        internal ConfigureTransport()
+        {
+            EnableByDefault();
+            //DependsOn<UnicastBus>();
+            //DependsOn<Receiving>();
+            Defaults(settings =>
+            {
+                this.settings = settings;
+                transportDefinition = settings.Get<TransportDefinition>() as AzureServiceBusTransport;
+
+                transportDefinition.Topology.ApplyDefaults(settings);
+            });
+        }
+
+        
+
+
+        protected override void Setup(FeatureConfigurationContext context)
+        {
+            //context.Container //can only register
+            //context.Pipeline //can extend
+            //context.Settings //cannot change
+            transportDefinition.Topology.InitializeContainer(settings);
+        }
+
+
+    }
+
 }

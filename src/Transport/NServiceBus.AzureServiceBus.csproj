@@ -86,6 +86,7 @@
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
+    <Compile Include="Topology\ITopology.cs" />
     <Compile Include="Topology\Topologies\BasicTopology.cs" />
     <Compile Include="Topology\Topologies\ForwardingTopology.cs" />
     <Compile Include="Topology\Topologies\StandardTopology.cs" />

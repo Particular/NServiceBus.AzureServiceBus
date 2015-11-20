@@ -2,34 +2,21 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Features;
     using NServiceBus.Settings;
 
-    public class StandardTopology : Feature
+    public class StandardTopology :ITopology
     {
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
 
-        public StandardTopology() : this(new TransportPartsContainer()){}
+        public StandardTopology() : this(new TransportPartsContainer()){ }
 
         internal StandardTopology(ITransportPartsContainer container)
         {
             this.container = container;
-            //DependsOn<UnicastBus>();
-            //DependsOn<Receiving>();
-            Defaults(ApplyDefaults);
-        }
-
-
-        protected override void Setup(FeatureConfigurationContext context)
-        {
-            //context.Container //can only register
-            //context.Pipeline //can extend
-            //context.Settings //cannot change
-            InitializeContainer(context.Settings);
         }
         
-        internal void ApplyDefaults(SettingsHolder settings)
+        public void ApplyDefaults(SettingsHolder settings)
         {
             new DefaultConfigurationValues().Apply(settings);
             // ensures settings are present/correct
@@ -42,7 +29,7 @@ namespace NServiceBus.AzureServiceBus
             topologySectionManager = new StandardTopologySectionManager(settings, container);
         }
 
-        internal void InitializeContainer(ReadOnlySettings settings)
+        public void InitializeContainer(SettingsHolder settings)
         {
             // runtime components
             container.Register<ITopologySectionManager>(() => topologySectionManager);

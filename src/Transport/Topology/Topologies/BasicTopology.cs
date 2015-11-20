@@ -2,10 +2,9 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Features;
     using NServiceBus.Settings;
 
-    public class BasicTopology : Feature
+    public class BasicTopology : ITopology
     {
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
@@ -15,21 +14,9 @@ namespace NServiceBus.AzureServiceBus
         internal BasicTopology(ITransportPartsContainer container)
         {
             this.container = container;
-            //DependsOn<UnicastBus>();
-            //DependsOn<Receiving>();
-            //RegisterStartupTask<SomeStartupTask>();
-            Defaults(ApplyDefaults);
         }
 
-        protected override void Setup(FeatureConfigurationContext context)
-        {
-            //context.Container //can only register
-            //context.Pipeline //can extend
-            //context.Settings //cannot change
-            InitializeContainer(context.Settings);
-        }
-
-        internal void ApplyDefaults(SettingsHolder settings)
+        public void ApplyDefaults(SettingsHolder settings)
         {
             // apply all configuration defaults
             new DefaultConfigurationValues().Apply(settings);
@@ -43,7 +30,7 @@ namespace NServiceBus.AzureServiceBus
             topologySectionManager = new BasicTopologySectionManager(settings, container);
         }
 
-        internal void InitializeContainer(ReadOnlySettings settings)
+        public void InitializeContainer(SettingsHolder settings)
         {
             // runtime components
             container.Register<ITopologySectionManager>(() => topologySectionManager);
@@ -78,13 +65,5 @@ namespace NServiceBus.AzureServiceBus
             container.Register(validationStrategyType);
         }
 
-
-        //class SomeStartupTask : FeatureStartupTask
-        //{
-        //    protected override Task OnStart(IBusContext context)
-        //    {
-        //        return Task.FromResult(true);
-        //    }
-        //}
     }
 }
