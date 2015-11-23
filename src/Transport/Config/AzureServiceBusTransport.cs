@@ -13,13 +13,13 @@
     {
         protected override void ConfigureForReceiving(TransportReceivingConfigurationContext context)
         {
-            //context.SetQueueCreatorFactory(Topology.GetQueueCreatorFactory());
-            //context.SetMessagePumpFactory(Topology.GetMessagePumpFactory());
+            context.SetQueueCreatorFactory(Topology.GetQueueCreatorFactory());
+            context.SetMessagePumpFactory(Topology.GetMessagePumpFactory());
         }
 
         protected override void ConfigureForSending(TransportSendingConfigurationContext context)
         {
-            //context.SetDispatcherFactory(Topology.GetDispatcherFactory());
+            context.SetDispatcherFactory(Topology.GetDispatcherFactory());
         }
 
         public override IEnumerable<Type> GetSupportedDeliveryConstraints()
@@ -35,16 +35,14 @@
         public override TransactionSupport GetTransactionSupport()
         {
             // TODO: need to test this and see when invoked from the core
-            // TODO: decision is based on type of Topology (BasicTopology doesn't have pub/sub).
+            // TODO: decision is based on condition (if multiple namespaces are used, we can only support single queue, otherwise multi queue).
             // TODO: need configuration object here to make the decision
             return TransactionSupport.MultiQueue;
         }
 
         public override IManageSubscriptions GetSubscriptionManager()
         {
-            // TODO: decision is based on type of Topology (BasicTopology doesn't have pub/sub).
-            // TODO: need configuration object here to make the decision
-            throw new NotImplementedException();
+            return Topology.GetSubscriptionManager();
         }
 
         public override string GetDiscriminatorForThisEndpointInstance()
@@ -66,10 +64,7 @@
 
         public override OutboundRoutingPolicy GetOutboundRoutingPolicy(ReadOnlySettings settings)
         {
-            // TODO: decision is based on type of Topology (BasicTopologySectionManager doesn't have pub/sub).
-            // TODO: need a container here
-            // return new OutboundRoutingPolicy(OutboundRoutingType.DirectSend, OutboundRoutingType.DirectSend, OutboundRoutingType.DirectSend); // BasicTopologySectionManager
-            return new OutboundRoutingPolicy(OutboundRoutingType.DirectSend, OutboundRoutingType.IndirectPublish, OutboundRoutingType.DirectSend); // StandardTopologySectionManager
+            return Topology.GetOutboundRoutingPolicy();
         }
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";

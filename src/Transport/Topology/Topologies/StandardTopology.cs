@@ -3,6 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Settings;
+    using NServiceBus.Transports;
 
     public class StandardTopology :ITopology
     {
@@ -66,5 +67,30 @@ namespace NServiceBus.AzureServiceBus
             container.Register(validationStrategyType);
         }
 
+        public Func<ICreateQueues> GetQueueCreatorFactory()
+        {
+            return () => container.Resolve<ICreateQueues>();
+        }
+
+        public Func<CriticalError, IPushMessages> GetMessagePumpFactory()
+        {
+            // todo, get criticial error integrated
+            return error => container.Resolve<IPushMessages>();
+        }
+
+        public Func<IDispatchMessages> GetDispatcherFactory()
+        {
+            return () => container.Resolve<IDispatchMessages>();
+        }
+
+        public IManageSubscriptions GetSubscriptionManager()
+        {
+            return container.Resolve<IManageSubscriptions>();
+        }
+
+        public OutboundRoutingPolicy GetOutboundRoutingPolicy()
+        {
+            return new OutboundRoutingPolicy(OutboundRoutingType.DirectSend, OutboundRoutingType.IndirectPublish, OutboundRoutingType.DirectSend);
+        }
     }
 }
