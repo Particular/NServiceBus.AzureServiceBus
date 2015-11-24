@@ -59,7 +59,7 @@
         public override string ToTransportAddress(LogicalAddress logicalAddress)
         {
             // ???
-            throw new NotImplementedException();
+            return logicalAddress.EndpointInstanceName.ToString();
         }
 
         public override OutboundRoutingPolicy GetOutboundRoutingPolicy(ReadOnlySettings settings)
