@@ -5,7 +5,7 @@ namespace NServiceBus
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Transports;
 
-    public static class AzureServiceBusTransportExtensions
+    public static class AzureServiceBusTransportExtensions 
     {
         public static AzureServiceBusTopologySettings UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions) where T : ITopology, new()
         {
