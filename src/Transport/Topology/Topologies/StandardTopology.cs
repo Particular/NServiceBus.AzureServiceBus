@@ -33,6 +33,7 @@ namespace NServiceBus.AzureServiceBus
         public void InitializeContainer(SettingsHolder settings)
         {
             // runtime components
+            container.Register<ReadOnlySettings>(() => settings);
             container.Register<ITopologySectionManager>(() => topologySectionManager);
             container.RegisterSingleton<NamespaceManagerCreator>();
             container.RegisterSingleton<NamespaceManagerLifeCycleManager>();
@@ -49,6 +50,7 @@ namespace NServiceBus.AzureServiceBus
             container.Register<TopologyCreator>();
             container.RegisterSingleton<TopologyOperator>();
             container.Register<MessageReceiverNotifier>();
+            container.RegisterSingleton<SubscriptionManager>();
 
             // configures container
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);

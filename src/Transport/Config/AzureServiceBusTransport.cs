@@ -86,7 +86,10 @@
             {
                 this.settings = settings;
                 transportDefinition = settings.Get<TransportDefinition>() as AzureServiceBusTransport;
-
+                if (transportDefinition.Topology == null)
+                {
+                    transportDefinition.Topology = new StandardTopology();
+                }
                 transportDefinition.Topology.ApplyDefaults(settings);
             });
         }
