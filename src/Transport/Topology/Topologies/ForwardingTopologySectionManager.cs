@@ -5,6 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using Addressing;
+    using NServiceBus.Transports;
     using Settings;
 
     public class ForwardingTopologySectionManager : ITopologySectionManager
@@ -175,16 +176,33 @@ namespace NServiceBus.AzureServiceBus
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), partitioningIntent).ToArray();
 
             var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
-            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
+            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
             if (!topics.Any())
             {
                 BuildTopicBundles(namespaces, sanitizationStrategy);
             }
 
-            //TODO: core has a a list of queues as well, which I suppose includes ErrorQ & AuditQ
-            // integrate those correctly into the topologySectionManager
-            // settings.Get<QueueBindings>()
+            if (partitioningIntent == PartitioningIntent.Creating)
+            {
+                var queueBindings = settings.Get<QueueBindings>();
+                foreach (var n in namespaces)
+                {
+                    inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
+                    {
+                        Path = p,
+                        Type = EntityType.Queue,
+                        Namespace = n
+                    }));
+
+                    inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
+                    {
+                        Path = p,
+                        Type = EntityType.Queue,
+                        Namespace = n
+                    }));
+                }
+            }
 
             var entities = inputQueues.Concat(topics).ToArray();
 

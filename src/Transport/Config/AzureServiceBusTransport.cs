@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.DelayedDelivery;
     using NServiceBus.Features;
@@ -13,13 +14,26 @@
     {
         protected override void ConfigureForReceiving(TransportReceivingConfigurationContext context)
         {
+            EnsureConnectionStringIsRegisteredAsNamespace(context.ConnectionString, context.Settings);
+
             context.SetQueueCreatorFactory(Topology.GetQueueCreatorFactory());
             context.SetMessagePumpFactory(Topology.GetMessagePumpFactory());
         }
 
         protected override void ConfigureForSending(TransportSendingConfigurationContext context)
         {
+            EnsureConnectionStringIsRegisteredAsNamespace(context.ConnectionString, context.GlobalSettings);
+
             context.SetDispatcherFactory(Topology.GetDispatcherFactory());
+        }
+
+        private void EnsureConnectionStringIsRegisteredAsNamespace(string connectionstring, ReadOnlySettings settings)
+        {
+            var namespaces = settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            if (namespaces.All(n => n != connectionstring))
+            {
+                namespaces.Add(connectionstring);
+            }
         }
 
         public override IEnumerable<Type> GetSupportedDeliveryConstraints()

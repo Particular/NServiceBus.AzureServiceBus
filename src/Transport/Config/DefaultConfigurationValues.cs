@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Settings;
 
@@ -9,6 +10,7 @@
         public SettingsHolder Apply(SettingsHolder settings)
         {
             ApplyDefaultsForConnectivity(settings);
+            ApplyDefaultValuesForAddressing(settings);
             ApplyDefaultValuesForQueueDescriptions(settings);
             ApplyDefaultValuesForTopics(settings);
             ApplyDefaultValuesForSubscriptions(settings);
@@ -28,6 +30,11 @@
         void ApplyDefaultValuesForSerialization(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType, SupportedBrokeredMessageBodyTypes.ByteArray);
+        }
+
+        void ApplyDefaultValuesForAddressing(SettingsHolder settings)
+        {
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string>());
         }
 
         void ApplyDefaultsForConnectivity(SettingsHolder settings)
