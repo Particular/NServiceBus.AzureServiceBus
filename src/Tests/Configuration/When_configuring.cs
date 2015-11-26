@@ -13,7 +13,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topologySettings = extensions.Topology();
+            var topologySettings = extensions.UseDefaultTopology();
 
             Assert.IsInstanceOf<AzureServiceBusTopologySettings>(topologySettings);
         }
@@ -24,7 +24,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var addressingSettings = extensions.Topology().Addressing();
+            var addressingSettings = extensions.UseDefaultTopology().Addressing();
 
             Assert.IsInstanceOf<AzureServiceBusAddressingSettings>(addressingSettings);
         }
@@ -35,7 +35,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var partitioningSettings = extensions.Topology().Addressing().NamespacePartitioning();
+            var partitioningSettings = extensions.UseDefaultTopology().Addressing().NamespacePartitioning();
 
             Assert.IsInstanceOf<AzureServiceBusNamespacePartitioningSettings>(partitioningSettings);
         }
@@ -46,7 +46,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var compositionSettings = extensions.Topology().Addressing().Composition();
+            var compositionSettings = extensions.UseDefaultTopology().Addressing().Composition();
 
             Assert.IsInstanceOf<AzureServiceBusCompositionSettings>(compositionSettings);
         }
@@ -57,7 +57,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var validationSettings = extensions.Topology().Addressing().Validation();
+            var validationSettings = extensions.UseDefaultTopology().Addressing().Validation();
 
             Assert.IsInstanceOf<AzureServiceBusValidationSettings>(validationSettings);
         }
@@ -68,7 +68,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var individualizationSettings = extensions.Topology().Addressing().Individualization();
+            var individualizationSettings = extensions.UseDefaultTopology().Addressing().Individualization();
 
             Assert.IsInstanceOf<AzureServiceBusIndividualizationSettings>(individualizationSettings);
         }
@@ -79,7 +79,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var resourceSettings = extensions.Topology().Resources();
+            var resourceSettings = extensions.UseDefaultTopology().Resources();
 
             Assert.IsInstanceOf<AzureServiceBusResourceSettings>(resourceSettings);
         }
@@ -90,7 +90,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var queueSettings = extensions.Topology().Resources().Queues();
+            var queueSettings = extensions.UseDefaultTopology().Resources().Queues();
 
             Assert.IsInstanceOf<AzureServiceBusQueueSettings>(queueSettings);
         }
@@ -101,7 +101,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicsSettings = extensions.Topology().Resources().Topics();
+            var topicsSettings = extensions.UseDefaultTopology().Resources().Topics();
 
             Assert.IsInstanceOf<AzureServiceBusTopicSettings>(topicsSettings);
         }
@@ -112,7 +112,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var subscriptionSettings = extensions.Topology().Resources().Subscriptions();
+            var subscriptionSettings = extensions.UseDefaultTopology().Resources().Subscriptions();
 
             Assert.IsInstanceOf<AzureServiceBusSubscriptionSettings>(subscriptionSettings);
         }

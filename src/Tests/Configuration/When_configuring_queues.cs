@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var queueSettings = extensions.Topology().Resources().Queues().SupportOrdering(true);
+            var queueSettings = extensions.UseDefaultTopology().Resources().Queues().SupportOrdering(true);
 
             Assert.IsTrue(queueSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering));
         }

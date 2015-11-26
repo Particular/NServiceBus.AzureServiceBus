@@ -19,7 +19,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -43,7 +43,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -66,7 +66,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -93,7 +93,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
             var topology = new ForwardingTopology(container);
 

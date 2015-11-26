@@ -15,7 +15,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Topology().Resources().Topics().AutoDeleteOnIdle(TimeSpan.MinValue);
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().AutoDeleteOnIdle(TimeSpan.MinValue);
 
             Assert.AreEqual(TimeSpan.MinValue, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle));
         }
@@ -27,7 +27,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var timeToLive = TimeSpan.FromHours(5);
-            var topicSettings = extensions.Topology().Resources().Topics().DefaultMessageTimeToLive(timeToLive);
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().DefaultMessageTimeToLive(timeToLive);
 
             Assert.AreEqual(timeToLive, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.DefaultMessageTimeToLive));
         }
@@ -39,7 +39,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var dedupTimeWindow = TimeSpan.FromMilliseconds(30000);
-            var topicSettings = extensions.Topology().Resources().Topics().DuplicateDetectionHistoryTimeWindow(dedupTimeWindow);
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().DuplicateDetectionHistoryTimeWindow(dedupTimeWindow);
 
             Assert.AreEqual(dedupTimeWindow, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow));
         }
@@ -50,7 +50,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Topology().Resources().Topics().EnableBatchedOperations(true);
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().EnableBatchedOperations(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableBatchedOperations));
         }
@@ -61,7 +61,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Topology().Resources().Topics().EnableExpress(true);
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().EnableExpress(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress));
         }
@@ -72,7 +72,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Topology().Resources().Topics().EnableFilteringMessagesBeforePublishing(true);
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().EnableFilteringMessagesBeforePublishing(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableFilteringMessagesBeforePublishing));
         }
@@ -83,7 +83,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Topology().Resources().Topics().EnablePartitioning(true);
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().EnablePartitioning(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnablePartitioning));
         }
@@ -95,7 +95,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             const long maxTopicSizeInMB = 2048;
-            var topicSettings = extensions.Topology().Resources().Topics().MaxSizeInMegabytes(maxTopicSizeInMB);
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().MaxSizeInMegabytes(maxTopicSizeInMB);
 
             Assert.AreEqual(maxTopicSizeInMB, topicSettings.GetSettings().Get<long>(WellKnownConfigurationKeys.Topology.Resources.Topics.MaxSizeInMegabytes));
         }
@@ -106,7 +106,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Topology().Resources().Topics().RequiresDuplicateDetection(true);
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().RequiresDuplicateDetection(true);
 
             Assert.True(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.RequiresDuplicateDetection));
         }
@@ -117,7 +117,7 @@
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Topology().Resources().Topics().SupportOrdering(true);
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().SupportOrdering(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.SupportOrdering));
         }

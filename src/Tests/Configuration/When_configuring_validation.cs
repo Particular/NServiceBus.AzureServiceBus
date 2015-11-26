@@ -16,7 +16,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var validationSettings = extensions.Topology().Addressing().Validation().UseStrategy<MyValidationStrategy>();
+            var validationSettings = extensions.UseDefaultTopology().Addressing().Validation().UseStrategy<MyValidationStrategy>();
 
             Assert.AreEqual(typeof(MyValidationStrategy), validationSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy));
         }
@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var validationSettings = extensions.Topology().Addressing().Validation().UseQueuePathMaximumLength(10);
+            var validationSettings = extensions.UseDefaultTopology().Addressing().Validation().UseQueuePathMaximumLength(10);
 
             Assert.AreEqual(10, validationSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength));
         }
@@ -47,7 +47,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var validationSettings = extensions.Topology().Addressing().Validation().UseTopicPathMaximumLength(20);
+            var validationSettings = extensions.UseDefaultTopology().Addressing().Validation().UseTopicPathMaximumLength(20);
 
             Assert.AreEqual(20, validationSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength));
         }
@@ -58,7 +58,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var validationSettings = extensions.Topology().Addressing().Validation().UseSubscriptionPathMaximumLength(30);
+            var validationSettings = extensions.UseDefaultTopology().Addressing().Validation().UseSubscriptionPathMaximumLength(30);
 
             Assert.AreEqual(30, validationSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength));
         }

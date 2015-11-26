@@ -19,9 +19,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(primary);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(secondary);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(primary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(secondary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
 
             var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
 
@@ -37,9 +37,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(primary);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(secondary);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(primary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(secondary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
 
             var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
 
@@ -55,9 +55,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(primary);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(secondary);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(primary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(secondary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
 
             var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
 
@@ -73,9 +73,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(primary);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(secondary);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(primary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(secondary);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
 
             var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
 
@@ -100,7 +100,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Topology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
             
             Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioningStrategy(settings));
         }

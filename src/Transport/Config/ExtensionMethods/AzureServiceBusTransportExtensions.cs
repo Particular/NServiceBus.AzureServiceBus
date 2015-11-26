@@ -1,10 +1,37 @@
 namespace NServiceBus
 {
+    using System;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Configuration.AdvanceExtensibility;
+    using NServiceBus.Transports;
 
     public static class AzureServiceBusTransportExtensions
     {
-        public static AzureServiceBusTopologySettings Topology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        public static AzureServiceBusTopologySettings UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions) where T : ITopology, new()
+        {
+            var topology = Activator.CreateInstance<T>();
+            return UseTopology(transportExtensions, topology);
+        }
+
+        public static AzureServiceBusTopologySettings UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, Func<T> factory) where T : ITopology
+        {
+            return UseTopology(transportExtensions, factory());
+        }
+
+        public static AzureServiceBusTopologySettings UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, T topology) where T : ITopology
+        {
+            var settings = transportExtensions.GetSettings();
+            var transportDefinition = settings.Get<TransportDefinition>() as AzureServiceBusTransport;
+
+            if (transportDefinition != null)
+            {
+                transportDefinition.Topology = topology;
+            }
+
+            return new AzureServiceBusTopologySettings(settings);
+        }
+
+        public static AzureServiceBusTopologySettings UseDefaultTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             return new AzureServiceBusTopologySettings(transportExtensions.GetSettings());
         }

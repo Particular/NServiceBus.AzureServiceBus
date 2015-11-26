@@ -18,7 +18,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Func<string, ReadOnlySettings, QueueDescription> registeredFactory = (name, s) => new QueueDescription(name);
 
-            var connectivitySettings = extensions.Topology().Resources().Queues().DescriptionFactory(registeredFactory);
+            var connectivitySettings = extensions.UseDefaultTopology().Resources().Queues().DescriptionFactory(registeredFactory);
 
             Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, ReadOnlySettings, QueueDescription>>(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory));
         }
@@ -31,7 +31,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Func<string, ReadOnlySettings, TopicDescription> registeredFactory = (name, s) => new TopicDescription(name);
 
-            var connectivitySettings = extensions.Topology().Resources().Topics().DescriptionFactory(registeredFactory);
+            var connectivitySettings = extensions.UseDefaultTopology().Resources().Topics().DescriptionFactory(registeredFactory);
 
             Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, ReadOnlySettings, TopicDescription>>(WellKnownConfigurationKeys.Topology.Resources.Topics.DescriptionFactory));
         }
@@ -44,7 +44,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Func<string, string, ReadOnlySettings, SubscriptionDescription> registeredFactory = (topicname, subscriptionname, s) => new SubscriptionDescription(topicname, subscriptionname);
 
-            var connectivitySettings = extensions.Topology().Resources().Subscriptions().DescriptionFactory(registeredFactory);
+            var connectivitySettings = extensions.UseDefaultTopology().Resources().Subscriptions().DescriptionFactory(registeredFactory);
 
             Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, string, ReadOnlySettings, SubscriptionDescription>>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DescriptionFactory));
         }

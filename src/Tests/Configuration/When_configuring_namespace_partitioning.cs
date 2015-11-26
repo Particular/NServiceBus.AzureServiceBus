@@ -17,7 +17,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var partitioningSettings = extensions.Topology().Addressing().NamespacePartitioning().UseStrategy<MyNamespacePartitioningStrategy>();
+            var partitioningSettings = extensions.UseDefaultTopology().Addressing().NamespacePartitioning().UseStrategy<MyNamespacePartitioningStrategy>();
 
             Assert.AreEqual(typeof(MyNamespacePartitioningStrategy), partitioningSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy));
         }
@@ -30,7 +30,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var @namespace = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
 
-            var partitioningSettings = extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(@namespace);
+            var partitioningSettings = extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(@namespace);
 
             Assert.Contains(@namespace, partitioningSettings.GetSettings().Get<List<String>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces));
         }
