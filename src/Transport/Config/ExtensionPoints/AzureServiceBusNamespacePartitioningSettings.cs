@@ -25,7 +25,17 @@
 
         public AzureServiceBusNamespacePartitioningSettings AddNamespace(string @namespace)
         {
-            var namespaces = _settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            List<string> namespaces;
+            if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces))
+            {
+                namespaces = _settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            }
+            else
+            {
+                namespaces = new List<string>();
+                _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
+            }
+            
             namespaces.Add(@namespace);
             return this;
         }

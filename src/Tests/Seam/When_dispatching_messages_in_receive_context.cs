@@ -35,9 +35,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var pump = new MessagePump(topology, topologyOperator);
             
             // setup the dispatching side of things
-            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Resolve(typeof(IManageMessageSenderLifeCycle));
-            var router = new DefaultOutgoingMessageRouter(topology, new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
-            var dispatcher = new Dispatcher(router, settings);
+            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
 
             // create the destination queue
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
@@ -90,7 +88,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
 
             // cleanup 
-            await pump.StopAsync();
+            await pump.Stop();
 
             await Cleanup(container, "sales", "myqueue");
         }
@@ -112,9 +110,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Resolve(typeof(IManageMessageSenderLifeCycle));
-            var router = new DefaultOutgoingMessageRouter(topology, new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
-            var dispatcher = new Dispatcher(router, settings);
+            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
 
             // create the destination queue
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
@@ -168,7 +164,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // stop the pump so retries don't keep going
-            await pump.StopAsync();
+            await pump.Stop();
 
             // validate
             Assert.IsTrue(received);
@@ -205,9 +201,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Resolve(typeof(IManageMessageSenderLifeCycle));
-            var router = new DefaultOutgoingMessageRouter(topology, new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
-            var dispatcher = new Dispatcher(router, settings);
+            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
 
             // create the destination queue
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
@@ -261,7 +255,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(count == 1, "'myqueue' was expected to have 1 message, but it had " + count + " instead");
 
             // cleanup 
-            await pump.StopAsync();
+            await pump.Stop();
 
             await Cleanup(container, "sales", "myqueue");
         }
@@ -285,9 +279,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Resolve(typeof(IManageMessageSenderLifeCycle));
-            var router = new DefaultOutgoingMessageRouter(topology, new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
-            var dispatcher = new Dispatcher(router, settings);
+            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
 
             // create the destination queue
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
@@ -341,7 +333,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // stop the pump so retries don't keep going
-            await pump.StopAsync();
+            await pump.Stop();
 
             // validate
             Assert.IsTrue(received);
@@ -380,9 +372,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var clientLifecycleManager = (IManageMessageSenderLifeCycle)container.Resolve(typeof(IManageMessageSenderLifeCycle));
-            var router = new DefaultOutgoingMessageRouter(topology, new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
-            var dispatcher = new Dispatcher(router, settings);
+            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
 
             // create the destination queue
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
@@ -443,7 +433,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // stop the pump so retries don't keep going
-            await pump.StopAsync();
+            await pump.Stop();
 
             // validate
             var elapsed = secondTime - firstTime;

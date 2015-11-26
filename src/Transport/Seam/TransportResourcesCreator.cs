@@ -1,5 +1,6 @@
 namespace NServiceBus.AzureServiceBus
 {
+    using System.Threading.Tasks;
     using NServiceBus.Transports;
 
     class TransportResourcesCreator : ICreateQueues
@@ -14,12 +15,12 @@ namespace NServiceBus.AzureServiceBus
             this.sections = sections;
         }
 
-        public void CreateQueueIfNecessary(string address, string account)
+        public async Task CreateQueueIfNecessary(QueueBindings queueBindings, string identity)
         {
             if (resourcesCreated) return;
 
-           var receiveResources = sections.DetermineResourcesToCreate();
-           topologyCreator.Create(receiveResources).GetAwaiter().GetResult();
+            var receiveResources = sections.DetermineResourcesToCreate();
+            await topologyCreator.Create(receiveResources);
 
             resourcesCreated = true;
         }

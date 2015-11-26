@@ -185,22 +185,25 @@ namespace NServiceBus.AzureServiceBus
 
             if (partitioningIntent == PartitioningIntent.Creating)
             {
-                var queueBindings = settings.Get<QueueBindings>();
-                foreach (var n in namespaces)
+                if (settings.HasExplicitValue<QueueBindings>())
                 {
-                    inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
+                    var queueBindings = settings.Get<QueueBindings>();
+                    foreach (var n in namespaces)
                     {
-                        Path = p,
-                        Type = EntityType.Queue,
-                        Namespace = n
-                    }));
+                        inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
+                        {
+                            Path = p,
+                            Type = EntityType.Queue,
+                            Namespace = n
+                        }));
 
-                    inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
-                    {
-                        Path = p,
-                        Type = EntityType.Queue,
-                        Namespace = n
-                    }));
+                        inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
+                        {
+                            Path = p,
+                            Type = EntityType.Queue,
+                            Namespace = n
+                        }));
+                    }
                 }
             }
 

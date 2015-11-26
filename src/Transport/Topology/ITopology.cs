@@ -13,5 +13,7 @@ namespace NServiceBus.AzureServiceBus
         Func<IDispatchMessages> GetDispatcherFactory();
         IManageSubscriptions GetSubscriptionManager();
         OutboundRoutingPolicy GetOutboundRoutingPolicy();
+        bool HasNativePubSubSupport { get; }
+        bool HasSupportForCentralizedPubSub { get;}
     }
 }

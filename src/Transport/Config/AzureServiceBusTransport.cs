@@ -83,7 +83,17 @@
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
 
-        internal ITopology Topology { get; set; }
+        private ITopology _topology ;   
+        internal ITopology Topology
+        {
+            get { return _topology; }
+            set
+            {
+                _topology = value;
+                HasNativePubSubSupport = _topology.HasNativePubSubSupport;
+                HasSupportForCentralizedPubSub = _topology.HasSupportForCentralizedPubSub;
+            }
+        }
     }
 
     public class AzureServiceBusTransportConfigurator : Feature

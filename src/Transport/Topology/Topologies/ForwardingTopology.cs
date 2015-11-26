@@ -16,7 +16,10 @@ namespace NServiceBus.AzureServiceBus
         {
             this.container = container;
         }
-        
+
+        public bool HasNativePubSubSupport => true;
+        public bool HasSupportForCentralizedPubSub => true;
+
         public void Initialize(SettingsHolder settings)
         {
             ApplyDefaults(settings);
@@ -55,10 +58,15 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<AzureServiceBusTopicCreator>();
             container.RegisterSingleton<AzureServiceBusSubscriptionCreator>();
             container.Register<DefaultBrokeredMessagesToIncomingMessagesConverter>();
+            container.Register<DefaultOutgoingMessagesToBrokeredMessagesConverter>();
             container.Register<TopologyCreator>();
+            container.RegisterSingleton<DefaultOutgoingMessageRouter>();
             container.RegisterSingleton<TopologyOperator>();
             container.Register<MessageReceiverNotifier>();
-            container.Register<TransportResourcesCreator>();
+            container.RegisterSingleton<SubscriptionManager>();
+            container.RegisterSingleton<TransportResourcesCreator>();
+            container.RegisterSingleton<Dispatcher>();
+
 
             // configures container
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);

@@ -67,7 +67,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsNull(ex);
 
             // cleanup 
-            await pump.StopAsync();
+            await pump.Stop();
 
             await Cleanup(container, "sales");
         }

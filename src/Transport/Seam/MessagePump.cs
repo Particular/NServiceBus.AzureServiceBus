@@ -33,7 +33,8 @@ namespace NServiceBus.AzureServiceBus
 
                 context.Set(receiveContext);
 
-                return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, context));
+                //todo, figure out what the TransportTransaction parameter is about
+                return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, new NoTransaction(), context));
             });
 
         }
@@ -49,9 +50,11 @@ namespace NServiceBus.AzureServiceBus
             topologyOperator.Start(definition, limitations.MaxConcurrency);
         }
 
-        public Task StopAsync()
+        public Task Stop()
         {
             return topologyOperator.Stop();
         }
     }
+
+    public class NoTransaction : TransportTransaction { }
 }
