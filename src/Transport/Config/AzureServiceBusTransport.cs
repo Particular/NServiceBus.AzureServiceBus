@@ -72,12 +72,12 @@
         internal ITopology Topology { get; set; }
     }
 
-    public class ConfigureTransport : Feature
+    public class AzureServiceBusTransportConfigurator : Feature
     {
         private AzureServiceBusTransport transportDefinition;
         private SettingsHolder settings { get; set; }
 
-        internal ConfigureTransport()
+        internal AzureServiceBusTransportConfigurator()
         {
             EnableByDefault();
             //DependsOn<UnicastBus>();
