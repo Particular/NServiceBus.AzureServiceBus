@@ -74,7 +74,6 @@
 
     public class AzureServiceBusTransportConfigurator : Feature
     {
-        private AzureServiceBusTransport transportDefinition;
         private SettingsHolder settings { get; set; }
 
         internal AzureServiceBusTransportConfigurator()
@@ -85,12 +84,12 @@
             Defaults(settings =>
             {
                 this.settings = settings;
-                transportDefinition = settings.Get<TransportDefinition>() as AzureServiceBusTransport;
+                var transportDefinition = (AzureServiceBusTransport) settings.Get<TransportDefinition>();
                 if (transportDefinition.Topology == null)
                 {
                     transportDefinition.Topology = new StandardTopology();
                 }
-                transportDefinition.Topology.ApplyDefaults(settings);
+                transportDefinition.Topology.Initialize(settings);
             });
         }
 
@@ -102,7 +101,6 @@
             //context.Container //can only register
             //context.Pipeline //can extend
             //context.Settings //cannot change
-            transportDefinition.Topology.InitializeContainer(settings);
         }
 
 

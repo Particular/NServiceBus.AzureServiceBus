@@ -43,9 +43,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
             var topology = new BasicTopology(container);
-
-            topology.ApplyDefaults(settings);
-            topology.InitializeContainer(settings);
+            topology.Initialize(settings);
 
             return container.Resolve<ITopologySectionManager>();
         }

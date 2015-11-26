@@ -17,7 +17,13 @@ namespace NServiceBus.AzureServiceBus
             this.container = container;
         }
 
-        public void ApplyDefaults(SettingsHolder settings)
+        public void Initialize(SettingsHolder settings)
+        {
+            ApplyDefaults(settings);
+            InitializeContainer(settings);
+        }
+
+        private void ApplyDefaults(SettingsHolder settings)
         {
             // apply all configuration defaults
             new DefaultConfigurationValues().Apply(settings);
@@ -31,7 +37,7 @@ namespace NServiceBus.AzureServiceBus
             topologySectionManager = new BasicTopologySectionManager(settings, container);
         }
 
-        public void InitializeContainer(SettingsHolder settings)
+        private void InitializeContainer(SettingsHolder settings)
         {
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);

@@ -46,8 +46,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var topology = new StandardTopology(container);
 
-            topology.ApplyDefaults(settings);
-            topology.InitializeContainer(settings);
+            topology.Initialize(settings);
 
             return container.Resolve<ITopologySectionManager>();
         }

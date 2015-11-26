@@ -47,8 +47,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var topology = new ForwardingTopology(container);
 
-            topology.ApplyDefaults(settings);
-            topology.InitializeContainer(settings);
+            topology.Initialize(settings);
 
             return container.Resolve<ITopologySectionManager>();
         }

@@ -6,8 +6,7 @@ namespace NServiceBus.AzureServiceBus
 
     public interface ITopology {
 
-        void ApplyDefaults(SettingsHolder settings);
-        void InitializeContainer(SettingsHolder settings);
+        void Initialize(SettingsHolder settings);
 
         Func<ICreateQueues> GetQueueCreatorFactory();
         Func<CriticalError, IPushMessages> GetMessagePumpFactory();

@@ -521,9 +521,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
             var topology = new BasicTopology(container);
-
-            topology.ApplyDefaults(settings);
-            topology.InitializeContainer(settings);
+            topology.Initialize(settings);
 
             // create the topologySectionManager
             var topologyCreator = (ICreateTopology) container.Resolve(typeof(TopologyCreator));

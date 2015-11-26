@@ -23,8 +23,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
             var topology = new BasicTopology(container);
-            topology.ApplyDefaults(settings);
-            topology.InitializeContainer(settings);
+            topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
             var definition = sectionManager.DetermineResourcesToCreate();
@@ -47,8 +46,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             extensions.Topology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
             var topology = new BasicTopology(container);
-            topology.ApplyDefaults(settings);
-            topology.InitializeContainer(settings);
+            topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
             var definition = sectionManager.DetermineResourcesToCreate();
@@ -66,8 +64,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             container.Register(typeof(SettingsHolder), () => settings);
 
             var topology = new BasicTopology(container);
-            topology.ApplyDefaults(settings);
-            topology.InitializeContainer(settings);
+            topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
 
@@ -84,8 +81,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             container.Register(typeof(SettingsHolder), () => settings);
 
             var topology = new BasicTopology(container);
-            topology.ApplyDefaults(settings);
-            topology.InitializeContainer(settings);
+            topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
 
