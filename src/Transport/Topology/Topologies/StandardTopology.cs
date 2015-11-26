@@ -64,7 +64,7 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<SubscriptionManager>();
             container.RegisterSingleton<TransportResourcesCreator>();
             container.RegisterSingleton<Dispatcher>();
-            container.RegisterSingleton<MessagePump>();
+            container.Register<MessagePump>();
 
             // configures container
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
