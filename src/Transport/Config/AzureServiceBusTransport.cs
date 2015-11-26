@@ -67,7 +67,7 @@
             // var instanceId = settings.Get<InstanceId>(); // instance id set by the host
             // var discriminator = "-" + instanceId;
             // return Transport.ValidateDiscriminator(discriminator);
-            return "-";
+            return null;
         }
 
         public override string ToTransportAddress(LogicalAddress logicalAddress)

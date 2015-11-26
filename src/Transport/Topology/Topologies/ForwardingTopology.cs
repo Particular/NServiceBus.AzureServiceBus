@@ -66,6 +66,7 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<SubscriptionManager>();
             container.RegisterSingleton<TransportResourcesCreator>();
             container.RegisterSingleton<Dispatcher>();
+            container.RegisterSingleton<MessagePump>();
 
 
             // configures container

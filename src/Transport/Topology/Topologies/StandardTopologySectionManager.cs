@@ -43,26 +43,33 @@ namespace NServiceBus.AzureServiceBus
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), partitioningIntent).ToArray();
 
             var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
-            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
-
-            var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", EntityType.Topic);
-            var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
+            var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
             if (partitioningIntent == PartitioningIntent.Creating)
             {
-                if (settings.HasExplicitValue<QueueBindings>())
-                {
-                    var queueBindings = settings.Get<QueueBindings>();
-                    foreach (var n in namespaces)
-                    {
-                        inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
-                        {
-                            Path = p,
-                            Type = EntityType.Queue,
-                            Namespace = n
-                        }));
+                var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", EntityType.Topic);
+                var topics =
+                    namespaces.Select(n => new EntityInfo {Path = topicPath, Type = EntityType.Topic, Namespace = n})
+                        .ToArray();
+                entities.AddRange(topics);
+            }
 
-                        inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
+            if (settings.HasExplicitValue<QueueBindings>())
+            {
+                var queueBindings = settings.Get<QueueBindings>();
+                foreach (var n in namespaces)
+                {
+                    entities.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
+                    {
+                        Path = p,
+                        Type = EntityType.Queue,
+                        Namespace = n
+                    }));
+
+                    if (partitioningIntent == PartitioningIntent.Creating)
+                    {
+                        // assumed errorq and auditq are in here
+                        entities.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
                         {
                             Path = p,
                             Type = EntityType.Queue,
@@ -72,12 +79,10 @@ namespace NServiceBus.AzureServiceBus
                 }
             }
 
-            var entities = inputQueues.Concat(topics).ToArray();
-
             return new TopologySection()
             {
                 Namespaces = namespaces,
-                Entities = entities
+                Entities = entities.ToArray()
             };
         }
 

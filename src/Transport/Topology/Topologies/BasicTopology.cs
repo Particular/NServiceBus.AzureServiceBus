@@ -62,7 +62,8 @@ namespace NServiceBus.AzureServiceBus
             container.Register<MessageReceiverNotifier>();
             container.RegisterSingleton<TransportResourcesCreator>();
             container.RegisterSingleton<Dispatcher>();
-            
+            container.RegisterSingleton<MessagePump>();
+
 
 
             // strategies
