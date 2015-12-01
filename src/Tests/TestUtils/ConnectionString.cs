@@ -8,7 +8,7 @@
         {
             get
             {
-                var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString", EnvironmentVariableTarget.User);
+                var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString");
                 if (connectionString != null)
                 {
                     return connectionString;
