@@ -1,0 +1,11 @@
+﻿namespace NServiceBus.AzureServiceBus
+{
+    using System.Collections.Generic;
+
+    public class TopologySection
+    {
+        public IEnumerable<NamespaceInfo> Namespaces { get; set; }
+        public IEnumerable<EntityInfo> Entities { get; set; }
+        public IEnumerable<EntityRelationShipInfo> Relationships { get; set; }
+    }
+}

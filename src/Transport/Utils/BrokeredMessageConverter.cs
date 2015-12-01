@@ -1,150 +1,146 @@
-namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
-{
-    using System;
-    using System.Linq;
-    using Microsoft.ServiceBus.Messaging;
-    using Settings;
-    using Unicast;
+// looks like message properties got obsoleted as well, need to revisit
 
-    static class BrokeredMessageConverter
-    {
-        public static TransportMessage ToTransportMessage(this BrokeredMessage message)
-        {
-            TransportMessage t;
-            var rawMessage = BrokeredMessageBodyConversion.ExtractBody(message);
+//namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
+//{
+//    using System;
+//    using System.Linq;
+//    using Microsoft.ServiceBus.Messaging;
+//    using Settings;
+//    using Unicast;
 
-            if (message.Properties.Count > 0)
-            {
-                var headers = message.Properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
-                if (!String.IsNullOrWhiteSpace(message.ReplyTo))
-                {
-                    headers[Headers.ReplyToAddress] = message.ReplyTo;
-                }
+//    static class BrokeredMessageConverter
+//    {
+//        public static TransportMessage ToTransportMessage(this BrokeredMessage message)
+//        {
+//            TransportMessage t;
+//            var rawMessage = message.GetBody<byte[]>() ?? new byte[0];
 
-                t = new TransportMessage(message.MessageId, headers)
-                {
-                    CorrelationId = message.CorrelationId,
-                    TimeToBeReceived = message.TimeToLive,
-                    MessageIntent = (MessageIntentEnum)Enum.Parse(typeof(MessageIntentEnum), message.Properties[Headers.MessageIntent].ToString()),
-                    Body = rawMessage
-                };
-            }
-            else
-            {
-                t = new TransportMessage
-                {
-                    Body = rawMessage
-                };
-            }
+//            if (message.Properties.Count > 0)
+//            {
+//                var headers = message.Properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
+//                if (!String.IsNullOrWhiteSpace(message.ReplyTo))
+//                {
+//                    headers[Headers.ReplyToAddress] = message.ReplyTo;
+//                }
 
-            return t;
-        }
+//                t = new TransportMessage(message.MessageId, headers)
+//                {
+//                    CorrelationId = message.CorrelationId,
+//                    TimeToBeReceived = message.TimeToLive,
+//                    MessageIntent = (MessageIntentEnum)Enum.Parse(typeof(MessageIntentEnum), message.Properties[Headers.MessageIntent].ToString()),
+//                    Body = rawMessage
+//                };
+//            }
+//            else
+//            {
+//                t = new TransportMessage
+//                {
+//                    Body = rawMessage
+//                };
+//            }
 
-        public static BrokeredMessage ToBrokeredMessage(this TransportMessage message, PublishOptions options, ReadOnlySettings settings, Configure config)
-        {
-            var brokeredMessage = BrokeredMessageBodyConversion.InjectBody(message.Body);
+//            return t;
+//        }
 
-            SetHeaders(message, options, settings, config, brokeredMessage);
+//        public static BrokeredMessage ToBrokeredMessage(this TransportMessage message, PublishOptions options, ReadOnlySettings settings, Configure config)
+//        {
+//            var brokeredMessage = message.Body != null ? new BrokeredMessage(message.Body) : new BrokeredMessage();
 
-            if (message.TimeToBeReceived < TimeSpan.MaxValue)
-            {
-                brokeredMessage.TimeToLive = message.TimeToBeReceived;
-            }
+//            SetHeaders(message, options, settings, config, brokeredMessage);
 
-            GuardMessageSize(brokeredMessage);
+//            if (message.TimeToBeReceived < TimeSpan.MaxValue)
+//            {
+//                brokeredMessage.TimeToLive = message.TimeToBeReceived;
+//            }
 
-            return brokeredMessage;
-        }
+//            GuardMessageSize(brokeredMessage);
 
-        public static BrokeredMessage ToBrokeredMessage(this TransportMessage message, SendOptions options, SettingsHolder settings, bool expectDelay, Configure config)
-        {
-            var brokeredMessage = BrokeredMessageBodyConversion.InjectBody(message.Body);
+//            return brokeredMessage;
+//        }
 
-            SetHeaders(message, options, settings, config, brokeredMessage);
+//        public static BrokeredMessage ToBrokeredMessage(this TransportMessage message, SendOptions options, SettingsHolder settings, bool expectDelay, Configure config)
+//        {
+//            var brokeredMessage = message.Body != null ? new BrokeredMessage(message.Body) : new BrokeredMessage();
 
-            var timeToSend = DelayIfNeeded(options, expectDelay);
+//            SetHeaders(message, options, settings, config, brokeredMessage);
+
+//            var timeToSend = DelayIfNeeded(options, expectDelay);
                         
-            if (timeToSend.HasValue)
-                brokeredMessage.ScheduledEnqueueTimeUtc = timeToSend.Value;
+//            if (timeToSend.HasValue)
+//                brokeredMessage.ScheduledEnqueueTimeUtc = timeToSend.Value;
 
-            TimeSpan? timeToLive = null;
-            if (message.TimeToBeReceived < TimeSpan.MaxValue)
-            {
-                timeToLive = message.TimeToBeReceived;
-            }
-            else if (options.TimeToBeReceived.HasValue && options.TimeToBeReceived < TimeSpan.MaxValue)
-            {
-                timeToLive = options.TimeToBeReceived.Value;
-            }
+//            TimeSpan? timeToLive = null;
+//            if (message.TimeToBeReceived < TimeSpan.MaxValue)
+//            {
+//                timeToLive = message.TimeToBeReceived;
+//            }
+//            else if (options.TimeToBeReceived.HasValue && options.TimeToBeReceived < TimeSpan.MaxValue)
+//            {
+//                timeToLive = options.TimeToBeReceived.Value;
+//            }
 
-            if (timeToLive.HasValue)
-            {
-                if (timeToLive.Value <= TimeSpan.Zero) return null;
+//            if (timeToLive.HasValue)
+//            {
+//                if (timeToLive.Value <= TimeSpan.Zero) return null;
 
-                brokeredMessage.TimeToLive = timeToLive.Value;
-            }
-            GuardMessageSize(brokeredMessage);
+//                brokeredMessage.TimeToLive = timeToLive.Value;
+//            }
+//            GuardMessageSize(brokeredMessage);
 
-            return brokeredMessage;
-        }
+//            return brokeredMessage;
+//        }
 
-        static void GuardMessageSize(BrokeredMessage brokeredMessage)
-        {
-            if (brokeredMessage.Size > 256*1024)
-            {
-                throw new MessageTooLargeException(string.Format("The message with id {0} is larger that the maximum message size allowed by Azure ServiceBus, consider using the databus instead", brokeredMessage.MessageId));
-            }
-        }
+//        static void GuardMessageSize(BrokeredMessage brokeredMessage)
+//        {
+//            if (brokeredMessage.Size > 256*1024)
+//            {
+//                throw new MessageTooLargeException(string.Format("The message with id {0} is larger that the maximum message size allowed by Azure ServiceBus, consider using the databus instead", brokeredMessage.MessageId));
+//            }
+//        }
 
-        static void SetHeaders(TransportMessage message, DeliveryOptions options, ReadOnlySettings settings, Configure config, BrokeredMessage brokeredMessage)
-        {
-            foreach (var header in message.Headers)
-            {
-                brokeredMessage.Properties[header.Key] = header.Value;
-            }
+//        static void SetHeaders(TransportMessage message, DeliveryOptions options, ReadOnlySettings settings, Configure config, BrokeredMessage brokeredMessage)
+//        {
+//            foreach (var header in message.Headers)
+//            {
+//                brokeredMessage.Properties[header.Key] = header.Value;
+//            }
 
-            brokeredMessage.Properties[Headers.MessageIntent] = message.MessageIntent.ToString();
-            brokeredMessage.MessageId = message.Id;
-            brokeredMessage.CorrelationId = message.CorrelationId;
+//            brokeredMessage.Properties[Headers.MessageIntent] = message.MessageIntent.ToString();
+//            brokeredMessage.MessageId = message.Id;
+//            brokeredMessage.CorrelationId = message.CorrelationId;
 
-            if (message.ReplyToAddress != null)
-            {
-                brokeredMessage.ReplyTo = new DeterminesBestConnectionStringForAzureServiceBus(config.TransportConnectionString()).Determine(settings, message.ReplyToAddress);
-            }
-            else if (options.ReplyToAddress != null)
-            {
-                brokeredMessage.ReplyTo = new DeterminesBestConnectionStringForAzureServiceBus(config.TransportConnectionString()).Determine(settings, options.ReplyToAddress);
-            }
-        }
+//            if (message.ReplyToAddress != null)
+//            {
+//                brokeredMessage.ReplyTo = new DeterminesBestConnectionStringForAzureServiceBus(config.TransportConnectionString()).Determine(settings, message.ReplyToAddress);
+//            }
+//            else if (options.ReplyToAddress != null)
+//            {
+//                brokeredMessage.ReplyTo = new DeterminesBestConnectionStringForAzureServiceBus(config.TransportConnectionString()).Determine(settings, options.ReplyToAddress);
+//            }
+//        }
 
-        static DateTime? DelayIfNeeded(SendOptions options, bool expectDelay)
-        {
-            DateTime? deliverAt = null;
+//        static DateTime? DelayIfNeeded(SendOptions options, bool expectDelay)
+//        {
+//            DateTime? deliverAt = null;
 
-            if (options.DelayDeliveryWith.HasValue)
-            {
-                deliverAt = DateTime.UtcNow + options.DelayDeliveryWith.Value;
-            }
-            else
-            {
-                if (options.DeliverAt.HasValue)
-                {
-                    deliverAt = options.DeliverAt.Value;
-                }
-                else if (expectDelay)
-                {
-                    throw new ArgumentException("A delivery time needs to be specified for Deferred messages");
-                }
+//            if (options.DelayDeliveryWith.HasValue)
+//            {
+//                deliverAt = DateTime.UtcNow + options.DelayDeliveryWith.Value;
+//            }
+//            else
+//            {
+//                if (options.DeliverAt.HasValue)
+//                {
+//                    deliverAt = options.DeliverAt.Value;
+//                }
+//                else if (expectDelay)
+//                {
+//                    throw new ArgumentException("A delivery time needs to be specified for Deferred messages");
+//                }
 
-            }
+//            }
 
-            return deliverAt;
-        }
-    }
-
-    public static class BrokeredMessageBodyConversion
-    {
-        public static Func<BrokeredMessage, byte[]> ExtractBody = message => message.GetBody<byte[]>() ?? new byte[0];
-        public static Func<byte[], BrokeredMessage> InjectBody = bytes => bytes != null ? new BrokeredMessage(bytes) : new BrokeredMessage();
-    }
-}
+//            return deliverAt;
+//        }
+//    }
+//}

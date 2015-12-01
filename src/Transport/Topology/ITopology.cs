@@ -1,19 +1,19 @@
-﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
+namespace NServiceBus.AzureServiceBus
 {
     using System;
-    using Settings;
+    using NServiceBus.Settings;
+    using NServiceBus.Transports;
 
-    public interface ITopology
-    {
-        void Initialize(ReadOnlySettings setting);
+    public interface ITopology {
 
-        INotifyReceivedBrokeredMessages Subscribe(Type eventType, Address address);
-        void Unsubscribe(INotifyReceivedBrokeredMessages notifier);
+        void Initialize(SettingsHolder settings);
 
-        INotifyReceivedBrokeredMessages GetReceiver(Address address);
-
-        ISendBrokeredMessages GetSender(Address destination);
-        IPublishBrokeredMessages GetPublisher(Address local);
-        void Create(Address address);
+        Func<ICreateQueues> GetQueueCreatorFactory();
+        Func<CriticalError, IPushMessages> GetMessagePumpFactory();
+        Func<IDispatchMessages> GetDispatcherFactory();
+        IManageSubscriptions GetSubscriptionManager();
+        OutboundRoutingPolicy GetOutboundRoutingPolicy();
+        bool HasNativePubSubSupport { get; }
+        bool HasSupportForCentralizedPubSub { get;}
     }
 }
