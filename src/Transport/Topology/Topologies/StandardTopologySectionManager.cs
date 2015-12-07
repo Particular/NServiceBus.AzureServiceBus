@@ -4,11 +4,8 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using Addressing;
     using NServiceBus.Config;
-    using NServiceBus.Hosting.Helpers;
-    using NServiceBus.Routing.MessageDrivenSubscriptions;
     using NServiceBus.Transports;
     using Settings;
 
