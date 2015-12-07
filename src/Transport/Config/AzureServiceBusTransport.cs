@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.DelayedDelivery;
     using NServiceBus.Features;
@@ -12,19 +13,24 @@
 
     public class AzureServiceBusTransport : TransportDefinition
     {
-        protected override void ConfigureForReceiving(TransportReceivingConfigurationContext context)
+        protected override TransportReceivingConfigurationResult ConfigureForReceiving(TransportReceivingConfigurationContext context)
+        {
+            EnsureConnectionStringIsRegisteredAsNamespace(context.ConnectionString, context.Settings);
+            return new TransportReceivingConfigurationResult(
+                Topology.GetMessagePumpFactory(),
+                Topology.GetQueueCreatorFactory(),
+                () => Task.FromResult(StartupCheckResult.Success) //TODO: figure out what this is for
+                );
+        }
+
+        protected override TransportSendingConfigurationResult ConfigureForSending(TransportSendingConfigurationContext context)
         {
             EnsureConnectionStringIsRegisteredAsNamespace(context.ConnectionString, context.Settings);
 
-            context.SetQueueCreatorFactory(Topology.GetQueueCreatorFactory());
-            context.SetMessagePumpFactory(Topology.GetMessagePumpFactory());
-        }
-
-        protected override void ConfigureForSending(TransportSendingConfigurationContext context)
-        {
-            EnsureConnectionStringIsRegisteredAsNamespace(context.ConnectionString, context.GlobalSettings);
-
-            context.SetDispatcherFactory(Topology.GetDispatcherFactory());
+            return new TransportSendingConfigurationResult(
+                Topology.GetDispatcherFactory(),
+                () => Task.FromResult(StartupCheckResult.Success) //TODO: figure out what this is for
+                );
         }
 
         private void EnsureConnectionStringIsRegisteredAsNamespace(string connectionstring, ReadOnlySettings settings)
@@ -59,7 +65,7 @@
             return Topology.GetSubscriptionManager();
         }
 
-        public override string GetDiscriminatorForThisEndpointInstance()
+        public override string GetDiscriminatorForThisEndpointInstance(ReadOnlySettings settings)
         {
             // Decision is based on 3 parties: Core + Transport + Host + User scenario (based on hosting scenario, ex: multiple instances on the same physical machine)
             // TODO: What is "discriminator"? Does that include endpoint instance identifier or not?
@@ -90,8 +96,6 @@
             set
             {
                 _topology = value;
-                HasNativePubSubSupport = _topology.HasNativePubSubSupport;
-                HasSupportForCentralizedPubSub = _topology.HasSupportForCentralizedPubSub;
             }
         }
     }

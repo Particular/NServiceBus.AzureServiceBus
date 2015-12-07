@@ -109,7 +109,7 @@ namespace NServiceBus.AzureServiceBus
 
         public OutboundRoutingPolicy GetOutboundRoutingPolicy()
         {
-            return new OutboundRoutingPolicy(OutboundRoutingType.DirectSend, OutboundRoutingType.IndirectPublish, OutboundRoutingType.DirectSend);
+            return new OutboundRoutingPolicy(OutboundRoutingType.Unicast, OutboundRoutingType.Multicast, OutboundRoutingType.Unicast);
         }
     }
 }
