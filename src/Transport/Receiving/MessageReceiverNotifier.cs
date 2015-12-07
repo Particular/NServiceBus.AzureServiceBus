@@ -127,7 +127,7 @@ namespace NServiceBus.AzureServiceBus
 
             using (var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
-                logger.InfoFormat("Abandoning brokered message");
+                logger.InfoFormat("Abandoning brokered message {0}", message.MessageId);
 
                 await message.SafeAbandonAsync().ConfigureAwait(false);
 
@@ -142,7 +142,7 @@ namespace NServiceBus.AzureServiceBus
 
         Task Complete(BrokeredMessage message)
         {
-            logger.InfoFormat("Completing brokered message");
+            logger.InfoFormat("Completing brokered message {0}", message.MessageId);
 
             return message.SafeCompleteAsync();
         }
