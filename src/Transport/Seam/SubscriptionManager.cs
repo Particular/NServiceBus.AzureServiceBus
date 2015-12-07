@@ -9,18 +9,20 @@ namespace NServiceBus.AzureServiceBus
     {
         readonly ITopologySectionManager topologySectionManager; // responsible for providing the metadata about the subscription (what in case of EH?)
         readonly IOperateTopology topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
+        readonly ICreateTopology topologyCreator;
 
-        public SubscriptionManager(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
+        public SubscriptionManager(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator, ICreateTopology topologyCreator)
         {
             this.topologySectionManager = topologySectionManager;
             this.topologyOperator = topologyOperator;
+            this.topologyCreator = topologyCreator;
         }
 
-        public Task Subscribe(Type eventType, ContextBag context)
+        public async Task Subscribe(Type eventType, ContextBag context)
         {
             var section = topologySectionManager.DetermineResourcesToSubscribeTo(eventType);
+            await topologyCreator.Create(section);
             topologyOperator.Start(section.Entities);
-            return TaskEx.Completed;
         }
 
         public Task Unsubscribe(Type eventType, ContextBag context)

@@ -119,7 +119,7 @@
             var exists = await rememberExistence.GetOrAdd(key, async notFoundKey =>
             {
                 logger.InfoFormat("Checking namespace for existence of subscription '{0}' for the topic '{1}'", subscriptionName, topicPath);
-                return await namespaceClient.SubscriptionExists(topicPath, notFoundKey).ConfigureAwait(false);
+                return await namespaceClient.SubscriptionExists(topicPath, subscriptionName).ConfigureAwait(false);
             }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the subscription '{0}' {1}", subscriptionName, exists ? "exists" : "does not exist");

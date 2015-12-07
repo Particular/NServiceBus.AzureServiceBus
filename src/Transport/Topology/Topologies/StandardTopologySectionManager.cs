@@ -4,7 +4,11 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using Addressing;
+    using NServiceBus.Config;
+    using NServiceBus.Hosting.Helpers;
+    using NServiceBus.Routing.MessageDrivenSubscriptions;
     using NServiceBus.Transports;
     using Settings;
 
@@ -181,9 +185,31 @@ namespace NServiceBus.AzureServiceBus
 
         List<string> DetermineTopicsFor(Type eventType)
         {
-            throw new NotImplementedException(); //StaticMessageRouter is obsolete and no public replacement exists at the moment
+            var result = new List<string>();
+            var unicastBusConfig = settings.GetConfigSection<UnicastBusConfig>();
+            if (unicastBusConfig != null)
+            {
+                var legacyRoutingConfig = unicastBusConfig.MessageEndpointMappings;
+                var conventions = settings.Get<Conventions>();
 
-            //var messageMapper = (IMessageMapper)container.Build(typeof(IMessageMapper));
+                var knownMessageTypes = settings.GetAvailableTypes()
+                    .Where(conventions.IsMessageType)
+                    .ToList();
+
+                foreach (MessageEndpointMapping m in legacyRoutingConfig)
+                {
+                    m.Configure((type, s) =>
+                    {
+                        if(knownMessageTypes.Any(t => t.IsAssignableFrom(eventType)))
+                        {
+                            var path = s + ".events";
+                            if(!result.Contains(path)) result.Add(path);
+                        }
+                    });
+                }
+            }
+            return result;
+            //var messageMapper = (IMessageMapper)container.Build(typeof());
             //var messageRouter = (StaticMessageRouter)container.Build(typeof(StaticMessageRouter));
 
             //var destinations = messageRouter.GetDestinationFor(eventType);

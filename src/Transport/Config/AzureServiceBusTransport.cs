@@ -113,7 +113,7 @@
             {
                 this.settings = settings;
                 settings.SetDefault("Transactions.DoNotWrapHandlersExecutionInATransactionScope", true);
-                settings.SetDefault("Transactions.SuppressDistributedTransactions", false);
+                settings.SetDefault("Transactions.SuppressDistributedTransactions", true);
 
                 var transportDefinition = (AzureServiceBusTransport) settings.Get<TransportDefinition>();
                 if (transportDefinition.Topology == null)

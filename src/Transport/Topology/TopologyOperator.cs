@@ -3,8 +3,10 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.ServiceBus.Messaging;
 
     public class TopologyOperator : IOperateTopology
     {
@@ -18,6 +20,9 @@ namespace NServiceBus.AzureServiceBus
         ConcurrentDictionary<EntityInfo, INotifyIncomingMessages> notifiers = new ConcurrentDictionary<EntityInfo, INotifyIncomingMessages>();
 
         CancellationTokenSource cancellationTokenSource;
+
+        bool running = false;
+        List<Action> pendingStartOperations = new List<Action>();
 
         int maxConcurrency;
 
@@ -33,7 +38,15 @@ namespace NServiceBus.AzureServiceBus
 
             cancellationTokenSource = new CancellationTokenSource();
 
-            StartNotifiersFor(topology.Entities, maxConcurrency);
+            StartNotifiersFor(topology.Entities);
+
+            foreach (var operation in pendingStartOperations)
+            {
+                operation();
+            }
+
+            pendingStartOperations = new List<Action>();
+            running = true;
         }
 
         public Task Stop()
@@ -45,7 +58,14 @@ namespace NServiceBus.AzureServiceBus
 
         public void Start(IEnumerable<EntityInfo> subscriptions)
         {
-            StartNotifiersFor(subscriptions, maxConcurrency);
+            if (!running) // cannot start subscribers before the notifier itself is started
+            {
+                pendingStartOperations.Add(() => StartNotifiersFor(subscriptions));
+            }
+            else
+            {
+                StartNotifiersFor(subscriptions);
+            }
         }
 
         public Task Stop(IEnumerable<EntityInfo> subscriptions)
@@ -63,14 +83,20 @@ namespace NServiceBus.AzureServiceBus
             onError = func;
         }
 
-        void StartNotifiersFor(IEnumerable<EntityInfo> entities, int maximumConcurrency)
+        void StartNotifiersFor(IEnumerable<EntityInfo> entities)
         {
             foreach (var entity in entities)
             {
                 var notifier = notifiers.GetOrAdd(entity, e =>
                 {
                     var n = CreateNotifier(entity.Type);
-                    n.Initialize(e.Path, e.Namespace.ConnectionString, onMessage, onError, maximumConcurrency);
+                    var path = e.Path;
+                    if (entity.Type == EntityType.Subscription)
+                    {
+                        var topic = entity.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
+                        path = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, path);
+                    }
+                    n.Initialize(path, e.Namespace.ConnectionString, onMessage, onError, maxConcurrency);
                     return n;
                 });
 
