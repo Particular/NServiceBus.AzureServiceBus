@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
@@ -58,9 +59,9 @@ namespace NServiceBus.AzureServiceBus
             return _manager.SubscriptionExistsAsync(topicPath, subscriptionName);
         }
 
-        public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription)
+        public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, string sqlFilter)
         {
-            return _manager.CreateSubscriptionAsync(subscriptionDescription);
+            return _manager.CreateSubscriptionAsync(subscriptionDescription, new SqlFilter(sqlFilter));
         }
 
         public Task<SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName)
@@ -71,6 +72,11 @@ namespace NServiceBus.AzureServiceBus
         public Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription)
         {
             return _manager.UpdateSubscriptionAsync(subscriptionDescription);
+        }
+
+        public Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription)
+        {
+            return _manager.GetRulesAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
         }
 
         public Task<TopicDescription> UpdateTopic(TopicDescription topicDescription)

@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
@@ -118,7 +119,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 throw new NotImplementedException();
             }
 
-            public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription)
+            public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, string sqlFilter)
             {
                 throw new NotImplementedException();
             }
@@ -129,6 +130,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             }
 
             public Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription)
             {
                 throw new NotImplementedException();
             }

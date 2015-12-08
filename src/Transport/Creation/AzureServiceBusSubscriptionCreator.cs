@@ -37,7 +37,7 @@
             }
         }
 
-        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, INamespaceManager namespaceManager)
+        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, string sqlFilter, INamespaceManager namespaceManager)
         {
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
 
@@ -47,7 +47,7 @@
                 {
                     if (!await ExistsAsync(topicPath, subscriptionName, namespaceManager).ConfigureAwait(false))
                     {
-                        await namespaceManager.CreateSubscription(subscriptionDescription).ConfigureAwait(false);
+                        await namespaceManager.CreateSubscription(subscriptionDescription, sqlFilter).ConfigureAwait(false);
                         logger.InfoFormat("Subscription '{0}' created", subscriptionDescription.Name);
 
                         var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
@@ -126,6 +126,5 @@
 
             return exists;
         }
-
     }
 }

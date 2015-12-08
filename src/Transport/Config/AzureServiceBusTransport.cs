@@ -46,7 +46,7 @@
         {
             return new List<Type>
             {
-                typeof(DelayedDeliveryConstraint),
+                typeof(DelayedDeliveryConstraint), // remove this when core PR 1381 (https://github.com/Particular/NServiceBus/pull/3181) is accepted
                 typeof(DelayDeliveryWith),
                 typeof(DoNotDeliverBefore),
                 typeof(DiscardIfNotReceivedBefore),

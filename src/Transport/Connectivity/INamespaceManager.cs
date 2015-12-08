@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
@@ -23,8 +24,10 @@ namespace NServiceBus.AzureServiceBus
         Task DeleteTopic(string path);
 
         Task<bool> SubscriptionExists(string topicPath, string subscriptionName);
-        Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription);
+        Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, string sqlFilter);
         Task<SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName);
         Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription);
+
+        Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription);
     }
 }
