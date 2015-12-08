@@ -46,6 +46,7 @@
         {
             return new List<Type>
             {
+                typeof(DelayedDeliveryConstraint),
                 typeof(DelayDeliveryWith),
                 typeof(DoNotDeliverBefore),
                 typeof(DiscardIfNotReceivedBefore),
