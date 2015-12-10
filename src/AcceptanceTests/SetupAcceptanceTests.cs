@@ -25,7 +25,7 @@ public class SetupAcceptanceTests
 
     private string ConnectionString { get; } = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
 
-    [TearDown]
+    [TestFixtureTearDown]
     public void TearDown()
     {
         var stopwatch = new Stopwatch();
