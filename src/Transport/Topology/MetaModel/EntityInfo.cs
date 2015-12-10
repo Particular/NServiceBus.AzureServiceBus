@@ -11,6 +11,7 @@ namespace NServiceBus.AzureServiceBus
         public NamespaceInfo Namespace { get; set; }
 
         public IList<EntityRelationShipInfo> RelationShips { get; private set; }
+        public string Metadata { get; set; }
 
         public EntityInfo()
         {

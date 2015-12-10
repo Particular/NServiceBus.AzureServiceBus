@@ -152,7 +152,8 @@ namespace NServiceBus.AzureServiceBus
                 {
                     Namespace = ns,
                     Type = EntityType.Topic,
-                    Path = path
+                    Path = path,
+                    Metadata = topicPath
                 }));
 
                 subs.AddRange(namespaces.Select(ns =>
@@ -162,6 +163,7 @@ namespace NServiceBus.AzureServiceBus
                         Namespace = ns,
                         Type = EntityType.Subscription,
                         Path = subscriptionPath,
+                        Metadata = eventType.FullName,
                         BrokerSideFilter = new SqlSubscriptionFilter(eventType)
                     };
                     sub.RelationShips.Add(new EntityRelationShipInfo

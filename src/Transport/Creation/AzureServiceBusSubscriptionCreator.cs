@@ -37,7 +37,7 @@
             }
         }
 
-        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, string sqlFilter, INamespaceManager namespaceManager)
+        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, string metadata, string sqlFilter, INamespaceManager namespaceManager)
         {
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
 
@@ -45,17 +45,18 @@
             {
                 if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 {
-                    if (!await ExistsAsync(topicPath, subscriptionName, namespaceManager).ConfigureAwait(false))
+                    if (!await ExistsAsync(topicPath, subscriptionName, metadata, namespaceManager).ConfigureAwait(false))
                     {
+                        subscriptionDescription.UserMetadata = metadata;
                         await namespaceManager.CreateSubscription(subscriptionDescription, sqlFilter).ConfigureAwait(false);
-                        logger.InfoFormat("Subscription '{0}' created", subscriptionDescription.Name);
+                        logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}'");
 
                         var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
                         await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
                     }
                     else
                     {
-                        logger.InfoFormat("Subscription '{0}' already exists, skipping creation", subscriptionDescription.Name);
+                        logger.Info($"Subscription '{subscriptionDescription.Name}' aka '{subscriptionDescription.UserMetadata}' already exists, skipping creation");
                         logger.InfoFormat("Checking if subscription '{0}' needs to be updated", subscriptionDescription.Name);
                         var existingSubscriptionDescription = await namespaceManager.GetSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
                         if (!existingSubscriptionDescription.AllMembersAreEqual(subscriptionDescription))
@@ -67,7 +68,7 @@
                 }
                 else
                 {
-                    logger.InfoFormat("'{0}' is set to false, skipping the creation of subscription '{0}'", WellKnownConfigurationKeys.Core.CreateTopology, subscriptionDescription.Name);
+                    logger.InfoFormat("'{0}' is set to false, skipping the creation of subscription '{0}' aka '{1}'", WellKnownConfigurationKeys.Core.CreateTopology, subscriptionDescription.Name, subscriptionDescription.UserMetadata);
                 }
             }
             catch (MessagingEntityAlreadyExistsException)
@@ -80,12 +81,12 @@
                 logger.InfoFormat("Timeout occurred on subscription creation for topic '{0}' subscription name '{1}' going to validate if it doesn't exist", subscriptionDescription.TopicPath, subscriptionDescription.Name);
 
                 // there is a chance that the timeout occured, but the topic was still created, check again
-                if (!await ExistsAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name, namespaceManager, removeCacheEntry: true).ConfigureAwait(false))
+                if (!await ExistsAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name, metadata, namespaceManager, removeCacheEntry: true).ConfigureAwait(false))
                 {
                     throw;
                 }
 
-                logger.InfoFormat("Looks like topic '{0}' exists anyway", subscriptionDescription.Name);
+                logger.InfoFormat("Looks like subscription '{0}' exists anyway", subscriptionDescription.Name);
             }
             catch (MessagingException ex)
             {
@@ -104,9 +105,9 @@
 
         }
 
-        async Task<bool> ExistsAsync(string topicPath, string subscriptionName, INamespaceManager namespaceClient, bool removeCacheEntry = false)
+        async Task<bool> ExistsAsync(string topicPath, string subscriptionName, string metadata, INamespaceManager namespaceClient, bool removeCacheEntry = false)
         {
-            logger.InfoFormat("Checking existence cache for '{0}'", subscriptionName);
+            logger.Info($"Checking existence cache for subscription '{subscriptionName}' aka '{metadata}'");
 
             var key = topicPath + subscriptionName;
 
