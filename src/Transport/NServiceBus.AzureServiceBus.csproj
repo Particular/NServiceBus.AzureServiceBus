@@ -47,6 +47,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Janitor, Version=1.1.4.0, Culture=neutral, PublicKeyToken=d34c7d3bba3746e6, processorArchitecture=MSIL">
+      <HintPath>..\packages\Janitor.Fody.1.1.4.0\lib\dotnet\Janitor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.ServiceBus, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAzure.ServiceBus.3.0.9\lib\net45-full\Microsoft.ServiceBus.dll</HintPath>
@@ -84,6 +88,7 @@
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitizationV6Strategy.cs" />
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationV6Rules.cs" />
+    <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
     <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
@@ -283,9 +288,11 @@
     <Error Condition="!Exists('..\packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets'))" />
     <Error Condition="!Exists('..\packages\Fody.1.29.3\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.3\build\dotnet\Fody.targets'))" />
     <Error Condition="!Exists('..\packages\Obsolete.Fody.4.0.3\build\dotnet\Obsolete.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Obsolete.Fody.4.0.3\build\dotnet\Obsolete.Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Janitor.Fody.1.1.4.0\build\dotnet\Janitor.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Janitor.Fody.1.1.4.0\build\dotnet\Janitor.Fody.targets'))" />
   </Target>
   <Import Project="..\packages\NuGetPackager.0.5.4\build\NuGetPackager.targets" Condition="Exists('..\packages\NuGetPackager.0.5.4\build\NuGetPackager.targets')" />
   <Import Project="..\packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets')" />
   <Import Project="..\packages\Fody.1.29.3\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.3\build\dotnet\Fody.targets')" />
   <Import Project="..\packages\Obsolete.Fody.4.0.3\build\dotnet\Obsolete.Fody.targets" Condition="Exists('..\packages\Obsolete.Fody.4.0.3\build\dotnet\Obsolete.Fody.targets')" />
+  <Import Project="..\packages\Janitor.Fody.1.1.4.0\build\dotnet\Janitor.Fody.targets" Condition="Exists('..\packages\Janitor.Fody.1.1.4.0\build\dotnet\Janitor.Fody.targets')" />
 </Project>

@@ -90,8 +90,11 @@ namespace NServiceBus.AzureServiceBus
 
         public Func<CriticalError, IPushMessages> GetMessagePumpFactory()
         {
-            // todo, get criticial error integrated
-            return error => container.Resolve<IPushMessages>();
+            return error =>
+            {
+                container.Register<CriticalError>(() => error);
+                return container.Resolve<IPushMessages>();
+            };
         }
 
         public Func<IDispatchMessages> GetDispatcherFactory()
