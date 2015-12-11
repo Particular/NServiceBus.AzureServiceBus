@@ -24,7 +24,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
-            var pump = new MessagePump(topology, topologyOperator);
+            var pump = new MessagePump(topology, topologyOperator, new CriticalError((ei, error, exception) => Task.FromResult(0)));
 
             var completed = new AsyncAutoResetEvent(false);
             //var error = new AsyncAutoResetEvent(false);
