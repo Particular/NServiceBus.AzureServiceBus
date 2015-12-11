@@ -50,7 +50,8 @@ namespace NServiceBus.AzureServiceBus
             circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker("MessagePump", TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
         }
 
-        public void OnError(Func<Exception, Task> func)
+        /// <summary>For internal testing purposes.</summary>
+        internal void OnError(Func<Exception, Task> func)
         {
             topologyOperator.OnError(exception =>
             {
