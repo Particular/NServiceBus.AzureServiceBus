@@ -32,7 +32,8 @@
             });
             criticalError.GetType().GetProperty("Endpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(criticalError, new FakeEndpoint(), null);
 
-            var pump = new MessagePump(new FakeTopology(), fakeTopologyOperator, criticalError);
+            var pump = new MessagePump(new FakeTopology(), fakeTopologyOperator);
+            pump.OnCriticalError(criticalError);
             pump.OnError(exception =>
             {
                 // circuit breaker is armed now

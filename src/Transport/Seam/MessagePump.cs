@@ -9,15 +9,13 @@ namespace NServiceBus.AzureServiceBus
     {
         ITopologySectionManager topologySectionManager;
         IOperateTopology topologyOperator;
-        private readonly CriticalError criticalError;
         Func<PushContext, Task> messagePump;
         private RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
 
-        public MessagePump(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator, CriticalError criticalError)
+        public MessagePump(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
         {
             this.topologySectionManager = topologySectionManager;
             this.topologyOperator = topologyOperator;
-            this.criticalError = criticalError;
         }
 
         public void Init(Func<PushContext, Task> pump, PushSettings settings)
@@ -30,11 +28,11 @@ namespace NServiceBus.AzureServiceBus
             //settings.PurgeOnStartup
             //settings.RequiredConsistency
 
-            circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker("MessagePump", TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
+            
 
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
                 {
-                    circuitBreaker.Success();
+                    circuitBreaker?.Success();
 
                     var context = new ContextBag();
 
@@ -46,11 +44,16 @@ namespace NServiceBus.AzureServiceBus
 
         }
 
+        public void OnCriticalError(CriticalError criticalError)
+        {
+            circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker("MessagePump", TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
+        }
+
         public void OnError(Func<Exception, Task> func)
         {
             topologyOperator.OnError(exception =>
             {
-                circuitBreaker.Failure(exception);
+                circuitBreaker?.Failure(exception);
                 return func(exception);
             });
         }

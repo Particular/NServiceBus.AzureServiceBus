@@ -95,8 +95,9 @@ namespace NServiceBus.AzureServiceBus
         {
             return error =>
             {
-                container.Register<CriticalError>(() => error);
-                return container.Resolve<IPushMessages>();
+                var pump = container.Resolve<MessagePump>();
+                pump.OnCriticalError(error);
+                return pump;
             };
         }
 
