@@ -46,7 +46,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setup the test
             var received = false;
 
-            pump.Init(async context =>
+            await pump.Init(async context =>
             {
                 received = true;
 
@@ -128,7 +128,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 return TaskEx.Completed;
             });
 
-            pump.Init(async context =>
+            await pump.Init(async context =>
             {
                 received = true;
 
@@ -212,7 +212,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setup the test
             var received = false;
 
-            pump.Init(async context =>
+            await pump.Init(async context =>
             {
                 received = true;
 
@@ -297,7 +297,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 return TaskEx.Completed;
             });
 
-            pump.Init(async context =>
+            await pump.Init(async context =>
             {
                 received = true;
 
@@ -399,7 +399,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 return TaskEx.Completed;
             });
 
-            pump.Init(async context =>
+            await pump.Init(async context =>
             {
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
@@ -459,7 +459,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         {
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            settings.SetDefault<EndpointName>(new EndpointName(enpointname));
+            settings.SetDefault<Endpoint>(new Endpoint(enpointname));
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
             var topology = new BasicTopology(container);

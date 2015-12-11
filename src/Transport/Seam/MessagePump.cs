@@ -18,7 +18,7 @@ namespace NServiceBus.AzureServiceBus
             this.topologyOperator = topologyOperator;
         }
 
-        public void Init(Func<PushContext, Task> pump, PushSettings settings)
+        public Task Init(Func<PushContext, Task> pump, PushSettings settings)
         {
             messagePump = pump;
 
@@ -42,6 +42,7 @@ namespace NServiceBus.AzureServiceBus
                     return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, new NoTransaction(), context));
                 });
 
+            return TaskEx.Completed;
         }
 
         public void OnCriticalError(CriticalError criticalError)

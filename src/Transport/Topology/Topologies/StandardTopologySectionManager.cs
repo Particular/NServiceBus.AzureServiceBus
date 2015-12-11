@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBus
         {
             // computes the topologySectionManager
 
-            var endpointName = settings.Get<EndpointName>();
+            var endpointName = settings.EndpointName();
 
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
@@ -89,7 +89,7 @@ namespace NServiceBus.AzureServiceBus
 
         public TopologySection DeterminePublishDestination(Type eventType)
         {
-            var endpointName = settings.Get<EndpointName>();
+            var endpointName = settings.EndpointName();
 
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
@@ -136,7 +136,7 @@ namespace NServiceBus.AzureServiceBus
         TopologySection BuildSubscriptionHierarchy(Type eventType)
         {
             var partitioningStrategy = (INamespacePartitioningStrategy) container.Resolve(typeof(INamespacePartitioningStrategy));
-            var endpointName = settings.Get<EndpointName>();
+            var endpointName = settings.EndpointName();
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
             var sanitizationStrategy = (ISanitizationStrategy) container.Resolve(typeof(ISanitizationStrategy));
 

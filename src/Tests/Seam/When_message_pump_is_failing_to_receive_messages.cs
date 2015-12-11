@@ -41,7 +41,7 @@
                 return TaskEx.Completed;
             });
 
-            pump.Init(context => Task.FromResult(0), new PushSettings("sales", "error", false, TransactionSupport.MultiQueue));
+            await pump.Init(context => Task.FromResult(0), new PushSettings("sales", "error", false, TransactionSupport.MultiQueue));
             pump.Start(new PushRuntimeSettings(1));
 
             await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new MemoryStream()), new BrokeredMessageReceiveContext());

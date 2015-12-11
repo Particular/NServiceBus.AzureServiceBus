@@ -31,7 +31,7 @@ namespace NServiceBus.AzureServiceBus
         {
             // computes the topologySectionManager
 
-            var endpointName = settings.Get<EndpointName>();
+            var endpointName = settings.EndpointName();
 
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));

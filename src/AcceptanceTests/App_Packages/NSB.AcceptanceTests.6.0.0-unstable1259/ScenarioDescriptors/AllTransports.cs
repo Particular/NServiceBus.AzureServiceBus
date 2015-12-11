@@ -112,7 +112,6 @@
                 if (type != null)
                 {
                     var transport = Activator.CreateInstance(type, true) as TransportDefinition;
-                    // TODO: discuss with core how to achieve: ConfigureTopology(transport);
                     if (condition(transport))
                     {
                         remove(rundescriptor);

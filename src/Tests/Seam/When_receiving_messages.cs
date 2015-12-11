@@ -32,7 +32,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var received = false;
             Exception ex = null;
 
-            pump.Init(context =>
+            await pump.Init(context =>
             {
                 received = true;
 
@@ -84,7 +84,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            settings.SetDefault<EndpointName>(new EndpointName(enpointname));
+            settings.SetDefault<Endpoint>(new Endpoint(enpointname));
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
             var topology = new BasicTopology(container);

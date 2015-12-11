@@ -17,7 +17,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            settings.SetDefault<EndpointName>(new EndpointName("sales"));
+            settings.SetDefault<Endpoint>(new Endpoint("sales"));
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            settings.SetDefault<EndpointName>(new EndpointName("sales"));
+            settings.SetDefault<Endpoint>(new Endpoint("sales"));
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
@@ -64,7 +64,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            settings.SetDefault<EndpointName>(new EndpointName("sales"));
+            settings.SetDefault<Endpoint>(new Endpoint("sales"));
             const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
@@ -91,7 +91,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            settings.SetDefault<EndpointName>(new EndpointName("sales"));
+            settings.SetDefault<Endpoint>(new Endpoint("sales"));
             const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
