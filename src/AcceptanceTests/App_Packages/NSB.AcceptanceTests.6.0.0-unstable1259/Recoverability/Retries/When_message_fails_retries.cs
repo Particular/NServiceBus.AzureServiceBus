@@ -17,7 +17,14 @@
             var exception = Assert.Throws<AggregateException>(async () => await
                 Scenario.Define<Context>()
                     .WithEndpoint<RetryEndpoint>(b => b
-                        .When((bus, c) => bus.SendLocal(new MessageWhichFailsRetries())))
+                        .When((bus, c) =>
+                        {
+                            c.ContextId = Guid.NewGuid().ToString();
+                            return bus.SendLocal(new MessageWhichFailsRetries()
+                            {
+                                ContextId = c.ContextId
+                            });
+                        }))
                     .Done(c => c.ForwardedToErrorQueue)
                     .Run())
                 .ExpectFailedMessages();
@@ -75,14 +82,21 @@
 
                 public Task Handle(MessageWhichFailsRetries message, IMessageHandlerContext context)
                 {
-                    TestContext.PhysicalMessageId = context.MessageId;
-                    throw new SimulatedException();
+                    if (message.ContextId == TestContext.ContextId)
+                    {
+                        TestContext.PhysicalMessageId = context.MessageId;
+                        throw new SimulatedException();
+                    }
+
+                    return Task.FromResult(true);
                 }
             }
         }
 
         public class Context : ScenarioContext
         {
+            public string ContextId { get; set; }
+
             public bool ForwardedToErrorQueue { get; set; }
 
             public string PhysicalMessageId { get; set; }
@@ -90,6 +104,7 @@
 
         public class MessageWhichFailsRetries : IMessage
         {
+            public string ContextId { get; set; }
         }
     }
 }
