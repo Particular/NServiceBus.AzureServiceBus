@@ -271,6 +271,8 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1259\UnitOfWork\When_a_subscription_message_arrives.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1259\Versioning\When_multiple_versions_of_a_message_is_published.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1259\Volatile\When_sending_to_non_durable_endpoint.cs" />
+    <Compile Include="ConfigureAzureServiceBusTransport.cs" />
+    <Compile Include="Infrastructure\TestIndependenceBehavior.cs" />
     <Compile Include="OldTests\When_sending_a_message_with_no_correlation_id.cs" />
     <Compile Include="OldTests\When_overriding_endpoint_name.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_without_a_transaction_scope.cs" />

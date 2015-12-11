@@ -43,7 +43,8 @@
                 await dc.Configure(config);
                 var cleanupMethod = configurer.GetType().GetMethod("Cleanup", BindingFlags.Public | BindingFlags.Instance);
                 config.GetSettings().Set("CleanupTransport", cleanupMethod != null ? configurer : new Cleaner());
-                return;
+                // TODO: Remove when Core PR https://github.com/Particular/NServiceBus/pull/3203 is merged
+                //return;
             }
 
             config.UseTransport(transportType).ConnectionString(settings["Transport.ConnectionString"]);
