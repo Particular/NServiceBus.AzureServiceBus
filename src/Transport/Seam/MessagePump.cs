@@ -1,8 +1,6 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
-    using System.Collections.Concurrent;
-    using System.Linq;
     using System.Threading.Tasks;
     using Extensibility;
     using NServiceBus.Logging;
@@ -72,7 +70,11 @@ namespace NServiceBus.AzureServiceBus
 
         public async Task Stop()
         {
+            logger.Info("Stopping messagepump");
+
             await topologyOperator.Stop();
+
+            logger.Info("Messagepump stopped");
         }
 
         public void Dispose()

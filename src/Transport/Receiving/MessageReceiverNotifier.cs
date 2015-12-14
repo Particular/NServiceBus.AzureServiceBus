@@ -164,6 +164,8 @@ namespace NServiceBus.AzureServiceBus
         {
             stopping = true;
 
+            logger.Info("Stopping notifier for " + path);
+
             var closeReceiverTask = internalReceiver.CloseAsync();
 
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
@@ -179,6 +181,8 @@ namespace NServiceBus.AzureServiceBus
             }
 
             pipelineInvocationTasks.Clear();
+
+            logger.Info("Notifier for " + path + " stopped");
 
             IsRunning = false;
         }

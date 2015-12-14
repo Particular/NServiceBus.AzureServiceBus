@@ -7,6 +7,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.Logging;
 
     public class TopologyOperator : IOperateTopology
     {
@@ -23,6 +24,7 @@ namespace NServiceBus.AzureServiceBus
 
         bool running = false;
         List<Action> pendingStartOperations = new List<Action>();
+        ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
 
         int maxConcurrency;
 
@@ -49,11 +51,14 @@ namespace NServiceBus.AzureServiceBus
             running = true;
         }
 
-        public Task Stop()
+        public async Task Stop()
         {
+            logger.Info("Stopping messagepump");
+
             cancellationTokenSource.Cancel();
 
-            return StopNotifiersForAsync(topology.Entities);
+            logger.Info("Stopping notifiers");
+            await StopNotifiersForAsync(topology.Entities);
         }
 
         public void Start(IEnumerable<EntityInfo> subscriptions)
