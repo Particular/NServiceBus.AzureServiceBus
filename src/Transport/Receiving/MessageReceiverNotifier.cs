@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace NServiceBus.AzureServiceBus
         OnMessageOptions options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
+        private ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
         string path;
         string connstring;
         bool stopping = false;
@@ -72,6 +74,7 @@ namespace NServiceBus.AzureServiceBus
         public void Start()
         {
             stopping = false;
+            pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
 
             internalReceiver = clientEntities.Get(path, connstring);
 
@@ -80,7 +83,17 @@ namespace NServiceBus.AzureServiceBus
                 throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {path}, this is probably due to a misconfiguration of the topology");
             }
 
-            internalReceiver.OnMessage(message => ProcessMessageAsync(message), options);
+            internalReceiver.OnMessage(message =>
+            {
+                var processTask = ProcessMessageAsync(message);
+                pipelineInvocationTasks.TryAdd(processTask, processTask);
+                processTask.ContinueWith(t =>
+                {
+                    Task toBeRemoved;
+                    pipelineInvocationTasks.TryRemove(t, out toBeRemoved);
+                }, TaskContinuationOptions.ExecuteSynchronously);
+                return processTask;
+            }, options);
 
             IsRunning = true;
         }
@@ -151,7 +164,21 @@ namespace NServiceBus.AzureServiceBus
         {
             stopping = true;
 
-            await internalReceiver.CloseAsync().ConfigureAwait(false);
+            var closeReceiverTask = internalReceiver.CloseAsync();
+
+            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
+            var allTasks = pipelineInvocationTasks.Values.Concat(new[]
+            {
+                closeReceiverTask
+            });
+            var finishedTask = await Task.WhenAny(Task.WhenAll(allTasks), timeoutTask).ConfigureAwait(false);
+
+            if (finishedTask.Equals(timeoutTask))
+            {
+                logger.Error("The receiver failed to stop with in the time allowed (30s)");
+            }
+
+            pipelineInvocationTasks.Clear();
 
             IsRunning = false;
         }

@@ -1,8 +1,11 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Concurrent;
+    using System.Linq;
     using System.Threading.Tasks;
     using Extensibility;
+    using NServiceBus.Logging;
     using Transports;
 
     class MessagePump : IPushMessages, IDisposable
@@ -11,6 +14,7 @@ namespace NServiceBus.AzureServiceBus
         IOperateTopology topologyOperator;
         Func<PushContext, Task> messagePump;
         private RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
+        ILog logger = LogManager.GetLogger(typeof(MessagePump));
 
         public MessagePump(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
         {
@@ -66,9 +70,9 @@ namespace NServiceBus.AzureServiceBus
             topologyOperator.Start(definition, limitations.MaxConcurrency);
         }
 
-        public Task Stop()
+        public async Task Stop()
         {
-            return topologyOperator.Stop();
+            await topologyOperator.Stop();
         }
 
         public void Dispose()
