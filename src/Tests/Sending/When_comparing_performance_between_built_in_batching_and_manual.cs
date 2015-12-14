@@ -7,7 +7,6 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Azure.WindowsAzureServiceBus.Tests;
-    using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using Settings;
     using NUnit.Framework;
 
@@ -119,7 +118,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     counter++;
                 }
                 var sender = entityLifecycleManager.Get("myqueue", null, AzureServiceBusConnectionString.Value);
-                tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatch(batch), s => s.SendBatch(batch.CloneWithMessageId()), TimeSpan.FromSeconds(10), 5));
+                tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatch(batch), s => s.SendBatch(batch.Select(x => x.Clone())), TimeSpan.FromSeconds(10), 5));
             }
             await Task.WhenAll(tasks);
 

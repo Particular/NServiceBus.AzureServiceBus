@@ -74,7 +74,7 @@ namespace NServiceBus.AzureServiceBus
                     if (chunk.Any())
                     {
                         var currentChunk = chunk;
-                        await messageSender.RetryOnThrottleAsync(s => s.SendBatch(currentChunk), s => s.SendBatch(currentChunk.CloneWithMessageId()), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                        await messageSender.RetryOnThrottleAsync(s => s.SendBatch(currentChunk), s => s.SendBatch(currentChunk.Select(x => x.Clone())), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
                     }
 
                     chunk = new List<BrokeredMessage> { message };
@@ -89,7 +89,7 @@ namespace NServiceBus.AzureServiceBus
 
             if (chunk.Any())
             {
-                await messageSender.RetryOnThrottleAsync(s => s.SendBatch(chunk), s => s.SendBatch(chunk.CloneWithMessageId()), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                await messageSender.RetryOnThrottleAsync(s => s.SendBatch(chunk), s => s.SendBatch(chunk.Select(x => x.Clone())), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
             }
         }
 

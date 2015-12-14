@@ -2,8 +2,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 {
     using Logging;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
@@ -80,19 +78,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 Log.Warn($"A timeout exception occured while trying to abandon a message, the exception was {ex.Message}", ex);
             }
             return false;
-        }
-
-        public static BrokeredMessage CloneWithMessageId(this BrokeredMessage toSend)
-        {
-            var clone = toSend.Clone();
-            clone.MessageId = toSend.MessageId;
-            toSend = clone;
-            return toSend;
-        }
-
-        public static IEnumerable<BrokeredMessage> CloneWithMessageId(this IEnumerable<BrokeredMessage> toSend)
-        {
-            return toSend.Select(message => message.CloneWithMessageId());
         }
 
         static ILog Log = LogManager.GetLogger(typeof(BrokeredMessageExtensions));
