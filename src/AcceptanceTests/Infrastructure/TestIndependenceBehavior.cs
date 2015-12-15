@@ -2,51 +2,45 @@
 {
     using System;
     using System.Threading.Tasks;
+    using NServiceBus.AcceptanceTesting;
     using NServiceBus.Pipeline;
     using NServiceBus.MessageMutator;
 
-    public class TestIndependenceData
-    {
-        public string Header { get; } = "AcceptanceTesting.TestRunId";
-        public string TestRunId { get; } = Guid.NewGuid().ToString();
-    }
-
     class TestIndependenceMutator : IMutateOutgoingTransportMessages
     {
-        TestIndependenceData data;
+        string testRunId;
 
-        public TestIndependenceMutator(TestIndependenceData data)
+        public TestIndependenceMutator(ScenarioContext scenarioContext)
         {
-            this.data = data;
+            this.testRunId = scenarioContext.TestRunId.ToString();
         }
 
         public Task MutateOutgoing(MutateOutgoingTransportMessageContext context)
         {
-            context.OutgoingHeaders[data.Header] = data.TestRunId;
+            context.OutgoingHeaders["$AcceptanceTesting.TestRunId"] = testRunId;
             return Task.FromResult(0);
         }
     }
 
-    class TestIndependenceSkipBehavior : Behavior<IncomingPhysicalMessageContext>
+    class TestIndependenceSkipBehavior : Behavior<IIncomingPhysicalMessageContext>
     {
-        TestIndependenceData data;
+        string testRunId;
 
-        public TestIndependenceSkipBehavior(TestIndependenceData data)
+        public TestIndependenceSkipBehavior(ScenarioContext scenarioContext)
         {
-            this.data = data;
+            this.testRunId = scenarioContext.TestRunId.ToString();
         }
 
-        public override Task Invoke(IncomingPhysicalMessageContext context, Func<Task> next)
+        public override Task Invoke(IIncomingPhysicalMessageContext context, Func<Task> next)
         {
             string runId;
-            if (!context.MessageHeaders.TryGetValue(data.Header, out runId) || runId != data.TestRunId)
+            if (!context.MessageHeaders.TryGetValue("$AcceptanceTesting.TestRunId", out runId) || runId != testRunId)
             {
+                Console.WriteLine($"Skipping message {context.MessageId} from previous test run");
                 return Task.FromResult(0);
             }
 
             return next();
         }
     }
-
-
 }

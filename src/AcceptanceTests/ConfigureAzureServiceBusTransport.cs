@@ -1,22 +1,23 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using NServiceBus;
+using NServiceBus.AcceptanceTesting.Support;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
 
-public class ConfigureAzureServiceBusTransport
+public class ConfigureAzureServiceBusTransport : IConfigureTestExecution
 {
-    public Task Configure(BusConfiguration config)
+    public Task Configure(BusConfiguration config, IDictionary<string, string> settings)
     {
-        // TODO: If https://github.com/Particular/NServiceBus/pull/3203 is not merged, we need a settings in order to get the connection string
-        //config.UseTransport<AzureServiceBusTransport>()
-        //    .ConnectionString(settings["Transport.ConnectionString"]);
+        config.UseTransport<AzureServiceBusTransport>()
+            .ConnectionString(settings["Transport.ConnectionString"]);
 
         config.RegisterComponents(c =>
         {
-            c.ConfigureComponent<TestIndependenceData>(DependencyLifecycle.SingleInstance);
             c.ConfigureComponent<TestIndependenceMutator>(DependencyLifecycle.SingleInstance);
         });
 
-        config.Pipeline.Register("TestIndependenceBehavior", typeof(TestIndependenceSkipBehavior), "Skips messages not created during the current test.");
+        config.Pipeline.Register("TestIndependenceBehavior", typeof(TestIndependenceSkipBehavior), 
+            "Skips messages not created during the current test.");
 
         return Task.FromResult(0);
     }
