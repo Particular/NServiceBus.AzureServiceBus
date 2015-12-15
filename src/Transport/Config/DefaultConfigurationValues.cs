@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.Features;
     using NServiceBus.Settings;
 
     public class DefaultConfigurationValues
@@ -61,7 +62,10 @@
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.DefaultMessageTimeToLive, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration, false);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow, TimeSpan.FromMilliseconds(600000));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount, 6);
+
+            var maxDeliveryCount = settings.IsFeatureEnabled(typeof(FirstLevelRetries)) ? 6 : 1;
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount, maxDeliveryCount);
+            
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresSession, false);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning, false);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering, false);
