@@ -1,3 +1,4 @@
+using NServiceBus.AzureServiceBus.AcceptanceTests;
 using NUnit.Framework;
 
 /// <summary>
@@ -14,6 +15,10 @@ public class SetupAcceptanceTests
         // case 2:
         // setting topology for all ATTs
         // setting.Set<TransportDefinition>(topology_to_use)
+
+        //fix time
+        var timeSync = new TimeSynchronization();
+        timeSync.Sync();
     }
 }
 

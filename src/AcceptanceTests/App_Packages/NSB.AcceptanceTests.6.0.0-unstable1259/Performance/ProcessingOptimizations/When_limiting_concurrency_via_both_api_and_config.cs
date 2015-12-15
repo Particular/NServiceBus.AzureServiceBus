@@ -7,6 +7,7 @@ namespace NServiceBus.AcceptanceTests.Config
     using NServiceBus.AcceptanceTests.FakeTransport;
     using NServiceBus.Config;
     using NUnit.Framework;
+    using ScenarioDescriptors;
 
     public class When_limiting_concurrency_via_both_api_and_config : NServiceBusAcceptanceTest
     {
@@ -16,9 +17,9 @@ namespace NServiceBus.AcceptanceTests.Config
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<ThrottledEndpoint>(b => b.CustomConfig(c => c.LimitMessageProcessingConcurrencyTo(10)))
                 .Done(c => c.EndpointsStarted)
+                .Repeat(r => r.For(Transports.AllAvailable.SingleOrDefault(t => t.Key == "FakeTransport")))
+                .Should(c => Assert.True(c.Exceptions.First().Message.Contains("specified both via API and configuration")))
                 .Run();
-
-            Assert.True(context.Exceptions.First().Message.Contains("specified both via API and configuration"));
         }
 
         public class Context : ScenarioContext
