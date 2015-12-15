@@ -20,9 +20,10 @@ namespace NServiceBus.AzureServiceBus
             this.topologyOperator = topologyOperator;
         }
 
-        public Task Init(Func<PushContext, Task> pump, PushSettings settings)
+        public Task Init(Func<PushContext, Task> pump, CriticalError criticalError, PushSettings settings)
         {
             messagePump = pump;
+            circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker("MessagePump", TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
 
             //TODO: integrate these
             //settings.ErrorQueue
@@ -30,7 +31,7 @@ namespace NServiceBus.AzureServiceBus
             //settings.PurgeOnStartup
             //settings.RequiredConsistency
 
-            
+
 
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
                 {
@@ -45,11 +46,6 @@ namespace NServiceBus.AzureServiceBus
                 });
 
             return TaskEx.Completed;
-        }
-
-        public void OnCriticalError(CriticalError criticalError)
-        {
-            circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker("MessagePump", TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
         }
 
         /// <summary>For internal testing purposes.</summary>

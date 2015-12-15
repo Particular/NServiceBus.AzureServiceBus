@@ -9,7 +9,8 @@ namespace NServiceBus.AzureServiceBus
         void Initialize(SettingsHolder settings);
 
         Func<ICreateQueues> GetQueueCreatorFactory();
-        Func<CriticalError, IPushMessages> GetMessagePumpFactory();
+        // TODO: CriticalError no longer passed in to MessagePumpFactory. Ensure that Core is doing pushMessages.OnCriticalError(error);
+        Func<IPushMessages> GetMessagePumpFactory();
         Func<IDispatchMessages> GetDispatcherFactory();
         IManageSubscriptions GetSubscriptionManager();
         OutboundRoutingPolicy GetOutboundRoutingPolicy();
