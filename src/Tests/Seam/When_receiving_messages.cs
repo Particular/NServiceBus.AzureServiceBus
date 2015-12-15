@@ -32,6 +32,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var received = false;
             Exception ex = null;
 
+            // Dummy CriticalError
+            var criticalError = new CriticalError((endpoint, error, exception) => Task.FromResult(0));
+
             await pump.Init(context =>
             {
                 received = true;
@@ -39,7 +42,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 completed.Set();
 
                 return Task.FromResult(true);
-            }, new PushSettings("sales", "error", false, TransactionSupport.SingleQueue));
+
+                // TODO: TransportTransactionMode will need to change with topology
+            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
 
             // how to propagate error's to the core, or should they be handled by us?
