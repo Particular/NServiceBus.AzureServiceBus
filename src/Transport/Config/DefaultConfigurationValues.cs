@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Features;
     using NServiceBus.Settings;
 
     public class DefaultConfigurationValues
