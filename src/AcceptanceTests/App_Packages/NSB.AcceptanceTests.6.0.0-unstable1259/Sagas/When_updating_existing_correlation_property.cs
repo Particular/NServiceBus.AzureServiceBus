@@ -13,11 +13,14 @@
         [Test]
         public void Should_blow_up()
         {
+            // TODO: revert changes when idempotent-test-execution branch is merged
+
             var exception = Assert.Throws<AggregateException>(async () =>
-                await Scenario.Define<Context>()
-                    .WithEndpoint<ChangePropertyEndpoint>(b => b.When(bus => bus.SendLocal(new StartSagaMessage
+                await Scenario.Define<Context>(context => context.Id = Guid.NewGuid())
+                    .WithEndpoint<ChangePropertyEndpoint>(b => b.When((bus, ctx) => bus.SendLocal(new StartSagaMessage
                     {
-                        SomeId = Guid.NewGuid()
+                        SomeId = Guid.NewGuid(),
+                        ContextId = ctx.Id
                     })))
                     .Done(c => c.Exceptions.Any())
                     .Run())
@@ -32,6 +35,7 @@
 
         public class Context : ScenarioContext
         {
+            public Guid Id { get; set; }
         }
 
         public class ChangePropertyEndpoint : EndpointConfigurationBuilder
@@ -43,8 +47,15 @@
 
             public class ChangeCorrPropertySaga : Saga<ChangeCorrPropertySagaData>, IAmStartedByMessages<StartSagaMessage>
             {
+                public Context TestContext { get; set; }
+
                 public Task Handle(StartSagaMessage message, IMessageHandlerContext context)
                 {
+                    if (TestContext.Id != message.ContextId)
+                    {
+                        return Task.FromResult(0);
+                    }
+
                     if (message.SecondMessage)
                     {
                         Data.SomeId = Guid.NewGuid(); //this is not allowed
@@ -54,7 +65,8 @@
                     return context.SendLocal(new StartSagaMessage
                     {
                         SecondMessage = true,
-                        SomeId = Data.SomeId
+                        SomeId = Data.SomeId,
+                        ContextId = TestContext.Id
                     });
                 }
 
@@ -78,6 +90,7 @@
         {
             public Guid SomeId { get; set; }
             public bool SecondMessage { get; set; }
+            public Guid ContextId { get; set; }
         }
     }
 }
