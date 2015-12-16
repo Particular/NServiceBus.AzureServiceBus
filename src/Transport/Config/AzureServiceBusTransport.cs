@@ -52,13 +52,13 @@
             };
         }
 
-        public override TransactionSupport GetTransactionSupport()
+        public override TransportTransactionMode GetSupportedTransactionMode()
         {
-            // TODO: need to test this and see when invoked from the core
-            // TODO: decision is based on condition (if multiple namespaces are used, we can only support single queue, otherwise multi queue).
-            // TODO: need configuration object here to make the decision
-            return TransactionSupport.MultiQueue;
+            // TODO: See where Core is calling this and make sure None is the correct value.
+            // TODO: TransportTransactionMode may need to be dependent upon topology.
+            return TransportTransactionMode.SendsAtomicWithReceive;
         }
+
 
         public override IManageSubscriptions GetSubscriptionManager()
         {

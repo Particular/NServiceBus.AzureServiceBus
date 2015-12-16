@@ -33,7 +33,6 @@
             criticalError.GetType().GetProperty("Endpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(criticalError, new FakeEndpoint(), null);
 
             var pump = new MessagePump(new FakeTopology(), fakeTopologyOperator);
-            pump.OnCriticalError(criticalError);
             pump.OnError(exception =>
             {
                 // circuit breaker is armed now
@@ -41,7 +40,8 @@
                 return TaskEx.Completed;
             });
 
-            await pump.Init(context => Task.FromResult(0), new PushSettings("sales", "error", false, TransactionSupport.MultiQueue));
+            // TODO: TransportTransactionMode may need to change with topology
+            await pump.Init(context => Task.FromResult(0), criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
             pump.Start(new PushRuntimeSettings(1));
 
             await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new MemoryStream()), new BrokeredMessageReceiveContext());
@@ -135,6 +135,11 @@
             public Task Stop()
             {
                 return Task.FromResult(0);
+            }
+
+            public IBusSession CreateBusSession()
+            {
+                return null;
             }
         }
     }

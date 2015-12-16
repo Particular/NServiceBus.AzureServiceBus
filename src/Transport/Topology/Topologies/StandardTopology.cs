@@ -88,12 +88,11 @@ namespace NServiceBus.AzureServiceBus
             return () => container.Resolve<ICreateQueues>();
         }
 
-        public Func<CriticalError, IPushMessages> GetMessagePumpFactory()
+        public Func<IPushMessages> GetMessagePumpFactory()
         {
-            return error =>
+            return () =>
             {
                 var pump = container.Resolve<MessagePump>();
-                pump.OnCriticalError(error);
                 return pump;
             };
         }
