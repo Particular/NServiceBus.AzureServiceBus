@@ -1,50 +1,46 @@
-﻿//namespace NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure
-//{
-//    using System;
-//    using System.Threading.Tasks;
-//    using NServiceBus.Pipeline;
-//    using NServiceBus.MessageMutator;
-//
-//    public class TestIndependenceData
-//    {
-//        public string Header { get; } = "AcceptanceTesting.TestRunId";
-//        public string TestRunId { get; } = Guid.NewGuid().ToString();
-//    }
-//
-//    class TestIndependenceMutator : IMutateOutgoingTransportMessages
-//    {
-//        TestIndependenceData data;
-//
-//        public TestIndependenceMutator(TestIndependenceData data)
-//        {
-//            this.data = data;
-//        }
-//
-//        public Task MutateOutgoing(MutateOutgoingTransportMessageContext context)
-//        {
-//            context.OutgoingHeaders[data.Header] = data.TestRunId;
-//            return Task.FromResult(0);
-//        }
-//    }
-//
-//    class TestIndependenceSkipBehavior : Behavior<IncomingPhysicalMessageContext>
-//    {
-//        TestIndependenceData data;
-//
-//        public TestIndependenceSkipBehavior(TestIndependenceData data)
-//        {
-//            this.data = data;
-//        }
-//
-//        public override Task Invoke(IncomingPhysicalMessageContext context, Func<Task> next)
-//        {
-//            string runId;
-//            if (!context.MessageHeaders.TryGetValue(data.Header, out runId) || runId != data.TestRunId)
-//            {
-//                return Task.FromResult(0);
-//            }
-//
-//            return next();
-//        }
-//    }
-//}
+﻿namespace NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure
+{
+    using System;
+    using System.Threading.Tasks;
+    using NServiceBus.AcceptanceTesting;
+    using NServiceBus.Pipeline;
+    using NServiceBus.MessageMutator;
+
+    class TestIndependenceMutator : IMutateOutgoingTransportMessages
+    {
+        string testRunId;
+
+        public TestIndependenceMutator(ScenarioContext scenarioContext)
+        {
+            this.testRunId = scenarioContext.TestRunId.ToString();
+        }
+
+        public Task MutateOutgoing(MutateOutgoingTransportMessageContext context)
+        {
+            context.OutgoingHeaders["$AcceptanceTesting.TestRunId"] = testRunId;
+            return Task.FromResult(0);
+        }
+    }
+
+    class TestIndependenceSkipBehavior : Behavior<IIncomingPhysicalMessageContext>
+    {
+        string testRunId;
+
+        public TestIndependenceSkipBehavior(ScenarioContext scenarioContext)
+        {
+            this.testRunId = scenarioContext.TestRunId.ToString();
+        }
+
+        public override Task Invoke(IIncomingPhysicalMessageContext context, Func<Task> next)
+        {
+            string runId;
+            if (!context.MessageHeaders.TryGetValue("$AcceptanceTesting.TestRunId", out runId) || runId != testRunId)
+            {
+                Console.WriteLine($"Skipping message {context.MessageId} from previous test run");
+                return Task.FromResult(0);
+            }
+
+            return next();
+        }
+    }
+}
