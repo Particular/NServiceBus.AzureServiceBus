@@ -56,7 +56,7 @@
         {
             // TODO: See where Core is calling this and make sure None is the correct value.
             // TODO: TransportTransactionMode may need to be dependent upon topology.
-            return TransportTransactionMode.None;
+            return TransportTransactionMode.SendsAtomicWithReceive;
         }
 
 
