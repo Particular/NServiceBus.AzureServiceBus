@@ -14,12 +14,14 @@
         [Test]
         public void Should_throw()
         {
-            var exception = Assert.Throws<AggregateException>(async () =>
-                await Scenario.Define<Context>()
+            // TODO: revert changes when idempotent-test-execution branch is merged
+
+            var exception = Assert.Throws<AggregateException>(async () => 
+                await Scenario.Define<Context>(context => context.Id = Guid.NewGuid())
                     .WithEndpoint<Endpoint>(
-                        b => b.When(bus => bus.SendLocal(new StartSaga
+                        b => b.When((bus, c) => bus.SendLocal(new StartSaga
                         {
-                            DataId = Guid.NewGuid()
+                            DataId = c.Id
                         })))
                     .Done(c => c.FailedMessages.Any())
                     .Run())
@@ -35,6 +37,7 @@
         public class Context : ScenarioContext
         {
             public string MessageId { get; set; }
+            public Guid Id { get; set; }
         }
 
         public class Endpoint : EndpointConfigurationBuilder
@@ -51,6 +54,10 @@
 
                 public Task Handle(StartSaga message, IMessageHandlerContext context)
                 {
+                    if (TestContext.Id != message.DataId)
+                    {
+                        return Task.FromResult(0);
+                    }
                     Data.Id = Guid.NewGuid();
                     TestContext.MessageId = context.MessageId;
                     return Task.FromResult(0);
