@@ -11,8 +11,18 @@
         [Test]
         public async Task Should_hydrate_and_invoke_the_existing_instance()
         {
+            // TODO: revert changes when idempotent-test-execution branch is merged
+
             var context = await Scenario.Define<Context>()
-                .WithEndpoint<ExistingSagaInstanceEndpt>(b => b.When(bus => bus.SendLocal(new StartSagaMessage { SomeId = Guid.NewGuid() })))
+                .WithEndpoint<ExistingSagaInstanceEndpt>(b => b.When((bus, ctx) =>
+                {
+                    ctx.Id = Guid.NewGuid();
+                    return bus.SendLocal(new StartSagaMessage
+                    {
+                        SomeId = Guid.NewGuid(),
+                        TestRunId = ctx.Id
+                    });
+                }))
                 .Done(c => c.SecondMessageReceived)
                 .Run();
 
@@ -22,9 +32,9 @@
         public class Context : ScenarioContext
         {
             public bool SecondMessageReceived { get; set; }
-
             public Guid FirstSagaId { get; set; }
             public Guid SecondSagaId { get; set; }
+            public Guid Id { get; set; }
         }
 
         public class ExistingSagaInstanceEndpt : EndpointConfigurationBuilder
@@ -40,6 +50,11 @@
 
                 public Task Handle(StartSagaMessage message, IMessageHandlerContext context)
                 {
+                    if (TestContext.Id != message.TestRunId)
+                    {
+                        return Task.FromResult(0);
+                    }
+
                     Data.SomeId = message.SomeId;
 
                     if (message.SecondMessage)
@@ -50,7 +65,12 @@
                     else
                     {
                         TestContext.FirstSagaId = Data.Id;
-                        return context.SendLocal(new StartSagaMessage { SomeId = message.SomeId, SecondMessage = true });
+                        return context.SendLocal(new StartSagaMessage
+                        {
+                            SomeId = message.SomeId,
+                            SecondMessage = true,
+                            TestRunId = TestContext.Id
+                        });
                     }
 
                     return Task.FromResult(0);
@@ -78,6 +98,8 @@
             public Guid SomeId { get; set; }
 
             public bool SecondMessage { get; set; }
+
+            public Guid TestRunId { get; set; }
         }
     }
 }

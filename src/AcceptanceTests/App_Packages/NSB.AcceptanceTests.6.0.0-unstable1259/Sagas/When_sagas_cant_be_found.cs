@@ -13,8 +13,18 @@
         [Test]
         public async Task IHandleSagaNotFound_only_called_once()
         {
+            // TODO: revert changes when idempotent-test-execution branch is merged
+
             var context = await Scenario.Define<Context>()
-                    .WithEndpoint<ReceiverWithSagas>(b => b.When((bus, c) => bus.SendLocal(new MessageToSaga { Id = Guid.NewGuid() })))
+                    .WithEndpoint<ReceiverWithSagas>(b => b.When((bus, c) =>
+                    {
+                        c.Id = Guid.NewGuid();
+                        return bus.SendLocal(new MessageToSaga
+                        {
+                            Id = Guid.NewGuid(),
+                            ContextId = c.Id
+                        });
+                    }))
                     .Done(c => c.Done)
                     .Run();
 
@@ -36,6 +46,7 @@
         {
             public int TimesFired { get; set; }
             public bool Done { get; set; }
+            public Guid Id { get; set; }
         }
 
         public class ReceiverWithSagas : EndpointConfigurationBuilder
@@ -128,6 +139,12 @@
 
                 public Task Handle(object message, IMessageProcessingContext context)
                 {
+                    var candidate = (message as MessageToSaga);
+                    if (candidate != null && TestContext.Id != candidate.ContextId)
+                    {
+                        return Task.FromResult(0);
+                    }
+
                     TestContext.TimesFired++;
                     TestContext.Done = true;
                     return Task.FromResult(0);
@@ -252,6 +269,7 @@
         public class MessageToSaga : ICommand
         {
             public Guid Id { get; set; }
+            public Guid ContextId { get; set; }
         }
     }
 }
