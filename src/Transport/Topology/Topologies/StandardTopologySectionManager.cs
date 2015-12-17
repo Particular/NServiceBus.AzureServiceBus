@@ -189,19 +189,14 @@ namespace NServiceBus.AzureServiceBus
             if (unicastBusConfig != null)
             {
                 var legacyRoutingConfig = unicastBusConfig.MessageEndpointMappings;
-                var conventions = settings.Get<Conventions>();
-
-                var knownMessageTypes = settings.GetAvailableTypes()
-                    .Where(conventions.IsMessageType)
-                    .ToList();
 
                 foreach (MessageEndpointMapping m in legacyRoutingConfig)
                 {
-                    m.Configure((type, s) =>
+                    m.Configure((type, address) =>
                     {
-                        if(knownMessageTypes.Any(t => t.IsAssignableFrom(eventType)))
+                        if(type == eventType)
                         {
-                            var path = s + ".events";
+                            var path = address + ".events";
                             if(!result.Contains(path)) result.Add(path);
                         }
                     });
