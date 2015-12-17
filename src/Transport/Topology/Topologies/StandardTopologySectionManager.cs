@@ -142,8 +142,9 @@ namespace NServiceBus.AzureServiceBus
 
             var topicPaths = DetermineTopicsFor(eventType);
             // TODO: issue
-            // 2 problems: 1) endpoint name is not taken into consideration 2) subscriptions in V6 were done on type.Name or type.FullName, as here only on FullName
-            var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Subscription);
+            // subscriptions in V6 were done on type.Name or type.FullName, as here only on FullName
+            var subscriptionNameCandidate = endpointName + "." + eventType.FullName;
+            var subscriptionPath = sanitizationStrategy.Sanitize(subscriptionNameCandidate, EntityType.Subscription);
 
             var topics = new List<EntityInfo>();
             var subs = new List<SubscriptionInfo>();
