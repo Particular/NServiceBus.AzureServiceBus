@@ -141,6 +141,8 @@ namespace NServiceBus.AzureServiceBus
             var sanitizationStrategy = (ISanitizationStrategy) container.Resolve(typeof(ISanitizationStrategy));
 
             var topicPaths = DetermineTopicsFor(eventType);
+            // TODO: issue
+            // 2 problems: 1) endpoint name is not taken into consideration 2) subscriptions in V6 were done on type.Name or type.FullName, as here only on FullName
             var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Subscription);
 
             var topics = new List<EntityInfo>();
@@ -163,7 +165,7 @@ namespace NServiceBus.AzureServiceBus
                         Namespace = ns,
                         Type = EntityType.Subscription,
                         Path = subscriptionPath,
-                        Metadata = eventType.FullName,
+                        Metadata = endpointName + " subscribed to " + eventType.FullName,
                         BrokerSideFilter = new SqlSubscriptionFilter(eventType)
                     };
                     sub.RelationShips.Add(new EntityRelationShipInfo
