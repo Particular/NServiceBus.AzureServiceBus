@@ -58,7 +58,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[] {});
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
 
-            Assert.That(async () => await router.RouteBatch(new[] { outgoingMessage }, new RoutingOptions {DispatchOptions = dispatchOptions}), Throws.Exception);
+            Assert.That(async () => await router.RouteBatch(new[] { new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage, dispatchOptions) }, new RoutingOptions ()), Throws.Exception);
             Assert.AreNotSame(usedMessages[0], usedMessages[1], "retried message should be a clone and not the original BrokeredMessage");
         }
     }

@@ -49,7 +49,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
 
             
-            await router.RouteBatch(new[] { outgoingMessage }, new RoutingOptions {DispatchOptions = dispatchOptions});
+            await router.RouteBatch(new[] { new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage, dispatchOptions) }, new RoutingOptions ());
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -90,7 +90,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
             
-            await router.RouteBatch(new [] {outgoingMessage1, outgoingMessage2}, new RoutingOptions { DispatchOptions = dispatchOptions });
+            await router.RouteBatch(new [] { new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage1, dispatchOptions), new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage2, dispatchOptions)}, new RoutingOptions());
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -131,7 +131,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
             
-            await router.RouteBatch(new [] {outgoingMessage1, outgoingMessage2}, new RoutingOptions { DispatchOptions = dispatchOptions });
+            await router.RouteBatch(new [] { new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage1, dispatchOptions), new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage2, dispatchOptions) }, new RoutingOptions ());
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -172,7 +172,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
             //validate
-            Assert.That(async () => await router.RouteBatch(new [] {outgoingMessage1}, new RoutingOptions { DispatchOptions = dispatchOptions }), Throws.Exception.TypeOf<MessageTooLargeException>());
+            Assert.That(async () => await router.RouteBatch(new [] { new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage1, dispatchOptions), }, new RoutingOptions ()), Throws.Exception.TypeOf<MessageTooLargeException>());
 
             //cleanup 
             await namespaceManager.DeleteQueue("myqueue");

@@ -31,26 +31,29 @@ namespace NServiceBus.AzureServiceBus
             maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes);
         }
 
-        public async Task RouteBatch(IEnumerable<OutgoingMessage> messages, RoutingOptions routingOptions)
+        public async Task RouteBatch(IEnumerable<Tuple<OutgoingMessage, DispatchOptions>> messages, RoutingOptions routingOptions)
         {
-            var addresses = GetAddresses(routingOptions);
+            var outgoingMessages = messages as IList<Tuple<OutgoingMessage, DispatchOptions>> ?? messages.ToList();
+            if (!outgoingMessages.Any()) return;
+
+            var addresses = GetAddresses(outgoingMessages.First().Item2); //batches are assumed grouped by address, done by the batcher
             foreach (var address in addresses)
             {
                 var messageSender = senders.Get(address.Path, routingOptions.ViaEntityPath, address.Namespace.ConnectionString);
 
-                var brokeredMessages = outgoingMessageConverter.Convert(messages, routingOptions);
+                var brokeredMessages = outgoingMessageConverter.Convert(outgoingMessages, routingOptions);
 
                 await SendBatchWithEnforcedBatchSizeAsync(messageSender, brokeredMessages).ConfigureAwait(false); 
             }
         }
 
-        IEnumerable<EntityInfo> GetAddresses(RoutingOptions routingOptions)
+        IEnumerable<EntityInfo> GetAddresses(DispatchOptions dispatchOptions)
         {
-            var directRouting = routingOptions.DispatchOptions.AddressTag as UnicastAddressTag;
+            var directRouting = dispatchOptions.AddressTag as UnicastAddressTag;
 
             if (directRouting == null) // publish
             {
-                var toAllSubscribers = (MulticastAddressTag)routingOptions.DispatchOptions.AddressTag;
+                var toAllSubscribers = (MulticastAddressTag)dispatchOptions.AddressTag;
 
                 return topologySectionManager.DeterminePublishDestination(toAllSubscribers.MessageType).Entities;
             }

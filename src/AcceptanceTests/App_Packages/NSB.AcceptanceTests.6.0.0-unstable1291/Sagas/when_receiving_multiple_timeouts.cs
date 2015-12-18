@@ -38,6 +38,7 @@
             {
                 EndpointSetup<DefaultServer>(c =>
                 {
+                    c.LimitMessageProcessingConcurrencyTo(1);
                     c.EnableFeature<TimeoutManager>();
                     c.ExecuteTheseHandlersFirst(typeof(CatchAllMessageHandler));
                 });
@@ -63,10 +64,10 @@
 
                 public Task Timeout(Saga1Timeout state, IMessageHandlerContext context)
                 {
-                    MarkAsComplete();
-
                     if (state.ContextId == TestContext.Id)
                     {
+                        MarkAsComplete();
+
                         TestContext.Saga1TimeoutFired = true;
                     }
 
