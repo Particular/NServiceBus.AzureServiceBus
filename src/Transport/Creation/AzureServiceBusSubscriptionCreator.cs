@@ -40,6 +40,7 @@
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, string metadata, string sqlFilter, INamespaceManager namespaceManager)
         {
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
+            subscriptionDescription.UserMetadata = metadata;
 
             try
             {
@@ -47,7 +48,6 @@
                 {
                     if (!await ExistsAsync(topicPath, subscriptionName, metadata, namespaceManager).ConfigureAwait(false))
                     {
-                        subscriptionDescription.UserMetadata = metadata;
                         await namespaceManager.CreateSubscription(subscriptionDescription, sqlFilter).ConfigureAwait(false);
                         logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}'");
 
