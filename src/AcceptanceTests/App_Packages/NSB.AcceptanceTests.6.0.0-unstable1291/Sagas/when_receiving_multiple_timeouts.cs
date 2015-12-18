@@ -38,6 +38,7 @@
             {
                 EndpointSetup<DefaultServer>(c =>
                 {
+                    c.LimitMessageProcessingConcurrencyTo(1);
                     c.EnableFeature<TimeoutManager>();
                     c.ExecuteTheseHandlersFirst(typeof(CatchAllMessageHandler));
                 });

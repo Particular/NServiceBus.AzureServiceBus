@@ -39,7 +39,6 @@ namespace NServiceBus.AzureServiceBus
                     SendVia = sendVia,
                     ViaEntityPath = context?.EntityPath,
                     ViaConnectionString = context?.ConnectionString,
-                    DispatchOptions = batch.First().DispatchOptions,
                     ViaPartitionKey = context?.IncomingBrokeredMessage.PartitionKey
                 };
 
@@ -55,7 +54,7 @@ namespace NServiceBus.AzureServiceBus
         {
             try
             {
-                await routeOutgoingMessages.RouteBatch(batch.Select(x => x.Message), routingOptions).ConfigureAwait(false);
+                await routeOutgoingMessages.RouteBatch(batch.Select(x => new Tuple<OutgoingMessage, DispatchOptions>(x.Message, x.DispatchOptions)), routingOptions).ConfigureAwait(false);
             }
             catch (Exception exception)
             {

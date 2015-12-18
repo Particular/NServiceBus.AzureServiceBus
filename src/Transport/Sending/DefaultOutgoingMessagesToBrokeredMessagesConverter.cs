@@ -19,19 +19,19 @@ namespace NServiceBus.AzureServiceBus
             this.settings = settings;
         }
 
-        public IEnumerable<BrokeredMessage> Convert(IEnumerable<OutgoingMessage> outgoingMessages, RoutingOptions routingOptions)
+        public IEnumerable<BrokeredMessage> Convert(IEnumerable<Tuple<OutgoingMessage, DispatchOptions>> outgoingMessages, RoutingOptions routingOptions)
         {
-            return outgoingMessages.Select(message => Convert(message, routingOptions));
+            return outgoingMessages.Select(x => Convert(x.Item1, x.Item2, routingOptions));
         }
 
-        public BrokeredMessage Convert(OutgoingMessage outgoingMessage, RoutingOptions routingOptions)
+        public BrokeredMessage Convert(OutgoingMessage outgoingMessage, DispatchOptions dispatchOptions, RoutingOptions routingOptions)
         {
             var brokeredMessage = CreateBrokeredMessage(outgoingMessage);
             brokeredMessage.MessageId = outgoingMessage.MessageId;
 
             CopyHeaders(outgoingMessage, brokeredMessage);
 
-            ApplyDeliveryConstraints(brokeredMessage, routingOptions.DispatchOptions);
+            ApplyDeliveryConstraints(brokeredMessage, dispatchOptions);
 
             ApplyTimeToLive(outgoingMessage, brokeredMessage);
 
