@@ -58,7 +58,7 @@
 
         private class FakeTopology : ITopologySectionManager
         {
-            public TopologySection DetermineReceiveResources()
+            public TopologySection DetermineReceiveResources(string inputQueue)
             {
                 return new TopologySection();
             }

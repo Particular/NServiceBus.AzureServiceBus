@@ -17,17 +17,24 @@ namespace NServiceBus.AzureServiceBus
             this.container = container;
         }
 
-        public TopologySection DetermineReceiveResources()
+        public TopologySection DetermineReceiveResources(string inputQueue)
         {
-            return Determine(PartitioningIntent.Receiving);
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
+
+            var namespaces = partitioningStrategy.GetNamespaces(inputQueue, PartitioningIntent.Creating).ToArray();
+
+            var inputQueuePath = sanitizationStrategy.Sanitize(inputQueue, EntityType.Queue);
+            var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
+
+            return new TopologySection()
+            {
+                Namespaces = namespaces,
+                Entities = entities.ToArray()
+            };
         }
 
         public TopologySection DetermineResourcesToCreate()
-        {
-            return Determine(PartitioningIntent.Creating);
-        }
-
-        private TopologySection Determine(PartitioningIntent partitioningIntent)
         {
             // computes the topologySectionManager
 
@@ -36,32 +43,29 @@ namespace NServiceBus.AzureServiceBus
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
 
-            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), partitioningIntent).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
 
             var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
             var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
-
-            if (partitioningIntent == PartitioningIntent.Creating)
+            
+            if(settings.HasExplicitValue<QueueBindings>())
             {
-                if(settings.HasExplicitValue<QueueBindings>())
+                var queueBindings = settings.Get<QueueBindings>();
+                foreach (var n in namespaces)
                 {
-                    var queueBindings = settings.Get<QueueBindings>();
-                    foreach (var n in namespaces)
+                    inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
                     {
-                        inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
-                        {
-                            Path = p,
-                            Type = EntityType.Queue,
-                            Namespace = n
-                        }));
+                        Path = p,
+                        Type = EntityType.Queue,
+                        Namespace = n
+                    }));
 
-                        inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
-                        {
-                            Path = p,
-                            Type = EntityType.Queue,
-                            Namespace = n
-                        }));
-                    }
+                    inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
+                    {
+                        Path = p,
+                        Type = EntityType.Queue,
+                        Namespace = n
+                    }));
                 }
             }
 

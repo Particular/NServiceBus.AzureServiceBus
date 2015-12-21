@@ -22,14 +22,68 @@ namespace NServiceBus.AzureServiceBus
             this.container = container;
         }
 
-        public TopologySection DetermineReceiveResources()
+        public TopologySection DetermineReceiveResources(string inputQueue)
         {
-            return Determine(PartitioningIntent.Receiving);
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
+
+            var namespaces = partitioningStrategy.GetNamespaces(inputQueue, PartitioningIntent.Creating).ToArray();
+
+            var inputQueuePath = sanitizationStrategy.Sanitize(inputQueue, EntityType.Queue);
+            var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
+
+            return new TopologySection()
+            {
+                Namespaces = namespaces,
+                Entities = entities.ToArray()
+            };
         }
 
         public TopologySection DetermineResourcesToCreate()
         {
-            return Determine(PartitioningIntent.Creating);
+            var endpointName = settings.EndpointName();
+
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
+
+            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
+
+            var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
+            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
+
+            if (!topics.Any())
+            {
+                BuildTopicBundles(namespaces, sanitizationStrategy);
+            }
+            
+            if (settings.HasExplicitValue<QueueBindings>())
+            {
+                var queueBindings = settings.Get<QueueBindings>();
+                foreach (var n in namespaces)
+                {
+                    inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
+                    {
+                        Path = p,
+                        Type = EntityType.Queue,
+                        Namespace = n
+                    }));
+
+                    inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
+                    {
+                        Path = p,
+                        Type = EntityType.Queue,
+                        Namespace = n
+                    }));
+                }
+            }
+
+            var entities = inputQueues.Concat(topics).ToArray();
+
+            return new TopologySection
+            {
+                Namespaces = namespaces,
+                Entities = entities
+            };
         }
 
         public TopologySection DeterminePublishDestination(Type eventType)
@@ -163,57 +217,6 @@ namespace NServiceBus.AzureServiceBus
                 }));
             }
         }
-        
-        private TopologySection Determine(PartitioningIntent partitioningIntent)
-        {
-            // computes the topologySectionManager
-
-            var endpointName = settings.EndpointName();
-
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
-
-            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), partitioningIntent).ToArray();
-
-            var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
-            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
-
-            if (!topics.Any())
-            {
-                BuildTopicBundles(namespaces, sanitizationStrategy);
-            }
-
-            if (partitioningIntent == PartitioningIntent.Creating)
-            {
-                if (settings.HasExplicitValue<QueueBindings>())
-                {
-                    var queueBindings = settings.Get<QueueBindings>();
-                    foreach (var n in namespaces)
-                    {
-                        inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
-                        {
-                            Path = p,
-                            Type = EntityType.Queue,
-                            Namespace = n
-                        }));
-
-                        inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
-                        {
-                            Path = p,
-                            Type = EntityType.Queue,
-                            Namespace = n
-                        }));
-                    }
-                }
-            }
-
-            var entities = inputQueues.Concat(topics).ToArray();
-
-            return new TopologySection
-            {
-                Namespaces = namespaces,
-                Entities = entities
-            };
-        }
+      
     }
 }

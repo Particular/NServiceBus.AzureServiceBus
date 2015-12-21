@@ -121,7 +121,7 @@
                 throw new NotImplementedException();
             }
 
-            public TopologySection DetermineReceiveResources()
+            public TopologySection DetermineReceiveResources(string inputQueue)
             {
                 throw new NotImplementedException();
             }

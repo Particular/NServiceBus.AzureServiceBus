@@ -46,7 +46,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
@@ -110,7 +110,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
@@ -173,7 +173,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
@@ -235,7 +235,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
@@ -298,7 +298,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
@@ -353,7 +353,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
@@ -412,7 +412,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
@@ -479,7 +479,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources(), 1);
+            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));

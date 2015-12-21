@@ -5,7 +5,7 @@
     public interface ITopologySectionManager
     {
 
-        TopologySection DetermineReceiveResources();
+        TopologySection DetermineReceiveResources(string inputQueue);
         TopologySection DetermineResourcesToCreate();
 
         TopologySection DeterminePublishDestination(Type eventType);

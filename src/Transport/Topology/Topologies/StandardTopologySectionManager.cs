@@ -22,17 +22,24 @@ namespace NServiceBus.AzureServiceBus
             this.container = container;
         }
 
-        public TopologySection DetermineReceiveResources()
+        public TopologySection DetermineReceiveResources(string inputQueue)
         {
-            return Determine(PartitioningIntent.Receiving);
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
+            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
+
+            var namespaces = partitioningStrategy.GetNamespaces(inputQueue, PartitioningIntent.Receiving).ToArray();
+
+            var inputQueuePath = sanitizationStrategy.Sanitize(inputQueue, EntityType.Queue);
+            var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
+
+            return new TopologySection()
+            {
+                Namespaces = namespaces,
+                Entities = entities.ToArray()
+            };
         }
 
         public TopologySection DetermineResourcesToCreate()
-        {
-            return Determine(PartitioningIntent.Creating);
-        }
-
-        private TopologySection Determine(PartitioningIntent partitioningIntent)
         {
             // computes the topologySectionManager
 
@@ -41,19 +48,16 @@ namespace NServiceBus.AzureServiceBus
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
             
-            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), partitioningIntent).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
 
             var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
-
-            if (partitioningIntent == PartitioningIntent.Creating)
-            {
-                var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", EntityType.Topic);
-                var topics =
-                    namespaces.Select(n => new EntityInfo {Path = topicPath, Type = EntityType.Topic, Namespace = n})
-                        .ToArray();
-                entities.AddRange(topics);
-            }
+            
+            var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", EntityType.Topic);
+            var topics =
+                namespaces.Select(n => new EntityInfo {Path = topicPath, Type = EntityType.Topic, Namespace = n})
+                    .ToArray();
+            entities.AddRange(topics);
 
             if (settings.HasExplicitValue<QueueBindings>())
             {
@@ -66,17 +70,14 @@ namespace NServiceBus.AzureServiceBus
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
-
-                    if (partitioningIntent == PartitioningIntent.Creating)
+                    
+                    // assumed errorq and auditq are in here
+                    entities.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
                     {
-                        // assumed errorq and auditq are in here
-                        entities.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
-                        {
-                            Path = p,
-                            Type = EntityType.Queue,
-                            Namespace = n
-                        }));
-                    }
+                        Path = p,
+                        Type = EntityType.Queue,
+                        Namespace = n
+                    }));
                 }
             }
 

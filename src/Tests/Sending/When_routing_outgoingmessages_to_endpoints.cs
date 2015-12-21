@@ -190,7 +190,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 throw new NotImplementedException();
             }
 
-            public TopologySection DetermineReceiveResources()
+            public TopologySection DetermineReceiveResources(string inputQueue)
             {
                 throw new NotImplementedException();
             }

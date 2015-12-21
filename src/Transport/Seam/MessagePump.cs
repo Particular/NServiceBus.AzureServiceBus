@@ -13,6 +13,7 @@ namespace NServiceBus.AzureServiceBus
         Func<PushContext, Task> messagePump;
         private RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
+        string _inputQueue ;
 
         public MessagePump(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
         {
@@ -27,7 +28,7 @@ namespace NServiceBus.AzureServiceBus
 
             //TODO: integrate these
             //settings.ErrorQueue
-            //settings.InputQueue
+            _inputQueue = settings.InputQueue;
             //settings.PurgeOnStartup
             //settings.RequiredConsistency
 
@@ -60,7 +61,7 @@ namespace NServiceBus.AzureServiceBus
 
         public void Start(PushRuntimeSettings limitations)
         {
-            var definition = topologySectionManager.DetermineReceiveResources();
+            var definition = topologySectionManager.DetermineReceiveResources(_inputQueue);
             topologyOperator.Start(definition, limitations.MaxConcurrency);
         }
 
