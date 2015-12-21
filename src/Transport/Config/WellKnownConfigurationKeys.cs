@@ -22,7 +22,9 @@ namespace NServiceBus.AzureServiceBus
                     public const string EnableBatchedOperations = "AzureServiceBus.Settings.Topology.Resources.Queues.EnableBatchedOperations";
                     public const string EnablePartitioning = "AzureServiceBus.Settings.Topology.Resources.Queues.EnablePartitioning";
                     public const string AutoDeleteOnIdle = "AzureServiceBus.Settings.Topology.Resources.Queues.AutoDeleteOnIdle";
+
                     public const string EnableExpress = "AzureServiceBus.Settings.Topology.Resources.Queues.EnableExpress";
+                    public const string EnableExpressCondition = "AzureServiceBus.Settings.Topology.Resources.Queues.EnableExpressCondition";
 
                     public const string ForwardDeadLetteredMessagesToCondition = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardDeadLetteredMessagesToCondition";
                     public const string ForwardDeadLetteredMessagesTo = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo";
@@ -39,12 +41,14 @@ namespace NServiceBus.AzureServiceBus
                     public const string DefaultMessageTimeToLive = "AzureServiceBus.Settings.Topology.Resources.Topics.DefaultMessageTimeToLive";
                     public const string DuplicateDetectionHistoryTimeWindow = "AzureServiceBus.Settings.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow";
                     public const string EnableBatchedOperations = "AzureServiceBus.Settings.Topology.Resources.Topics.EnableBatchedOperations";
-                    public const string EnableExpress = "AzureServiceBus.Settings.Topology.Resources.Topics.EnableExpress";
                     public const string EnableFilteringMessagesBeforePublishing = "AzureServiceBus.Settings.Topology.Resources.Topics.EnableFilteringMessagesBeforePublishing";
                     public const string EnablePartitioning = "AzureServiceBus.Settings.Topology.Resources.Topics.EnablePartitioning";
                     public const string MaxSizeInMegabytes = "AzureServiceBus.Settings.Topology.Resources.Topics.MaxSizeInMegabytes";
                     public const string RequiresDuplicateDetection = "AzureServiceBus.Settings.Topology.Resources.Topics.RequiresDuplicateDetection";
                     public const string SupportOrdering = "AzureServiceBus.Settings.Topology.Resources.Topics.SupportOrdering";
+
+                    public const string EnableExpress = "AzureServiceBus.Settings.Topology.Resources.Topics.EnableExpress";
+                    public const string EnableExpressCondition = "AzureServiceBus.Settings.Topology.Resources.Topics.EnableExpressCondition";
                 }
 
                 public static class Subscriptions

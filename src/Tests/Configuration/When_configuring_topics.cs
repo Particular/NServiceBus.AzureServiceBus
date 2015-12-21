@@ -67,6 +67,19 @@
         }
 
         [Test]
+        public void Should_be_able_to_set_EnableExpress_conditionally()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            Func<string, bool> condition = name => name != "expresstopic";
+            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().EnableExpress(condition, true);
+
+            Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress));
+            Assert.AreEqual(condition, topicSettings.GetSettings().Get<Func<string, bool>>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpressCondition));
+        }
+
+        [Test]
         public void Should_be_able_to_set_EnableFilteringMessagesBeforePublishing()
         {
             var settings = new SettingsHolder();

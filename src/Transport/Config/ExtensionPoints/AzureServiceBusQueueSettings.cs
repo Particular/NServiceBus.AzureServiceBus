@@ -54,6 +54,14 @@
             return this;
         }
 
+        public AzureServiceBusQueueSettings EnableExpressCondition(Func<string, bool> condition, bool enableExpress)
+        {
+            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpressCondition, condition);
+            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress, enableExpress);
+
+            return this;
+        }
+
         public AzureServiceBusQueueSettings AutoDeleteOnIdle(TimeSpan autoDeleteOnIdle)
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.AutoDeleteOnIdle, autoDeleteOnIdle);
@@ -116,6 +124,7 @@
 
             return this;
         }
+
 
         public AzureServiceBusQueueSettings MaxSizeInMegabytes(long maxSizeInMegabytes)
         {

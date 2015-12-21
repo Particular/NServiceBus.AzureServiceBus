@@ -7,6 +7,7 @@ namespace NServiceBus.AzureServiceBus
 
     static class ReadOnlySettingsExtensions
     {
+        /// <summary>Apply conditional setting if condition exists</summary>
         internal static T GetConditional<T>(this ReadOnlySettings settings, string name, string key)
         {
             var condition = settings.Get<Func<string, bool>>(key + "Condition");

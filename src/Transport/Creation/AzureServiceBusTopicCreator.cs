@@ -26,12 +26,13 @@
                     DefaultMessageTimeToLive = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.DefaultMessageTimeToLive),
                     DuplicateDetectionHistoryTimeWindow = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow),
                     EnableBatchedOperations = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableBatchedOperations),
-                    EnableExpress = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress),
                     EnableFilteringMessagesBeforePublishing = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableFilteringMessagesBeforePublishing),
                     EnablePartitioning = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnablePartitioning),
                     MaxSizeInMegabytes = setting.GetOrDefault<long>(WellKnownConfigurationKeys.Topology.Resources.Topics.MaxSizeInMegabytes),
                     RequiresDuplicateDetection = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.RequiresDuplicateDetection),
                     SupportOrdering = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.SupportOrdering),
+
+                    EnableExpress = setting.GetConditional<bool>(topicPath, WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress),
                 };
             }
         }

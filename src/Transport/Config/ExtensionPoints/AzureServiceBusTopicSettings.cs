@@ -59,6 +59,12 @@
             _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress, enableExpress);
             return this;
         }
+        public AzureServiceBusTopicSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
+        {
+            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress, enableExpress);
+            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpressCondition, condition);
+            return this;
+        }
 
         public AzureServiceBusTopicSettings EnableFilteringMessagesBeforePublishing(bool enableFilteringMessagesBeforePublishing)
         {

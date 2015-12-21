@@ -21,23 +21,24 @@
 
             if(!_settings.TryGet(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, out _descriptionFactory))
             {
-                _descriptionFactory = (name, s) => new QueueDescription(name)
+                _descriptionFactory = (queuePath, setting) => new QueueDescription(queuePath)
                 {
-                    LockDuration = s.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration),
-                    MaxSizeInMegabytes = s.GetOrDefault<long>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxSizeInMegabytes),
-                    RequiresDuplicateDetection = s.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresDuplicateDetection),
-                    RequiresSession = s.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresSession),
-                    DefaultMessageTimeToLive = s.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.DefaultMessageTimeToLive),
-                    EnableDeadLetteringOnMessageExpiration = s.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration),
-                    DuplicateDetectionHistoryTimeWindow = s.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow),
-                    MaxDeliveryCount = s.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount),
-                    EnableBatchedOperations = s.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableBatchedOperations),
-                    EnablePartitioning = s.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning),
-                    SupportOrdering = s.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering),
-                    AutoDeleteOnIdle = s.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.AutoDeleteOnIdle),
-                    EnableExpress = s.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress),
-                    ForwardDeadLetteredMessagesTo = s.GetConditional<string>(name, WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo),
-                    ForwardTo = s.GetConditional<string>(name, WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo)
+                    LockDuration = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration),
+                    MaxSizeInMegabytes = setting.GetOrDefault<long>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxSizeInMegabytes),
+                    RequiresDuplicateDetection = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresDuplicateDetection),
+                    RequiresSession = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresSession),
+                    DefaultMessageTimeToLive = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.DefaultMessageTimeToLive),
+                    EnableDeadLetteringOnMessageExpiration = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration),
+                    DuplicateDetectionHistoryTimeWindow = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow),
+                    MaxDeliveryCount = setting.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount),
+                    EnableBatchedOperations = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableBatchedOperations),
+                    EnablePartitioning = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning),
+                    SupportOrdering = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering),
+                    AutoDeleteOnIdle = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.AutoDeleteOnIdle),
+
+                    EnableExpress = setting.GetConditional<bool>(queuePath, WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress),
+                    ForwardDeadLetteredMessagesTo = setting.GetConditional<string>(queuePath, WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo),
+                    ForwardTo = setting.GetConditional<string>(queuePath, WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo)
                 };
             }
         }
