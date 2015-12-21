@@ -78,7 +78,8 @@
         {
             public CentralizedStoragePublisher()
             {
-                EndpointSetup<DefaultServer>();
+                EndpointSetup<DefaultServer>()
+                    .AddMapping<EventHandledByLocalEndpoint>(typeof(CentralizedStoragePublisher)); //an explicit mapping is needed;
             }
 
             class CatchAllHandler : IHandleMessages<IEvent> 
