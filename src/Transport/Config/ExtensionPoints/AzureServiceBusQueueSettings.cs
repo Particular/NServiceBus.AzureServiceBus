@@ -54,7 +54,7 @@
             return this;
         }
 
-        public AzureServiceBusQueueSettings EnableExpressCondition(Func<string, bool> condition, bool enableExpress)
+        public AzureServiceBusQueueSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpressCondition, condition);
             _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress, enableExpress);

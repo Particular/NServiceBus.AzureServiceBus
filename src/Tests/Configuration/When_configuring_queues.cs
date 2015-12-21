@@ -82,7 +82,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             Func<string, bool> condition = name => name != "expressqueue";
-            var queueSettings = extensions.UseDefaultTopology().Resources().Queues().EnableExpressCondition(condition, true);
+            var queueSettings = extensions.UseDefaultTopology().Resources().Queues().EnableExpress(condition, true);
 
             Assert.IsTrue(queueSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress));
             Assert.AreEqual(condition, queueSettings.GetSettings().Get<Func<string, bool>>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpressCondition));

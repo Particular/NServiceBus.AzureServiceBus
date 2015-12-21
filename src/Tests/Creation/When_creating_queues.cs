@@ -188,6 +188,29 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
+        public async Task Properly_sets_EnableExpress_on_the_created_entity_that_qualifies_condition()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            extensions.UseDefaultTopology().Resources().Queues().EnableExpress(name => name == "myqueue", true);
+
+            var creator = new AzureServiceBusQueueCreator(settings);
+
+            await creator.Create("myqueue", namespaceManager);
+
+            var real = await namespaceManager.GetQueue("myqueue");
+
+            Assert.IsTrue(real.EnableExpress, "Queue should be marked as express, but it wasn't.");
+
+            //cleanup 
+            await namespaceManager.DeleteQueue("myqueue");
+        }
+
+
+        [Test]
         public async Task Properly_sets_AutoDeleteOnIdle_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
