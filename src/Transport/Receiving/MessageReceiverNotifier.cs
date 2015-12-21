@@ -21,8 +21,8 @@ namespace NServiceBus.AzureServiceBus
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
         private ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
-        string path;
-        string connstring;
+        private string fullPath;
+        EntityInfo entity;
         bool stopping = false;
 
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
@@ -37,12 +37,18 @@ namespace NServiceBus.AzureServiceBus
         public bool IsRunning { get; private set; }
         public int RefCount { get; set; }
 
-        public void Initialize(string entitypath, string connectionstring, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
+        public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
         {
             this.incomingCallback = callback;
             this.errorCallback = errorCallback;
-            this.path = entitypath;
-            this.connstring = connectionstring;
+            this.entity = entity;
+           
+            fullPath = entity.Path;
+            if (entity.Type == EntityType.Subscription)
+            {
+                var topic = entity.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
+                fullPath = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, entity.Path);
+            }
 
             options = new OnMessageOptions
             {
@@ -76,11 +82,11 @@ namespace NServiceBus.AzureServiceBus
             stopping = false;
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
 
-            internalReceiver = clientEntities.Get(path, connstring);
+            internalReceiver = clientEntities.Get(fullPath, entity.Namespace.ConnectionString);
 
             if (internalReceiver == null)
             {
-                throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {path}, this is probably due to a misconfiguration of the topology");
+                throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
             }
 
             internalReceiver.OnMessage(message =>
@@ -104,8 +110,7 @@ namespace NServiceBus.AzureServiceBus
             var context = new BrokeredMessageReceiveContext()
             {
                 IncomingBrokeredMessage = message,
-                EntityPath = path,
-                ConnectionString = connstring,
+                Entity = entity,
                 ReceiveMode = internalReceiver.Mode,
                 OnComplete = new List<Func<Task>>()
             };
@@ -164,7 +169,7 @@ namespace NServiceBus.AzureServiceBus
         {
             stopping = true;
 
-            logger.Info("Stopping notifier for " + path);
+            logger.Info("Stopping notifier for " + fullPath);
 
             var closeReceiverTask = internalReceiver.CloseAsync();
 
@@ -182,7 +187,7 @@ namespace NServiceBus.AzureServiceBus
 
             pipelineInvocationTasks.Clear();
 
-            logger.Info("Notifier for " + path + " stopped");
+            logger.Info("Notifier for " + fullPath + " stopped");
 
             IsRunning = false;
         }

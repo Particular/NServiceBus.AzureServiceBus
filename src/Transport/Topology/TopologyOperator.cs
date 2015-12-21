@@ -3,10 +3,8 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Logging;
 
     public class TopologyOperator : IOperateTopology
@@ -95,13 +93,7 @@ namespace NServiceBus.AzureServiceBus
                 var notifier = notifiers.GetOrAdd(entity, e =>
                 {
                     var n = CreateNotifier(entity.Type);
-                    var path = e.Path;
-                    if (entity.Type == EntityType.Subscription)
-                    {
-                        var topic = entity.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
-                        path = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, path);
-                    }
-                    n.Initialize(path, e.Namespace.ConnectionString, onMessage, onError, maxConcurrency);
+                    n.Initialize(e, onMessage, onError, maxConcurrency);
                     return n;
                 });
 

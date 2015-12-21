@@ -2,7 +2,7 @@
 {
     public class NamespaceInfo
     {
-        public NamespaceInfo(string connectionString, NamespaceMode mode)
+        public NamespaceInfo(string connectionString, NamespaceMode mode = NamespaceMode.Active)
         {
             ConnectionString = connectionString;
             Mode = mode;

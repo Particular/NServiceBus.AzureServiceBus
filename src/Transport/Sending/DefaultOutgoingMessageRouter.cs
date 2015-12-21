@@ -6,6 +6,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
+    using NServiceBus.Logging;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -39,6 +40,15 @@ namespace NServiceBus.AzureServiceBus
             var addresses = GetAddresses(outgoingMessages.First().Item2); //batches are assumed grouped by address, done by the batcher
             foreach (var address in addresses)
             {
+                if (!string.IsNullOrEmpty(routingOptions.ViaEntityPath))
+                {
+                    Logger.InfoFormat("Routing {0} messages to {1} via {2}", outgoingMessages.Count, address.Path, routingOptions.ViaEntityPath);
+                }
+                else
+                {
+                    Logger.InfoFormat("Routing {0} messages to {1}", outgoingMessages.Count, address.Path);
+                }
+
                 var messageSender = senders.Get(address.Path, routingOptions.ViaEntityPath, address.Namespace.ConnectionString);
 
                 var brokeredMessages = outgoingMessageConverter.Convert(outgoingMessages, routingOptions);
@@ -103,5 +113,7 @@ namespace NServiceBus.AzureServiceBus
                 throw new MessageTooLargeException($"The message with id {brokeredMessage.MessageId} is larger that the maximum message size allowed by Azure ServiceBus, consider using the databus feature.");
             }
         }
+
+        static ILog Logger = LogManager.GetLogger<DefaultOutgoingMessageRouter>();
     }
 }

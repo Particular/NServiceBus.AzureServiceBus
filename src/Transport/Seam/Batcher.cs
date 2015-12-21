@@ -37,8 +37,8 @@ namespace NServiceBus.AzureServiceBus
                 var routingOptions = new RoutingOptions
                 {
                     SendVia = sendVia,
-                    ViaEntityPath = context?.EntityPath,
-                    ViaConnectionString = context?.ConnectionString,
+                    ViaEntityPath = CanRouteVia(context?.Entity) ? context?.Entity.Path : null,
+                    ViaConnectionString = context?.Entity.Namespace.ConnectionString,
                     ViaPartitionKey = context?.IncomingBrokeredMessage.PartitionKey
                 };
 
@@ -48,6 +48,11 @@ namespace NServiceBus.AzureServiceBus
             }
 
             return Task.WhenAll(tasks.ToArray());
+        }
+
+        private bool CanRouteVia(EntityInfo entity)
+        {
+            return entity != null && entity.Type == EntityType.Queue;
         }
 
         private async Task RouteOutBatchesAndLogExceptionsAsync(IEnumerable<TransportOperation> batch, RoutingOptions routingOptions)

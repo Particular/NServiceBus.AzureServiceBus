@@ -9,7 +9,7 @@ namespace NServiceBus.AzureServiceBus
         bool IsRunning { get; }
         int RefCount { get; set; }
 
-        void Initialize(string entitypath, string connectionstring, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency);
+        void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency);
 
         void Start();
         Task Stop();

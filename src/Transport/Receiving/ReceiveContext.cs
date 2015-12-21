@@ -19,9 +19,7 @@ namespace NServiceBus.AzureServiceBus
     {
         public BrokeredMessage IncomingBrokeredMessage { get; set; }
 
-        //TODO: replace by EntityInfo object
-        public string EntityPath { get; set; }
-        public string ConnectionString { get; set; }
+        public EntityInfo Entity { get; set; }
 
         // Dispatcher needs to compare this with requested consistency guarantees, cannot do default (postponed) dispatch if there is no completion step (ReceiveAndDelete)
         public ReceiveMode ReceiveMode { get; set; }
