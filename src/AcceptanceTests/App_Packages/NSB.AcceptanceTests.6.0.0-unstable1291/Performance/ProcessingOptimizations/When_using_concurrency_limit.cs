@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AcceptanceTests.Config
 {
     using System;
+    using System.Linq;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using NServiceBus.AcceptanceTesting;
@@ -10,15 +11,19 @@
     using NServiceBus.Transports;
     using NUnit.Framework;
     using CriticalError = NServiceBus.CriticalError;
+    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 
     public class When_using_concurrency_limit : NServiceBusAcceptanceTest
     {
         [Test]
         public async Task Should_pass_it_to_the_transport()
         {
+            // TODO: revert test change when resolve issue with the core not respecting transport override via EndpointSetup<DefaultServer>(c => c.UseTransport<FakeTransport>());
+
             await Scenario.Define<Context>()
                 .WithEndpoint<ThrottledEndpoint>(b => b.CustomConfig(c => c.LimitMessageProcessingConcurrencyTo(10)))
                 .Done(c => c.EndpointsStarted)
+                .Repeat(r => r.For(Transports.AllAvailable.SingleOrDefault(t => t.Key == "FakeTransport")))
                 .Run();
 
             //Assert in FakeReceiver.Start

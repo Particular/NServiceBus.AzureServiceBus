@@ -141,7 +141,10 @@ namespace NServiceBus.AzureServiceBus
             var sanitizationStrategy = (ISanitizationStrategy) container.Resolve(typeof(ISanitizationStrategy));
 
             var topicPaths = DetermineTopicsFor(eventType);
-            var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Subscription);
+            // TODO: issue
+            // subscriptions in V6 were done on type.Name or type.FullName, as here only on FullName
+            var subscriptionNameCandidate = endpointName + "." + eventType.FullName;
+            var subscriptionPath = sanitizationStrategy.Sanitize(subscriptionNameCandidate, EntityType.Subscription);
 
             var topics = new List<EntityInfo>();
             var subs = new List<SubscriptionInfo>();
@@ -163,7 +166,7 @@ namespace NServiceBus.AzureServiceBus
                         Namespace = ns,
                         Type = EntityType.Subscription,
                         Path = subscriptionPath,
-                        Metadata = eventType.FullName,
+                        Metadata = endpointName + " subscribed to " + eventType.FullName,
                         BrokerSideFilter = new SqlSubscriptionFilter(eventType)
                     };
                     sub.RelationShips.Add(new EntityRelationShipInfo
@@ -189,19 +192,14 @@ namespace NServiceBus.AzureServiceBus
             if (unicastBusConfig != null)
             {
                 var legacyRoutingConfig = unicastBusConfig.MessageEndpointMappings;
-                var conventions = settings.Get<Conventions>();
-
-                var knownMessageTypes = settings.GetAvailableTypes()
-                    .Where(conventions.IsMessageType)
-                    .ToList();
 
                 foreach (MessageEndpointMapping m in legacyRoutingConfig)
                 {
-                    m.Configure((type, s) =>
+                    m.Configure((type, address) =>
                     {
-                        if(knownMessageTypes.Any(t => t.IsAssignableFrom(eventType)))
+                        if(type == eventType)
                         {
-                            var path = s + ".events";
+                            var path = address + ".events";
                             if(!result.Contains(path)) result.Add(path);
                         }
                     });
