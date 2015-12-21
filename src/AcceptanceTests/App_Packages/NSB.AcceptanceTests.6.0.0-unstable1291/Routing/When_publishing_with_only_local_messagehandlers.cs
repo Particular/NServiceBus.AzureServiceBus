@@ -79,6 +79,7 @@
             public CentralizedStoragePublisher()
             {
                 EndpointSetup<DefaultServer>()
+                    //TODO: Pending approval PR 3266, https://github.com/Particular/NServiceBus/pull/3266
                     .AddMapping<EventHandledByLocalEndpoint>(typeof(CentralizedStoragePublisher)); //an explicit mapping is needed;
             }
 
