@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 {
     using System.Linq;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NUnit.Framework;
 
@@ -42,7 +43,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            settings.SetDefault<Endpoint>(new Endpoint(enpointname));
+            settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
             var topology = new ForwardingTopology(container);

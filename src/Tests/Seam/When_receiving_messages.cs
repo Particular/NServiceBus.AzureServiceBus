@@ -5,6 +5,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Tests;
+    using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
@@ -89,7 +90,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            settings.SetDefault<Endpoint>(new Endpoint(enpointname));
+            settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(AzureServiceBusConnectionString.Value);
 
             var topology = new BasicTopology(container);

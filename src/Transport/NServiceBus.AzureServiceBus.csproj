@@ -60,7 +60,7 @@
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="NServiceBus.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9fc386479f8a226c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NServiceBus.6.0.0-unstable1291\lib\net452\NServiceBus.Core.dll</HintPath>
+      <HintPath>..\packages\NServiceBus.6.0.0-unstable1330\lib\net452\NServiceBus.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Obsolete, Version=4.0.3.0, Culture=neutral, PublicKeyToken=1ca091877d12ca03, processorArchitecture=MSIL">
@@ -101,7 +101,7 @@
     <Compile Include="Utils\IRegisterTransportParts.cs" />
     <Compile Include="Receiving\IncomingMessageDetails.cs" />
     <Compile Include="Receiving\SupportedBrokeredMessageBodyTypes.cs" />
-    <Compile Include="Seam\Batcher.cs" />
+    <Compile Include="Sending\Batcher.cs" />
     <Compile Include="Seam\Dispatcher.cs" />
     <Compile Include="Seam\MessagePump.cs" />
     <Compile Include="Receiving\ReceiveContext.cs" />
@@ -144,9 +144,9 @@
     <Compile Include="Creation\ReadOnlySettingsExtensions.cs" />
     <Compile Include="Receiving\DefaultBrokeredMessagesToIncomingMessagesConverter.cs" />
     <Compile Include="Receiving\IConvertBrokeredMessagesToIncomingMessages.cs" />
-    <Compile Include="Sending\DefaultOutgoingMessageRouter.cs" />
+    <Compile Include="Sending\DefaultOutgoingBatchRouter.cs" />
     <Compile Include="Sending\DefaultOutgoingMessagesToBrokeredMessagesConverter.cs" />
-    <Compile Include="Sending\IRouteOutgoingMessages.cs" />
+    <Compile Include="Sending\IRouteOutgoingBatches.cs" />
     <Compile Include="Sending\IConvertOutgoingMessagesToBrokeredMessages.cs" />
     <Compile Include="Receiving\INotifyIncomingMessages.cs" />
     <Compile Include="Receiving\MessageReceiverNotifier.cs" />

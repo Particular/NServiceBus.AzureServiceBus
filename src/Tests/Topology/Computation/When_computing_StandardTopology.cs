@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System.Linq;
+    using NServiceBus.Routing;
     using Settings;
     using NUnit.Framework;
 
@@ -17,7 +18,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            settings.SetDefault<Endpoint>(new Endpoint("sales"));
+            settings.SetDefault<EndpointName>(new EndpointName("sales"));
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
@@ -36,7 +37,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            settings.SetDefault<Endpoint>(new Endpoint("sales"));
+            settings.SetDefault<EndpointName>(new EndpointName("sales"));
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
@@ -54,7 +55,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            settings.SetDefault<Endpoint>(new Endpoint("sales"));
+            settings.SetDefault<EndpointName>(new EndpointName("sales"));
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 

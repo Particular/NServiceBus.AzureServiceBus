@@ -39,7 +39,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             //// perform the test
 
-            var router = new DefaultOutgoingMessageRouter(
+            var router = new DefaultOutgoingBatchRouter(
                 new FakeTopologySectionManager(),
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
@@ -80,7 +80,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             //// perform the test
 
-            var router = new DefaultOutgoingMessageRouter(
+            var router = new DefaultOutgoingBatchRouter(
                 new FakeTopologySectionManager(),
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
@@ -121,7 +121,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             //// perform the test
 
-            var router = new DefaultOutgoingMessageRouter(
+            var router = new DefaultOutgoingBatchRouter(
                 new FakeTopologySectionManager(), 
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);
@@ -162,7 +162,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             //// perform the test
 
-            var router = new DefaultOutgoingMessageRouter(
+            var router = new DefaultOutgoingBatchRouter(
                 new FakeTopologySectionManager(), 
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
                 clientLifecycleManager, settings);

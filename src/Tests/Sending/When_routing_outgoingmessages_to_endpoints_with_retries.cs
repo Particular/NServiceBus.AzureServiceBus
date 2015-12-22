@@ -50,7 +50,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 .Invokes((IEnumerable<BrokeredMessage> received) => usedMessages.Add(received.First()))
                 .Throws(new ServerBusyException("busy"));
 
-            var router = new DefaultOutgoingMessageRouter(
+            var router = new DefaultOutgoingBatchRouter(
                 topology,
                 new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), 
                 clientLifecycleManager, settings);

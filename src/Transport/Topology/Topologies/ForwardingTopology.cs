@@ -60,7 +60,8 @@ namespace NServiceBus.AzureServiceBus
             container.Register<DefaultBrokeredMessagesToIncomingMessagesConverter>();
             container.Register<DefaultOutgoingMessagesToBrokeredMessagesConverter>();
             container.Register<TopologyCreator>();
-            container.RegisterSingleton<DefaultOutgoingMessageRouter>();
+            container.Register<Batcher>();
+            container.RegisterSingleton<DefaultOutgoingBatchRouter>();
             container.RegisterSingleton<TopologyOperator>();
             container.Register<MessageReceiverNotifier>();
             container.RegisterSingleton<SubscriptionManager>();
