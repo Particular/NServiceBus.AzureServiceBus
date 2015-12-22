@@ -436,8 +436,8 @@
         public async Task Should_be_able_to_update_an_existing_subscription_with_new_property_values()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.CreateTopic(new TopicDescription("existingtopic"));
-            await namespaceManager.CreateSubscription(new SubscriptionDescription("existingtopic", "existingsubscription"), "1=1");
+            await namespaceManager.CreateTopic(new TopicDescription("sometopic1"));
+            await namespaceManager.CreateSubscription(new SubscriptionDescription("sometopic1", "existingsubscription1"), "1=1");
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -448,21 +448,21 @@
             });
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
-            await creator.Create("existingtopic", "existingsubscription", "metadata", "1=1", namespaceManager);
+            await creator.Create("sometopic1", "existingsubscription1", "metadata", "1=1", namespaceManager);
 
-            var subscriptionDescription = await namespaceManager.GetSubscription("existingtopic", "existingsubscription");
+            var subscriptionDescription = await namespaceManager.GetSubscription("sometopic1", "existingsubscription1");
             Assert.AreEqual(TimeSpan.FromMinutes(100), subscriptionDescription.AutoDeleteOnIdle);
 
             //cleanup 
-            await namespaceManager.DeleteTopic("existingtopic");
+            await namespaceManager.DeleteTopic("sometopic1");
         }
 
         [Test]
         public async Task Should_be_able_to_update_an_existing_subscription_with_new_property_values_without_failing_on_readonly_properties()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.CreateTopic(new TopicDescription("existingtopic"));
-            await namespaceManager.CreateSubscription(new SubscriptionDescription("existingtopic", "existingsubscription")
+            await namespaceManager.CreateTopic(new TopicDescription("sometopic2"));
+            await namespaceManager.CreateSubscription(new SubscriptionDescription("sometopic2", "existingsubscription2")
             {
                 EnableDeadLetteringOnFilterEvaluationExceptions = true,
                 RequiresSession = true,
@@ -477,11 +477,10 @@
             });
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
-            Assert.Throws<ArgumentException>(async () => await creator.Create("existingtopic", "existingsubscription", "metadata", "1=1", namespaceManager));
+            Assert.Throws<ArgumentException>(async () => await creator.Create("sometopic2", "existingsubscription2", "metadata", "1=1", namespaceManager));
 
             //cleanup 
-//            await namespaceManager.DeleteSubscriptionAsync("existingtopic", "existingsubscription");
-            await namespaceManager.DeleteTopic("existingtopic");
+            await namespaceManager.DeleteTopic("sometopic2");
         }
     }
 }

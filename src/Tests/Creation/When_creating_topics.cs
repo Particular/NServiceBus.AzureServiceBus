@@ -386,7 +386,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Should_be_able_to_update_an_existing_topic_with_new_property_values()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.CreateTopic(new TopicDescription("existingtopic"));
+            await namespaceManager.CreateTopic(new TopicDescription("existingtopic1"));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -397,20 +397,20 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             var creator = new AzureServiceBusTopicCreator(settings);
-            await creator.Create("existingtopic", namespaceManager);
+            await creator.Create("existingtopic1", namespaceManager);
 
-            var topicDescription = await namespaceManager.GetTopic("existingtopic");
+            var topicDescription = await namespaceManager.GetTopic("existingtopic1");
             Assert.AreEqual(TimeSpan.FromMinutes(100), topicDescription.AutoDeleteOnIdle);
 
             //cleanup 
-            cleanup_action = async () =>  await namespaceManager.DeleteTopic("existingtopic");
+            cleanup_action = async () =>  await namespaceManager.DeleteTopic("existingtopic1");
         }
 
         [Test]
         public async Task Should_be_able_to_update_an_existing_topic_with_new_property_values_without_failing_on_readonly_properties()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.CreateTopic(new TopicDescription("existingtopic")
+            await namespaceManager.CreateTopic(new TopicDescription("existingtopic2")
             {
                 MaxSizeInMegabytes = 2048,
                 RequiresDuplicateDetection = true,
@@ -427,10 +427,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             });
 
             var creator = new AzureServiceBusTopicCreator(settings);
-            Assert.Throws<ArgumentException>(async () => await creator.Create("existingtopic", namespaceManager));
+            Assert.Throws<ArgumentException>(async () => await creator.Create("existingtopic2", namespaceManager));
 
             //cleanup 
-            cleanup_action = async () => await namespaceManager.DeleteTopic("existingtopic");
+            cleanup_action = async () => await namespaceManager.DeleteTopic("existingtopic2");
         }
     }
 }
