@@ -59,7 +59,7 @@
                         logger.Info($"Subscription '{subscriptionDescription.Name}' aka '{subscriptionDescription.UserMetadata}' already exists, skipping creation");
                         logger.InfoFormat("Checking if subscription '{0}' needs to be updated", subscriptionDescription.Name);
                         var existingSubscriptionDescription = await namespaceManager.GetSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
-                        if (!existingSubscriptionDescription.AllMembersAreEqual(subscriptionDescription))
+                        if (MembersAreNotEqual(existingSubscriptionDescription, subscriptionDescription))
                         {
                             logger.InfoFormat("Updating subscription '{0}' with new description", subscriptionDescription.Name);
                             await namespaceManager.UpdateSubscription(subscriptionDescription).ConfigureAwait(false);
@@ -126,6 +126,25 @@
             logger.InfoFormat("Determined, from cache, that the subscription '{0}' {1}", subscriptionName, exists ? "exists" : "does not exist");
 
             return exists;
+        }
+
+        private bool MembersAreNotEqual(SubscriptionDescription existingDescription, SubscriptionDescription newDescription)
+        {
+            if (existingDescription.RequiresSession != newDescription.RequiresSession)
+            {
+                logger.Warn("RequiresSession cannot be update on the existing queue!");
+            }
+
+            return existingDescription.AutoDeleteOnIdle != newDescription.AutoDeleteOnIdle
+                   || existingDescription.LockDuration != newDescription.LockDuration
+                   || existingDescription.DefaultMessageTimeToLive != newDescription.DefaultMessageTimeToLive
+                   || existingDescription.EnableDeadLetteringOnMessageExpiration != newDescription.EnableDeadLetteringOnMessageExpiration
+                   || existingDescription.EnableDeadLetteringOnFilterEvaluationExceptions != newDescription.EnableDeadLetteringOnFilterEvaluationExceptions
+                   || existingDescription.MaxDeliveryCount != newDescription.MaxDeliveryCount
+                   || existingDescription.EnableBatchedOperations != newDescription.EnableBatchedOperations
+                   || existingDescription.ForwardDeadLetteredMessagesTo != newDescription.ForwardDeadLetteredMessagesTo
+                   || existingDescription.ForwardTo != newDescription.ForwardTo;
+
         }
     }
 }

@@ -345,6 +345,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueue("myqueue");
         }
 
+        [Test]
         public async Task Properly_sets_DefaultMessageTimeToLive_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -366,6 +367,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueue("myqueue");
         }
 
+        [Test]
         public async Task Properly_sets_RequiresSession_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -390,6 +392,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueue("myqueue");
         }
 
+        [Test]
         public async Task Properly_sets_RequiresDuplicateDetection_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -411,6 +414,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueue("myqueue");
         }
 
+        [Test]
         public async Task Properly_sets_MaxSizeInMegabytes_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -432,6 +436,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueue("myqueue");
         }
 
+        [Test]
         public async Task Properly_sets_LockDuration_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -453,6 +458,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueue("myqueue");
         }
 
+        [Test]
         public async Task Properly_sets_SupportOrdering_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -473,8 +479,58 @@ namespace NServiceBus.AzureServiceBus.Tests
             //cleanup 
             await namespaceManager.DeleteQueue("myqueue");
         }
+
+        [Test]
+        public async Task Should_be_able_to_update_an_existing_queue_with_new_property_values()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.CreateQueue(new QueueDescription("existingqueue"));
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseDefaultTopology().Resources().Queues().DescriptionFactory((queuePath, readOnlySettings) => new QueueDescription(queuePath)
+            {
+                AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
+                EnableExpress = true,
+            });
+
+            var creator = new AzureServiceBusQueueCreator(settings);
+            await creator.Create("existingqueue", namespaceManager);
+
+            var queueDescription = await namespaceManager.GetQueue("existingqueue");
+            Assert.AreEqual(TimeSpan.FromMinutes(100), queueDescription.AutoDeleteOnIdle);
+            
+            //cleanup 
+            await namespaceManager.DeleteQueue("existingqueue");
+        }
+
+        [Test]
+        public async Task Should_be_able_to_update_an_existing_queue_with_new_property_values_without_failing_on_readonly_properties()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.CreateQueue(new QueueDescription("existingqueue")
+            {
+                LockDuration = TimeSpan.FromSeconds(50),
+                RequiresDuplicateDetection = true,
+                EnablePartitioning = true,
+                RequiresSession = true,
+            });
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseDefaultTopology().Resources().Queues().DescriptionFactory((queuePath, readOnlySettings) => new QueueDescription(queuePath)
+            {
+                LockDuration = TimeSpan.FromSeconds(50),
+                RequiresDuplicateDetection = false,
+                EnablePartitioning = false,
+                RequiresSession = false,
+            });
+
+            var creator = new AzureServiceBusQueueCreator(settings);
+            Assert.Throws<ArgumentException>(async () =>  await creator.Create("existingqueue", namespaceManager));
+            
+            //cleanup 
+            await namespaceManager.DeleteQueue("existingqueue");
+        }
     }
-
-
-
 }

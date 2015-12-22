@@ -56,7 +56,7 @@
                         logger.InfoFormat("Topic '{0}' already exists, skipping creation", topicDescription.Path);
                         logger.InfoFormat("Checking if topic '{0}' needs to be updated", topicDescription.Path);
                         var existingTopicDescription = await namespaceManager.GetTopic(topicDescription.Path).ConfigureAwait(false);
-                        if (!existingTopicDescription.AllMembersAreEqual(topicDescription))
+                        if (MembersAreNotEqual(existingTopicDescription, topicDescription))
                         {
                             logger.InfoFormat("Updating topic '{0}' with new description", topicDescription.Path);
                             await namespaceManager.UpdateTopic(topicDescription).ConfigureAwait(false);
@@ -121,5 +121,27 @@
 
             return exists;
         }
+
+        private bool MembersAreNotEqual(TopicDescription existingDescription, TopicDescription newDescription)
+        {
+            if (existingDescription.RequiresDuplicateDetection != newDescription.RequiresDuplicateDetection)
+            {
+                logger.Warn("RequiresDuplicateDetection cannot be update on the existing queue!");
+            }
+            if (existingDescription.EnablePartitioning != newDescription.EnablePartitioning)
+            {
+                logger.Warn("EnablePartitioning cannot be update on the existing queue!");
+            }
+
+            return existingDescription.AutoDeleteOnIdle != newDescription.AutoDeleteOnIdle
+                   || existingDescription.MaxSizeInMegabytes != newDescription.MaxSizeInMegabytes
+                   || existingDescription.DefaultMessageTimeToLive != newDescription.DefaultMessageTimeToLive
+                   || existingDescription.DuplicateDetectionHistoryTimeWindow != newDescription.DuplicateDetectionHistoryTimeWindow
+                   || existingDescription.EnableBatchedOperations != newDescription.EnableBatchedOperations
+                   || existingDescription.SupportOrdering != newDescription.SupportOrdering
+                   || existingDescription.EnableExpress != newDescription.EnableExpress
+                   || existingDescription.EnableFilteringMessagesBeforePublishing != newDescription.EnableFilteringMessagesBeforePublishing;
+        }
+
     }
 }

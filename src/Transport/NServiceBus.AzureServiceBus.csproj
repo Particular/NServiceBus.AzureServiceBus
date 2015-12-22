@@ -141,7 +141,6 @@
     <Compile Include="Connectivity\MessageSenderCreator.cs" />
     <Compile Include="Creation\AzureServiceBusSubscriptionCreator.cs" />
     <Compile Include="Creation\ICreateAzureServiceBusSubscriptions.cs" />
-    <Compile Include="Creation\MemberComparison.cs" />
     <Compile Include="Creation\ReadOnlySettingsExtensions.cs" />
     <Compile Include="Receiving\DefaultBrokeredMessagesToIncomingMessagesConverter.cs" />
     <Compile Include="Receiving\IConvertBrokeredMessagesToIncomingMessages.cs" />

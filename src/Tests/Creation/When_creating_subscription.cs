@@ -432,6 +432,56 @@
         }
 
 
-        // todo: test exception handling and edge cases
+        [Test]
+        public async Task Should_be_able_to_update_an_existing_subscription_with_new_property_values()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.CreateTopic(new TopicDescription("existingtopic"));
+            await namespaceManager.CreateSubscription(new SubscriptionDescription("existingtopic", "existingsubscription"), "1=1");
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseDefaultTopology().Resources().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
+            {
+                AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
+                EnableDeadLetteringOnMessageExpiration = true,
+            });
+
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            await creator.Create("existingtopic", "existingsubscription", "metadata", "1=1", namespaceManager);
+
+            var subscriptionDescription = await namespaceManager.GetSubscription("existingtopic", "existingsubscription");
+            Assert.AreEqual(TimeSpan.FromMinutes(100), subscriptionDescription.AutoDeleteOnIdle);
+
+            //cleanup 
+            await namespaceManager.DeleteTopic("existingtopic");
+        }
+
+        [Test]
+        public async Task Should_be_able_to_update_an_existing_subscription_with_new_property_values_without_failing_on_readonly_properties()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.CreateTopic(new TopicDescription("existingtopic"));
+            await namespaceManager.CreateSubscription(new SubscriptionDescription("existingtopic", "existingsubscription")
+            {
+                EnableDeadLetteringOnFilterEvaluationExceptions = true,
+                RequiresSession = true,
+            }, "1=1");
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseDefaultTopology().Resources().Subscriptions().DescriptionFactory((topic, sub, readOnlySettings) => new SubscriptionDescription(topic, sub)
+            {
+                EnableDeadLetteringOnFilterEvaluationExceptions = false,
+                RequiresSession = false,
+            });
+
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            Assert.Throws<ArgumentException>(async () => await creator.Create("existingtopic", "existingsubscription", "metadata", "1=1", namespaceManager));
+
+            //cleanup 
+//            await namespaceManager.DeleteSubscriptionAsync("existingtopic", "existingsubscription");
+            await namespaceManager.DeleteTopic("existingtopic");
+        }
     }
 }

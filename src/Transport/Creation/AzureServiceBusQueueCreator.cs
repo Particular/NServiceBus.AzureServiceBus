@@ -62,8 +62,8 @@
                     {
                         logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
                         logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
-                        var desc = await namespaceManager.GetQueue(description.Path).ConfigureAwait(false);
-                        if (!desc.AllMembersAreEqual(description))
+                        var existingDescription = await namespaceManager.GetQueue(description.Path).ConfigureAwait(false);
+                        if (MembersAreNotEqual(existingDescription, description))
                         {
                             logger.InfoFormat("Updating queue '{0}' with new description", description.Path);
                             await namespaceManager.UpdateQueue(description).ConfigureAwait(false);
@@ -122,7 +122,34 @@
 
             return exists;
         }
-        
 
+        private bool MembersAreNotEqual(QueueDescription existingDescription, QueueDescription newDescription)
+        {
+            if (existingDescription.RequiresDuplicateDetection != newDescription.RequiresDuplicateDetection)
+            {
+                logger.Warn("RequiresDuplicateDetection cannot be update on the existing queue!");
+            }
+            if (existingDescription.EnablePartitioning != newDescription.EnablePartitioning)
+            {
+                logger.Warn("EnablePartitioning cannot be update on the existing queue!");
+            }
+            if (existingDescription.RequiresSession != newDescription.RequiresSession)
+            {
+                logger.Warn("RequiresSession cannot be update on the existing queue!");
+            }
+
+            return existingDescription.AutoDeleteOnIdle != newDescription.AutoDeleteOnIdle
+                   || existingDescription.LockDuration != newDescription.LockDuration
+                   || existingDescription.MaxSizeInMegabytes != newDescription.MaxSizeInMegabytes
+                   || existingDescription.DefaultMessageTimeToLive != newDescription.DefaultMessageTimeToLive
+                   || existingDescription.EnableDeadLetteringOnMessageExpiration != newDescription.EnableDeadLetteringOnMessageExpiration
+                   || existingDescription.DuplicateDetectionHistoryTimeWindow != newDescription.DuplicateDetectionHistoryTimeWindow
+                   || existingDescription.MaxDeliveryCount != newDescription.MaxDeliveryCount
+                   || existingDescription.EnableBatchedOperations != newDescription.EnableBatchedOperations
+                   || existingDescription.SupportOrdering != newDescription.SupportOrdering
+                   || existingDescription.EnableExpress != newDescription.EnableExpress
+                   || existingDescription.ForwardDeadLetteredMessagesTo != newDescription.ForwardDeadLetteredMessagesTo
+                   || existingDescription.ForwardTo != newDescription.ForwardTo;
+        }
     }
 }

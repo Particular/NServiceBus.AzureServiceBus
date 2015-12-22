@@ -382,5 +382,55 @@ namespace NServiceBus.AzureServiceBus.Tests
             cleanup_action = () => { };
         }
 
+        [Test]
+        public async Task Should_be_able_to_update_an_existing_topic_with_new_property_values()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.CreateTopic(new TopicDescription("existingtopic"));
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseDefaultTopology().Resources().Topics().DescriptionFactory((topicPath, readOnlySettings) => new TopicDescription(topicPath)
+            {
+                AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
+                EnableExpress = true,
+            });
+
+            var creator = new AzureServiceBusTopicCreator(settings);
+            await creator.Create("existingtopic", namespaceManager);
+
+            var topicDescription = await namespaceManager.GetTopic("existingtopic");
+            Assert.AreEqual(TimeSpan.FromMinutes(100), topicDescription.AutoDeleteOnIdle);
+
+            //cleanup 
+            cleanup_action = async () =>  await namespaceManager.DeleteTopic("existingtopic");
+        }
+
+        [Test]
+        public async Task Should_be_able_to_update_an_existing_topic_with_new_property_values_without_failing_on_readonly_properties()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.CreateTopic(new TopicDescription("existingtopic")
+            {
+                MaxSizeInMegabytes = 2048,
+                RequiresDuplicateDetection = true,
+                EnablePartitioning = true,
+            });
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseDefaultTopology().Resources().Topics().DescriptionFactory((queuePath, readOnlySettings) => new TopicDescription(queuePath)
+            {
+                MaxSizeInMegabytes = 1024,
+                RequiresDuplicateDetection = false,
+                EnablePartitioning = false,
+            });
+
+            var creator = new AzureServiceBusTopicCreator(settings);
+            Assert.Throws<ArgumentException>(async () => await creator.Create("existingtopic", namespaceManager));
+
+            //cleanup 
+            cleanup_action = async () => await namespaceManager.DeleteTopic("existingtopic");
+        }
     }
 }
