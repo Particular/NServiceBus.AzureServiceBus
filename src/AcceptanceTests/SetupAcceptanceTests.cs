@@ -17,8 +17,8 @@ public class SetupAcceptanceTests
         // setting.Set<TransportDefinition>(topology_to_use)
 
         //fix time
-        var timeSync = new TimeSynchronization();
-        timeSync.Sync();
+        //var timeSync = new TimeSynchronization();
+        //timeSync.Sync();
     }
 }
 
