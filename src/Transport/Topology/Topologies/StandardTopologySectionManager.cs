@@ -145,10 +145,11 @@ namespace NServiceBus.AzureServiceBus
             var sanitizationStrategy = (ISanitizationStrategy) container.Resolve(typeof(ISanitizationStrategy));
 
             var topicPaths = DetermineTopicsFor(eventType);
-            // TODO: issue
-            // subscriptions in V6 were done on type.Name or type.FullName, as here only on FullName
+
             var subscriptionNameCandidate = endpointName + "." + eventType.FullName;
-            var subscriptionPath = sanitizationStrategy.Sanitize(subscriptionNameCandidate, EntityType.Subscription);
+            var subscriptionName = sanitizationStrategy.Sanitize(subscriptionNameCandidate, EntityType.Subscription);
+            var subscriptionNameCandidateV6 = endpointName + "." + eventType.Name;
+            var subscriptionNameV6 = sanitizationStrategy.Sanitize(subscriptionNameCandidateV6, EntityType.Subscription);
 
             var topics = new List<EntityInfo>();
             var subs = new List<SubscriptionInfo>();
@@ -160,7 +161,6 @@ namespace NServiceBus.AzureServiceBus
                     Namespace = ns,
                     Type = EntityType.Topic,
                     Path = path,
-                    Metadata = topicPath
                 }));
 
                 subs.AddRange(namespaces.Select(ns =>
@@ -169,8 +169,12 @@ namespace NServiceBus.AzureServiceBus
                     {
                         Namespace = ns,
                         Type = EntityType.Subscription,
-                        Path = subscriptionPath,
-                        Metadata = endpointName + " subscribed to " + eventType.FullName,
+                        Path = subscriptionName,
+                        Metadata = new SubscriptionMetadata
+                        {
+                            Description = endpointName + " subscribed to " + eventType.FullName,
+                            LegacySubscriptionName = subscriptionNameV6
+                        },
                         BrokerSideFilter = new SqlSubscriptionFilter(eventType)
                     };
                     sub.RelationShips.Add(new EntityRelationShipInfo

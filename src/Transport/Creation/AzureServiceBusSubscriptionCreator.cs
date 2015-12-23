@@ -37,16 +37,16 @@
             }
         }
 
-        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, string metadata, string sqlFilter, INamespaceManager namespaceManager)
+        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager)
         {
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
-            subscriptionDescription.UserMetadata = metadata;
+            subscriptionDescription.UserMetadata = metadata.Description;
 
             try
             {
                 if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 {
-                    if (!await ExistsAsync(topicPath, subscriptionName, metadata, namespaceManager).ConfigureAwait(false))
+                    if (!await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager).ConfigureAwait(false))
                     {
                         await namespaceManager.CreateSubscription(subscriptionDescription, sqlFilter).ConfigureAwait(false);
                         logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}'");
@@ -81,7 +81,7 @@
                 logger.InfoFormat("Timeout occurred on subscription creation for topic '{0}' subscription name '{1}' going to validate if it doesn't exist", subscriptionDescription.TopicPath, subscriptionDescription.Name);
 
                 // there is a chance that the timeout occured, but the topic was still created, check again
-                if (!await ExistsAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name, metadata, namespaceManager, removeCacheEntry: true).ConfigureAwait(false))
+                if (!await ExistsAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name, metadata.Description, namespaceManager, removeCacheEntry: true).ConfigureAwait(false))
                 {
                     throw;
                 }

@@ -14,7 +14,7 @@
     public class When_creating_subscription
     {
         const string topicPath = "topic";
-        const string metadata = "eventname";
+        static SubscriptionMetadata metadata = new SubscriptionMetadata { Description = "eventname" };
         private const string sqlFilter = "1=1";
 
         [TestFixtureSetUp]
@@ -35,7 +35,7 @@
         }
 
         [Test]
-        public async Task Should_properly_set_not_create_subsciption_when_topology_creation_is_turned_off()
+        public async Task Should_not_create_subsciption_when_topology_creation_is_turned_off()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, false);
@@ -423,7 +423,7 @@
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
             const string subsciptionName = "sub1";
-            var subscriptionDescription = await creator.Create(topicPath, subsciptionName, "very.logn.name.of.an.event.that.would.exceed.subscription.length", sqlFilter, namespaceManager);
+            var subscriptionDescription = await creator.Create(topicPath, subsciptionName, new SubscriptionMetadata {Description = "very.logn.name.of.an.event.that.would.exceed.subscription.length" }, sqlFilter, namespaceManager);
 
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subsciptionName));
             Assert.AreEqual("very.logn.name.of.an.event.that.would.exceed.subscription.length", subscriptionDescription.UserMetadata);
@@ -437,7 +437,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.CreateTopic(new TopicDescription("sometopic1"));
-            await namespaceManager.CreateSubscription(new SubscriptionDescription("sometopic1", "existingsubscription1"), "1=1");
+            await namespaceManager.CreateSubscription(new SubscriptionDescription("sometopic1", "existingsubscription1"), sqlFilter);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -448,7 +448,7 @@
             });
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
-            await creator.Create("sometopic1", "existingsubscription1", "metadata", "1=1", namespaceManager);
+            await creator.Create("sometopic1", "existingsubscription1", metadata, sqlFilter, namespaceManager);
 
             var subscriptionDescription = await namespaceManager.GetSubscription("sometopic1", "existingsubscription1");
             Assert.AreEqual(TimeSpan.FromMinutes(100), subscriptionDescription.AutoDeleteOnIdle);
@@ -477,7 +477,7 @@
             });
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
-            Assert.Throws<ArgumentException>(async () => await creator.Create("sometopic2", "existingsubscription2", "metadata", "1=1", namespaceManager));
+            Assert.Throws<ArgumentException>(async () => await creator.Create("sometopic2", "existingsubscription2", metadata, sqlFilter, namespaceManager));
 
             //cleanup 
             await namespaceManager.DeleteTopic("sometopic2");

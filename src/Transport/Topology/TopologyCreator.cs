@@ -45,7 +45,8 @@ namespace NServiceBus.AzureServiceBus
                 {
                     var topic = subscription.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
                     var sqlFilter = (subscription as SubscriptionInfo)?.BrokerSideFilter.Serialize();
-                    await subscriptionCreator.Create(topic.Target.Path, subscription.Path, subscription.Metadata, sqlFilter, namespaces.Get(subscription.Namespace.ConnectionString)).ConfigureAwait(false);
+                    var metadata = (subscription as SubscriptionInfo)?.Metadata ?? new SubscriptionMetadata();
+                    await subscriptionCreator.Create(topic.Target.Path, subscription.Path, metadata, sqlFilter, namespaces.Get(subscription.Namespace.ConnectionString)).ConfigureAwait(false);
                 }
             }
         }
