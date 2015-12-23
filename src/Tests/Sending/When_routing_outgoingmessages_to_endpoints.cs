@@ -1,6 +1,5 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -8,8 +7,6 @@ namespace NServiceBus.AzureServiceBus.Tests
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NServiceBus.DeliveryConstraints;
-    using NServiceBus.ObjectBuilder;
-    using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
@@ -31,25 +28,47 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
+            var router = new DefaultOutgoingBatchRouter(new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
             await creator.Create("myqueue", namespaceManager);
 
-            //// perform the test
-
-            var router = new DefaultOutgoingBatchRouter(
-                new FakeTopologySectionManager(),
-                new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
-                clientLifecycleManager, settings);
-
+            // setup the batch
+            var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
+            var batch = new Batch
+            {
+                Destinations = new TopologySection
+                {
+                    Entities = new List<EntityInfo>
+                        {
+                            new EntityInfo
+                            {
+                                Namespace = @namespace,
+                                Path = "MyQueue",
+                                Type = EntityType.Queue
+                            }
+                        },
+                    Namespaces = new List<NamespaceInfo>
+                        {
+                            @namespace
+                        }
+                },
+                RequiredDispatchConsistency = DispatchConsistency.Default,
+                Operations = new List<BatchedOperation>
+                    {
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        },
+                    }
+            };
 
-            
-            await router.RouteBatch(new[] { new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage, dispatchOptions) }, new RoutingOptions ());
+            // perform the test
+            await router.RouteBatch(batch, null);
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -72,25 +91,52 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
+            var router = new DefaultOutgoingBatchRouter(new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
             await creator.Create("myqueue", namespaceManager);
 
-            //// perform the test
-
-            var router = new DefaultOutgoingBatchRouter(
-                new FakeTopologySectionManager(),
-                new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
-                clientLifecycleManager, settings);
-
+            // setup the batch
+            var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-            var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
-            
-            await router.RouteBatch(new [] { new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage1, dispatchOptions), new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage2, dispatchOptions)}, new RoutingOptions());
+            var batch = new Batch
+            {
+                Destinations = new TopologySection
+                {
+                    Entities = new List<EntityInfo>
+                        {
+                            new EntityInfo
+                            {
+                                Namespace = @namespace,
+                                Path = "MyQueue",
+                                Type = EntityType.Queue
+                            }
+                        },
+                    Namespaces = new List<NamespaceInfo>
+                        {
+                            @namespace
+                        }
+                },
+                RequiredDispatchConsistency = DispatchConsistency.Default,
+                Operations = new List<BatchedOperation>
+                    {
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        },
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        }
+                    }
+            };
+
+            // perform the test
+            await router.RouteBatch(batch, null);
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -113,25 +159,52 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
+            var router = new DefaultOutgoingBatchRouter(new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
             await creator.Create("myqueue", namespaceManager);
 
-            //// perform the test
+            // setup the batch
+            var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var bytes = Enumerable.Range(0, 250 * 1024).Select(x => (byte)(x % 256)).ToArray();
+            var batch = new Batch
+            {
+                Destinations = new TopologySection
+                {
+                    Entities = new List<EntityInfo>
+                        {
+                            new EntityInfo
+                            {
+                                Namespace = @namespace,
+                                Path = "MyQueue",
+                                Type = EntityType.Queue
+                            }
+                        },
+                    Namespaces = new List<NamespaceInfo>
+                        {
+                            @namespace
+                        }
+                },
+                RequiredDispatchConsistency = DispatchConsistency.Default,
+                Operations = new List<BatchedOperation>
+                    {
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        },
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        }
+                    }
+            };
 
-            var router = new DefaultOutgoingBatchRouter(
-                new FakeTopologySectionManager(), 
-                new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
-                clientLifecycleManager, settings);
-
-            var bytes = Enumerable.Range(0, 250 * 1024).Select(x => (byte) (x%256)).ToArray();
-            var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-            var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
-            
-            await router.RouteBatch(new [] { new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage1, dispatchOptions), new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage2, dispatchOptions) }, new RoutingOptions ());
+            // perform the test
+            await router.RouteBatch(batch, null);
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -154,82 +227,51 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-
+            var router = new DefaultOutgoingBatchRouter(new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
+            
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
             await creator.Create("myqueue", namespaceManager);
 
-            //// perform the test
+            // setup the batch
+            var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
-            var router = new DefaultOutgoingBatchRouter(
-                new FakeTopologySectionManager(), 
-                new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), // this feels odd that brokeredmessage is a concern at this level, should be implementation detail
-                clientLifecycleManager, settings);
+            var batch = new Batch
+            {
+                Destinations = new TopologySection
+                {
+                    Entities = new List<EntityInfo>
+                        {
+                            new EntityInfo
+                            {
+                                Namespace = @namespace,
+                                Path = "MyQueue",
+                                Type = EntityType.Queue
+                            }
+                        },
+                    Namespaces = new List<NamespaceInfo>
+                        {
+                            @namespace
+                        }
+                },
+                RequiredDispatchConsistency = DispatchConsistency.Default,
+                Operations = new List<BatchedOperation>
+                    {
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        }
+                    }
+            };
 
-            var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes) * 1024).Select(x => (byte) (x%256)).ToArray();
-            var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
-
-            //validate
-            Assert.That(async () => await router.RouteBatch(new [] { new Tuple<OutgoingMessage, DispatchOptions>(outgoingMessage1, dispatchOptions), }, new RoutingOptions ()), Throws.Exception.TypeOf<MessageTooLargeException>());
+            // perform the test
+            Assert.That(async () => await router.RouteBatch(batch, null), Throws.Exception.TypeOf<MessageTooLargeException>());
 
             //cleanup 
             await namespaceManager.DeleteQueue("myqueue");
-        }
-
-        public class FakeTopologySectionManager : ITopologySectionManager
-        {
-            public void InitializeSettings(SettingsHolder settings)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void InitializeContainer(IConfigureComponents container, ITransportPartsContainer transportPartsContainer)
-            {
-                throw new NotImplementedException();
-            }
-
-            public TopologySection DetermineReceiveResources(string inputQueue)
-            {
-                throw new NotImplementedException();
-            }
-
-            public TopologySection DetermineResourcesToCreate()
-            {
-                throw new NotImplementedException();
-            }
-
-
-            public TopologySection DeterminePublishDestination(Type eventType)
-            {
-                throw new NotImplementedException();
-            }
-
-            public TopologySection DetermineSendDestination(string destination)
-            {
-                return new TopologySection()
-                {
-                    Entities = new[]
-                    {
-                        new EntityInfo
-                        {
-                            Path = destination,
-                            Namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active)
-                        }
-                    }
-                };
-            }
-
-            public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
-            {
-                throw new NotImplementedException();
-            }
-
-            public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 }

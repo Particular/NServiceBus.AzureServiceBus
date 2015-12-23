@@ -93,6 +93,11 @@ namespace NServiceBus.AzureServiceBus
 
     public class Batch
     {
+        public Batch()
+        {
+            Operations = new List<BatchedOperation>();
+        }
+
         public TopologySection Destinations { get; set; }
 
         public DispatchConsistency RequiredDispatchConsistency { get; set; }

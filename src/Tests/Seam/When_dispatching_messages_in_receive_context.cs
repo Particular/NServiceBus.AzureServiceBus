@@ -55,7 +55,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                var dispatchOptions = new DispatchOptions(new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(() =>
@@ -64,10 +63,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     return TaskEx.Completed;
                 });
 
-                await dispatcher.Dispatch(new[]
-                {
-                    new TransportOperation(outgoingMessage, dispatchOptions)
-                }, context.Context); // makes sure the context propagates
+                var transportOperations = new TransportOperations(Enumerable.Empty<MulticastTransportOperation>(), new[] {  new UnicastTransportOperation(outgoingMessage, "myqueue", Enumerable.Empty<DeliveryConstraint>(), DispatchConsistency.Default)});
+
+                await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
 
                 // TODO: TransportTransactionMode will need to change with topology
             }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
@@ -78,7 +76,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // send message to local queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
-            await sender.Send(new BrokeredMessage());
+            await sender.Send(new BrokeredMessage {MessageId = "id-incoming"});
 
             await completed.WaitOne();
 
@@ -110,15 +108,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupBasicTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
+            var dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await creator.Create("myqueue", namespaceManager);
 
@@ -141,7 +139,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                var dispatchOptions = new DispatchOptions(new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(async () =>
@@ -151,10 +148,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     throw new Exception("Something bad happens on complete");
                 });
 
-                await dispatcher.Dispatch(new[]
-                {
-                    new TransportOperation(outgoingMessage, dispatchOptions)
-                }, context.Context);
+                var transportOperations = new TransportOperations(Enumerable.Empty<MulticastTransportOperation>(), new[] { new UnicastTransportOperation(outgoingMessage, "myqueue", Enumerable.Empty<DeliveryConstraint>(), DispatchConsistency.Default) });
+                await dispatcher.Dispatch(transportOperations, context.Context);
 
                 // TODO: TransportTransactionMode will need to change with topology
             }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
@@ -163,7 +158,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to local queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
             await sender.Send(new BrokeredMessage());
 
@@ -205,15 +200,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupBasicTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
+            var dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await creator.Create("myqueue", namespaceManager);
 
@@ -229,7 +224,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                var dispatchOptions = new DispatchOptions(new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(() =>
@@ -238,10 +232,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     return TaskEx.Completed;
                 });
 
-                await dispatcher.Dispatch(new[]
-                {
-                    new TransportOperation(outgoingMessage, dispatchOptions)
-                }, context.Context); // makes sure the context propagates
+                var transportOperations = new TransportOperations(Enumerable.Empty<MulticastTransportOperation>(), new[] { new UnicastTransportOperation(outgoingMessage, "myqueue", Enumerable.Empty<DeliveryConstraint>(), DispatchConsistency.Default) });
+
+                await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
 
                 // TODO: TransportTransactionMode will need to change with topology
             }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
@@ -250,9 +243,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to local queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
-            await sender.Send(new BrokeredMessage {MessageId = "id-init"});
+            await sender.Send(new BrokeredMessage
+            {
+                MessageId = "id-init"
+            });
 
             await completed.WaitOne();
 
@@ -287,15 +283,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupBasicTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
+            var dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await creator.Create("myqueue", namespaceManager);
 
@@ -318,20 +314,18 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                var dispatchOptions = new DispatchOptions(new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
-
+                
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(async () =>
                 {
                     await Task.Delay(1); // makes sure the compiler creates the statemachine that handles exception propagation
-                    
+
                     throw new Exception("Something bad happens on complete");
                 });
 
-                await dispatcher.Dispatch(new[]
-                {
-                    new TransportOperation(outgoingMessage, dispatchOptions)
-                }, context.Context);
+                var transportOperations = new TransportOperations(Enumerable.Empty<MulticastTransportOperation>(), new[] { new UnicastTransportOperation(outgoingMessage, "myqueue", Enumerable.Empty<DeliveryConstraint>(), DispatchConsistency.Default) });
+
+                await dispatcher.Dispatch(transportOperations, context.Context);
 
                 // TODO: TransportTransactionMode will need to change with topology
             }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
@@ -340,7 +334,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to local queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
             await sender.Send(new BrokeredMessage());
 
@@ -384,15 +378,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupBasicTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
             var pump = new MessagePump(topology, topologyOperator);
 
             // setup the dispatching side of things
-            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
+            var dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             await creator.Create("myqueue", namespaceManager);
 
@@ -422,7 +416,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             {
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                var dispatchOptions = new DispatchOptions(new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
 
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(async () =>
@@ -432,10 +425,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     throw new Exception("Something bad happens on complete");
                 });
 
-                await dispatcher.Dispatch(new[]
-                {
-                    new TransportOperation(outgoingMessage, dispatchOptions)
-                }, context.Context);
+                var transportOperations = new TransportOperations(Enumerable.Empty<MulticastTransportOperation>(), new[] { new UnicastTransportOperation(outgoingMessage, "myqueue", Enumerable.Empty<DeliveryConstraint>(), DispatchConsistency.Default) });
+
+                await dispatcher.Dispatch(transportOperations, context.Context);
 
                 // TODO: TransportTransactionMode will need to change with topology
             }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
@@ -444,7 +436,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to local queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
             var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
             await sender.Send(new BrokeredMessage());
 

@@ -1,15 +1,11 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using AzureServiceBus;
     using DeliveryConstraints;
     using NServiceBus.Extensibility;
-    using NServiceBus.ObjectBuilder;
-    using Routing;
     using Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
@@ -31,7 +27,7 @@
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingBatchRouter(new FakeTopologySectionManager(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
+            var router = new DefaultOutgoingBatchRouter(new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -39,21 +35,9 @@
             await creator.Create("myqueue", namespaceManager);
             await creator.Create("myqueue2", namespaceManager);
 
-            var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-            var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
-            var outgoingMessage3 = new OutgoingMessage("Id-3", new Dictionary<string, string>(), bytes);
-            var outgoingMessage4 = new OutgoingMessage("Id-4", new Dictionary<string, string>(), bytes);
-            var dispatchOptions1 = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
-            var dispatchOptions2 = new DispatchOptions(new UnicastAddressTag("MyQueue2"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
-
-            //// perform the test
-            var dispatcher = new Dispatcher(router, settings);
-            await dispatcher.Dispatch(new []
-            {
-                new TransportOperation(outgoingMessage1, dispatchOptions1), new TransportOperation(outgoingMessage2, dispatchOptions1), //batch #1
-                new TransportOperation(outgoingMessage3, dispatchOptions2), new TransportOperation(outgoingMessage4, dispatchOptions2), //batch #2
-            }, new ContextBag());
+            // perform the test
+            var dispatcher = new Dispatcher(router, new FakeBatcher());
+            await dispatcher.Dispatch(new TransportOperations(new List<MulticastTransportOperation>(), new List<UnicastTransportOperation>()), new ContextBag());
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -79,86 +63,108 @@
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingBatchRouter(new FakeTopologySectionManager(), new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
+            var router = new DefaultOutgoingBatchRouter(new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), clientLifecycleManager, settings);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
             await creator.Create("myqueue", namespaceManager);
 
-            var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var outgoingMessage1 = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-            var outgoingMessage2 = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes);
-            var outgoingMessage3 = new OutgoingMessage("Id-3", new Dictionary<string, string>(), bytes);
-            var outgoingMessage4 = new OutgoingMessage("Id-4", new Dictionary<string, string>(), bytes);
-            var dispatchOptions1 = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
-            var dispatchOptions2 = new DispatchOptions(new UnicastAddressTag("MyQueue2"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>());
+            // perform the test
+            var dispatcher = new Dispatcher(router, new FakeBatcher());
 
-            //// perform the test
-            var dispatcher = new Dispatcher(router, settings);
-
-            //validate
-            Assert.That(async () => await dispatcher.Dispatch(new[]
-            {
-                new TransportOperation(outgoingMessage1, dispatchOptions1), new TransportOperation(outgoingMessage2, dispatchOptions1), //batch #1
-                new TransportOperation(outgoingMessage3, dispatchOptions2), new TransportOperation(outgoingMessage4, dispatchOptions2), //batch #2
-            }, new ContextBag()), Throws.Exception);
+            // validate
+            Assert.That(async () => await dispatcher.Dispatch(new TransportOperations(new List<MulticastTransportOperation>(), new List<UnicastTransportOperation>()), new ContextBag()), Throws.Exception);
 
             //cleanup 
             await namespaceManager.DeleteQueue("myqueue");
         }
 
 
-        class FakeTopologySectionManager : ITopologySectionManager
+        class FakeBatcher : IBatcher
         {
-            public void InitializeSettings(SettingsHolder settings)
+            public IList<Batch> ToBatches(TransportOperations operations)
             {
-                throw new NotImplementedException();
-            }
+                // we don't care about incoming operations as we'll fake batcher and return pre-canned batches
 
-            public void InitializeContainer(IConfigureComponents container, ITransportPartsContainer transportPartsContainer)
-            {
-                throw new NotImplementedException();
-            }
+                var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
 
-            public TopologySection DetermineReceiveResources(string inputQueue)
-            {
-                throw new NotImplementedException();
-            }
+                var bytes = Encoding.UTF8.GetBytes("Whatever");
 
-            public TopologySection DetermineResourcesToCreate()
-            {
-                throw new NotImplementedException();
-            }
-            
-            public TopologySection DeterminePublishDestination(Type eventType)
-            {
-                throw new NotImplementedException();
-            }
 
-            public TopologySection DetermineSendDestination(string destination)
-            {
-                return new TopologySection
+                var batch1 = new Batch
                 {
-                    Entities = new[]
+                    Destinations = new TopologySection
                     {
-                        new EntityInfo
+                        Entities = new List<EntityInfo>
                         {
-                            Path = destination,
-                            Namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active)
+                            new EntityInfo
+                            {
+                                Namespace = @namespace,
+                                Path = "MyQueue",
+                                Type = EntityType.Queue
+                            }
+                        },
+                        Namespaces = new List<NamespaceInfo>
+                        {
+                            @namespace
                         }
+                    },
+                    RequiredDispatchConsistency = DispatchConsistency.Default,
+                    Operations = new List<BatchedOperation>
+                    {
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        },
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        },
                     }
                 };
-            }
 
-            public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
-            {
-                throw new NotImplementedException();
-            }
+                var batch2 = new Batch
+                {
+                    Destinations = new TopologySection
+                    {
+                        Entities = new List<EntityInfo>
+                        {
+                            new EntityInfo
+                            {
+                                Namespace = @namespace,
+                                Path = "MyQueue2",
+                                Type = EntityType.Queue
+                            }
+                        },
+                        Namespaces = new List<NamespaceInfo>
+                        {
+                            @namespace
+                        }
+                    },
+                    RequiredDispatchConsistency = DispatchConsistency.Default,
+                    Operations = new List<BatchedOperation>
+                    {
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("Id-3", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        },
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("Id-4", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        },
+                    }
+                };
 
-            public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
-            {
-                throw new NotImplementedException();
+                return new List<Batch>
+                {
+                    batch1,
+                    batch2
+                };
             }
         }
     }
