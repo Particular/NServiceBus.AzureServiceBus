@@ -6,7 +6,6 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System.Text;
     using NServiceBus.DelayedDelivery;
     using NServiceBus.DeliveryConstraints;
-    using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
@@ -25,11 +24,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
 
-            var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
-            var routingOptions = new RoutingOptions();
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions, routingOptions);
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
             var body = Encoding.UTF8.GetString(brokeredMessage.GetBody<byte[]>());
 
@@ -49,11 +50,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
 
-            var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
-            var routingOptions = new RoutingOptions();
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions, routingOptions);
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
             var sr = new StreamReader(brokeredMessage.GetBody<Stream>());
             var body = sr.ReadToEnd();
@@ -66,14 +69,15 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-
             var converter = new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings);
 
-            var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
-            var routingOptions = new RoutingOptions();
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions, routingOptions);
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
             Assert.IsTrue(brokeredMessage.MessageId == "SomeId");
         }
@@ -91,11 +95,13 @@ namespace NServiceBus.AzureServiceBus.Tests
                 {"MyHeader", "MyValue"}
             };
 
-            var outgoingMessage = new OutgoingMessage("SomeId", headers, new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
-            var routingOptions = new RoutingOptions();
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", headers, new byte[0]),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions, routingOptions);
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
             Assert.IsTrue(brokeredMessage.Properties.ContainsKey("MyHeader"));
             Assert.AreEqual("MyValue", brokeredMessage.Properties["MyHeader"]);
@@ -110,18 +116,17 @@ namespace NServiceBus.AzureServiceBus.Tests
             var converter = new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings);
 
             var now = DateTime.UtcNow;
-            Time.UtcNow = () => now ;
+            Time.UtcNow = () => now;
 
             var delay = new DelayDeliveryWith(TimeSpan.FromDays(1));
 
-            var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>
+            var batchedOperation = new BatchedOperation
             {
-                delay
-            });
-            var routingOptions = new RoutingOptions();
+                Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]),
+                DeliveryConstraints = new List<DeliveryConstraint> { delay }
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions, routingOptions);
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
             Assert.IsTrue(brokeredMessage.ScheduledEnqueueTimeUtc == now.AddDays(1));
 
@@ -140,15 +145,13 @@ namespace NServiceBus.AzureServiceBus.Tests
             Time.UtcNow = () => now;
             var delay = new DoNotDeliverBefore(now.AddDays(2));
 
-            var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>
+            var batchedOperation = new BatchedOperation
             {
-                delay
-            });
-            var routingOptions = new RoutingOptions();
+                Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]),
+                DeliveryConstraints = new List<DeliveryConstraint> { delay }
+            };
 
-
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions, routingOptions);
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
             Assert.IsTrue(brokeredMessage.ScheduledEnqueueTimeUtc == now.AddDays(2));
 
@@ -163,16 +166,19 @@ namespace NServiceBus.AzureServiceBus.Tests
             var converter = new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings);
 
             var ttl = TimeSpan.FromMinutes(1);
-            var headers = new Dictionary<string, string>()
+
+            var headers = new Dictionary<string, string>
             {
                 {Headers.TimeToBeReceived, ttl.ToString()}
             };
 
-            var outgoingMessage = new OutgoingMessage("SomeId", headers, new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
-            var routingOptions = new RoutingOptions();
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", headers, new byte[0]),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions, routingOptions);
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
             Assert.IsTrue(brokeredMessage.TimeToLive == ttl);
         }
@@ -185,17 +191,18 @@ namespace NServiceBus.AzureServiceBus.Tests
             var converter = new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings);
 
             var correlationId = "SomeId";
-            var headers = new Dictionary<string, string>()
+            var headers = new Dictionary<string, string>
             {
                 {Headers.CorrelationId, correlationId}
             };
 
-            var outgoingMessage = new OutgoingMessage("SomeId", headers, new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
-            var routingOptions = new RoutingOptions();
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", headers, new byte[0]),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
 
-
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions, routingOptions);
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
             Assert.IsTrue(brokeredMessage.CorrelationId == correlationId);
         }
@@ -207,40 +214,43 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var converter = new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings);
 
-            var replyto = "MyQueue";
             var headers = new Dictionary<string, string>()
             {
-                {Headers.ReplyToAddress, replyto}
+                {Headers.ReplyToAddress, "MyQueue"}
             };
 
-            var outgoingMessage = new OutgoingMessage("SomeId", headers, new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
-            var routingOptions = new RoutingOptions();
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", headers, new byte[0]),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions, routingOptions);
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
-            Assert.IsTrue(brokeredMessage.ReplyTo == replyto);
+            Assert.IsTrue(brokeredMessage.ReplyTo == "MyQueue");
         }
 
         [Test]
         public void Should_set_ViaPartitionKey_if_partition_key_is_available_and_sending_via_option_is_enabled()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-
             var converter = new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings);
 
-            var partitionKey = "partitionkey";
-            var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]);
-            var dispatchOptions = new DispatchOptions(new UnicastAddressTag("MyQueue"), DispatchConsistency.Default, new List<DeliveryConstraint>());
             var routingOptions = new RoutingOptions
             {
                 SendVia = true,
-                ViaPartitionKey = partitionKey
+                ViaPartitionKey = "partitionkey"
             };
 
-            var brokeredMessage = converter.Convert(outgoingMessage, dispatchOptions, routingOptions);
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[0]),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
 
-            Assert.IsTrue(brokeredMessage.ViaPartitionKey == partitionKey);
+            var brokeredMessage = converter.Convert(batchedOperation, routingOptions);
+
+            Assert.IsTrue(brokeredMessage.ViaPartitionKey == "partitionkey");
         }
     }
 }

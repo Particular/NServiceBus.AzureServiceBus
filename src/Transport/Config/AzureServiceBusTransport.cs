@@ -8,6 +8,7 @@
     using NServiceBus.DelayedDelivery;
     using NServiceBus.Features;
     using NServiceBus.Performance.TimeToBeReceived;
+    using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
@@ -65,15 +66,10 @@
             return Topology.GetSubscriptionManager();
         }
 
-        public override string GetDiscriminatorForThisEndpointInstance(ReadOnlySettings settings)
+        public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance, ReadOnlySettings settings)
         {
-            // Decision is based on 3 parties: Core + Transport + Host + User scenario (based on hosting scenario, ex: multiple instances on the same physical machine)
-            // TODO: What is "discriminator"? Does that include endpoint instance identifier or not?
-
-            // var instanceId = settings.Get<InstanceId>(); // instance id set by the host
-            // var discriminator = "-" + instanceId;
-            // return Transport.ValidateDiscriminator(discriminator);
-            return null;
+            // ???
+            return instance;
         }
 
         public override string ToTransportAddress(LogicalAddress logicalAddress)

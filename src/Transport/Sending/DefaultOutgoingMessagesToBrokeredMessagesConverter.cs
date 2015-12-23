@@ -19,19 +19,20 @@ namespace NServiceBus.AzureServiceBus
             this.settings = settings;
         }
 
-        public IEnumerable<BrokeredMessage> Convert(IEnumerable<Tuple<OutgoingMessage, DispatchOptions>> outgoingMessages, RoutingOptions routingOptions)
+        public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperation> outgoingMessages, RoutingOptions routingOptions)
         {
-            return outgoingMessages.Select(x => Convert(x.Item1, x.Item2, routingOptions));
+            return outgoingMessages.Select(x => Convert(x, routingOptions));
         }
 
-        public BrokeredMessage Convert(OutgoingMessage outgoingMessage, DispatchOptions dispatchOptions, RoutingOptions routingOptions)
+        public BrokeredMessage Convert(BatchedOperation outgoingOperation, RoutingOptions routingOptions)
         {
+            var outgoingMessage = outgoingOperation.Message;
             var brokeredMessage = CreateBrokeredMessage(outgoingMessage);
             brokeredMessage.MessageId = outgoingMessage.MessageId;
 
             CopyHeaders(outgoingMessage, brokeredMessage);
 
-            ApplyDeliveryConstraints(brokeredMessage, dispatchOptions);
+            ApplyDeliveryConstraints(brokeredMessage, outgoingOperation);
 
             ApplyTimeToLive(outgoingMessage, brokeredMessage);
 
@@ -84,11 +85,11 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        void ApplyDeliveryConstraints(BrokeredMessage brokeredMessage, DispatchOptions dispatchOptions)
+        void ApplyDeliveryConstraints(BrokeredMessage brokeredMessage, BatchedOperation operation)
         {
             DateTime? scheduledEnqueueTime = null;
 
-            var deliveryConstraint = dispatchOptions.DeliveryConstraints.FirstOrDefault(d => d is DelayedDeliveryConstraint);
+            var deliveryConstraint = operation.DeliveryConstraints.FirstOrDefault(d => d is DelayedDeliveryConstraint);
 
             if (deliveryConstraint != null)
             {
