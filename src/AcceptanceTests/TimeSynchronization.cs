@@ -25,28 +25,36 @@ namespace NServiceBus.AzureServiceBus.AcceptanceTests
 
         public void Sync()
         {
-            // Call the native GetSystemTime method 
-            // with the defined structure.
-            var systime = new SYSTEMTIME();
-
-            TimeSpan offset;
-            using (var ntp = new NtpClient("pool.ntp.org"))
+            try
             {
-                ntp.Timeout = TimeSpan.FromSeconds(5);
-                var ntpResponse = ntp.Query();
-                offset = ntpResponse.CorrectionOffset;
+                // Call the native GetSystemTime method 
+                // with the defined structure.
+                var systime = new SYSTEMTIME();
+
+                TimeSpan offset;
+                using (var ntp = new NtpClient("pool.ntp.org"))
+                {
+                    ntp.Timeout = TimeSpan.FromSeconds(5);
+                    var ntpResponse = ntp.Query();
+                    offset = ntpResponse.CorrectionOffset;
+                }
+                var accurateTime = DateTime.UtcNow + offset;
+
+                systime.wYear = (ushort)accurateTime.Year;
+                systime.wMonth = (ushort)accurateTime.Month;
+                systime.wDay = (ushort)accurateTime.Day;
+                systime.wHour = (ushort)accurateTime.Hour;
+                systime.wMinute = (ushort)accurateTime.Minute;
+                systime.wSecond = (ushort)accurateTime.Second;
+                systime.wMilliseconds = (ushort)accurateTime.Millisecond;
+
+                SetSystemTime(ref systime);
             }
-            var accurateTime = DateTime.UtcNow + offset;
-
-            systime.wYear = (ushort)accurateTime.Year;
-            systime.wMonth = (ushort)accurateTime.Month;
-            systime.wDay = (ushort)accurateTime.Day;
-            systime.wHour = (ushort)accurateTime.Hour;
-            systime.wMinute = (ushort)accurateTime.Minute;
-            systime.wSecond = (ushort)accurateTime.Second;
-            systime.wMilliseconds = (ushort)accurateTime.Millisecond;
-
-            SetSystemTime(ref systime);
+            catch (Exception ex)
+            {
+               Console.WriteLine($"Exception of type '{0}' occured while trying to synchronize the machine clock.", ex.GetType().Name);
+            }
+            
         }
     }
 }

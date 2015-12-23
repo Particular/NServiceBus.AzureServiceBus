@@ -96,27 +96,35 @@
 
                 public Task Handle(StartSagaMessage message, IMessageHandlerContext context)
                 {
-                    Context.AddTrace("Saga started");
+                    if (Context.Id == message.SomeId)
+                    {
+                        Context.AddTrace("Saga started");
 
-                    Data.SomeId = message.SomeId;
+                        Data.SomeId = message.SomeId;
 
-                    Context.StartSagaMessageReceived = true;
-
+                        Context.StartSagaMessageReceived = true;
+                    }
                     return Task.FromResult(0);
                 }
 
                 public Task Handle(CompleteSagaMessage message, IMessageHandlerContext context)
                 {
-                    Context.AddTrace("CompleteSagaMessage received");
-                    MarkAsComplete();
-                    Context.SagaCompleted = true;
+                    if (Context.Id == message.SomeId)
+                    {
+                        Context.AddTrace("CompleteSagaMessage received");
+                        MarkAsComplete();
+                        Context.SagaCompleted = true;
+                    }
                     return Task.FromResult(0);
                 }
 
                 public Task Handle(AnotherMessage message, IMessageHandlerContext context)
                 {
-                    Context.AddTrace("AnotherMessage received");
-                    Context.SagaReceivedAnotherMessage = true;
+                    if (Context.Id == message.SomeId)
+                    {
+                        Context.AddTrace("AnotherMessage received");
+                        Context.SagaReceivedAnotherMessage = true;
+                    }
                     return Task.FromResult(0);
                 }
 
@@ -145,7 +153,10 @@
             public Context Context { get; set; }
             public Task Handle(AnotherMessage message, IMessageHandlerContext context)
             {
-                Context.AnotherMessageReceived = true;
+                if (Context.Id == message.SomeId)
+                {
+                    Context.AnotherMessageReceived = true;
+                }
                 return Task.FromResult(0);
             }
         }

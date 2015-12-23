@@ -106,6 +106,12 @@ namespace NServiceBus.AzureServiceBus
 
         async Task ProcessMessageAsync(BrokeredMessage message)
         {
+            if (stopping || !IsRunning)
+            {
+                await AbandonAsync(message).ConfigureAwait(false);
+                return;
+            }
+
             var incomingMessage = brokeredMessageConverter.Convert(message);
             var context = new BrokeredMessageReceiveContext()
             {
@@ -139,10 +145,27 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
+        async Task AbandonAsync(BrokeredMessage message)
+        {
+            logger.Info("Received message while shutting down, abandoning it so we can process it later.");
+
+            await AbandonInternal(message);
+        }
+
         async Task AbandonAsync(BrokeredMessage message, Exception exception)
         {
             logger.Info($"Exceptions occurred OnComplete, exception: {exception}");
 
+            await AbandonInternal(message);
+
+            if (errorCallback != null && exception != null)
+            {
+                await errorCallback(exception).ConfigureAwait(false);
+            }
+        }
+
+        async Task AbandonInternal(BrokeredMessage message)
+        {
             using (var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
                 logger.InfoFormat("Abandoning brokered message {0}", message.MessageId);
@@ -150,11 +173,6 @@ namespace NServiceBus.AzureServiceBus
                 await message.SafeAbandonAsync().ConfigureAwait(false);
 
                 suppressScope.Complete();
-            }
-
-            if (errorCallback != null)
-            {
-                await errorCallback(exception).ConfigureAwait(false);
             }
         }
 
