@@ -4,8 +4,11 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
+    using System.Threading.Tasks;
     using Addressing;
-    using NServiceBus.Config;
+    using NServiceBus.Routing;
+    using NServiceBus.Routing.MessageDrivenSubscriptions;
     using NServiceBus.Transports;
     using Settings;
 
@@ -189,44 +192,32 @@ namespace NServiceBus.AzureServiceBus
         List<string> DetermineTopicsFor(Type eventType)
         {
             var result = new List<string>();
-            var unicastBusConfig = settings.GetConfigSection<UnicastBusConfig>();
-            if (unicastBusConfig != null)
-            {
-                var legacyRoutingConfig = unicastBusConfig.MessageEndpointMappings;
 
-                foreach (MessageEndpointMapping m in legacyRoutingConfig)
-                {
-                    m.Configure((type, address) =>
-                    {
-                        if(type == eventType)
-                        {
-                            var path = address + ".events";
-                            if(!result.Contains(path)) result.Add(path);
-                        }
-                    });
-                }
+            // TODO: Hacked a way into this functionality, hope it becomes available from the core
+            var publishers = settings.Get<Publishers>();
+            var endpointInstances = settings.Get<EndpointInstances>();
+            var transportAddresses = settings.Get<TransportAddresses>();
+
+            var subscriptionRouterType = Type.GetType("NServiceBus.SubscriptionRouter, NServiceBus.Core");
+            var subscriptionRouter = Activator.CreateInstance(subscriptionRouterType, new object[]
+            {
+                publishers,
+                endpointInstances,
+                transportAddresses
+            });
+            var getAddressesMethod = subscriptionRouterType.GetMethod("GetAddressesForEventType",BindingFlags.Instance | BindingFlags.Public);
+            var addresses = ((Task<IEnumerable<string>>) getAddressesMethod.Invoke(subscriptionRouter, new object[]
+            {
+                eventType
+            })).GetAwaiter().GetResult();
+
+
+            foreach (var address in addresses)
+            {
+                var path = address + ".events";
+                if (!result.Contains(path)) result.Add(path);
             }
             return result;
-            //var messageMapper = (IMessageMapper)container.Build(typeof());
-            //var messageRouter = (StaticMessageRouter)container.Build(typeof(StaticMessageRouter));
-
-            //var destinations = messageRouter.GetDestinationFor(eventType);
-
-            //if (destinations.Any())
-            //{
-            //    return destinations;
-            //}
-
-            //if (messageMapper != null && !eventType.IsInterface)
-            //{
-            //    var t = messageMapper.GetMappedTypeFor(eventType);
-            //    if (t != null && t != eventType)
-            //    {
-            //        return DetermineTopicsFor(t);
-            //    }
-            //}
-
-            //return destinations;
         }
 
         public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
