@@ -89,7 +89,7 @@ namespace NServiceBus.AzureServiceBus
                 throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
             }
 
-            internalReceiver.OnMessage(message =>
+            Func<BrokeredMessage, Task> callback = message =>
             {
                 var processTask = ProcessMessageAsync(message);
                 pipelineInvocationTasks.TryAdd(processTask, processTask);
@@ -99,7 +99,9 @@ namespace NServiceBus.AzureServiceBus
                     pipelineInvocationTasks.TryRemove(t, out toBeRemoved);
                 }, TaskContinuationOptions.ExecuteSynchronously);
                 return processTask;
-            }, options);
+            };
+
+            internalReceiver.OnMessage(callback, options);
 
             IsRunning = true;
         }
@@ -190,7 +192,7 @@ namespace NServiceBus.AzureServiceBus
             logger.Info("Stopping notifier for " + fullPath);
 
             var closeReceiverTask = internalReceiver.CloseAsync();
-
+            
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
             var allTasks = pipelineInvocationTasks.Values.Concat(new[]
             {

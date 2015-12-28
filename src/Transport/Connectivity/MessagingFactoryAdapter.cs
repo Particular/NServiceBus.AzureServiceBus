@@ -38,5 +38,10 @@ namespace NServiceBus.AzureServiceBus
         {
             return new MessageSenderAdapter(await _factory.CreateMessageSenderAsync(entitypath, viaEntityPath).ConfigureAwait(false));
         }
+
+        public async Task CloseAsync()
+        {
+            await _factory.CloseAsync();
+        }
     }
 }
