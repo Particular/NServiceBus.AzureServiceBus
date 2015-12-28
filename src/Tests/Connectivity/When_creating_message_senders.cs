@@ -59,6 +59,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 return factory;
             }
+
+            public Task CloseAll()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         class InterceptedMessagingFactory : IMessagingFactory
@@ -89,6 +94,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             }
 
             public Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task CloseAsync()
             {
                 throw new NotImplementedException();
             }

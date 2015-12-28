@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Threading.Tasks;
     using NServiceBus.Settings;
 
     class MessagingFactoryLifeCycleManager : IManageMessagingFactoryLifeCycle
@@ -48,6 +49,18 @@ namespace NServiceBus.AzureServiceBus
 
             return entry.Factory;
 
+        }
+
+        public async Task CloseAll()
+        {
+            foreach (var key in MessagingFactories.Keys)
+            {
+                var buffer = MessagingFactories[key];
+                foreach (var entry in buffer.GetBuffer())
+                {
+                    await entry.Factory.CloseAsync();
+                }
+            }
         }
 
         class FactoryEntry

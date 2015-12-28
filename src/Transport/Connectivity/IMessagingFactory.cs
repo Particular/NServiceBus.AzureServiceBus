@@ -10,5 +10,7 @@ namespace NServiceBus.AzureServiceBus
         Task<IMessageSender> CreateMessageSender(string entitypath);
 
         Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath);
+
+        Task CloseAsync();
     }
 }
