@@ -35,7 +35,6 @@ namespace NServiceBus.AzureServiceBus
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioningStrategy));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(AdjustmentSanitizationStrategy));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(EntityNameValidationRules));
-
             topologySectionManager = new StandardTopologySectionManager(settings, container);
         }
 
@@ -59,6 +58,10 @@ namespace NServiceBus.AzureServiceBus
             container.Register<DefaultOutgoingMessagesToBrokeredMessagesConverter>();
             container.Register<TopologyCreator>();
             container.Register<Batcher>();
+
+            var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
+            container.Register<IHandleOversizedBrokeredMessages>(() => oversizedMessageHandler);
+
             container.RegisterSingleton<DefaultOutgoingBatchRouter>();
             container.RegisterSingleton<TopologyOperator>();
             container.Register<MessageReceiverNotifier>();
@@ -67,7 +70,6 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<Dispatcher>();
             container.Register<MessagePump>();
 
-            // configures container
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
             container.Register(compositionStrategyType);
 

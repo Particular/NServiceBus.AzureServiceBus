@@ -39,7 +39,14 @@ namespace NServiceBus
 
         public AzureServiceBusMessageSenderSettings MaximuMessageSizeInKilobytes(int sizeInKilobytes)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes, sizeInKilobytes);
+            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes, sizeInKilobytes);
+
+            return this;
+        }
+
+        public AzureServiceBusMessageSenderSettings OversizedBrokeredMessageHandler<T>(T instance) where T : IHandleOversizedBrokeredMessages
+        {
+            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance, instance);
 
             return this;
         }

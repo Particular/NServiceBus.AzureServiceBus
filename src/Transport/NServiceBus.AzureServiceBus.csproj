@@ -94,6 +94,8 @@
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
+    <Compile Include="Sending\IHandleOversizedBrokeredMessages.cs" />
+    <Compile Include="Sending\ThrowOnOversizedBrokeredMessages.cs" />
     <Compile Include="Topology\ITopology.cs" />
     <Compile Include="Topology\Topologies\ForwardingTopology.cs" />
     <Compile Include="Topology\Topologies\StandardTopology.cs" />

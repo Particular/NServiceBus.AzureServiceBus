@@ -37,7 +37,6 @@ namespace NServiceBus.AzureServiceBus
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(EntityNameValidationRules));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle, 2);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix, "bundle-");
-
             topologySectionManager = new ForwardingTopologySectionManager(settings, container);
         }
 
@@ -61,6 +60,10 @@ namespace NServiceBus.AzureServiceBus
             container.Register<DefaultOutgoingMessagesToBrokeredMessagesConverter>();
             container.Register<TopologyCreator>();
             container.Register<Batcher>();
+
+            var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
+            container.Register<IHandleOversizedBrokeredMessages>(() => oversizedMessageHandler);
+
             container.RegisterSingleton<DefaultOutgoingBatchRouter>();
             container.RegisterSingleton<TopologyOperator>();
             container.Register<MessageReceiverNotifier>();
@@ -69,8 +72,6 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<Dispatcher>();
             container.Register<MessagePump>();
 
-
-            // configures container
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
             container.Register(compositionStrategyType);
 
@@ -85,6 +86,8 @@ namespace NServiceBus.AzureServiceBus
 
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
             container.Register(validationStrategyType);
+
+           
         }
 
         public Func<ICreateQueues> GetQueueCreatorFactory()

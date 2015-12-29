@@ -1,7 +1,9 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
+    using System.Threading.Tasks;
     using Microsoft.ServiceBus;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -51,7 +53,28 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var connectivitySettings = extensions.Connectivity().MessageSenders().MaximuMessageSizeInKilobytes(200);
 
-            Assert.AreEqual(200, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes));
+            Assert.AreEqual(200, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes));
+        }
+
+        [Test]
+        public void Should_be_able_to_set_oversized_brokered_message_handler()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            var myOversizedBrokeredMessageHandler = new MyOversizedBrokeredMessageHandler();
+            var connectivitySettings = extensions.Connectivity().MessageSenders().OversizedBrokeredMessageHandler(myOversizedBrokeredMessageHandler);
+
+            Assert.AreEqual(myOversizedBrokeredMessageHandler, connectivitySettings.GetSettings().Get<IHandleOversizedBrokeredMessages>(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance));
+        }
+
+        public class MyOversizedBrokeredMessageHandler : IHandleOversizedBrokeredMessages
+        {
+            public Task Handle(BrokeredMessage brokeredMessage)
+            {
+                return TaskEx.Completed;
+            }
         }
     }
+    
 }
