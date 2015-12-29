@@ -118,8 +118,7 @@ namespace NServiceBus.AzureServiceBus
             public const string NumberOfClientsPerEntity = "AzureServiceBus.Connectivity.NumberOfClientsPerEntity";
 
             public const string SendViaReceiveQueue = "AzureServiceBus.Connectivity.SendViaReceiveQueue";
-
-
+            
             public static class MessageReceivers
             {
                 public const string ReceiveMode = "AzureServiceBus.Connectivity.MessageReceivers.ReceiveMode";
@@ -133,7 +132,8 @@ namespace NServiceBus.AzureServiceBus
                 public const string RetryPolicy = "AzureServiceBus.Connectivity.MessageSenders.RetryPolicy";
                 public const string BackOffTimeOnThrottle = "AzureServiceBus.Connectivity.MessageSenders.BackOffTimeOnThrottle";
                 public const string RetryAttemptsOnThrottle = "AzureServiceBus.Connectivity.MessageSenders.RetryAttemptsOnThrottle";
-                public const string MaximuMessageSizeInKilobytes = "AzureServiceBus.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes";
+                public const string MaximumMessageSizeInKilobytes = "AzureServiceBus.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes";
+                public const string OversizedBrokeredMessageHandlerInstance = "AzureServiceBus.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance";
             }
 
             public static class MessagingFactories

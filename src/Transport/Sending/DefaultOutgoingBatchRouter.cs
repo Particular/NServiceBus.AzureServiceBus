@@ -5,7 +5,6 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using NServiceBus.Logging;
     using NServiceBus.Settings;
 
@@ -15,20 +14,22 @@ namespace NServiceBus.AzureServiceBus
         readonly IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter;
         readonly IManageMessageSenderLifeCycle senders;
         private readonly ReadOnlySettings settings;
+        private readonly IHandleOversizedBrokeredMessages oversizedMessageHandler;
 
         int maxRetryAttemptsOnThrottle;
         TimeSpan backOffTimeOnThrottle;
         int maximuMessageSizeInKilobytes;
 
-        public DefaultOutgoingBatchRouter(IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings)
+        public DefaultOutgoingBatchRouter(IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings, IHandleOversizedBrokeredMessages oversizedMessageHandler)
         {
             this.outgoingMessageConverter = outgoingMessageConverter;
             this.senders = senders;
             this.settings = settings;
+            this.oversizedMessageHandler = oversizedMessageHandler;
 
             backOffTimeOnThrottle = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle);
             maxRetryAttemptsOnThrottle = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle);
-            maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximuMessageSizeInKilobytes);
+            maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes);
         }
 
         public async Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContext context)
@@ -154,7 +155,7 @@ namespace NServiceBus.AzureServiceBus
         {
             if (brokeredMessage.Size > maximuMessageSizeInKilobytes * 1024)
             {
-                throw new MessageTooLargeException($"The message with id {brokeredMessage.MessageId} is larger that the maximum message size allowed by Azure ServiceBus, consider using the databus feature.");
+                oversizedMessageHandler.Handle(brokeredMessage);
             }
         }
 
