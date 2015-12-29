@@ -125,7 +125,10 @@ namespace NServiceBus.AzureServiceBus
 
             foreach (var message in messagesToSend)
             {
-                GuardMessageSize(message);
+                if (GuardMessageSize(message))
+                {
+                    return;
+                }
 
                 if ((batchSize + message.Size) > maximuMessageSizeInKilobytes * 1024)
                 {
@@ -151,12 +154,15 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        void GuardMessageSize(BrokeredMessage brokeredMessage)
+        bool GuardMessageSize(BrokeredMessage brokeredMessage)
         {
             if (brokeredMessage.Size > maximuMessageSizeInKilobytes * 1024)
             {
                 oversizedMessageHandler.Handle(brokeredMessage);
+                return true;
             }
+
+            return false;
         }
 
         static ILog Logger = LogManager.GetLogger<DefaultOutgoingBatchRouter>();
