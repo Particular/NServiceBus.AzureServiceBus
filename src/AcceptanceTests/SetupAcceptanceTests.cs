@@ -1,4 +1,4 @@
-using NServiceBus.AzureServiceBus.AcceptanceTests;
+//using NServiceBus.AzureServiceBus.AcceptanceTests;
 using NUnit.Framework;
 
 /// <summary>
