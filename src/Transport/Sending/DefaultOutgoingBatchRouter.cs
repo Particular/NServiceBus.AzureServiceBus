@@ -81,15 +81,25 @@ namespace NServiceBus.AzureServiceBus
             return new RoutingOptions
             {
                 SendVia = sendVia,
-                ViaEntityPath = CanRouteVia(context?.Entity) ? context?.Entity.Path : null,
+                ViaEntityPath = GetViaEntityPathFor(context?.Entity),
                 ViaConnectionString = context?.Entity.Namespace.ConnectionString,
                 ViaPartitionKey = context?.IncomingBrokeredMessage.PartitionKey
             };
         }
 
-        private bool CanRouteVia(EntityInfo entity)
+        private string GetViaEntityPathFor(EntityInfo entity)
         {
-            return entity != null && entity.Type == EntityType.Queue;
+            if (entity?.Type == EntityType.Queue)
+            {
+                return entity.Path;
+            }
+            if (entity?.Type == EntityType.Subscription)
+            {
+                var topicRelationship = entity.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
+                return topicRelationship.Target.Path;
+            }
+
+            return null;
         }
 
         private async Task RouteOutBatchesAndLogExceptionsAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend)
