@@ -95,7 +95,6 @@
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
     <Compile Include="Topology\ITopology.cs" />
-    <Compile Include="Topology\Topologies\BasicTopology.cs" />
     <Compile Include="Topology\Topologies\ForwardingTopology.cs" />
     <Compile Include="Topology\Topologies\StandardTopology.cs" />
     <Compile Include="Utils\IRegisterTransportParts.cs" />
@@ -203,7 +202,6 @@
     <Compile Include="Topology\MetaModel\SqlSubscriptionFilter.cs" />
     <Compile Include="Topology\MetaModel\SubscriptionInfo.cs" />
     <Compile Include="Topology\MetaModel\TopologySection.cs" />
-    <Compile Include="Topology\Topologies\BasicTopologySectionManager.cs" />
     <Compile Include="Topology\TopologyCreator.cs" />
     <Compile Include="Topology\TopologyOperator.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
