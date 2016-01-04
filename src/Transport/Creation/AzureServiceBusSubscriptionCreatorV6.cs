@@ -1,5 +1,6 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Logging;
@@ -31,14 +32,11 @@
         async Task<bool> SubscriptionIsReusedAcrossDifferentNamespaces(SubscriptionDescription subscriptionDescription, string sqlFilter, INamespaceManager namespaceManager)
         {
             var rules = await namespaceManager.GetRules(subscriptionDescription);
-            foreach (var rule in rules)
+            var filter = rules.First().Filter as SqlFilter;
+            if (filter != null && filter.SqlExpression != sqlFilter)
             {
-                var filter = rule.Filter as SqlFilter;
-                if (filter != null && filter.SqlExpression != sqlFilter)
-                {
-                    logger.Debug("Looks like this subscription name is already taken as the sql filter does not match the subscribed event name.");
-                    return true;
-                }
+                logger.Debug("Looks like this subscription name is already taken as the sql filter does not match the subscribed event name.");
+                return true;
             }
 
             return false;
