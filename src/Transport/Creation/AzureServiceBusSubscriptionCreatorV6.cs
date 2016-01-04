@@ -17,12 +17,12 @@
 
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager)
         {
-            var subscriptionDescription = await creator.Create(topicPath, metadata.LegacySubscriptionName, metadata, sqlFilter, namespaceManager);
+            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
 
             if (await SubscriptionIsReusedAcrossDifferentNamespaces(subscriptionDescription, sqlFilter, namespaceManager))
             {
                 logger.Debug("Creating subscription using event type full name");
-                subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+                subscriptionDescription = await creator.Create(topicPath, metadata.SubscriptionNameBasedOnEventWithNamespace, metadata, sqlFilter, namespaceManager);
             }
 
             return subscriptionDescription;

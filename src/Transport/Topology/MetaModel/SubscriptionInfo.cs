@@ -12,6 +12,6 @@
     public class SubscriptionMetadata
     {
         public string Description { get; set; }
-        public string LegacySubscriptionName { get; set; }
+        public string SubscriptionNameBasedOnEventWithNamespace { get; set; }
     }
 }

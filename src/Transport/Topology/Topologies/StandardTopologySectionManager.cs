@@ -146,10 +146,10 @@ namespace NServiceBus.AzureServiceBus
 
             var topicPaths = DetermineTopicsFor(eventType);
 
-            var subscriptionNameCandidate = endpointName + "." + eventType.FullName;
-            var subscriptionName = sanitizationStrategy.Sanitize(subscriptionNameCandidate, EntityType.Subscription);
             var subscriptionNameCandidateV6 = endpointName + "." + eventType.Name;
             var subscriptionNameV6 = sanitizationStrategy.Sanitize(subscriptionNameCandidateV6, EntityType.Subscription);
+            var subscriptionNameCandidate = endpointName + "." + eventType.FullName;
+            var subscriptionName = sanitizationStrategy.Sanitize(subscriptionNameCandidate, EntityType.Subscription);
 
             var topics = new List<EntityInfo>();
             var subs = new List<SubscriptionInfo>();
@@ -169,11 +169,11 @@ namespace NServiceBus.AzureServiceBus
                     {
                         Namespace = ns,
                         Type = EntityType.Subscription,
-                        Path = subscriptionName,
+                        Path = subscriptionNameV6,
                         Metadata = new SubscriptionMetadata
                         {
                             Description = endpointName + " subscribed to " + eventType.FullName,
-                            LegacySubscriptionName = subscriptionNameV6
+                            SubscriptionNameBasedOnEventWithNamespace = subscriptionName
                         },
                         BrokerSideFilter = new SqlSubscriptionFilter(eventType)
                     };
