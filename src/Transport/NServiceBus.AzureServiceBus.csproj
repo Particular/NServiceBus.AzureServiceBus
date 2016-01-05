@@ -93,6 +93,7 @@
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
+    <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
     <Compile Include="Sending\IHandleOversizedBrokeredMessages.cs" />
     <Compile Include="Sending\ThrowOnOversizedBrokeredMessages.cs" />

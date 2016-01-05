@@ -53,7 +53,7 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<MessageSenderLifeCycleManager>();
             container.RegisterSingleton<AzureServiceBusQueueCreator>();
             container.RegisterSingleton<AzureServiceBusTopicCreator>();
-            container.RegisterSingleton<AzureServiceBusSubscriptionCreator>();
+            container.RegisterSingleton<AzureServiceBusSubscriptionCreatorV6>();
             container.Register<DefaultBrokeredMessagesToIncomingMessagesConverter>();
             container.Register<DefaultOutgoingMessagesToBrokeredMessagesConverter>();
             container.Register<TopologyCreator>();
