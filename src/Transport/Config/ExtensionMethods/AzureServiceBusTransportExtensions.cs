@@ -21,13 +21,7 @@ namespace NServiceBus
         public static AzureServiceBusTopologySettings UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, T topology) where T : ITopology
         {
             var settings = transportExtensions.GetSettings();
-            var transportDefinition = settings.Get<TransportDefinition>() as AzureServiceBusTransport;
-
-            if (transportDefinition != null)
-            {
-                transportDefinition.Topology = topology;
-            }
-
+            settings.Set<ITopology>(topology);
             return new AzureServiceBusTopologySettings(settings);
         }
 

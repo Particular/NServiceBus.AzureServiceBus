@@ -27,7 +27,6 @@
         protected override TransportSendingConfigurationResult ConfigureForSending(TransportSendingConfigurationContext context)
         {
             EnsureConnectionStringIsRegisteredAsNamespace(context.ConnectionString, context.Settings);
-
             return new TransportSendingConfigurationResult(
                 Topology.GetDispatcherFactory(),
                 () => Task.FromResult(StartupCheckResult.Success) //TODO: figure out what this is for
@@ -59,8 +58,7 @@
             // TODO: TransportTransactionMode may need to be dependent upon topology.
             return TransportTransactionMode.SendsAtomicWithReceive;
         }
-
-
+        
         public override IManageSubscriptions GetSubscriptionManager()
         {
             return Topology.GetSubscriptionManager();
@@ -80,24 +78,40 @@
 
         public override OutboundRoutingPolicy GetOutboundRoutingPolicy(ReadOnlySettings settings)
         {
-            // TODO: remove if when support for testing multiple topologies is supported by ATT framework
-            // need a way to specify what topology should be used before endpoint is started
-            if (Topology == null)
-            {
-                Topology = new StandardTopology();
-            }
-            return Topology.GetOutboundRoutingPolicy();
+            return TopologyWithScenarioDescriptorFallback.GetOutboundRoutingPolicy();
         }
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
 
-        private ITopology _topology ;   
+        private ITopology _topology;
+
+#pragma warning disable 649
+        private static Func<ITopology> _fallbackForScenarioDescriptors; 
+#pragma warning restore 649
+           
         internal ITopology Topology
         {
-            get { return _topology; }
-            set
+            get
             {
-                _topology = value;
+                return _topology;
+            }
+            set { _topology = value; }
+        }
+
+        private ITopology TopologyWithScenarioDescriptorFallback
+        {
+            get
+            {
+                // acceptence tests scenario descriptors use an uninitialized transportdefinition
+                // in order to detect whether a test should run or not, to make this work
+                // we need to make sure it gets the correct topology assigned when starting a testrun
+                // once the real topology is set, it should use that instead
+                if (Topology == null && _fallbackForScenarioDescriptors != null)
+                {
+                    return _fallbackForScenarioDescriptors();
+                }
+
+                return Topology;
             }
         }
     }
@@ -116,12 +130,14 @@
                 this.settings = settings;
                 settings.SetDefault("Transactions.DoNotWrapHandlersExecutionInATransactionScope", true);
                 settings.SetDefault("Transactions.SuppressDistributedTransactions", true);
+                settings.SetDefault<ITopology>(new StandardTopology());
 
                 var transportDefinition = (AzureServiceBusTransport) settings.Get<TransportDefinition>();
                 if (transportDefinition.Topology == null)
                 {
-                    transportDefinition.Topology = new StandardTopology();
+                    transportDefinition.Topology = settings.Get<ITopology>(); 
                 }
+
                 transportDefinition.Topology.Initialize(settings);
             });
         }

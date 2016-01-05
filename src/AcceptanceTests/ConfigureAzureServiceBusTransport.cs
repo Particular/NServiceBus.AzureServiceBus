@@ -1,15 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
+using NServiceBus.AzureServiceBus;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
 
 public class ConfigureAzureServiceBusTransport : IConfigureTestExecution
 {
     public Task Configure(BusConfiguration config, IDictionary<string, string> settings)
     {
-        config.UseTransport<AzureServiceBusTransport>()
-            .ConnectionString(settings["Transport.ConnectionString"]);
+        var connectionString = settings["Transport.ConnectionString"];
+        var topology = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
+        
+        var transportConfig = config.UseTransport<AzureServiceBusTransport>().ConnectionString(connectionString);
+
+        if (topology == "ForwardingTopology")
+        {
+            transportConfig.UseTopology<ForwardingTopology>();
+        }
+        //else default
 
         config.RegisterComponents(c =>
         {
