@@ -42,7 +42,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var creator = new AzureServiceBusSubscriptionCreatorV6(settings);
-            var shortedSubscriptionName = new DeterministicGuidBuilder().Build(typeof(SomeEvent).FullName).ToString();
+            var shortedSubscriptionName = new DeterministicGuidBuilderV6().Build(typeof(SomeEvent).FullName).ToString();
             var metadata = new SubscriptionMetadata
             {
                 SubscriptionNameBasedOnEventWithNamespace = shortedSubscriptionName,

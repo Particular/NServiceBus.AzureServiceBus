@@ -87,6 +87,7 @@
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitizationV6Strategy.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\DeterministicGuidBuilder.cs" />
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationV6Rules.cs" />
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
     <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
@@ -237,7 +238,7 @@
     <Compile Include="Topology\OldCode\ITopology.cs" />
     <Compile Include="Topology\OldCode\QueueAndTopicByEndpoint\NamingConventions.cs" />
     <Compile Include="Topology\OldCode\QueueAndTopicByEndpoint\QueueAndTopicByEndpointTopology.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\DeterministicGuidBuilder.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\DeterministicGuidBuilderV6.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Config\OldCode\AzureServiceBusTransport.cs" />
     <Compile Include="Config\OldCode\AzureServicebusDefaults.cs" />
