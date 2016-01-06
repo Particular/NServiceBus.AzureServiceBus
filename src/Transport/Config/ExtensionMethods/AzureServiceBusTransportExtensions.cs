@@ -3,7 +3,6 @@ namespace NServiceBus
     using System;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Transports;
 
     public static class AzureServiceBusTransportExtensions 
     {
