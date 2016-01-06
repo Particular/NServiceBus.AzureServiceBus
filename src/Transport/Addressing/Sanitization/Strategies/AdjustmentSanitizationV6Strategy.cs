@@ -20,7 +20,7 @@
             if (!validationStrategy.IsValid(entityPath, entityType))
             {
                 // turn long name into a guid
-                entityPath = new DeterministicGuidBuilderV6().Build(entityPath).ToString();
+                entityPath = new MD5DeterministicNameBuilder().Build(entityPath);
             }
 
             return entityPath;

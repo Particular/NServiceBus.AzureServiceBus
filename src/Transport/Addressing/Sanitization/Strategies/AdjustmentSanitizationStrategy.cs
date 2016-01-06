@@ -33,7 +33,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             if (!_validationStrategy.IsValid(entityPath, entityType))
             {
                 // turn long name into a guid
-                entityPath = new DeterministicGuidBuilder().Build(entityPath).ToString();
+                entityPath = new SHA1DeterministicNameBuilder().Build(entityPath);
             }
 
             return entityPath;
