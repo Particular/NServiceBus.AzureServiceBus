@@ -42,7 +42,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var creator = new AzureServiceBusSubscriptionCreatorV6(settings);
-            var shortedSubscriptionName = new MD5DeterministicNameBuilder().Build(typeof(SomeEvent).FullName);
+            var shortedSubscriptionName = MD5DeterministicNameBuilder.Build(typeof(SomeEvent).FullName);
             var metadata = new SubscriptionMetadata
             {
                 SubscriptionNameBasedOnEventWithNamespace = shortedSubscriptionName,

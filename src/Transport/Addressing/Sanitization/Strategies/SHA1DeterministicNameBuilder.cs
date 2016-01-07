@@ -4,9 +4,9 @@
     using System.Security.Cryptography;
     using System.Text;
 
-    class SHA1DeterministicNameBuilder
+    static class SHA1DeterministicNameBuilder
     {
-        public string Build(string input)
+        public static string Build(string input)
         {
             //use SHA1 hash to get a 20-byte hash of the string
             using (var provider = new SHA1CryptoServiceProvider())

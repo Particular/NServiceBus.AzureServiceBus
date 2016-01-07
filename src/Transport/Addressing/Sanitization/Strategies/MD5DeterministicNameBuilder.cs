@@ -4,9 +4,9 @@
     using System.Security.Cryptography;
     using System.Text;
 
-    class MD5DeterministicNameBuilder
+    static class MD5DeterministicNameBuilder
     {
-        public string Build(string input)
+        public static string Build(string input)
         {
             //use MD5 hash to get a 16-byte hash of the string
             using (var provider = new MD5CryptoServiceProvider())
