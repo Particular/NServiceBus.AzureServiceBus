@@ -11,6 +11,8 @@
         [Test]
         public void Should_execute_the_task()
         {
+            // TODO: flaky test, original test run time is 20sec, not enough for ASB
+
             Scenario.Define<Context>()
                     .WithEndpoint<SchedulingEndpoint>()
                     .Done(c => c.InvokedAt.HasValue)
@@ -20,7 +22,7 @@
                         Assert.True(c.InvokedAt.HasValue);
                         Assert.Greater(c.InvokedAt.Value - c.RequestedAt, TimeSpan.FromSeconds(5));
                     })
-                  .Run(TimeSpan.FromSeconds(20));
+                  .Run(TimeSpan.FromSeconds(40));
         }
 
         public class Context : ScenarioContext

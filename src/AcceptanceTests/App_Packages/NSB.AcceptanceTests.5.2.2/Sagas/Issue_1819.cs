@@ -13,10 +13,13 @@
         {
             var context = new Context { Id = Guid.NewGuid() };
 
+            // TODO: flaky test, original test run time is 20sec, not enough for ASB
+
             Scenario.Define(context)
                     .WithEndpoint<Endpoint>(b => b.Given((bus, c) => bus.SendLocal(new StartSaga1 { ContextId = c.Id })))
                     .Done(c => (c.Saga1TimeoutFired && c.Saga2TimeoutFired) || c.SagaNotFound)
-                    .Run(TimeSpan.FromSeconds(20));
+                    //.Run(TimeSpan.FromSeconds(20));
+                    .Run();
 
             Assert.IsFalse(context.SagaNotFound);
             Assert.IsTrue(context.Saga1TimeoutFired);
