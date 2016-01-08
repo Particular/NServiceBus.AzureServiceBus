@@ -4,7 +4,7 @@
     using Config;
     using Settings;
 
-    class DeterminesBestConnectionStringForAzureServiceBus
+    public class DeterminesBestConnectionStringForAzureServiceBus
     {
         string defaultconnectionString;
 

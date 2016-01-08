@@ -39,6 +39,13 @@
         public DefaultTopology() { }
         protected override void Setup(NServiceBus.Features.FeatureConfigurationContext context) { }
     }
+    public class DeterminesBestConnectionStringForAzureServiceBus
+    {
+        public DeterminesBestConnectionStringForAzureServiceBus(string defaultconnectionString) { }
+        public string Determine(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public string Determine(NServiceBus.Settings.ReadOnlySettings settings, NServiceBus.Address replyToAddress) { }
+        public bool IsPotentialServiceBusConnectionString(string potentialConnectionString) { }
+    }
     public interface ICreateMessagingFactories
     {
         Microsoft.ServiceBus.Messaging.MessagingFactory Create(NServiceBus.Address address);
@@ -128,6 +135,27 @@
         public SubscriptionAlreadyInUseException(string message) { }
         public SubscriptionAlreadyInUseException(string message, System.Exception inner) { }
         protected SubscriptionAlreadyInUseException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+    }
+}
+namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEndpoint
+{
+    
+    public enum EntityType
+    {
+        Queue = 0,
+        Topic = 1,
+        Subscription = 2,
+    }
+    public class static NamingConventions
+    {
+        public static System.Func<string, NServiceBus.Azure.Transports.WindowsAzureServiceBus.QueueAndTopicByEndpoint.EntityType, string> EntitySanitizationConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, NServiceBus.Address> PublisherAddressConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, NServiceBus.Address> PublisherAddressConventionForSubscriptions { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, NServiceBus.Address, bool, NServiceBus.Address> QueueAddressConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, bool, string> QueueNamingConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, string> SubscriptionFullNamingConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, string> SubscriptionNamingConvention { get; set; }
+        public static System.Func<NServiceBus.Settings.ReadOnlySettings, System.Type, string, string> TopicNamingConvention { get; set; }
     }
 }
 namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.Transports
