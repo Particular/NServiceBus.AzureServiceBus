@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
 
@@ -13,6 +14,7 @@ namespace NServiceBus.AzureServiceBus
     public abstract class ReceiveContext
     {
         public IList<Func<Task>> OnComplete { get; set; }
+        public CancellationToken CancellationToken { get; set; }
     }
 
     public class BrokeredMessageReceiveContext : ReceiveContext
