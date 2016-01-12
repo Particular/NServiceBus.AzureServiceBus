@@ -162,11 +162,11 @@ namespace NServiceBus.AzureServiceBus
             await AbandonInternal(message);
         }
 
-        async Task AbandonAsyncOnCancellation(BrokeredMessage message)
+        Task AbandonAsyncOnCancellation(BrokeredMessage message)
         {
             logger.Info("Received message is cancelled by the pipeline, abandoning it so we can process it later.");
 
-            await AbandonInternal(message);
+            return AbandonInternal(message);
         }
 
         async Task AbandonAsync(BrokeredMessage message, Exception exception)
