@@ -124,6 +124,7 @@
     <Compile Include="Seam\When_message_pump_is_failing_to_receive_messages.cs" />
     <Compile Include="Seam\When_receiving_messages.cs" />
     <Compile Include="Sending\When_batching_TransportOperations.cs" />
+    <Compile Include="Sending\When_asking_for_brokered_message_total_estimated_size.cs" />
     <Compile Include="Sending\When_retrying_on_throttle.cs" />
     <Compile Include="Sending\When_routing_outgoingmessages_to_endpoints_with_retries.cs" />
     <Compile Include="TestUtils\ConnectionString.cs" />
