@@ -252,5 +252,30 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.IsTrue(brokeredMessage.ViaPartitionKey == "partitionkey");
         }
+
+        [TestCase(SupportedBrokeredMessageBodyTypes.Stream, "application/octect-stream")]
+        [TestCase(SupportedBrokeredMessageBodyTypes.ByteArray, "wcf/byte-array")]
+        public void Should_set_transport_encoding_header(SupportedBrokeredMessageBodyTypes bodyType, string expectedHeaderValue)
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            extensions.Serialization().BrokeredMessageBodyType(bodyType);
+
+            var converter = new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings);
+
+            var bytes = Encoding.UTF8.GetBytes("Whatever");
+
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
+
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
+
+            Assert.That(brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding], Is.EqualTo(expectedHeaderValue));
+        }
     }
 }

@@ -7,7 +7,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Settings;
-    
+
     class DefaultBrokeredMessagesToIncomingMessagesConverter : IConvertBrokeredMessagesToIncomingMessages
     {
         readonly ReadOnlySettings settings;
@@ -21,14 +21,24 @@ namespace NServiceBus.AzureServiceBus
         {
             var headers = brokeredMessage.Properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
 
+            var transportEncodingWasSpecified = brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding);
+            var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : GetDefaultTransportEncoding();
+
             Stream rawBody;
-            var bodyType = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
-            switch (bodyType)
+            switch (transportEncodingToUse)
             {
-                case SupportedBrokeredMessageBodyTypes.ByteArray:
-                    rawBody = new MemoryStream(brokeredMessage.GetBody<byte[]>() ?? new byte[0]);
+                case "wcf/byte-array":
+                    try
+                    {
+                        rawBody = new MemoryStream(brokeredMessage.GetBody<byte[]>() ?? new byte[0]);
+                    }
+                    catch (Exception e)
+                    {
+                        var errorMessage = transportEncodingWasSpecified ? $"Unsupported brokered message body type `${transportEncodingToUse}` configured" : "No brokered message body type was found. Attempt to process message body as byte array has failed.";
+                        throw new ConfigurationErrorsException(errorMessage, e);
+                    }
                     break;
-                case SupportedBrokeredMessageBodyTypes.Stream:
+                case "application/octect-stream":
                     rawBody = new MemoryStream();
                     using (var body = brokeredMessage.GetBody<Stream>())
                     {
@@ -57,6 +67,12 @@ namespace NServiceBus.AzureServiceBus
             }
 
             return new IncomingMessageDetails(brokeredMessage.MessageId, headers, rawBody);
+        }
+
+        private string GetDefaultTransportEncoding()
+        {
+            var configuredDefault = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
+            return configuredDefault == SupportedBrokeredMessageBodyTypes.ByteArray ? "wcf/byte-array" : "application/octect-stream";
         }
     }
 }
