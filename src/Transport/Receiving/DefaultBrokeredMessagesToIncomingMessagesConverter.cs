@@ -6,15 +6,23 @@ namespace NServiceBus.AzureServiceBus
     using System.IO;
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.Settings;
 
     class DefaultBrokeredMessagesToIncomingMessagesConverter : IConvertBrokeredMessagesToIncomingMessages
     {
+        readonly ReadOnlySettings settings;
+
+        public DefaultBrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings)
+        {
+            this.settings = settings;
+        }
+
         public IncomingMessageDetails Convert(BrokeredMessage brokeredMessage)
         {
             var headers = brokeredMessage.Properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
 
             var transportEncodingWasSpecified = brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding);
-            var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : "wcf/byte-array";
+            var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : GetDefaultTransportEncoding();
 
             Stream rawBody;
             switch (transportEncodingToUse)
@@ -59,6 +67,12 @@ namespace NServiceBus.AzureServiceBus
             }
 
             return new IncomingMessageDetails(brokeredMessage.MessageId, headers, rawBody);
+        }
+
+        private string GetDefaultTransportEncoding()
+        {
+            var configuredDefault = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
+            return configuredDefault == SupportedBrokeredMessageBodyTypes.ByteArray ? "wcf/byte-array" : "application/octect-stream";
         }
     }
 }

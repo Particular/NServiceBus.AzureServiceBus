@@ -6,6 +6,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System.Linq;
     using System.Text;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -15,7 +16,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Should_copy_the_message_id()
         {
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
             var brokeredMessage = new BrokeredMessage
             {
@@ -30,7 +34,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Should_copy_properties_into_the_headers()
         {
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
             var brokeredMessage = new BrokeredMessage();
             brokeredMessage.Properties.Add("my-test-prop", "myvalue");
@@ -40,11 +47,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(incomingMessage.Headers.Any(h => h.Key == "my-test-prop" && h.Value == "myvalue"));
         }
 
+        [Test]
         public void Should_complete_replyto_address_if_not_present_in_headers()
         {
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var brokeredMessage = new BrokeredMessage("")
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var brokeredMessage = new BrokeredMessage(new byte[] { })
             {
                 ReplyTo = "MyQueue"
             };
@@ -56,11 +67,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual("MyQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
         }
 
+        [Test]
         public void Should_complete_correlationid_if_not_present_in_headers()
         {
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var brokeredMessage = new BrokeredMessage("")
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var brokeredMessage = new BrokeredMessage(new byte[] {})
             {
                 CorrelationId = "SomeId"
             };
@@ -72,12 +87,16 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual("SomeId", incomingMessage.Headers[Headers.CorrelationId]);
         }
 
+        [Test]
         public void Should_complete_timetobereceived_if_not_present_in_headers()
         {
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
             var timespan = TimeSpan.FromHours(1);
-            var brokeredMessage = new BrokeredMessage("")
+            var brokeredMessage = new BrokeredMessage(new byte[] { })
             {
                 TimeToLive = timespan
             };
@@ -92,7 +111,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Should_extract_body_as_byte_array_by_default()
         {
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var brokeredMessage = new BrokeredMessage(bytes);
@@ -108,7 +130,11 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Should_extract_body_as_stream_when_configured()
         {
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.Serialization().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
@@ -130,7 +156,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Should_extract_body_as_byte_array_when_configured()
         {
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var brokeredMessage = new BrokeredMessage(bytes);
             brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "wcf/byte-array";
@@ -146,7 +175,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Should_throw_for_a_message_without_transport_encoding_header_supplied_and_actual_body_type_other_than_default()
         {
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
             var brokeredMessage = new BrokeredMessage("non-default-type");
 
@@ -156,7 +188,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Should_throw_for_a_message_with_unknown_transport_encoding_header_supplied()
         {
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
             var brokeredMessage = new BrokeredMessage("non-default-type");
             brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "unknown";
