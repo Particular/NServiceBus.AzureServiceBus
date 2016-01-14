@@ -53,7 +53,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        void SetReplyToAddress(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
+        private void SetReplyToAddress(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
@@ -61,7 +61,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        void ApplyCorrelationId(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
+        private void ApplyCorrelationId(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.CorrelationId))
             {
@@ -69,7 +69,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        void ApplyTimeToLive(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
+        private void ApplyTimeToLive(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
             TimeSpan? timeToLive = null;
             if (outgoingMessage.Headers.ContainsKey(Headers.TimeToBeReceived))
@@ -85,7 +85,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        void ApplyDeliveryConstraints(BrokeredMessage brokeredMessage, BatchedOperation operation)
+        private void ApplyDeliveryConstraints(BrokeredMessage brokeredMessage, BatchedOperation operation)
         {
             DateTime? scheduledEnqueueTime = null;
 
@@ -112,7 +112,7 @@ namespace NServiceBus.AzureServiceBus
                    brokeredMessage.ScheduledEnqueueTimeUtc = scheduledEnqueueTime.Value;
         }
 
-        static void CopyHeaders(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
+        private static void CopyHeaders(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
             foreach (var header in outgoingMessage.Headers)
             {
@@ -120,7 +120,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        BrokeredMessage CreateBrokeredMessage(OutgoingMessage outgoingMessage)
+        private BrokeredMessage CreateBrokeredMessage(OutgoingMessage outgoingMessage)
         {
             BrokeredMessage brokeredMessage;
             var bodyType = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
@@ -128,9 +128,12 @@ namespace NServiceBus.AzureServiceBus
             {
                 case SupportedBrokeredMessageBodyTypes.ByteArray:
                     brokeredMessage = outgoingMessage.Body != null ? new BrokeredMessage(outgoingMessage.Body) : new BrokeredMessage();
+                    brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "wcf/byte-array";
                     break;
+
                 case SupportedBrokeredMessageBodyTypes.Stream:
                     brokeredMessage = outgoingMessage.Body != null ? new BrokeredMessage(new MemoryStream(outgoingMessage.Body)) : new BrokeredMessage();
+                    brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "application/octect-stream";
                     break;
                 default:
                     throw new ConfigurationErrorsException("Unsupported brokered message body type configured");
@@ -139,7 +142,7 @@ namespace NServiceBus.AzureServiceBus
         }
     }
 
-    static class Time
+    internal static class Time
     {
         public static Func<DateTime> UtcNow = () => DateTime.UtcNow;
     }
