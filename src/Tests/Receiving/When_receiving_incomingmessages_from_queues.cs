@@ -25,7 +25,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
-            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
@@ -57,7 +57,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
-            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
@@ -93,7 +93,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
-            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter();
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);

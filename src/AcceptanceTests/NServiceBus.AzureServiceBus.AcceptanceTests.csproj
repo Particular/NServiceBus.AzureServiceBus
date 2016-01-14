@@ -271,6 +271,7 @@
     <Compile Include="OldTests\When_sending_an_oversized_message_without_a_transaction_scope.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_from_a_transaction_scope.cs" />
     <Compile Include="SetupAcceptanceTests.cs" />
+    <Compile Include="TransportEncoding\When_sending_to_an_endpoint_with_different_transport_encoding.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Packages\NServiceBus.AcceptanceTests..5.0.0\**\*.cs" />
