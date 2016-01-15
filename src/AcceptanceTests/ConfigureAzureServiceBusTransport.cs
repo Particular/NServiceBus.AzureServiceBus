@@ -15,6 +15,7 @@ public class ConfigureAzureServiceBusTransport : IConfigureTestExecution
         typeof(AllDtcTransports),
         typeof(AllTransportsWithMessageDrivenPubSub),
         typeof(AllTransportsWithoutNativeDeferral),
+        typeof(AllNativeMultiQueueTransactionTransports)
         //typeof(AllNativeMultiQueueTransactionTransports)
     };
 
