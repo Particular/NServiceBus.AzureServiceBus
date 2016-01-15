@@ -1,7 +1,6 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
-    using System.Configuration;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -182,7 +181,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var brokeredMessage = new BrokeredMessage("non-default-type");
 
-            Assert.Throws<ConfigurationErrorsException>(() => converter.Convert(brokeredMessage));
+            Assert.Throws<UnsupportedBrokeredMessageBodyTypeException>(() => converter.Convert(brokeredMessage));
         }
 
         [Test]
@@ -196,7 +195,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var brokeredMessage = new BrokeredMessage("non-default-type");
             brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "unknown";
 
-            Assert.Throws<ConfigurationErrorsException>(() => converter.Convert(brokeredMessage));
+            Assert.Throws<UnsupportedBrokeredMessageBodyTypeException>(() => converter.Convert(brokeredMessage));
         }
         [Test]
 

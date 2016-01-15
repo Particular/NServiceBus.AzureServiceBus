@@ -65,7 +65,7 @@
             {
                 public Task MutateOutgoing(MutateOutgoingTransportMessageContext context)
                 {
-                    context.OutgoingHeaders["Transport-Encoding"] = "unknown";
+                    context.OutgoingHeaders["NServiceBus.Transport.Encoding"] = "unknown";
                     return Task.FromResult(0);
                 }
             }
