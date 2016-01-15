@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Extensibility;
     using NServiceBus.Logging;
@@ -32,7 +33,7 @@ namespace NServiceBus.AzureServiceBus
             //settings.PurgeOnStartup
             //settings.RequiredConsistency
 
-
+            var tokensource = new CancellationTokenSource();
 
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
                 {
@@ -43,7 +44,7 @@ namespace NServiceBus.AzureServiceBus
                     context.Set(receiveContext);
 
                     //todo, figure out what the TransportTransaction parameter is about
-                    return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, new NoTransaction(), context));
+                    return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, new NoTransaction(), tokensource, context));
                 });
 
             return TaskEx.Completed;

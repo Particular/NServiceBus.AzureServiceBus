@@ -23,11 +23,11 @@
             var stopwatch = new Stopwatch();
 
             // setup critical error action to capture exception thrown by message pump
-            var criticalError = new CriticalError((ei, error, exception) =>
+            var criticalError = new CriticalError(c =>
             {
                 stopwatch.Stop();
                 criticalErrorWasRaised = true;
-                exceptionReceivedByCircuitBreaker = exception;
+                exceptionReceivedByCircuitBreaker = c.Exception;
                 return Task.FromResult(0);
             });
             criticalError.GetType().GetProperty("Endpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(criticalError, new FakeEndpoint(), null);

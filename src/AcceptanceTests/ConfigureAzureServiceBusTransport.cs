@@ -1,13 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
+using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 using NServiceBus.AzureServiceBus;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
 
 public class ConfigureAzureServiceBusTransport : IConfigureTestExecution
 {
+    public IEnumerable<Type> UnsupportedScenarioDescriptorTypes { get; } = new[]
+    {
+        typeof(AllDtcTransports),
+        typeof(AllTransportsWithMessageDrivenPubSub),
+        typeof(AllTransportsWithoutNativeDeferral),
+        //typeof(AllNativeMultiQueueTransactionTransports)
+    };
+
     public Task Configure(BusConfiguration config, IDictionary<string, string> settings)
     {
         var connectionString = settings["Transport.ConnectionString"];
@@ -36,4 +46,6 @@ public class ConfigureAzureServiceBusTransport : IConfigureTestExecution
     {
         return Task.FromResult(0);
     }
+
+   
 }

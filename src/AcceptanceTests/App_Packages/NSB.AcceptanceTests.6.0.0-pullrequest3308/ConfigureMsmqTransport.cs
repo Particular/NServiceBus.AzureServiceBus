@@ -5,12 +5,18 @@ using System.Messaging;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
+using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 using NServiceBus.Configuration.AdvanceExtensibility;
 using NServiceBus.Transports;
 
 public class ConfigureMsmqTransport : IConfigureTestExecution
 {
     BusConfiguration busConfiguration;
+
+    public IEnumerable<Type> UnsupportedScenarioDescriptorTypes { get; } = new []
+    {
+        typeof(AllTransportsWithCentralizedPubSubSupport)
+    };
 
     public Task Configure(BusConfiguration configuration, IDictionary<string, string> settings)
     {
