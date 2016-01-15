@@ -1,15 +1,16 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
-    using System.Configuration;
     using System.Globalization;
     using System.IO;
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.Logging;
     using NServiceBus.Settings;
 
     class DefaultBrokeredMessagesToIncomingMessagesConverter : IConvertBrokeredMessagesToIncomingMessages
     {
+        ILog logger = LogManager.GetLogger<DefaultBrokeredMessagesToIncomingMessagesConverter>();
         readonly ReadOnlySettings settings;
 
         public DefaultBrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings)
@@ -19,7 +20,14 @@ namespace NServiceBus.AzureServiceBus
 
         public IncomingMessageDetails Convert(BrokeredMessage brokeredMessage)
         {
-            var headers = brokeredMessage.Properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
+            if (!brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding))
+            {
+                logger.Debug($"Incoming BrokeredMessage with id=`{brokeredMessage.MessageId}` had no `{BrokeredMessageHeaders.TransportEncoding}` header.");
+            }
+
+            var headers = brokeredMessage.Properties
+                .Where(kvp => kvp.Key != BrokeredMessageHeaders.TransportEncoding)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
 
             var transportEncodingWasSpecified = brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding);
             var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : GetDefaultTransportEncoding();
@@ -35,7 +43,7 @@ namespace NServiceBus.AzureServiceBus
                     catch (Exception e)
                     {
                         var errorMessage = transportEncodingWasSpecified ? $"Unsupported brokered message body type `${transportEncodingToUse}` configured" : "No brokered message body type was found. Attempt to process message body as byte array has failed.";
-                        throw new ConfigurationErrorsException(errorMessage, e);
+                        throw new UnsupportedBrokeredMessageBodyTypeException(errorMessage, e);
                     }
                     break;
                 case "application/octect-stream":
@@ -47,9 +55,9 @@ namespace NServiceBus.AzureServiceBus
                     }
                     break;
                 default:
-                    throw new ConfigurationErrorsException("Unsupported brokered message body type configured");
+                    throw new UnsupportedBrokeredMessageBodyTypeException("Unsupported brokered message body type configured");
             }
-            
+
 
             if (!string.IsNullOrWhiteSpace(brokeredMessage.ReplyTo) && !headers.ContainsKey(Headers.ReplyToAddress))
             {

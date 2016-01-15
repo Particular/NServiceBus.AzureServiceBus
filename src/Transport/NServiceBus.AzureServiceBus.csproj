@@ -95,6 +95,7 @@
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
+    <Compile Include="Receiving\UnsupportedBrokeredMessageBodyTypeException.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
     <Compile Include="Utils\BrokeredMessageHeaders.cs" />
     <Compile Include="Sending\IHandleOversizedBrokeredMessages.cs" />

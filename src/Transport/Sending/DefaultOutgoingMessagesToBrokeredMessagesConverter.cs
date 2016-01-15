@@ -2,7 +2,6 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.IO;
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
@@ -136,7 +135,7 @@ namespace NServiceBus.AzureServiceBus
                     brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "application/octect-stream";
                     break;
                 default:
-                    throw new ConfigurationErrorsException("Unsupported brokered message body type configured");
+                    throw new UnsupportedBrokeredMessageBodyTypeException("Unsupported brokered message body type configured");
             }
             return brokeredMessage;
         }
