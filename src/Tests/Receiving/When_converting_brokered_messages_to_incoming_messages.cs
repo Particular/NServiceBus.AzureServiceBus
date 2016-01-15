@@ -198,5 +198,21 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.Throws<ConfigurationErrorsException>(() => converter.Convert(brokeredMessage));
         }
+        [Test]
+
+        public void Should_not_propagate_transport_encoding_header_from_brokered_message()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var bytes = Encoding.UTF8.GetBytes("Whatever");
+            var brokeredMessage = new BrokeredMessage(bytes);
+            brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "wcf/byte-array";
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var incomingMessageDetails = converter.Convert(brokeredMessage);
+
+            CollectionAssert.DoesNotContain(incomingMessageDetails.Headers, BrokeredMessageHeaders.TransportEncoding, $"Headers should not contain `{BrokeredMessageHeaders.TransportEncoding}`, but it was found.");
+        }
     }
 }

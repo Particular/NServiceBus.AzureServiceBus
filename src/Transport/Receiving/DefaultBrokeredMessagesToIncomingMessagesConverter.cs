@@ -19,7 +19,9 @@ namespace NServiceBus.AzureServiceBus
 
         public IncomingMessageDetails Convert(BrokeredMessage brokeredMessage)
         {
-            var headers = brokeredMessage.Properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
+            var headers = brokeredMessage.Properties
+                .Where(kvp => kvp.Key != BrokeredMessageHeaders.TransportEncoding)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
 
             var transportEncodingWasSpecified = brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding);
             var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : GetDefaultTransportEncoding();
