@@ -47,7 +47,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var received = false;
 
             // Dummy CriticalError
-            var criticalError = new CriticalError((endpoint, error, exception) => Task.FromResult(0));
+            var criticalError = new CriticalError(ctx => Task.FromResult(0));
 
             await pump.Init(async context =>
             {
@@ -131,7 +131,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             });
 
             // Dummy CriticalError
-            var criticalError = new CriticalError((endpoint, error, exception) => Task.FromResult(0));
+            var criticalError = new CriticalError(ctx => Task.FromResult(0));
 
             await pump.Init(async context =>
             {
@@ -216,7 +216,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var received = false;
 
             // Dummy CriticalError
-            var criticalError = new CriticalError((endpoint, error, exception) => Task.FromResult(0));
+            var criticalError = new CriticalError(ctx => Task.FromResult(0));
 
             await pump.Init(async context =>
             {
@@ -306,7 +306,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             });
 
             // Dummy CriticalError
-            var criticalError = new CriticalError((endpoint, error, exception) => Task.FromResult(0));
+            var criticalError = new CriticalError(ctx => Task.FromResult(0));
 
             await pump.Init(async context =>
             {
@@ -410,7 +410,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             });
 
             // Dummy CriticalError
-            var criticalError = new CriticalError((endpoint, error, exception) => Task.FromResult(0));
+            var criticalError = new CriticalError(ctx => Task.FromResult(0));
 
             await pump.Init(async context =>
             {

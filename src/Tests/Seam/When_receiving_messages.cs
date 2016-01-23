@@ -34,7 +34,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Exception ex = null;
 
             // Dummy CriticalError
-            var criticalError = new CriticalError((endpoint, error, exception) => Task.FromResult(0));
+            var criticalError = new CriticalError(ctx => Task.FromResult(0));
 
             await pump.Init(context =>
             {
