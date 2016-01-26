@@ -78,7 +78,9 @@
         {
             public CentralizedStoragePublisher()
             {
-                EndpointSetup<DefaultServer>();
+                EndpointSetup<DefaultServer>()
+                    // TODO when core PR https://github.com/Particular/NServiceBus/pull/3266 is merged
+                    .AddMapping<EventHandledByLocalEndpoint>(typeof(CentralizedStoragePublisher)); //an explicit mapping may be needed, depends on the technology underneath;
             }
 
             class CatchAllHandler : IHandleMessages<IEvent> 
