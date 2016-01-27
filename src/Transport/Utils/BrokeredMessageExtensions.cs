@@ -2,6 +2,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 {
     using Logging;
     using System;
+    using System.Linq;
+    using System.Text;
     using System.Threading.Tasks;
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
@@ -79,6 +81,57 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             }
             return false;
         }
+
+        public static long TotalEstimatedSize(this BrokeredMessage msg)
+        {
+            var standardPropertiesSize = GetSize(msg.ContentType) +
+                                         GetSize(msg.CorrelationId) +
+                                         4 + //GetSize(msg.DeliveryCount) + // can't use until message is sent/received
+                                         8 + //GetSize(msg.EnqueuedSequenceNumber) +
+                                         8 + //GetSize(msg.EnqueuedTimeUtc) +
+                                         8 + //GetSize(msg.ExpiresAtUtc) +
+                                         GetSize(msg.ForcePersistence) +
+                                         GetSize(msg.IsBodyConsumed) +
+                                         GetSize(msg.Label) +
+                                         8 + //GetSize(msg.LockedUntilUtc) +
+                                         16 + //GetSize(msg.LockToken) +
+                                         GetSize(msg.MessageId) +
+                                         GetSize(msg.PartitionKey) +
+                                         GetSize(msg.ReplyTo) +
+                                         GetSize(msg.ReplyToSessionId) +
+                                         GetSize(msg.ScheduledEnqueueTimeUtc) +
+                                         8 + //GetSize(msg.SequenceNumber) +
+                                         GetSize(msg.SessionId) +
+                                         GetSize(msg.SessionId) +
+                                         GetSize((int) msg.State) +
+                                         GetSize(msg.TimeToLive) +
+                                         GetSize(msg.To) +
+                                         GetSize(msg.ViaPartitionKey);
+
+            var customPropertiesSize = msg.Properties.Sum(property => GetSize(property.Key) + GetSize(property.Value as string));
+
+            var bodySize = msg.Size; // body?
+
+            var totalWithoutAdditionalPercentage = standardPropertiesSize + customPropertiesSize + bodySize;
+
+            return (long) (totalWithoutAdditionalPercentage * 1.1);
+        }
+
+        static int GetSize(string value) => value != null ? Encoding.UTF8.GetByteCount(value) : 0;
+
+        static int GetSize(TimeSpan value) => 8;
+
+        static int GetSize(DateTime value) => 8;
+
+        static int GetSize(long value) => 8;
+
+        static int GetSize(Guid value) => 16;
+
+        static int GetSize(int value) => 4;
+
+        static int GetSize(short value) => 2;
+
+        static int GetSize(bool value) => 1;
 
         static ILog Log = LogManager.GetLogger(typeof(BrokeredMessageExtensions));
     }
