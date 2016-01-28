@@ -85,6 +85,30 @@
             Assert.That(batches[2].Operations.First().Message.MessageId, Is.EqualTo("id-3"));
             Assert.That(batches[3].Operations.First().Message.MessageId, Is.EqualTo("id-4"));
         }
+
+        [Test]
+        public void Should_calculate_size_of_each_batched_operation()
+        {
+            var headers = new Dictionary<string, string>{ { "header", "value"} };
+            var body = new byte[100];
+            var deliveryConstraints = new List<DeliveryConstraint>();
+
+            var operation1 = new MulticastTransportOperation(new OutgoingMessage("id-1", headers, body), typeof(EventA), deliveryConstraints, DispatchConsistency.Default);
+            var operation2 = new UnicastTransportOperation(new OutgoingMessage("id-2", headers, body), "CommandA", deliveryConstraints, DispatchConsistency.Default);
+
+            var multicastTransportOperations = new[] { operation1 };
+            var unicastTransportOperations = new[] { operation2 };
+
+            var transportOperations = new TransportOperations(multicastTransportOperations, unicastTransportOperations);
+
+            var batcher = new Batcher(new FakeTopolySectionManager());
+            var batches = batcher.ToBatches(transportOperations);
+
+            Assert.That(batches.Count, Is.EqualTo(2));
+            Assert.That(batches[0].Operations.First().GetEstimatedSize(), Is.EqualTo(2267));
+            Assert.That(batches[1].Operations.First().GetEstimatedSize(), Is.EqualTo(2267));
+        }
+
     }
 
     public class EventA
