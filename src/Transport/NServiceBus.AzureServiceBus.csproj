@@ -150,7 +150,7 @@
     <Compile Include="Receiving\DefaultBrokeredMessagesToIncomingMessagesConverter.cs" />
     <Compile Include="Receiving\IConvertBrokeredMessagesToIncomingMessages.cs" />
     <Compile Include="Sending\DefaultOutgoingBatchRouter.cs" />
-    <Compile Include="Sending\DefaultOutgoingMessagesToBrokeredMessagesConverter.cs" />
+    <Compile Include="Sending\DefaultBatchedOperationsToBrokeredMessagesConverter.cs" />
     <Compile Include="Sending\IRouteOutgoingBatches.cs" />
     <Compile Include="Sending\IConvertOutgoingMessagesToBrokeredMessages.cs" />
     <Compile Include="Receiving\INotifyIncomingMessages.cs" />

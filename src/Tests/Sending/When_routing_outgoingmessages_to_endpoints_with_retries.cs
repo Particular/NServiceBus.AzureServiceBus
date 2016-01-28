@@ -52,7 +52,7 @@
 //
 //            var router = new DefaultOutgoingBatchRouter(
 //                topology,
-//                new DefaultOutgoingMessagesToBrokeredMessagesConverter(settings), 
+//                new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), 
 //                clientLifecycleManager, settings);
 //
 //            var outgoingMessage = new OutgoingMessage("SomeId", new Dictionary<string, string>(), new byte[] {});
