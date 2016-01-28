@@ -1,17 +1,8 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 {
-    using System;
-    using System.Collections.Generic;
     using System.Configuration;
-    using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Tests;
-    using NServiceBus.DeliveryConstraints;
-    using NServiceBus.Routing;
-    using NServiceBus.Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 
