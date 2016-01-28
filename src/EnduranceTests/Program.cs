@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.EnduranceTests.Commands;
+    using NServiceBus.AzureServiceBus.EnduranceTests.TestUtils;
 
     internal class Program
     {
@@ -35,8 +36,11 @@
 
         private static async Task RunEndpointAsync(string endpointName, CancellationToken ct)
         {
+            var connectionString = AzureServiceBusConnectionString.Value;
+
             var busConfiguration = new BusConfiguration();
-            busConfiguration.UseTransport<AzureServiceBusTransport>();
+            busConfiguration.UseTransport<AzureServiceBusTransport>()
+                .ConnectionString(connectionString);
             busConfiguration.EndpointName(endpointName);
             busConfiguration.UseSerialization<JsonSerializer>();
             busConfiguration.EnableInstallers();
