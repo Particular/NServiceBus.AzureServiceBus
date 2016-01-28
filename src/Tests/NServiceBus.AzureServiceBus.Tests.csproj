@@ -120,6 +120,7 @@
     <Compile Include="Connectivity\When_executing_task_with_retry.cs" />
     <Compile Include="Creation\When_creating_subscription_backward_compatible_with_v6.cs" />
     <Compile Include="Seam\When_dispatching_messages.cs" />
+    <Compile Include="Seam\When_purge_on_startup_is_enabled.cs" />
     <Compile Include="Seam\When_dispatching_messages_in_receive_context.cs" />
     <Compile Include="Seam\When_message_pump_is_failing_to_receive_messages.cs" />
     <Compile Include="Seam\When_receiving_messages.cs" />
