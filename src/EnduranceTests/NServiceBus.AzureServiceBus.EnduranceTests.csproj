@@ -65,12 +65,10 @@
     <Compile Include="Commands\Heartbeat.cs" />
     <Compile Include="Handlers\HeartbeatHandler.cs" />
     <Compile Include="TestSettings.cs" />
+    <Compile Include="TestUtils\AzureServiceBusConnectionString.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Connections.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="readme.md" />
   </ItemGroup>
