@@ -66,7 +66,7 @@
       <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="NServiceBus.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9fc386479f8a226c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NServiceBus.6.0.0-unstable1335\lib\net452\NServiceBus.Core.dll</HintPath>
+      <HintPath>..\packages\NServiceBus.6.0.0-unstable1423\lib\net452\NServiceBus.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework">
@@ -93,6 +93,7 @@
     <Compile Include="Addressing\NamespacePartitioning\When_using_replicated_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_roundrobin_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_single_namespace_strategy.cs" />
+    <Compile Include="Addressing\Sanitization\When_building_SHA1_based_name.cs" />
     <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_by_adjusting_to_v6.cs" />
     <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_by_throwing_exception.cs" />
     <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_by_adjusting.cs" />

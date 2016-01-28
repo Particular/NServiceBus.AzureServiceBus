@@ -60,7 +60,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var validation = new ValidationMock();
             var sanitization = new AdjustmentSanitizationStrategy(validation);
             var endpointname = "endpointrw3pSH5zk5aQahkzt-E_U0aPf6KbXpWMZ7vnRFb/8/AAptt5Gp6YVt3rSnWwREBx3-BgnqNw9ol-Rn.wFRTFR1UzoCuHZM443EqKvSt-fzpMHPusH8rm4OQeiBCwBRVDA29rLC6RlOBZ4Xs_h415HW2lAdOPR6j4L-CaaVkfnDO2-9bjUTAGCDKs6jWYmgoCYMBx6x5PS_e0nRT05S_J78qd3SOKWTM-YjVj9fwQZ9xG2x02uCW-XIh0siprJp9c3jLE";
-            var sanitized = new DeterministicGuidBuilder().Build(endpointname).ToString();
+            var sanitized = SHA1DeterministicNameBuilder.Build(endpointname);
 
             Assert.AreEqual(sanitized, sanitization.Sanitize(endpointname, EntityType.Queue));
         }

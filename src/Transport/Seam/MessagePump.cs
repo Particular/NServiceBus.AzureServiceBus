@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Extensibility;
     using NServiceBus.Logging;
@@ -13,7 +14,7 @@ namespace NServiceBus.AzureServiceBus
         Func<PushContext, Task> messagePump;
         private RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
-        string _inputQueue ;
+        string _inputQueue;
 
         public MessagePump(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
         {
@@ -32,19 +33,20 @@ namespace NServiceBus.AzureServiceBus
             //settings.PurgeOnStartup
             //settings.RequiredConsistency
 
-
-
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
-                {
-                    circuitBreaker?.Success();
+            {
+                var tokenSource = new CancellationTokenSource();
+                receiveContext.CancellationToken = tokenSource.Token;
 
-                    var context = new ContextBag();
+                circuitBreaker?.Success();
 
-                    context.Set(receiveContext);
+                var context = new ContextBag();
 
-                    //todo, figure out what the TransportTransaction parameter is about
-                    return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, new NoTransaction(), context));
-                });
+                context.Set(receiveContext);
+
+                //todo, figure out what the TransportTransaction parameter is about
+                return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, new NoTransaction(), tokenSource, context));
+            });
 
             return TaskEx.Completed;
         }

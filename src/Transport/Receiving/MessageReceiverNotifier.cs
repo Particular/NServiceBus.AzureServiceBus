@@ -3,6 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Transactions;
@@ -10,7 +11,7 @@ namespace NServiceBus.AzureServiceBus
     using Logging;
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using Settings;
-    
+
     class MessageReceiverNotifier : INotifyIncomingMessages
     {
         readonly IManageMessageReceiverLifeCycle clientEntities;
@@ -42,7 +43,7 @@ namespace NServiceBus.AzureServiceBus
             this.incomingCallback = callback;
             this.errorCallback = errorCallback;
             this.entity = entity;
-           
+
             fullPath = entity.Path;
             if (entity.Type == EntityType.Subscription)
             {
@@ -76,7 +77,7 @@ namespace NServiceBus.AzureServiceBus
                 errorCallback?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
             }
         }
-        
+
         public void Start()
         {
             stopping = false;
@@ -114,7 +115,17 @@ namespace NServiceBus.AzureServiceBus
                 return;
             }
 
-            var incomingMessage = brokeredMessageConverter.Convert(message);
+            IncomingMessageDetails incomingMessage;
+            try
+            {
+                incomingMessage = brokeredMessageConverter.Convert(message);
+            }
+            catch (ConfigurationErrorsException exception)
+            {
+                await message.DeadLetterAsync("BrokeredMessage to IncomingMessageDetails conversion failure", exception.ToString());
+                return;
+            }
+
             var context = new BrokeredMessageReceiveContext()
             {
                 IncomingBrokeredMessage = message,
@@ -126,7 +137,15 @@ namespace NServiceBus.AzureServiceBus
             try
             {
                 await incomingCallback(incomingMessage, context).ConfigureAwait(false);
-                await InvokeCompletionCallbacksAsync(message, context).ConfigureAwait(false);
+
+                if (context.CancellationToken.IsCancellationRequested)
+                {
+                    await AbandonAsyncOnCancellation(message).ConfigureAwait(false);
+                }
+                else
+                {
+                    await InvokeCompletionCallbacksAsync(message, context).ConfigureAwait(false);
+                }
             }
             catch (Exception exception)
             {
@@ -152,6 +171,13 @@ namespace NServiceBus.AzureServiceBus
             logger.Info("Received message while shutting down, abandoning it so we can process it later.");
 
             await AbandonInternal(message);
+        }
+
+        Task AbandonAsyncOnCancellation(BrokeredMessage message)
+        {
+            logger.Info("Received message is cancelled by the pipeline, abandoning it so we can process it later.");
+
+            return AbandonInternal(message);
         }
 
         async Task AbandonAsync(BrokeredMessage message, Exception exception)
@@ -192,7 +218,7 @@ namespace NServiceBus.AzureServiceBus
             logger.Info("Stopping notifier for " + fullPath);
 
             var closeReceiverTask = internalReceiver.CloseAsync();
-            
+
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
             var allTasks = pipelineInvocationTasks.Values.Concat(new[]
             {

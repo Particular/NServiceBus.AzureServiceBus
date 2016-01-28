@@ -47,6 +47,67 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
+        public void Should_complete_replyto_address_if_not_present_in_headers()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var brokeredMessage = new BrokeredMessage(new byte[] { })
+            {
+                ReplyTo = "MyQueue"
+            };
+
+
+            var incomingMessage = converter.Convert(brokeredMessage);
+
+            Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.ReplyToAddress));
+            Assert.AreEqual("MyQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
+        }
+
+        [Test]
+        public void Should_complete_correlationid_if_not_present_in_headers()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var brokeredMessage = new BrokeredMessage(new byte[] {})
+            {
+                CorrelationId = "SomeId"
+            };
+
+
+            var incomingMessage = converter.Convert(brokeredMessage);
+
+            Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.CorrelationId));
+            Assert.AreEqual("SomeId", incomingMessage.Headers[Headers.CorrelationId]);
+        }
+
+        [Test]
+        public void Should_complete_timetobereceived_if_not_present_in_headers()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var timespan = TimeSpan.FromHours(1);
+            var brokeredMessage = new BrokeredMessage(new byte[] { })
+            {
+                TimeToLive = timespan
+            };
+
+
+            var incomingMessage = converter.Convert(brokeredMessage);
+
+            Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.TimeToBeReceived));
+            Assert.AreEqual(timespan.ToString(), incomingMessage.Headers[Headers.TimeToBeReceived]);
+        }
+
+        [Test]
         public void Should_extract_body_as_byte_array_by_default()
         {
             // default settings
@@ -55,7 +116,6 @@ namespace NServiceBus.AzureServiceBus.Tests
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
-
             var brokeredMessage = new BrokeredMessage(bytes);
 
             var incomingMessage = converter.Convert(brokeredMessage);
@@ -72,9 +132,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             extensions.Serialization().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
-
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
             var stream = new MemoryStream();
@@ -84,6 +142,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             stream.Position = 0;
 
             var brokeredMessage = new BrokeredMessage(stream);
+            brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "application/octect-stream";
 
             var incomingMessage = converter.Convert(brokeredMessage);
 
@@ -93,62 +152,66 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual("Whatever", body);
         }
 
-        public void Should_complete_replyto_address_if_not_present_in_headers()
+        [Test]
+        public void Should_extract_body_as_byte_array_when_configured()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
-
-            var brokeredMessage = new BrokeredMessage("")
-            {
-                ReplyTo = "MyQueue"
-            };
-
+            var bytes = Encoding.UTF8.GetBytes("Whatever");
+            var brokeredMessage = new BrokeredMessage(bytes);
+            brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "wcf/byte-array";
 
             var incomingMessage = converter.Convert(brokeredMessage);
 
-            Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.ReplyToAddress));
-            Assert.AreEqual("MyQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
+            var sr = new StreamReader(incomingMessage.BodyStream);
+            var body = sr.ReadToEnd();
+
+            Assert.AreEqual("Whatever", body);
         }
 
-        public void Should_complete_correlationid_if_not_present_in_headers()
+        [Test]
+        public void Should_throw_for_a_message_without_transport_encoding_header_supplied_and_actual_body_type_other_than_default()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
-            var brokeredMessage = new BrokeredMessage("")
-            {
-                CorrelationId = "SomeId"
-            };
+            var brokeredMessage = new BrokeredMessage("non-default-type");
 
-
-            var incomingMessage = converter.Convert(brokeredMessage);
-
-            Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.CorrelationId));
-            Assert.AreEqual("SomeId", incomingMessage.Headers[Headers.CorrelationId]);
+            Assert.Throws<UnsupportedBrokeredMessageBodyTypeException>(() => converter.Convert(brokeredMessage));
         }
 
-        public void Should_complete_timetobereceived_if_not_present_in_headers()
+        [Test]
+        public void Should_throw_for_a_message_with_unknown_transport_encoding_header_supplied()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
 
-            var timespan = TimeSpan.FromHours(1);
-            var brokeredMessage = new BrokeredMessage("")
-            {
-                TimeToLive = timespan
-            };
+            var brokeredMessage = new BrokeredMessage("non-default-type");
+            brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "unknown";
 
+            Assert.Throws<UnsupportedBrokeredMessageBodyTypeException>(() => converter.Convert(brokeredMessage));
+        }
+        [Test]
 
-            var incomingMessage = converter.Convert(brokeredMessage);
+        public void Should_not_propagate_transport_encoding_header_from_brokered_message()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.TimeToBeReceived));
-            Assert.AreEqual(timespan.ToString(), incomingMessage.Headers[Headers.TimeToBeReceived]);
+            var bytes = Encoding.UTF8.GetBytes("Whatever");
+            var brokeredMessage = new BrokeredMessage(bytes);
+            brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "wcf/byte-array";
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var incomingMessageDetails = converter.Convert(brokeredMessage);
+
+            CollectionAssert.DoesNotContain(incomingMessageDetails.Headers, BrokeredMessageHeaders.TransportEncoding, $"Headers should not contain `{BrokeredMessageHeaders.TransportEncoding}`, but it was found.");
         }
     }
 }
