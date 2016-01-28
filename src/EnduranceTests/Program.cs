@@ -38,7 +38,6 @@
             var busConfiguration = new BusConfiguration();
             busConfiguration.UseTransport<AzureServiceBusTransport>();
             busConfiguration.EndpointName(endpointName);
-            busConfiguration.PurgeOnStartup(true);
             busConfiguration.UseSerialization<JsonSerializer>();
             busConfiguration.EnableInstallers();
             busConfiguration.UsePersistence<InMemoryPersistence>();
