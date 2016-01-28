@@ -41,7 +41,14 @@ namespace NServiceBus.AzureServiceBus
 
             SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(brokeredMessage, routingOptions);
 
+            SetEstimatedMessageSizeHeader(brokeredMessage, outgoingOperation.GetEstimatedSize());
+
             return brokeredMessage;
+        }
+
+        private void SetEstimatedMessageSizeHeader(BrokeredMessage brokeredMessage, long estimatedSize)
+        {
+            brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize] = estimatedSize;
         }
 
         private void SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(BrokeredMessage brokeredMessage, RoutingOptions routingOptions)

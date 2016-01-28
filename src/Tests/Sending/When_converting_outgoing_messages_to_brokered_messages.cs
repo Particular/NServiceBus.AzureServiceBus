@@ -277,5 +277,26 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.That(brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding], Is.EqualTo(expectedHeaderValue));
         }
+
+        [Test]
+        public void Should_inject_estimated_message_size_into_headers()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+
+            var body = Encoding.UTF8.GetBytes("Whatever");
+            var headers = new Dictionary<string, string> { { "header", "value" } };
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", headers, body),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
+
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
+
+            Assert.That(brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize], Is.GreaterThan(0)); 
+        }
     }
 }
