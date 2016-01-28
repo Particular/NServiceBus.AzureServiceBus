@@ -46,7 +46,11 @@
             var endpoint = await Endpoint.Start(busConfiguration);
             Console.WriteLine(endpointName + " started");
             var session = endpoint.CreateBusSession();
-            await session.Send<StartHeartbeat>(cmd => { cmd.Wait = TestSettings.Rate; }, TestSettings.SendOptions);
+            await session.Send<StartHeartbeat>(cmd =>
+            {
+                cmd.Wait = TestSettings.Rate;
+                cmd.TestRunId = Guid.NewGuid();
+            }, TestSettings.SendOptions);
             try
             {
                 do

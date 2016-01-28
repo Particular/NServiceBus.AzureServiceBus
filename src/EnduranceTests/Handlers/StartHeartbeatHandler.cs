@@ -10,8 +10,12 @@
         public Task Handle(StartHeartbeat message, IMessageHandlerContext context)
         {
             log.InfoFormat("StartHeartbeatHandler starting Heartbeat with interval of {0}", message.Wait);
-            TestSettings.TestEnabled = true;
-            return context.Send<Heartbeat>(cmd => { cmd.Wait = message.Wait; }, TestSettings.SendOptions);
+            TestSettings.TestRunIds.Add(message.TestRunId);
+            return context.Send<Heartbeat>(cmd =>
+            {
+                cmd.Wait = message.Wait;
+                cmd.TestRunId = message.TestRunId;
+            }, TestSettings.SendOptions);
         }
     }
 }
