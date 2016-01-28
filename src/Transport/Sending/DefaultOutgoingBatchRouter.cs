@@ -5,6 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using NServiceBus.Logging;
     using NServiceBus.Settings;
 
@@ -122,6 +123,7 @@ namespace NServiceBus.AzureServiceBus
         {
             var chunk = new List<BrokeredMessage>();
             long batchSize = 0;
+            var chunkNumber = 1;
 
             foreach (var message in messagesToSend)
             {
@@ -130,34 +132,40 @@ namespace NServiceBus.AzureServiceBus
                     return;
                 }
 
-                if ((batchSize + message.Size) > maximuMessageSizeInKilobytes * 1024)
+                var messageSize = message.EstimatedSize();
+
+                if (batchSize + messageSize > maximuMessageSizeInKilobytes * 1024)
                 {
                     if (chunk.Any())
                     {
+                        logger.Debug($"Routing batched messages, chunk #{chunkNumber++}.");
                         var currentChunk = chunk;
                         await messageSender.RetryOnThrottleAsync(s => s.SendBatch(currentChunk), s => s.SendBatch(currentChunk.Select(x => x.Clone())), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
                     }
 
                     chunk = new List<BrokeredMessage> { message };
-                    batchSize = message.Size;
+                    batchSize = messageSize;
                 }
                 else
                 {
                     chunk.Add(message);
-                    batchSize += message.Size;
+                    batchSize += messageSize;
                 }
             }
 
             if (chunk.Any())
             {
+                logger.Debug($"Routing batched messages, chunk #{chunkNumber}.");
                 await messageSender.RetryOnThrottleAsync(s => s.SendBatch(chunk), s => s.SendBatch(chunk.Select(x => x.Clone())), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
             }
         }
 
         bool GuardMessageSize(BrokeredMessage brokeredMessage)
         {
-            if (brokeredMessage.Size > maximuMessageSizeInKilobytes * 1024)
+            var estimatedSize = brokeredMessage.EstimatedSize();
+            if (estimatedSize > maximuMessageSizeInKilobytes * 1024)
             {
+                logger.Debug($"Detected an outgoing message that exceeds the maximum message size allowed by Azure ServiceBus. Estimated message size is {estimatedSize} bytes.");
                 oversizedMessageHandler.Handle(brokeredMessage);
                 return true;
             }

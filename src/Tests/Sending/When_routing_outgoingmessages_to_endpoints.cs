@@ -169,7 +169,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // setup the batch
             var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
-            var bytes = Enumerable.Range(0, 250 * 1024).Select(x => (byte)(x % 256)).ToArray();
+            var bytes = Enumerable.Range(0, 220 * 1024).Select(x => (byte)(x % 256)).ToArray();
             var batch = new Batch
             {
                 Destinations = new TopologySection
