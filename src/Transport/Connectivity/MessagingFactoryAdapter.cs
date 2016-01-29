@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus
 
         public async Task CloseAsync()
         {
-            await _factory.CloseAsync();
+            await _factory.CloseAsync().ConfigureAwait(false);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace NServiceBus.AzureServiceBus
             context.TryGet(out receiveContext);
             if (receiveContext == null) // not in a receive context, so send out immediately
             {
-                await routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext: null);
+                await routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext: null).ConfigureAwait(false);
                 return;
             }
 
@@ -36,11 +36,11 @@ namespace NServiceBus.AzureServiceBus
 
             if (brokeredMessageReceiveContext != null) // apply brokered message specific dispatching rules
             {
-                await DispatchBatches(outgoingBatches, brokeredMessageReceiveContext);
+                await DispatchBatches(outgoingBatches, brokeredMessageReceiveContext).ConfigureAwait(false);
             }
             else // case when the receive context is different from brokered messaging (like eventhub)
             {
-                await routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext);// otherwise send out immediately
+                await routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext).ConfigureAwait(false);// otherwise send out immediately
             }
         }
 
@@ -49,7 +49,7 @@ namespace NServiceBus.AzureServiceBus
             // received brokered message has already been completed, so send everything out immediately
             if (receiveContext.ReceiveMode == ReceiveMode.ReceiveAndDelete)
             {
-                await routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext);
+                await routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext).ConfigureAwait(false);
             }
             else
             {
@@ -60,7 +60,7 @@ namespace NServiceBus.AzureServiceBus
                 var toBeDispatchedOnComplete = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Default);
 
                 receiveContext.OnComplete.Add(() => routeOutgoingBatches.RouteBatches(toBeDispatchedOnComplete, receiveContext));
-                await routeOutgoingBatches.RouteBatches(toBeDispatchedImmediately, receiveContext);
+                await routeOutgoingBatches.RouteBatches(toBeDispatchedImmediately, receiveContext).ConfigureAwait(false);
             }
         }
     }

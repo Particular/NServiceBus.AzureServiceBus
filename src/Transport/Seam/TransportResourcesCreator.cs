@@ -20,7 +20,7 @@ namespace NServiceBus.AzureServiceBus
             if (resourcesCreated) return;
 
             var receiveResources = sections.DetermineResourcesToCreate();
-            await topologyCreator.Create(receiveResources);
+            await topologyCreator.Create(receiveResources).ConfigureAwait(false);
 
             resourcesCreated = true;
         }

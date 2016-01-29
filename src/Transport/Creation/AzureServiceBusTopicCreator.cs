@@ -115,7 +115,7 @@
             {
                 logger.InfoFormat("Checking namespace for existence of the topic '{0}'", notFoundTopicPath);
                 return await namespaceClient.TopicExists(notFoundTopicPath).ConfigureAwait(false);
-            });
+            }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the topic '{0}' {1}", topicPath, exists ? "exists" : "does not exist");
 
