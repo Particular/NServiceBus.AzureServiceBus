@@ -1,6 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 {
-    using System.Configuration;
+    using System;
     using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Transports;
@@ -24,7 +24,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // Dummy CriticalError
             var criticalError = new CriticalError(ctx => Task.FromResult(0));
 
-            Assert.Throws<ConfigurationErrorsException>(async () => await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", true, TransportTransactionMode.SendsAtomicWithReceive)));
+            Assert.Throws<InvalidOperationException>(async () => await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", true, TransportTransactionMode.SendsAtomicWithReceive)));
         }
     }
 }
