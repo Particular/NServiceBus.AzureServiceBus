@@ -12,7 +12,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         {
             try
             {
-                await msg.CompleteAsync();
+                await msg.CompleteAsync().ConfigureAwait(false);
                 return true;
             }
             catch (MessageLockLostException ex)
@@ -48,7 +48,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         {
             try
             {
-                await msg.AbandonAsync();
+                await msg.AbandonAsync().ConfigureAwait(false);
                 return true;
             }
             catch (MessageLockLostException ex)

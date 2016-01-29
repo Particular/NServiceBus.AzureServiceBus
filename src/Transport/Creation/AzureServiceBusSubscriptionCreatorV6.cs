@@ -18,12 +18,12 @@
 
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager)
         {
-            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager).ConfigureAwait(false);
 
-            if (await SubscriptionIsReusedAcrossDifferentNamespaces(subscriptionDescription, sqlFilter, namespaceManager))
+            if (await SubscriptionIsReusedAcrossDifferentNamespaces(subscriptionDescription, sqlFilter, namespaceManager).ConfigureAwait(false))
             {
                 logger.Debug("Creating subscription using event type full name");
-                subscriptionDescription = await creator.Create(topicPath, metadata.SubscriptionNameBasedOnEventWithNamespace, metadata, sqlFilter, namespaceManager);
+                subscriptionDescription = await creator.Create(topicPath, metadata.SubscriptionNameBasedOnEventWithNamespace, metadata, sqlFilter, namespaceManager).ConfigureAwait(false);
             }
 
             return subscriptionDescription;
@@ -31,7 +31,7 @@
 
         async Task<bool> SubscriptionIsReusedAcrossDifferentNamespaces(SubscriptionDescription subscriptionDescription, string sqlFilter, INamespaceManager namespaceManager)
         {
-            var rules = await namespaceManager.GetRules(subscriptionDescription);
+            var rules = await namespaceManager.GetRules(subscriptionDescription).ConfigureAwait(false);
             var filter = rules.First().Filter as SqlFilter;
             if (filter != null && filter.SqlExpression != sqlFilter)
             {

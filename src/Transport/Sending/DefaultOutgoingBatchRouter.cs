@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBus
         {
             foreach (var batch in outgoingBatches)
             {
-                await RouteBatch(batch, context);
+                await RouteBatch(batch, context).ConfigureAwait(false);
             }
         }
 
@@ -107,7 +107,7 @@ namespace NServiceBus.AzureServiceBus
         {
             try
             {
-                await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend);
+                await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend).ConfigureAwait(false);
             }
             catch (Exception exception)
             {

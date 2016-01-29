@@ -122,7 +122,7 @@ namespace NServiceBus.AzureServiceBus
             }
             catch (ConfigurationErrorsException exception)
             {
-                await message.DeadLetterAsync("BrokeredMessage to IncomingMessageDetails conversion failure", exception.ToString());
+                await message.DeadLetterAsync("BrokeredMessage to IncomingMessageDetails conversion failure", exception.ToString()).ConfigureAwait(false);
                 return;
             }
 
@@ -170,7 +170,7 @@ namespace NServiceBus.AzureServiceBus
         {
             logger.Info("Received message while shutting down, abandoning it so we can process it later.");
 
-            await AbandonInternal(message);
+            await AbandonInternal(message).ConfigureAwait(false);
         }
 
         Task AbandonAsyncOnCancellation(BrokeredMessage message)
@@ -184,7 +184,7 @@ namespace NServiceBus.AzureServiceBus
         {
             logger.Info($"Exceptions occurred OnComplete, exception: {exception}");
 
-            await AbandonInternal(message);
+            await AbandonInternal(message).ConfigureAwait(false);
 
             if (errorCallback != null && exception != null)
             {

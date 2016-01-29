@@ -76,7 +76,7 @@ namespace NServiceBus.AzureServiceBus
         {
             logger.Info("Stopping messagepump");
 
-            await topologyOperator.Stop();
+            await topologyOperator.Stop().ConfigureAwait(false);
 
             logger.Info("Messagepump stopped");
         }
