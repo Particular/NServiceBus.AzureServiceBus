@@ -9,7 +9,7 @@
     {
         public SettingsHolder Apply(SettingsHolder settings)
         {
-            ApplyDefaultsForConnectivity(settings);
+            ApplyDefaultsForConnectivityAndSending(settings);
             ApplyDefaultValuesForAddressing(settings);
             ApplyDefaultValuesForQueueDescriptions(settings);
             ApplyDefaultValuesForTopics(settings);
@@ -37,7 +37,7 @@
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string>());
         }
 
-        void ApplyDefaultsForConnectivity(SettingsHolder settings)
+        void ApplyDefaultsForConnectivityAndSending(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 5);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, false);
@@ -48,6 +48,7 @@
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle, TimeSpan.FromSeconds(10));
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle, 5);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes, 256);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage, 5);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance, new ThrowOnOversizedBrokeredMessages());
         }
 
