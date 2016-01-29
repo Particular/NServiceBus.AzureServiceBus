@@ -25,6 +25,7 @@ namespace NServiceBus
 
         public AzureServiceBusMessageSenderSettings BackOffTimeOnThrottle(TimeSpan backoffTime)
         {
+            Guard.AgainstNegative(nameof(backoffTime), backoffTime);
             _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle, backoffTime);
 
             return this;
@@ -32,6 +33,7 @@ namespace NServiceBus
 
         public AzureServiceBusMessageSenderSettings RetryAttemptsOnThrottle(int count)
         {
+            Guard.AgainstNegative(nameof(count), count);
             _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle, count);
 
             return this;
@@ -39,8 +41,16 @@ namespace NServiceBus
 
         public AzureServiceBusMessageSenderSettings MaximuMessageSizeInKilobytes(int sizeInKilobytes)
         {
+            Guard.AgainstNegativeAndZero(nameof(sizeInKilobytes), sizeInKilobytes);
             _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes, sizeInKilobytes);
 
+            return this;
+        }
+
+        public AzureServiceBusMessageSenderSettings MessageSizePaddingPercentage(int percentage)
+        {
+            Guard.AgainstNegative(nameof(percentage), percentage);
+            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage, percentage);
             return this;
         }
 
