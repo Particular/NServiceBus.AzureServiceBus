@@ -48,8 +48,7 @@
             busConfiguration.SendFailedMessagesTo("error");
             var endpoint = await Endpoint.Start(busConfiguration);
             Console.WriteLine(endpointName + " started");
-            var session = endpoint.CreateBusSession();
-            await session.Send<StartHeartbeat>(cmd =>
+            await endpoint.Send<StartHeartbeat>(cmd =>
             {
                 cmd.Wait = TestSettings.Rate;
                 cmd.TestRunId = Guid.NewGuid();
