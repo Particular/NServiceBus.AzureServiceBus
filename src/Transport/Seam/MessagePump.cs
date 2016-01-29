@@ -27,6 +27,11 @@ namespace NServiceBus.AzureServiceBus
             messagePump = pump;
             circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker("MessagePump", TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
 
+            if (settings.PurgeOnStartup)
+            {
+                throw new InvalidOperationException("Azure Service Bus transport doesn't support PurgeOnStartup behaviour");
+            }
+
             //TODO: integrate these
             //settings.ErrorQueue
             _inputQueue = settings.InputQueue;
