@@ -9,7 +9,7 @@
     {
         public SettingsHolder Apply(SettingsHolder settings)
         {
-            ApplyDefaultsForConnectivityAndSending(settings);
+            ApplyDefaultsForConnectivity(settings);
             ApplyDefaultValuesForAddressing(settings);
             ApplyDefaultValuesForQueueDescriptions(settings);
             ApplyDefaultValuesForTopics(settings);
@@ -37,7 +37,7 @@
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string>());
         }
 
-        void ApplyDefaultsForConnectivityAndSending(SettingsHolder settings)
+        void ApplyDefaultsForConnectivity(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 5);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, false);

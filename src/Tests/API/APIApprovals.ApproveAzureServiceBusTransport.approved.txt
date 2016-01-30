@@ -190,7 +190,7 @@ namespace NServiceBus.AzureServiceBus
     }
     public class BatchedOperation
     {
-        public BatchedOperation() { }
+        public BatchedOperation(int messageSizePaddingPercentage = 0) { }
         public System.Collections.Generic.IEnumerable<NServiceBus.DeliveryConstraints.DeliveryConstraint> DeliveryConstraints { get; set; }
         public NServiceBus.Transports.OutgoingMessage Message { get; set; }
         public long GetEstimatedSize() { }
@@ -668,6 +668,7 @@ namespace NServiceBus
         public AzureServiceBusMessageSenderSettings(NServiceBus.Settings.SettingsHolder settings) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings BackOffTimeOnThrottle(System.TimeSpan backoffTime) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings MaximuMessageSizeInKilobytes(int sizeInKilobytes) { }
+        public NServiceBus.AzureServiceBusMessageSenderSettings MessageSizePaddingPercentage(int percentage) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings OversizedBrokeredMessageHandler<T>(T instance)
             where T : NServiceBus.AzureServiceBus.IHandleOversizedBrokeredMessages { }
         public NServiceBus.AzureServiceBusMessageSenderSettings RetryAttemptsOnThrottle(int count) { }

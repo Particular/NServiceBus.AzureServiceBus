@@ -4,6 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Text;
     using NServiceBus.DeliveryConstraints;
+    using NServiceBus.Settings;
     using NServiceBus.Transports;
 
     public interface IBatcher
@@ -14,12 +15,14 @@ namespace NServiceBus.AzureServiceBus
     class Batcher : IBatcher
     {
         private readonly ITopologySectionManager topologySectionManager;
-        
-        public Batcher(ITopologySectionManager topologySectionManager)
+        private int messageSizePaddingPercentage;
+
+        public Batcher(ITopologySectionManager topologySectionManager, ReadOnlySettings settings)
         {
             this.topologySectionManager = topologySectionManager;
+            messageSizePaddingPercentage = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage);
         }
-        
+
         public IList<Batch> ToBatches(TransportOperations operations)
         {
             var indexedBatches = new Dictionary<string, Batch>();
@@ -42,7 +45,7 @@ namespace NServiceBus.AzureServiceBus
                     batch.Destinations = topologySectionManager.DetermineSendDestination(unicastOperation.Destination);
                     batch.RequiredDispatchConsistency = unicastOperation.RequiredDispatchConsistency;
                 }
-                batch.Operations.Add(new BatchedOperation
+                batch.Operations.Add(new BatchedOperation(messageSizePaddingPercentage)
                 {
                     Message = unicastOperation.Message,
                     DeliveryConstraints = unicastOperation.DeliveryConstraints,
@@ -64,7 +67,7 @@ namespace NServiceBus.AzureServiceBus
                     batch.Destinations = topologySectionManager.DeterminePublishDestination(multicastOperation.MessageType);
                     batch.RequiredDispatchConsistency = multicastOperation.RequiredDispatchConsistency;
                 }
-                batch.Operations.Add(new BatchedOperation
+                batch.Operations.Add(new BatchedOperation(messageSizePaddingPercentage)
                 {
                     DeliveryConstraints = multicastOperation.DeliveryConstraints,
                     Message = multicastOperation.Message
@@ -107,6 +110,13 @@ namespace NServiceBus.AzureServiceBus
 
     public class BatchedOperation
     {
+        private int messageSizePaddingPercentage;
+
+        public BatchedOperation(int messageSizePaddingPercentage = 0)
+        {
+            this.messageSizePaddingPercentage = messageSizePaddingPercentage;
+        }
+
         public OutgoingMessage Message { get; set; }
 
         public IEnumerable<DeliveryConstraint> DeliveryConstraints { get; set; }
@@ -139,8 +149,8 @@ namespace NServiceBus.AzureServiceBus
             var bodySize = Message.Body.Length;
             var total = standardPropertiesSize + headers + bodySize;
 
-            const double addTenPercent = 1.1;
-            var estimatedSize = (long)(total * addTenPercent);
+            var padWithPercentage = (double)(100 + messageSizePaddingPercentage) / 100;
+            var estimatedSize = (long)(total * padWithPercentage);
             return estimatedSize;
         }
 

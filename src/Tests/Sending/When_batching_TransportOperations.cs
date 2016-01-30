@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using NServiceBus.DeliveryConstraints;
+    using NServiceBus.Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 
@@ -26,7 +27,9 @@
 
             var transportOperations = new TransportOperations(multicastTransportOperations, unicastTransportOperations);
 
-            var batcher = new Batcher(new FakeTopolySectionManager());
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var batcher = new Batcher(new FakeTopolySectionManager(), settings);
             var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(2));
@@ -51,7 +54,9 @@
 
             var transportOperations = new TransportOperations(multicastTransportOperations, unicastTransportOperations);
 
-            var batcher = new Batcher(new FakeTopolySectionManager());
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var batcher = new Batcher(new FakeTopolySectionManager(), settings);
             var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(2));
@@ -76,7 +81,9 @@
 
             var transportOperations = new TransportOperations(multicastTransportOperations, unicastTransportOperations);
 
-            var batcher = new Batcher(new FakeTopolySectionManager());
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var batcher = new Batcher(new FakeTopolySectionManager(), settings);
             var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(4));
@@ -101,12 +108,14 @@
 
             var transportOperations = new TransportOperations(multicastTransportOperations, unicastTransportOperations);
 
-            var batcher = new Batcher(new FakeTopolySectionManager());
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var batcher = new Batcher(new FakeTopolySectionManager(), settings);
             var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(2));
-            Assert.That(batches[0].Operations.First().GetEstimatedSize(), Is.EqualTo(2267));
-            Assert.That(batches[1].Operations.First().GetEstimatedSize(), Is.EqualTo(2267));
+            Assert.That(batches[0].Operations.First().GetEstimatedSize(), Is.EqualTo(2164), "For default message size padding of 5% size should be 2,164 bytes");
+            Assert.That(batches[1].Operations.First().GetEstimatedSize(), Is.EqualTo(2164), "For default message size padding of 5% size should be 2,164 bytes");
         }
 
     }
