@@ -4,6 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Text;
     using NServiceBus.DeliveryConstraints;
+    using NServiceBus.Settings;
     using NServiceBus.Transports;
 
     public interface IBatcher
@@ -14,12 +15,14 @@ namespace NServiceBus.AzureServiceBus
     class Batcher : IBatcher
     {
         private readonly ITopologySectionManager topologySectionManager;
-        
-        public Batcher(ITopologySectionManager topologySectionManager)
+        private int messageSizePaddingPercentage;
+
+        public Batcher(ITopologySectionManager topologySectionManager, ReadOnlySettings settings)
         {
             this.topologySectionManager = topologySectionManager;
+            messageSizePaddingPercentage = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage);
         }
-        
+
         public IList<Batch> ToBatches(TransportOperations operations)
         {
             var indexedBatches = new Dictionary<string, Batch>();
@@ -42,10 +45,10 @@ namespace NServiceBus.AzureServiceBus
                     batch.Destinations = topologySectionManager.DetermineSendDestination(unicastOperation.Destination);
                     batch.RequiredDispatchConsistency = unicastOperation.RequiredDispatchConsistency;
                 }
-                batch.Operations.Add(new BatchedOperation
+                batch.Operations.Add(new BatchedOperation(messageSizePaddingPercentage)
                 {
                     Message = unicastOperation.Message,
-                    DeliveryConstraints = unicastOperation.DeliveryConstraints
+                    DeliveryConstraints = unicastOperation.DeliveryConstraints,
                 });
             }
         }
@@ -64,7 +67,7 @@ namespace NServiceBus.AzureServiceBus
                     batch.Destinations = topologySectionManager.DeterminePublishDestination(multicastOperation.MessageType);
                     batch.RequiredDispatchConsistency = multicastOperation.RequiredDispatchConsistency;
                 }
-                batch.Operations.Add(new BatchedOperation
+                batch.Operations.Add(new BatchedOperation(messageSizePaddingPercentage)
                 {
                     DeliveryConstraints = multicastOperation.DeliveryConstraints,
                     Message = multicastOperation.Message
@@ -107,8 +110,50 @@ namespace NServiceBus.AzureServiceBus
 
     public class BatchedOperation
     {
+        private int messageSizePaddingPercentage;
+
+        public BatchedOperation(int messageSizePaddingPercentage = 0)
+        {
+            this.messageSizePaddingPercentage = messageSizePaddingPercentage;
+        }
+
         public OutgoingMessage Message { get; set; }
 
         public IEnumerable<DeliveryConstraint> DeliveryConstraints { get; set; }
+
+        public long GetEstimatedSize()
+        {
+            const int assumeSize = 256;
+            var standardPropertiesSize = GetStringSizeInBytes(Message.MessageId) +
+                                         assumeSize + // ContentType +
+                                         assumeSize + // CorrelationId +
+                                         4 + // DeliveryCount
+                                         8 + // EnqueuedSequenceNumber
+                                         8 + // EnqueuedTimeUtc
+                                         8 + // ExpiresAtUtc
+                                         1 + // ForcePersistence
+                                         1 + // IsBodyConsumed
+                                         assumeSize + // Label
+                                         8 + // LockedUntilUtc 
+                                         16 + // LockToken 
+                                         assumeSize + // PartitionKey
+                                         8 + // ScheduledEnqueueTimeUtc
+                                         8 + // SequenceNumber
+                                         assumeSize + // SessionId
+                                         4 + // State
+                                         8 + // TimeToLive +
+                                         assumeSize + // To +
+                                         assumeSize;  // ViaPartitionKey;
+
+            var headers = Message.Headers.Sum(property => GetStringSizeInBytes(property.Key) + GetStringSizeInBytes(property.Value));
+            var bodySize = Message.Body.Length;
+            var total = standardPropertiesSize + headers + bodySize;
+
+            var padWithPercentage = (double)(100 + messageSizePaddingPercentage) / 100;
+            var estimatedSize = (long)(total * padWithPercentage);
+            return estimatedSize;
+        }
+
+        private static int GetStringSizeInBytes(string value) => value != null ? Encoding.UTF8.GetByteCount(value) : 0;
     }
 }

@@ -133,6 +133,7 @@ namespace NServiceBus.AzureServiceBus
                 public const string BackOffTimeOnThrottle = "AzureServiceBus.Connectivity.MessageSenders.BackOffTimeOnThrottle";
                 public const string RetryAttemptsOnThrottle = "AzureServiceBus.Connectivity.MessageSenders.RetryAttemptsOnThrottle";
                 public const string MaximumMessageSizeInKilobytes = "AzureServiceBus.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes";
+                public const string MessageSizePaddingPercentage = "AzureServiceBus.Connectivity.MessageSenders.MessageSizePaddingPercentage";
                 public const string OversizedBrokeredMessageHandlerInstance = "AzureServiceBus.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance";
             }
 

@@ -9,11 +9,11 @@ namespace NServiceBus.AzureServiceBus
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
-    public class DefaultOutgoingMessagesToBrokeredMessagesConverter : IConvertOutgoingMessagesToBrokeredMessages
+    public class DefaultBatchedOperationsToBrokeredMessagesConverter : IConvertOutgoingMessagesToBrokeredMessages
     {
         readonly ReadOnlySettings settings;
 
-        public DefaultOutgoingMessagesToBrokeredMessagesConverter(ReadOnlySettings settings)
+        public DefaultBatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings)
         {
             this.settings = settings;
         }
@@ -41,7 +41,14 @@ namespace NServiceBus.AzureServiceBus
 
             SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(brokeredMessage, routingOptions);
 
+            SetEstimatedMessageSizeHeader(brokeredMessage, outgoingOperation.GetEstimatedSize());
+
             return brokeredMessage;
+        }
+
+        private void SetEstimatedMessageSizeHeader(BrokeredMessage brokeredMessage, long estimatedSize)
+        {
+            brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize] = estimatedSize;
         }
 
         private void SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(BrokeredMessage brokeredMessage, RoutingOptions routingOptions)

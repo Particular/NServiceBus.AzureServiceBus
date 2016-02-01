@@ -35,6 +35,15 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
+        public void Should_be_not_able_to_set_invalid_backoff_time_when_throttled()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.Connectivity().MessageSenders().BackOffTimeOnThrottle(TimeSpan.FromSeconds(-1)));
+        }
+
+        [Test]
         public void Should_be_able_to_set_retry_attempts_when_throttled()
         {
             var settings = new SettingsHolder();
@@ -43,6 +52,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             var connectivitySettings = extensions.Connectivity().MessageSenders().RetryAttemptsOnThrottle(10);
 
             Assert.AreEqual(10, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle));
+        }
+
+        [Test]
+        public void Should_be_able_to_set_invalid_retry_attempts_when_throttled()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.Connectivity().MessageSenders().RetryAttemptsOnThrottle(-1));
         }
 
         [Test]
@@ -57,6 +75,35 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
+        public void Should_not_be_able_to_set_invalid_maximum_message_size_in_kilobytes()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.Connectivity().MessageSenders().MaximuMessageSizeInKilobytes(0));
+        }
+
+        [Test]
+        public void Should_be_able_to_set_message_size_padding_percentage()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            var connectivitySettings = extensions.Connectivity().MessageSenders().MessageSizePaddingPercentage(10);
+
+            Assert.AreEqual(10, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage));
+        }
+
+        [Test]
+        public void Should_be_not_be_able_to_set_invalid_message_size_padding_percentage()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.Connectivity().MessageSenders().MessageSizePaddingPercentage(-1));
+        }
+
+        [Test]
         public void Should_be_able_to_set_oversized_brokered_message_handler()
         {
             var settings = new SettingsHolder();
@@ -68,7 +115,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual(myOversizedBrokeredMessageHandler, connectivitySettings.GetSettings().Get<IHandleOversizedBrokeredMessages>(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance));
         }
 
-        public class MyOversizedBrokeredMessageHandler : IHandleOversizedBrokeredMessages
+        private class MyOversizedBrokeredMessageHandler : IHandleOversizedBrokeredMessages
         {
             public Task Handle(BrokeredMessage brokeredMessage)
             {

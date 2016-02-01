@@ -95,6 +95,7 @@
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
+    <Compile Include="Properties\Resharper.Annotations.g.cs" />
     <Compile Include="Receiving\UnsupportedBrokeredMessageBodyTypeException.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
     <Compile Include="Utils\BrokeredMessageHeaders.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Topology\ITopology.cs" />
     <Compile Include="Topology\Topologies\ForwardingTopology.cs" />
     <Compile Include="Topology\Topologies\StandardTopology.cs" />
+    <Compile Include="Utils\Guard.cs" />
     <Compile Include="Utils\IRegisterTransportParts.cs" />
     <Compile Include="Receiving\IncomingMessageDetails.cs" />
     <Compile Include="Receiving\SupportedBrokeredMessageBodyTypes.cs" />
@@ -150,7 +152,7 @@
     <Compile Include="Receiving\DefaultBrokeredMessagesToIncomingMessagesConverter.cs" />
     <Compile Include="Receiving\IConvertBrokeredMessagesToIncomingMessages.cs" />
     <Compile Include="Sending\DefaultOutgoingBatchRouter.cs" />
-    <Compile Include="Sending\DefaultOutgoingMessagesToBrokeredMessagesConverter.cs" />
+    <Compile Include="Sending\DefaultBatchedOperationsToBrokeredMessagesConverter.cs" />
     <Compile Include="Sending\IRouteOutgoingBatches.cs" />
     <Compile Include="Sending\IConvertOutgoingMessagesToBrokeredMessages.cs" />
     <Compile Include="Receiving\INotifyIncomingMessages.cs" />

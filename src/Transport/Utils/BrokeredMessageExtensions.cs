@@ -5,6 +5,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
     using System.Threading.Tasks;
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus;
 
     static class BrokeredMessageExtensions
     {
@@ -78,6 +79,13 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                 Log.Warn($"A timeout exception occured while trying to abandon a message, the exception was {ex.Message}", ex);
             }
             return false;
+        }
+
+        public static long EstimatedSize(this BrokeredMessage message)
+        {
+            object size;
+            message.Properties.TryGetValue(BrokeredMessageHeaders.EstimatedMessageSize, out size);
+            return Convert.ToInt64(size);
         }
 
         static ILog Log = LogManager.GetLogger(typeof(BrokeredMessageExtensions));
