@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus;
+    using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.DelayedDelivery;
     using NServiceBus.Features;
     using NServiceBus.Performance.TimeToBeReceived;
@@ -20,7 +21,25 @@
             return new TransportReceivingConfigurationResult(
                 Topology.GetMessagePumpFactory(),
                 Topology.GetQueueCreatorFactory(),
-                () => Task.FromResult(StartupCheckResult.Success) //TODO: figure out what this is for
+                () =>
+                {
+                    // Useless for me: when we resolve INamespacePartitioningStrategy to apply startup check, we have already applied checks defined into ctor of concrete classes. Right?
+                    var namespacePartitioningStrategy = Container.Resolve<INamespacePartitioningStrategy>();
+                    var namespaces = context.Settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+                    var endpointName = context.Settings.Get<EndpointName>();
+
+                    var configuredNamespaces = namespacePartitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating);
+
+                    if (namespaces.Count != configuredNamespaces.Count())
+                        return Task.FromResult(StartupCheckResult.Failed("..."));
+
+                    var namespaceManager  = Container.Resolve<IManageNamespaceManagerLifeCycle>()
+                        .Get(context.ConnectionString);
+                    if (context.Settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology) && !namespaceManager.HasManageRights)
+                        return Task.FromResult(StartupCheckResult.Failed("..."));
+
+                    return Task.FromResult(StartupCheckResult.Success);
+                } //TODO: figure out what this is for
                 );
         }
 
@@ -88,6 +107,8 @@
 #pragma warning disable 649
         private static Func<ITopology> _fallbackForScenarioDescriptors; 
 #pragma warning restore 649
+
+        internal IResolveTransportParts Container { get; set; }
            
         internal ITopology Topology
         {
@@ -138,7 +159,7 @@
                     transportDefinition.Topology = settings.Get<ITopology>(); 
                 }
 
-                transportDefinition.Topology.Initialize(settings);
+                transportDefinition.Container = transportDefinition.Topology.Initialize(settings);
             });
         }
 
@@ -150,6 +171,7 @@
             //context.Container //can only register
             //context.Pipeline //can extend
             //context.Settings //cannot change
+
         }
 
 

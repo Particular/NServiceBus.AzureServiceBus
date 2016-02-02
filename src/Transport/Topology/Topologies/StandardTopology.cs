@@ -20,10 +20,12 @@ namespace NServiceBus.AzureServiceBus
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
 
-        public void Initialize(SettingsHolder settings)
+        public IResolveTransportParts Initialize(SettingsHolder settings)
         {
             ApplyDefaults(settings);
             InitializeContainer(settings);
+
+            return container;
         }
 
         private void ApplyDefaults(SettingsHolder settings)
