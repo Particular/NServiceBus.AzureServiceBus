@@ -6,7 +6,7 @@ namespace NServiceBus.AzureServiceBus
 
     public interface ITopology {
 
-        void Initialize(SettingsHolder settings);
+        IResolveTransportParts Initialize(SettingsHolder settings);
 
         Func<ICreateQueues> GetQueueCreatorFactory();
         // TODO: CriticalError no longer passed in to MessagePumpFactory. Ensure that Core is doing pushMessages.OnCriticalError(error);

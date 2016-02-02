@@ -10,6 +10,7 @@ namespace NServiceBus.AzureServiceBus
     {
         NamespaceManagerSettings Settings { get; }
         Uri Address { get; }
+        bool HasManageRights { get; }
 
         Task CreateQueue(QueueDescription description);
         Task UpdateQueue(QueueDescription description);

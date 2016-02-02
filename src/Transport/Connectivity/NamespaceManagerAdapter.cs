@@ -19,6 +19,22 @@ namespace NServiceBus.AzureServiceBus
 
         public Uri Address => _manager.Address;
 
+        public bool HasManageRights
+        {
+            get
+            {
+                try
+                {
+                    _manager.GetQueues();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         public Task CreateQueue(QueueDescription description)
         {
             return _manager.CreateQueueAsync(description);
