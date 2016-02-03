@@ -84,6 +84,9 @@ namespace NServiceBus.AzureServiceBus
 
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
             container.Register(validationStrategyType);
+
+            container.Register(typeof(NamespacesConfigurationCheck));
+            container.Register(typeof(ManageRightsCheck));
         }
 
         public Func<ICreateQueues> GetQueueCreatorFactory()
@@ -103,6 +106,14 @@ namespace NServiceBus.AzureServiceBus
         public Func<IDispatchMessages> GetDispatcherFactory()
         {
             return () => container.Resolve<IDispatchMessages>();
+        }
+
+        public StartupCheckResult ApplyPreStartupChecks()
+        {
+            var checks = container.ResolveAll<IStartupCheck>();
+            var compositeStartupChecker = new CompositeStartupCheck(checks);
+
+            return compositeStartupChecker.Apply();
         }
 
         public IManageSubscriptions GetSubscriptionManager()

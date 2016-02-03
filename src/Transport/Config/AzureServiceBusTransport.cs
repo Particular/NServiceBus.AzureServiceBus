@@ -20,7 +20,7 @@
             return new TransportReceivingConfigurationResult(
                 Topology.GetMessagePumpFactory(),
                 Topology.GetQueueCreatorFactory(),
-                () => Task.FromResult(StartupCheckResult.Success) //TODO: figure out what this is for
+                () => Task.FromResult(Topology.ApplyPreStartupChecks())
                 );
         }
 
@@ -29,7 +29,7 @@
             EnsureConnectionStringIsRegisteredAsNamespace(context.ConnectionString, context.Settings);
             return new TransportSendingConfigurationResult(
                 Topology.GetDispatcherFactory(),
-                () => Task.FromResult(StartupCheckResult.Success) //TODO: figure out what this is for
+                () => Task.FromResult(Topology.ApplyPreStartupChecks())
                 );
         }
 
