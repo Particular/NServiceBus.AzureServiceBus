@@ -254,7 +254,7 @@ namespace NServiceBus.AzureServiceBus
         public ForwardingTopology() { }
         public bool HasNativePubSubSupport { get; }
         public bool HasSupportForCentralizedPubSub { get; }
-		public NServiceBus.Transports.StartupCheckResult ApplyPreStartupChecks() { }
+        public NServiceBus.Transports.StartupCheckResult ApplyPreStartupChecks() { }
         public System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory() { }
         public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
         public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
@@ -373,7 +373,7 @@ namespace NServiceBus.AzureServiceBus
     public interface INamespaceManager
     {
         System.Uri Address { get; }
-		bool HasManageRights { get; }
+        bool HasManageRights { get; }
         Microsoft.ServiceBus.NamespaceManagerSettings Settings { get; }
         System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description);
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter);
@@ -436,7 +436,7 @@ namespace NServiceBus.AzureServiceBus
         System.Threading.Tasks.Task RouteBatch(NServiceBus.AzureServiceBus.Batch batch, NServiceBus.AzureServiceBus.ReceiveContext receiveContext);
         System.Threading.Tasks.Task RouteBatches(System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.Batch> outgoingBatches, NServiceBus.AzureServiceBus.ReceiveContext receiveContext);
     }
-	public interface IStartupCheck
+    public interface IStartupCheck
     {
         NServiceBus.Transports.StartupCheckResult Apply();
     }
@@ -444,7 +444,7 @@ namespace NServiceBus.AzureServiceBus
     {
         bool HasNativePubSubSupport { get; }
         bool HasSupportForCentralizedPubSub { get; }
-		NServiceBus.Transports.StartupCheckResult ApplyPreStartupChecks();
+        NServiceBus.Transports.StartupCheckResult ApplyPreStartupChecks();
         System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory();
         System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory();
         NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy();
@@ -494,7 +494,7 @@ namespace NServiceBus.AzureServiceBus
     {
         public NamespaceManagerAdapter(Microsoft.ServiceBus.NamespaceManager manager) { }
         public System.Uri Address { get; }
-		public bool HasManageRights { get; }
+        public bool HasManageRights { get; }
         public Microsoft.ServiceBus.NamespaceManagerSettings Settings { get; }
         public System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter) { }
@@ -541,7 +541,7 @@ namespace NServiceBus.AzureServiceBus
         public StandardTopology() { }
         public bool HasNativePubSubSupport { get; }
         public bool HasSupportForCentralizedPubSub { get; }
-		public NServiceBus.Transports.StartupCheckResult ApplyPreStartupChecks() { }
+        public NServiceBus.Transports.StartupCheckResult ApplyPreStartupChecks() { }
         public System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory() { }
         public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
         public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
