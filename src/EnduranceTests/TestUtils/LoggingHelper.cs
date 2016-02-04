@@ -7,6 +7,7 @@
     using NServiceBus.AzureServiceBus.EnduranceTests.Targets;
     using System;
     using System.Threading.Tasks;
+    using NServiceBus.AzureServiceBus.EnduranceTests.LayoutRenderer;
 
 
     public static class LoggingHelper
@@ -20,11 +21,13 @@
 
             ConfigurationItemFactory.Default.Targets.RegisterDefinition("AzureBlobErrorOnly", typeof(AzureBlobErrorOnlyTarget));
 
+            ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("aggregateexception", typeof(AggregateExceptionLayoutRenderer));
+
             var logConfig = new LoggingConfiguration();
 
             var consoleTarget = new ColoredConsoleTarget
             {
-                Layout = @"${level}|${logger}|${message}${onexception:${newline}${exception:format=tostring}}"
+                Layout = @"${level}|${logger}|${message}${onexception:${newline}${aggregateexception:format=type,message,method}}"
             };
 
             logConfig.AddTarget("console", consoleTarget);
@@ -41,7 +44,8 @@
                         Layout = @"${date:format=yyyy-MM-dd HH\:mm\:ss} ${message}",
                         WebhookUri = webhookUri
                     },
-                    BufferSize = 1
+                    BufferSize = TestSettings.SlackBufferSize,
+                    FlushTimeout = TestSettings.SlackTimeoutInMilliseconds
                 };
 
                 logConfig.AddTarget("slack", bufferedTarget);
@@ -50,7 +54,7 @@
                 var blobTarget = new AzureBlobErrorOnlyTarget
                 {
                     StorageAccount = TestEnvironment.AzureStorage,
-                    Layout = @"TimeStamp: ${date:format=yyyy-MM-dd HH\:mm\:ss}${newline}Logger: ${logger}${newline}Message: ${message}${newline}Exception:${newline}${exception:format=type,message,method,stacktrace:maxInnerExceptionLevel=5:innerFormat=shortType,message,method,stacktrace}"
+                    Layout = @"TimeStamp: ${date:format=yyyy-MM-dd HH\:mm\:ss}${newline}Logger: ${logger}${newline}Message: ${message}${newline}Exception:${newline}${aggregateexception:format=type,message,method,stacktrace:Separator=\r\n:InnerExceptionSeparator=\r\n:maxInnerExceptionLevel=5:innerFormat=shortType,message,method,stacktrace}"
                 };
 
                 logConfig.AddTarget("blob", blobTarget);

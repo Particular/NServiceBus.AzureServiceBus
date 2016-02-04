@@ -8,6 +8,14 @@
 
     internal class Program
     {
+        private static void WaitForUserInput()
+        {
+            if (Environment.UserInteractive)
+            {
+                Console.ReadLine();
+            }
+        }
+
         private static void Main(string[] args)
         {
             LoggingHelper.Configure();
@@ -19,7 +27,7 @@
             const string endpointName = "EnduranceTest";
 
             Console.WriteLine("CTRL + C to stop test. Press Enter to continue.");
-            Console.ReadLine();
+            WaitForUserInput();
 
             Console.CancelKeyPress += (s, e) =>
             {
@@ -38,7 +46,7 @@
                 catch (OperationCanceledException)
                 {
                     Console.WriteLine("Test Cancelled. Press ENTER to continue.");
-                    Console.ReadLine();
+                    WaitForUserInput();
 
                     break;
                 }
@@ -51,8 +59,6 @@
 
         private static async Task RunEndpointAsync(string endpointName, CancellationToken ct)
         {
-            TestSettings.ClearTestRuns();
-
             var connectionString = TestEnvironment.AzureServiceBus;
 
             var busConfiguration = new BusConfiguration();
@@ -65,22 +71,19 @@
 
             var endpoint = await Endpoint.Start(busConfiguration);
 
-            var throwAt = 0;
-
             Console.WriteLine(endpointName + " started");
-            Console.ReadLine();
-            await endpoint.Send<StartHeartbeat>(cmd =>
+
+            TestSettings.TestRunId = Guid.NewGuid();
+
+            await endpoint.Send<Heartbeat>(cmd =>
             {
-                cmd.Wait = TestSettings.Rate;
-                cmd.TestRunId = Guid.NewGuid();
+                cmd.TestRunId = TestSettings.TestRunId;
             }, TestSettings.SendOptions);
             try
             {
                 do
                 {
-                    await Task.Delay(2000, ct);
-                    throwAt++;
-                    if (throwAt % 2 == 0) throw new Exception("Test exception logging");
+                    await Task.Delay(60000, ct);
                     Console.WriteLine("NServiceBus Endpoint Running. Press CTRL+C to Cancel");
                 } while (!ct.IsCancellationRequested);
             }

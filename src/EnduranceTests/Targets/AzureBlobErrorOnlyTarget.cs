@@ -24,7 +24,7 @@ namespace NServiceBus.AzureServiceBus.EnduranceTests.Targets
 
         protected override void Write(LogEventInfo logEvent)
         {
-            if (logEvent.Level < LogLevel.Error) return;
+            if (logEvent.Level < LogLevel.Error || logEvent.Exception == null) return;
 
             if (_client == null) return;
 
