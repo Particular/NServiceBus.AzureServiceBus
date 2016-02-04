@@ -9,10 +9,20 @@
         private static SemaphoreSlim enabledMutex = new SemaphoreSlim(1);
         private static SemaphoreSlim rateMutex = new SemaphoreSlim(2);
 
-        private static int rate = 4000;
+        private static int rate = 1000;
+        private static ConcurrentBag<Guid> testRunIds;
 
-        public static ConcurrentBag<Guid> TestRunIds { get; } = new ConcurrentBag<Guid>();
+        public static ConcurrentBag<Guid> TestRunIds
+        {
+            get { return testRunIds; }
+            set { testRunIds = value; }
+        }
 
+        public static void ClearTestRuns()
+        {
+            var newBag = new ConcurrentBag<Guid>();
+            Interlocked.Exchange(ref testRunIds, newBag);
+        }
 
         public static int Rate
         {

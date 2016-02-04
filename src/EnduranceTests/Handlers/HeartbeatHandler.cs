@@ -7,7 +7,8 @@
 
     public class HeartbeatHandler : IHandleMessages<Heartbeat>
     {
-        private static readonly ILog log = LogManager.GetLogger<HeartbeatHandler>();
+        static readonly ILog log = LogManager.GetLogger<HeartbeatHandler>();
+
         public async Task Handle(Heartbeat message, IMessageHandlerContext context)
         {
             log.InfoFormat("HeartbeatHandler Heartbeat with Wait of {0}", message.Wait);
