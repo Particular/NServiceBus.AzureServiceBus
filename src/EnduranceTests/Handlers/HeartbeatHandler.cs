@@ -1,9 +1,8 @@
 ﻿namespace NServiceBus.AzureServiceBus.EnduranceTests.Handlers
 {
-    using System.Linq;
     using System.Threading.Tasks;
-    using NServiceBus.AzureServiceBus.EnduranceTests.Commands;
-    using NServiceBus.Logging;
+    using Commands;
+    using Logging;
 
     public class HeartbeatHandler : IHandleMessages<Heartbeat>
     {
@@ -11,18 +10,17 @@
 
         public async Task Handle(Heartbeat message, IMessageHandlerContext context)
         {
-            log.InfoFormat("HeartbeatHandler Heartbeat with Wait of {0}", message.Wait);
+            log.InfoFormat("HeartbeatHandler Heartbeat with Wait of {0}", TestSettings.Rate);
 
-            if (!TestSettings.TestRunIds.Contains(message.TestRunId))
+            if (TestSettings.TestRunId != message.TestRunId)
             {
                 return;
             }
 
-            await Task.Delay(message.Wait);
+            await Task.Delay(TestSettings.Rate);
             await context.Send<Heartbeat>(cmd =>
             {
-                cmd.Wait = message.Wait;
-                cmd.TestRunId = message.TestRunId;
+                cmd.TestRunId = TestSettings.TestRunId;
             }, TestSettings.SendOptions);
         }
     }

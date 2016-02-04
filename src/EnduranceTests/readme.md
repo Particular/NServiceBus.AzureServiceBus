@@ -1,10 +1,7 @@
-﻿### Connections.config
+﻿Continuously sends and handles a message at a set interval looking for unhandled exceptions. 
 
-Connections.config has been excluded from Git, add a file with the following to the project directory and set the connection string in that to run.
+### Environment Variables
 
-```
-  <connectionStrings configSource="Connections.config">    
-    <add name="NServiceBus/Transport"
-      connectionString="<Add Your ASB queue connection string here>"/>
-  </connectionStrings>
-```
+ * **AzureServiceBus.ConnectionString**: Common environment variable
+ * **AzureServiceBus.EnduranceTests.StorageConnectionString**: Stores exception information
+ * **AzureServiceBus.EnduranceTests.SlackWebhookUri**: Notifies via Slack exceptions

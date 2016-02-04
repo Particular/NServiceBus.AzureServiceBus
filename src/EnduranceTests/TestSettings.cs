@@ -1,28 +1,15 @@
 ﻿namespace NServiceBus.AzureServiceBus.EnduranceTests
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Threading;
 
-    public static class TestSettings
+    internal static class TestSettings
     {
-        private static SemaphoreSlim enabledMutex = new SemaphoreSlim(1);
-        private static SemaphoreSlim rateMutex = new SemaphoreSlim(2);
+        private static SemaphoreSlim rateMutex = new SemaphoreSlim(1);
 
         private static int rate = 1000;
-        private static ConcurrentBag<Guid> testRunIds;
 
-        public static ConcurrentBag<Guid> TestRunIds
-        {
-            get { return testRunIds; }
-            set { testRunIds = value; }
-        }
-
-        public static void ClearTestRuns()
-        {
-            var newBag = new ConcurrentBag<Guid>();
-            Interlocked.Exchange(ref testRunIds, newBag);
-        }
+        public static Guid TestRunId { get; set; }
 
         public static int Rate
         {
@@ -43,5 +30,8 @@
                 return options;
             }
         }
+
+        public static int SlackBufferSize { get; set; } = 5;
+        public static int SlackTimeoutInMilliseconds { get; set; } = 1000*60*60*8;
     }
 }
