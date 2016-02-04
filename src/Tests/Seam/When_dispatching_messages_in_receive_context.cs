@@ -63,7 +63,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     return TaskEx.Completed;
                 });
 
-                var transportOperations = new TransportOperations(Enumerable.Empty<MulticastTransportOperation>(), new[] {  new UnicastTransportOperation(outgoingMessage, "myqueue", Enumerable.Empty<DeliveryConstraint>(), DispatchConsistency.Default)});
+                var transportOperations = new TransportOperations( new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
 
                 await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
 
@@ -148,7 +148,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     throw new Exception("Something bad happens on complete");
                 });
 
-                var transportOperations = new TransportOperations(Enumerable.Empty<MulticastTransportOperation>(), new[] { new UnicastTransportOperation(outgoingMessage, "myqueue", Enumerable.Empty<DeliveryConstraint>(), DispatchConsistency.Default) });
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
                 await dispatcher.Dispatch(transportOperations, context.Context);
 
                 // TODO: TransportTransactionMode will need to change with topology
@@ -232,7 +232,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     return TaskEx.Completed;
                 });
 
-                var transportOperations = new TransportOperations(Enumerable.Empty<MulticastTransportOperation>(), new[] { new UnicastTransportOperation(outgoingMessage, "myqueue", Enumerable.Empty<DeliveryConstraint>(), DispatchConsistency.Default) });
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
 
                 await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
 
@@ -323,7 +323,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     throw new Exception("Something bad happens on complete");
                 });
 
-                var transportOperations = new TransportOperations(Enumerable.Empty<MulticastTransportOperation>(), new[] { new UnicastTransportOperation(outgoingMessage, "myqueue", Enumerable.Empty<DeliveryConstraint>(), DispatchConsistency.Default) });
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue") , DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
 
                 await dispatcher.Dispatch(transportOperations, context.Context);
 
@@ -425,7 +425,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     throw new Exception("Something bad happens on complete");
                 });
 
-                var transportOperations = new TransportOperations(Enumerable.Empty<MulticastTransportOperation>(), new[] { new UnicastTransportOperation(outgoingMessage, "myqueue", Enumerable.Empty<DeliveryConstraint>(), DispatchConsistency.Default) });
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
 
                 await dispatcher.Dispatch(transportOperations, context.Context);
 

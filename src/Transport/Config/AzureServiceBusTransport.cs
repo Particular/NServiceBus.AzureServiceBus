@@ -13,15 +13,6 @@
 
     public class AzureServiceBusTransport : TransportDefinition
     {
-        public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance, ReadOnlySettings settings)
-        {
-            return instance;
-        }
-
-        public override string ToTransportAddress(LogicalAddress logicalAddress)
-        {
-            return logicalAddress.ToString();
-        }
         
         protected override TransportInfrastructure Initialize(SettingsHolder settings)
         {
@@ -58,7 +49,7 @@
                 return new TransportSubscriptionInfrastructure(topology.GetSubscriptionManagerFactory());
             };
 
-            var supported = new TransportInfrastructure(
+            var supported = new AzureServiceBusTransportInfrastructure(
                 deliveryConstraints,
                 transactionMode, 
                 outboundRoutingPolicy,
@@ -77,6 +68,23 @@
             {
                 namespaces.Add(connectionstring);
             }
+        }
+    }
+
+    public class AzureServiceBusTransportInfrastructure : TransportInfrastructure
+    {
+        public AzureServiceBusTransportInfrastructure(IEnumerable<Type> deliveryConstraints, TransportTransactionMode transactionMode, OutboundRoutingPolicy outboundRoutingPolicy, Func<string, TransportSendInfrastructure> configureSendInfrastructure, Func<string, TransportReceiveInfrastructure> configureReceiveInfrastructure = null, Func<TransportSubscriptionInfrastructure> configureSubscriptionInfrastructure = null) : base(deliveryConstraints, transactionMode, outboundRoutingPolicy, configureSendInfrastructure, configureReceiveInfrastructure, configureSubscriptionInfrastructure)
+        {
+        }
+
+        public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance, ReadOnlySettings settings)
+        {
+            return instance;
+        }
+
+        public override string ToTransportAddress(LogicalAddress logicalAddress)
+        {
+            return logicalAddress.ToString();
         }
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
