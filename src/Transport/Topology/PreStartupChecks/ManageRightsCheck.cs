@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
@@ -16,17 +17,18 @@ namespace NServiceBus.AzureServiceBus
             this.settings = container.Resolve<ReadOnlySettings>();
         }
 
-        public StartupCheckResult Apply()
+        public async Task<StartupCheckResult> Apply()
         {
             if (!settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 return StartupCheckResult.Success;
 
-            var hasNotRights = settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces)
+            var tasks = settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces)
                 .Select(x => manageNamespaceManagerLifeCycle.Get(x))
-                .Any(x => !x.HasManageRights);
+                .Select(async x => await x.HasManageRights());
 
-            return hasNotRights ?
-                StartupCheckResult.Failed("...") : StartupCheckResult.Success;
+            return (await Task.WhenAll(tasks)).Any(x => !x) ?
+                StartupCheckResult.Failed($"Manage rights on namespace is required if {WellKnownConfigurationKeys.Core.CreateTopology} is true") : 
+                StartupCheckResult.Success;
         }
     }
 }

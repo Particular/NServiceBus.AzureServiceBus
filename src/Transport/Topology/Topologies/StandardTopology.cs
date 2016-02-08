@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -105,11 +106,11 @@ namespace NServiceBus.AzureServiceBus
             return () => container.Resolve<IDispatchMessages>();
         }
 
-        public StartupCheckResult ApplyPreStartupChecks()
+        public async Task<StartupCheckResult> ApplyPreStartupChecks()
         {
             var check = new ManageRightsCheck(this.container);
 
-            return check.Apply();
+            return await check.Apply().ConfigureAwait(false);
         }
 
         public IManageSubscriptions GetSubscriptionManager()

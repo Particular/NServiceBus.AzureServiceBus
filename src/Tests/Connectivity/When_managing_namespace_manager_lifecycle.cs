@@ -64,9 +64,9 @@ namespace NServiceBus.AzureServiceBus.Tests
                 get { throw new NotImplementedException(); }
             }
 
-            public bool HasManageRights
+            public Task<bool> HasManageRights()
             {
-                get { throw new NotImplementedException(); }
+                throw new NotImplementedException(); 
             }
 
             public Task CreateQueue(QueueDescription description)

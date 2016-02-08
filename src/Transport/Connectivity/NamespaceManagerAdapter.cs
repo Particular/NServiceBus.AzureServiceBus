@@ -19,19 +19,17 @@ namespace NServiceBus.AzureServiceBus
 
         public Uri Address => _manager.Address;
 
-        public bool HasManageRights
+        public async Task<bool> HasManageRights()
         {
-            get
+            try
             {
-                try
-                {
-                    _manager.GetQueues();
-                    return true;
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    return false;
-                }
+                await _manager.GetQueuesAsync();
+
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
             }
         }
 

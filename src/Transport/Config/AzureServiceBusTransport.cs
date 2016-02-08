@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.DelayedDelivery;
     using NServiceBus.Features;
@@ -20,7 +19,7 @@
             return new TransportReceivingConfigurationResult(
                 Topology.GetMessagePumpFactory(),
                 Topology.GetQueueCreatorFactory(),
-                () => Task.FromResult(Topology.ApplyPreStartupChecks())
+                () => Topology.ApplyPreStartupChecks()
                 );
         }
 
@@ -29,7 +28,7 @@
             EnsureConnectionStringIsRegisteredAsNamespace(context.ConnectionString, context.Settings);
             return new TransportSendingConfigurationResult(
                 Topology.GetDispatcherFactory(),
-                () => Task.FromResult(Topology.ApplyPreStartupChecks())
+                () => Topology.ApplyPreStartupChecks()
                 );
         }
 
