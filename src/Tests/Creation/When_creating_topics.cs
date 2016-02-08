@@ -13,14 +13,6 @@ namespace NServiceBus.AzureServiceBus.Tests
     [Category("AzureServiceBus")]
     public class When_creating_topics
     {
-        Action cleanup_action = () => { throw new InvalidOperationException("Assign cleanup_action at the end of test"); };
-
-        [TearDown]
-        public void CleanUp()
-        {
-            cleanup_action();
-        }
-
         [Test]
         public async Task Should_not_create_topics_when_topology_creation_is_turned_off()
         {
@@ -37,8 +29,6 @@ namespace NServiceBus.AzureServiceBus.Tests
             await creator.Create(topicPath, namespaceManager);
 
             Assert.IsFalse(await namespaceManager.TopicExists(topicPath));
-
-            cleanup_action = () => { };
         }
 
         [Test]
@@ -46,8 +36,8 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
             const string topicPath = "mytopic2";
+            await namespaceManager.DeleteTopic(topicPath);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             var topicDescription = await creator.Create(topicPath, namespaceManager);
@@ -63,8 +53,6 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual(1024, topicDescription.MaxSizeInMegabytes);
             Assert.IsFalse(topicDescription.RequiresDuplicateDetection);
             Assert.IsFalse(topicDescription.SupportOrdering);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
 
@@ -76,6 +64,8 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             const string topicPath = "mytopic3";
+            await namespaceManager.DeleteTopic(topicPath);
+
             var topicDescriptionToUse = new TopicDescription(topicPath)
             {
                 AutoDeleteOnIdle = TimeSpan.MaxValue
@@ -89,8 +79,6 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.IsTrue(await namespaceManager.TopicExists(topicPath));
             Assert.AreEqual(topicDescriptionToUse, description);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         [Test]
@@ -107,12 +95,12 @@ namespace NServiceBus.AzureServiceBus.Tests
             var creator = new AzureServiceBusTopicCreator(settings);
 
             const string topicPath = "mytopic4";
+            await namespaceManager.DeleteTopic(topicPath);
+
             await creator.Create(topicPath, namespaceManager);
             var foundTopic = await namespaceManager.GetTopic(topicPath);
 
             Assert.AreEqual(autoDeleteTime, foundTopic.AutoDeleteOnIdle);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         [Test]
@@ -128,13 +116,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic5";
+            await namespaceManager.DeleteTopic(topicPath);
+
             await creator.Create(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopic(topicPath);
 
             Assert.AreEqual(timeToLive, foundTopic.DefaultMessageTimeToLive);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         [Test]
@@ -150,13 +138,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic6";
+            await namespaceManager.DeleteTopic(topicPath);
+
             await creator.Create(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopic(topicPath);
 
             Assert.AreEqual(duplicateDetectionTime, foundTopic.DuplicateDetectionHistoryTimeWindow);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         [Test]
@@ -171,13 +159,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic7";
+            await namespaceManager.DeleteTopic(topicPath);
+
             await creator.Create(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopic(topicPath);
 
             Assert.IsFalse(foundTopic.EnableBatchedOperations);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         [Test]
@@ -192,13 +180,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic8";
+            await namespaceManager.DeleteTopic(topicPath);
+
             await creator.Create(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopic(topicPath);
 
             Assert.IsTrue(foundTopic.EnableFilteringMessagesBeforePublishing);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         [Test]
@@ -222,8 +210,6 @@ namespace NServiceBus.AzureServiceBus.Tests
             var foundTopic = await namespaceManager.GetTopic(topicPath);
 
             Assert.IsTrue(foundTopic.EnablePartitioning);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         [Test]
@@ -238,13 +224,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic10";
+            await namespaceManager.DeleteTopic(topicPath);
+
             await creator.Create(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopic(topicPath);
 
             Assert.AreEqual(4096, foundTopic.MaxSizeInMegabytes);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         [Test]
@@ -259,13 +245,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic11";
+            await namespaceManager.DeleteTopic(topicPath);
+
             await creator.Create(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopic(topicPath);
 
             Assert.IsTrue(foundTopic.RequiresDuplicateDetection);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         [Test]
@@ -280,13 +266,13 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic12";
+            await namespaceManager.DeleteTopic(topicPath);
+
             await creator.Create(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopic(topicPath);
 
             Assert.IsTrue(foundTopic.SupportOrdering);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         [Test]
@@ -295,6 +281,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             var creator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
             const string topicPath = "mytopic13";
+            await namespaceManager.DeleteTopic(topicPath);
 
             await creator.Create(topicPath, namespaceManager);
 
@@ -310,8 +297,6 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.AreEqual(1024, foundTopic.MaxSizeInMegabytes);
             Assert.IsFalse(foundTopic.RequiresDuplicateDetection);
             Assert.IsFalse(foundTopic.SupportOrdering);
-
-            cleanup_action = async () => await namespaceManager.DeleteTopic(topicPath);
         }
 
         
@@ -334,8 +319,6 @@ namespace NServiceBus.AzureServiceBus.Tests
             await creator.Create(topicPath, namespaceManager);
 
             Assert.IsTrue(topicCreationThrewException);
-
-            cleanup_action = () => { };
         }
 
         [Test]
@@ -349,8 +332,6 @@ namespace NServiceBus.AzureServiceBus.Tests
             var creator = new AzureServiceBusTopicCreator(settings);
 
             Assert.Throws<TimeoutException>(async () => await creator.Create("faketopic", namespaceManager));
-
-            cleanup_action = () => { };
         }
 
         [Test]
@@ -364,8 +345,6 @@ namespace NServiceBus.AzureServiceBus.Tests
             var creator = new AzureServiceBusTopicCreator(settings);
 
             await creator.Create("faketopic", namespaceManager);
-
-            cleanup_action = () => { };
         }
 
         [Test]
@@ -378,14 +357,14 @@ namespace NServiceBus.AzureServiceBus.Tests
             var creator = new AzureServiceBusTopicCreator(settings);
 
             Assert.Throws<MessagingException>(async () => await creator.Create("faketopic", namespaceManager));
-
-            cleanup_action = () => { };
         }
 
         [Test]
         public async Task Should_be_able_to_update_an_existing_topic_with_new_property_values()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.DeleteTopic("existingtopic1");
+
             await namespaceManager.CreateTopic(new TopicDescription("existingtopic1"));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -401,15 +380,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var topicDescription = await namespaceManager.GetTopic("existingtopic1");
             Assert.AreEqual(TimeSpan.FromMinutes(100), topicDescription.AutoDeleteOnIdle);
-
-            //cleanup 
-            cleanup_action = async () =>  await namespaceManager.DeleteTopic("existingtopic1");
         }
 
         [Test]
         public async Task Should_be_able_to_update_an_existing_topic_with_new_property_values_without_failing_on_readonly_properties()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.DeleteTopic("existingtopic2");
+
             await namespaceManager.CreateTopic(new TopicDescription("existingtopic2")
             {
                 MaxSizeInMegabytes = 2048,
@@ -428,9 +406,6 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var creator = new AzureServiceBusTopicCreator(settings);
             Assert.Throws<ArgumentException>(async () => await creator.Create("existingtopic2", namespaceManager));
-
-            //cleanup 
-            cleanup_action = async () => await namespaceManager.DeleteTopic("existingtopic2");
         }
     }
 }
