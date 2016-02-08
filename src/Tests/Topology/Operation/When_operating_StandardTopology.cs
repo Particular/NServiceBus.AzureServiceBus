@@ -15,6 +15,9 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public async Task Receives_incoming_messages_from_endpoint_queue()
         {
+            // cleanup
+            await TestUtility.Delete("sales");
+
             // setting up the environment
             var container = new TransportPartsContainer();
 
@@ -59,16 +62,16 @@ namespace NServiceBus.AzureServiceBus.Tests
             // validate
             Assert.IsTrue(received);
             Assert.IsNull(ex);
-
-            // cleanup 
+            
             await topologyOperator.Stop();
-
-            await Cleanup(container, "sales");
         }
 
         [Test]
         public async Task Calls_completion_callbacks_before_completing()
         {
+            // cleanup
+            await TestUtility.Delete("sales");
+
             // setting up the environment
             var container = new TransportPartsContainer();
 
@@ -124,16 +127,16 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(completeCalled);
             Assert.IsTrue(received);
             Assert.IsNull(ex);
-
-            // cleanup 
+            
             await topologyOperator.Stop();
-
-            await Cleanup(container, "sales");
         }
 
         [Test]
         public async Task Does_not_call_completion_when_error_during_processing()
         {
+            // cleanup
+            await TestUtility.Delete("sales");
+
             // setting up the environment
             var container = new TransportPartsContainer();
 
@@ -186,16 +189,16 @@ namespace NServiceBus.AzureServiceBus.Tests
             // validate
             Assert.IsTrue(received);
             Assert.IsFalse(completeCalled);
-
-            // cleanup 
+            
             await topologyOperator.Stop();
-
-            await Cleanup(container, "sales");
         }
 
         [Test]
         public async Task Calls_on_error_when_error_during_processing()
         {
+            // cleanup
+            await TestUtility.Delete("sales");
+
             // setting up the environment
             var container = new TransportPartsContainer();
 
@@ -249,15 +252,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(received);
             Assert.IsTrue(errorOccured);
 
-            // cleanup 
             await topologyOperator.Stop();
-
-            await Cleanup(container, "sales");
         }
 
         [Test]
         public async Task Calls_on_error_when_error_during_completion()
         {
+            // cleanup
+            await TestUtility.Delete("sales");
+
             // setting up the environment
             var container = new TransportPartsContainer();
 
@@ -313,15 +316,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(errorOccured);
             Assert.AreEqual("Something went wrong", ex.Message);
 
-            // cleanup 
             await topologyOperator.Stop();
-
-            await Cleanup(container, "sales");
         }
 
         [Test]
         public async Task Completes_incoming_message_when_successfully_received()
         {
+            // cleanup
+            await TestUtility.Delete("sales");
+
             // setting up the environment
             var container = new TransportPartsContainer();
 
@@ -373,16 +376,16 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
             var queueDescription = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(0, queueDescription.MessageCount);
-
-            // cleanup
+            
             await topologyOperator.Stop();
-             
-            await Cleanup(container, "sales");
         }
 
         [Test]
         public async Task Aborts_incoming_message_when_error_during_processing()
         {
+            // cleanup
+            await TestUtility.Delete("sales");
+
             // setting up the environment
             var container = new TransportPartsContainer();
 
@@ -433,15 +436,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             var queueDescription = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(1, queueDescription.MessageCount);
 
-            // cleanup 
             await topologyOperator.Stop();
-
-            await Cleanup(container, "sales");
         }
 
         [Test]
         public async Task Aborts_incoming_message_when_error_during_completion()
         {
+            // cleanup
+            await TestUtility.Delete("sales");
+
             // setting up the environment
             var container = new TransportPartsContainer();
 
@@ -500,17 +503,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var queueDescription = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(1, queueDescription.MessageCount);
 
-            // cleanup 
             await topologyOperator.Stop();
-
-            await Cleanup(container, "sales");
-        }
-
-        static async Task Cleanup(TransportPartsContainer container, string enpointname)
-        {
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
-            await namespaceManager.DeleteQueue(enpointname);
         }
 
         async Task<ITopologySectionManager> SetupStandardTopology(TransportPartsContainer container, string enpointname)

@@ -15,7 +15,7 @@
     public class When_message_pump_is_failing_to_receive_messages
     {
         [Test]
-        public async Task Should_trigger_circuit_braker()
+        public async Task Should_trigger_circuit_breaker()
         {
             var fakeTopologyOperator = new FakeTopologyOperator();
             Exception exceptionReceivedByCircuitBreaker = null;

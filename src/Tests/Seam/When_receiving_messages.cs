@@ -17,6 +17,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public async Task Pushes_received_message_into_pipeline()
         {
+            await TestUtility.Delete("sales");
+
             // setting up the environment
             var container = new TransportPartsContainer();
 
@@ -74,15 +76,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // cleanup 
             await pump.Stop();
-
-            await Cleanup(container, "sales");
-        }
-
-        static async Task Cleanup(TransportPartsContainer container, string enpointname)
-        {
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
-            await namespaceManager.DeleteQueue(enpointname);
         }
 
         async Task<ITopologySectionManager> SetupStandardTopology(TransportPartsContainer container, string enpointname)

@@ -17,6 +17,9 @@
         [Test]
         public async Task Should_dispatch_multiple_batches()
         {
+            // cleanup
+            await TestUtility.Delete("myqueue", "myqueue2");
+
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -44,15 +47,14 @@
             Assert.IsTrue(queue.MessageCount == 2, $"'myqueue' was expected to have 2 message, but it didn't ({queue.MessageCount} found)");
             queue = await namespaceManager.GetQueue("myqueue2");
             Assert.IsTrue(queue.MessageCount == 2, $"'myqueue2' was expected to have 2 message, but it didn't ({queue.MessageCount} found)");
-
-            //cleanup 
-            await namespaceManager.DeleteQueue("myqueue");
-            await namespaceManager.DeleteQueue("myqueue2");
         }
 
         [Test]
         public async Task Should_throw_if_at_least_one_batch_fails()
         {
+            // cleanup
+            await TestUtility.Delete("myqueue", "myqueue2");
+
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -75,9 +77,6 @@
 
             // validate
             Assert.That(async () => await dispatcher.Dispatch(new TransportOperations(new List<MulticastTransportOperation>(), new List<UnicastTransportOperation>()), new ContextBag()), Throws.Exception);
-
-            //cleanup 
-            await namespaceManager.DeleteQueue("myqueue");
         }
 
 

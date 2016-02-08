@@ -21,6 +21,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public async Task Should_dispatch_message_in_receive_context()
         {
+            // cleanup
+            await TestUtility.Delete("sales", "myqueue");
+
             var completed = new AsyncAutoResetEvent(false);
 
             // setting up the environment
@@ -91,13 +94,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // cleanup 
             await pump.Stop();
-
-            await Cleanup(container, "sales", "myqueue");
         }
 
         [Test]
         public async Task Will_not_rollback_dispatch_message_in_receive_context_when_exception_occurs_on_completion()
         {
+            // cleanup
+            await TestUtility.Delete("sales", "myqueue");
+
             var errored = new AsyncAutoResetEvent(false);
 
             // setting up the environment
@@ -179,15 +183,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // check origin queue that source message is still there
             queue = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(1, queue.MessageCount, "'sales' was expected to have 1 message, but it didn't");
-
-            // cleanup
-            await Cleanup(container, "sales", "myqueue");
         }
 
 
         [Test]
         public async Task Should_dispatch_message_in_receive_context_via_receive_queue()
         {
+            // cleanup
+            await TestUtility.Delete("sales", "myqueue");
+
             var completed = new AsyncAutoResetEvent(false);
 
             // setting up the environment
@@ -262,15 +266,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var count = queue.MessageCount;
             Assert.IsTrue(count == 1, "'myqueue' was expected to have 1 message, but it had " + count + " instead");
 
-            // cleanup 
             await pump.Stop();
-
-            await Cleanup(container, "sales", "myqueue");
         }
 
         [Test]
         public async Task Should_rollback_dispatch_message_in_receive_context_via_receive_queue_when_exception_occurs_on_completion()
         {
+            // cleanup
+            await TestUtility.Delete("sales", "myqueue");
+
             var errored = new AsyncAutoResetEvent(false);
 
             // setting up the environment
@@ -355,14 +359,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // check origin queue that source message is still there
             queue = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(1, queue.MessageCount, "'sales' was expected to have 1 message, but it didn't");
-
-            // cleanup
-            await Cleanup(container, "sales", "myqueue");
         }
 
         [Test]
         public async Task Should_retry_after_rollback_in_less_then_thirty_seconds_when_using_via_queue()
         {
+            // cleanup
+            await TestUtility.Delete("sales", "myqueue");
+
             var retried = new AsyncAutoResetEvent(false);
             var invocationCount = 0;
             var firstTime = DateTime.MinValue;
@@ -451,20 +455,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var elapsed = secondTime - firstTime;
             Console.WriteLine("elapsed" + elapsed.TotalSeconds);
             Assert.IsTrue(elapsed < TimeSpan.FromSeconds(29)); // 29 instead of 30 to accommodate for a little clock drift
-
-            // cleanup
-            await Cleanup(container, "sales", "myqueue");
-        }
-
-        static async Task Cleanup(TransportPartsContainer container, params string[] endpointnames)
-        {
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
-
-            foreach (var endpointname in endpointnames)
-            {
-                await namespaceManager.DeleteQueue(endpointname);
-            }
         }
 
         async Task<ITopologySectionManager> SetupStandardTopology(TransportPartsContainer container, string enpointname, SettingsHolder settings)
