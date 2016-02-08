@@ -99,6 +99,7 @@
     <Compile Include="Properties\Resharper.Annotations.g.cs" />
     <Compile Include="Receiving\UnsupportedBrokeredMessageBodyTypeException.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
+    <Compile Include="Topology\PreStartupChecks\ManageRightsCheck.cs" />
     <Compile Include="Utils\BrokeredMessageHeaders.cs" />
     <Compile Include="Sending\IHandleOversizedBrokeredMessages.cs" />
     <Compile Include="Sending\ThrowOnOversizedBrokeredMessages.cs" />
