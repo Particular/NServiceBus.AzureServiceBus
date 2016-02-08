@@ -109,9 +109,9 @@ namespace NServiceBus.AzureServiceBus
             return () => container.Resolve<IDispatchMessages>();
         }
 
-        public IManageSubscriptions GetSubscriptionManager()
+        public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
         {
-            return container.Resolve<IManageSubscriptions>();
+            return () => container.Resolve<IManageSubscriptions>();
         }
 
         public OutboundRoutingPolicy GetOutboundRoutingPolicy()
