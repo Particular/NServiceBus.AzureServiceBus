@@ -254,13 +254,13 @@ namespace NServiceBus.AzureServiceBus
         public ForwardingTopology() { }
         public bool HasNativePubSubSupport { get; }
         public bool HasSupportForCentralizedPubSub { get; }
-        public async System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> ApplyPreStartupChecks() { }
         public System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory() { }
         public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
         public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
         public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
         public NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
+        public async System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
     }
     public class ForwardingTopologySectionManager : NServiceBus.AzureServiceBus.ITopologySectionManager
     {
@@ -440,13 +440,13 @@ namespace NServiceBus.AzureServiceBus
     {
         bool HasNativePubSubSupport { get; }
         bool HasSupportForCentralizedPubSub { get; }
-        System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> ApplyPreStartupChecks();
         System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory();
         System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory();
         NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy();
         System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory();
         NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager();
         void Initialize(NServiceBus.Settings.SettingsHolder settings);
+        System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks();
     }
     public interface ITopologySectionManager
     {
@@ -537,13 +537,13 @@ namespace NServiceBus.AzureServiceBus
         public StandardTopology() { }
         public bool HasNativePubSubSupport { get; }
         public bool HasSupportForCentralizedPubSub { get; }
-        public async System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> ApplyPreStartupChecks() { }
         public System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory() { }
         public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
         public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
         public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
         public NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
+        public async System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
     }
     public class StandardTopologySectionManager : NServiceBus.AzureServiceBus.ITopologySectionManager
     {

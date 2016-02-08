@@ -13,7 +13,7 @@ namespace NServiceBus.AzureServiceBus
         // TODO: CriticalError no longer passed in to MessagePumpFactory. Ensure that Core is doing pushMessages.OnCriticalError(error);
         Func<IPushMessages> GetMessagePumpFactory();
         Func<IDispatchMessages> GetDispatcherFactory();
-        Task<StartupCheckResult> ApplyPreStartupChecks();
+        Task<StartupCheckResult> RunPreStartupChecks();
         IManageSubscriptions GetSubscriptionManager();
         OutboundRoutingPolicy GetOutboundRoutingPolicy();
         bool HasNativePubSubSupport { get; }

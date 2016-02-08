@@ -106,11 +106,11 @@ namespace NServiceBus.AzureServiceBus
             return () => container.Resolve<IDispatchMessages>();
         }
 
-        public async Task<StartupCheckResult> ApplyPreStartupChecks()
+        public async Task<StartupCheckResult> RunPreStartupChecks()
         {
             var check = new ManageRightsCheck(this.container);
 
-            return await check.Apply().ConfigureAwait(false);
+            return await check.Run().ConfigureAwait(false);
         }
 
         public IManageSubscriptions GetSubscriptionManager()

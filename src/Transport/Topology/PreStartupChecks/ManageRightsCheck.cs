@@ -17,7 +17,7 @@ namespace NServiceBus.AzureServiceBus
             this.settings = container.Resolve<ReadOnlySettings>();
         }
 
-        public async Task<StartupCheckResult> Apply()
+        public async Task<StartupCheckResult> Run()
         {
             if (!settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 return StartupCheckResult.Success;
