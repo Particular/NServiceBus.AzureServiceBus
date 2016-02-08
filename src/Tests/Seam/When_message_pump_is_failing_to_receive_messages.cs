@@ -30,7 +30,7 @@
                 exceptionReceivedByCircuitBreaker = ctx.Exception;
                 return Task.FromResult(0);
             });
-            criticalError.GetType().GetProperty("Endpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(criticalError, new FakeEndpoint(), null);
+            criticalError.GetType().GetMethod("SetEndpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Invoke(criticalError, new[] { new FakeEndpoint() });
 
             var pump = new MessagePump(new FakeTopology(), fakeTopologyOperator);
             pump.OnError(exception =>
@@ -137,9 +137,34 @@
                 return Task.FromResult(0);
             }
 
-            public IBusSession CreateBusSession()
+            public Task Send(object message, SendOptions options)
             {
-                return null;
+                throw new NotImplementedException();
+            }
+
+            public Task Send<T>(Action<T> messageConstructor, SendOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task Publish(object message, PublishOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task Publish<T>(Action<T> messageConstructor, PublishOptions publishOptions)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task Subscribe(Type eventType, SubscribeOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task Unsubscribe(Type eventType, UnsubscribeOptions options)
+            {
+                throw new NotImplementedException();
             }
         }
     }

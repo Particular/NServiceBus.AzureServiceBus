@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using NServiceBus.DeliveryConstraints;
+    using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
@@ -19,13 +20,10 @@
             var body = new byte[0];
             var deliveryConstraints = new List<DeliveryConstraint>();
 
-            var operation1 = new MulticastTransportOperation(new OutgoingMessage("id-1", headers, body), typeof(EventA), deliveryConstraints, DispatchConsistency.Default);
-            var operation2 = new UnicastTransportOperation(new OutgoingMessage("id-2", headers, body), "CommandA", deliveryConstraints, DispatchConsistency.Default);
+            var operation1 = new TransportOperation(new OutgoingMessage("id-1", headers, body), new MulticastAddressTag(typeof(EventA)) , DispatchConsistency.Default, deliveryConstraints);
+            var operation2 = new TransportOperation(new OutgoingMessage("id-2", headers, body), new UnicastAddressTag("CommandA") , DispatchConsistency.Default, deliveryConstraints);
 
-            var multicastTransportOperations = new[] { operation1 };
-            var unicastTransportOperations = new[] { operation2 };
-
-            var transportOperations = new TransportOperations(multicastTransportOperations, unicastTransportOperations);
+            var transportOperations = new TransportOperations(operation1, operation2);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -44,15 +42,12 @@
             var body = new byte[0];
             var deliveryConstraints = new List<DeliveryConstraint>();
 
-            var operation1 = new MulticastTransportOperation(new OutgoingMessage("id-1", headers, body), typeof(EventA), deliveryConstraints, DispatchConsistency.Default);
-            var operation2 = new MulticastTransportOperation(new OutgoingMessage("id-2", headers, body), typeof(EventA), deliveryConstraints, DispatchConsistency.Default);
-            var operation3 = new UnicastTransportOperation(new OutgoingMessage("id-3", headers, body), "CommandA", deliveryConstraints, DispatchConsistency.Isolated);
-            var operation4 = new UnicastTransportOperation(new OutgoingMessage("id-4", headers, body), "CommandA", deliveryConstraints, DispatchConsistency.Isolated);
+            var operation1 = new TransportOperation(new OutgoingMessage("id-1", headers, body), new MulticastAddressTag(typeof(EventA)), DispatchConsistency.Default, deliveryConstraints);
+            var operation2 = new TransportOperation(new OutgoingMessage("id-2", headers, body), new MulticastAddressTag(typeof(EventA)), DispatchConsistency.Default, deliveryConstraints);
+            var operation3 = new TransportOperation(new OutgoingMessage("id-3", headers, body), new UnicastAddressTag("CommandA"), DispatchConsistency.Isolated, deliveryConstraints);
+            var operation4 = new TransportOperation(new OutgoingMessage("id-4", headers, body), new UnicastAddressTag("CommandA"), DispatchConsistency.Isolated, deliveryConstraints);
 
-            var multicastTransportOperations = new[] { operation1, operation2 };
-            var unicastTransportOperations = new[] { operation3, operation4 };
-
-            var transportOperations = new TransportOperations(multicastTransportOperations, unicastTransportOperations);
+            var transportOperations = new TransportOperations(operation1, operation2, operation3, operation4);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -71,15 +66,12 @@
             var body = new byte[0];
             var deliveryConstraints = new List<DeliveryConstraint>();
 
-            var operation1 = new MulticastTransportOperation(new OutgoingMessage("id-1", headers, body), typeof(EventA), deliveryConstraints, DispatchConsistency.Default);
-            var operation2 = new MulticastTransportOperation(new OutgoingMessage("id-2", headers, body), typeof(EventA), deliveryConstraints, DispatchConsistency.Isolated);
-            var operation3 = new UnicastTransportOperation(new OutgoingMessage("id-3", headers, body), "CommandA", deliveryConstraints, DispatchConsistency.Default);
-            var operation4 = new UnicastTransportOperation(new OutgoingMessage("id-4", headers, body), "CommandA", deliveryConstraints, DispatchConsistency.Isolated);
+            var operation1 = new TransportOperation(new OutgoingMessage("id-1", headers, body), new MulticastAddressTag(typeof(EventA)) , DispatchConsistency.Default, deliveryConstraints);
+            var operation2 = new TransportOperation(new OutgoingMessage("id-2", headers, body), new MulticastAddressTag(typeof(EventA)), DispatchConsistency.Isolated, deliveryConstraints);
+            var operation3 = new TransportOperation(new OutgoingMessage("id-3", headers, body), new UnicastAddressTag("CommandA") , DispatchConsistency.Default, deliveryConstraints);
+            var operation4 = new TransportOperation(new OutgoingMessage("id-4", headers, body), new UnicastAddressTag("CommandA"), DispatchConsistency.Isolated, deliveryConstraints);
 
-            var multicastTransportOperations = new[] { operation1, operation2 };
-            var unicastTransportOperations = new[] { operation3, operation4 };
-
-            var transportOperations = new TransportOperations(multicastTransportOperations, unicastTransportOperations);
+            var transportOperations = new TransportOperations(operation1, operation2, operation3, operation4);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -100,13 +92,10 @@
             var body = new byte[100];
             var deliveryConstraints = new List<DeliveryConstraint>();
 
-            var operation1 = new MulticastTransportOperation(new OutgoingMessage("id-1", headers, body), typeof(EventA), deliveryConstraints, DispatchConsistency.Default);
-            var operation2 = new UnicastTransportOperation(new OutgoingMessage("id-2", headers, body), "CommandA", deliveryConstraints, DispatchConsistency.Default);
+            var operation1 = new TransportOperation(new OutgoingMessage("id-1", headers, body), new MulticastAddressTag(typeof(EventA)), DispatchConsistency.Default, deliveryConstraints);
+            var operation2 = new TransportOperation(new OutgoingMessage("id-2", headers, body), new UnicastAddressTag("CommandA"), DispatchConsistency.Default, deliveryConstraints);
 
-            var multicastTransportOperations = new[] { operation1 };
-            var unicastTransportOperations = new[] { operation2 };
-
-            var transportOperations = new TransportOperations(multicastTransportOperations, unicastTransportOperations);
+            var transportOperations = new TransportOperations(operation1, operation2);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 

@@ -19,12 +19,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         }
 
         [Test]
-        public async Task Should_throw()
+        public Task Should_throw()
         {
             // Dummy CriticalError
             var criticalError = new CriticalError(ctx => Task.FromResult(0));
 
             Assert.Throws<InvalidOperationException>(async () => await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", true, TransportTransactionMode.SendsAtomicWithReceive)));
+
+            return Task.FromResult(true);
         }
     }
 }
