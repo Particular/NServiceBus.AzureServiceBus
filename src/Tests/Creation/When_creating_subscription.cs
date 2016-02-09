@@ -31,7 +31,7 @@
         public void TopicCleanUp()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            namespaceManager.DeleteTopic(topicPath).Wait();        
+            namespaceManager.DeleteTopic(topicPath).Wait();
         }
 
         [Test]
@@ -335,7 +335,32 @@
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
             await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
-        
+
+        [Test]
+        public async Task Should_set_forwarding_to_an_explicitly_provided_forwardto()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+
+            var queueCreator = new AzureServiceBusQueueCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
+            var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
+            var topic = await topicCreator.Create(topicPath, namespaceManager);
+            var queueToForwardTo = await queueCreator.Create("forwardto", namespaceManager);
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
+
+            const string subscriptionName = "sub15";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, queueToForwardTo.Path);
+
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
+
+            Assert.That(foundDescription.ForwardTo.EndsWith(queueToForwardTo.Path));
+
+            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteTopic(topic.Path);
+            await namespaceManager.DeleteQueue(queueToForwardTo.Path);
+        }
+
         [Test]
         public async Task Should_properly_set_ForwardDeadLetteredMessagesTo_on_the_created_entity()
         {
@@ -423,7 +448,7 @@
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
             const string subsciptionName = "sub1";
-            var subscriptionDescription = await creator.Create(topicPath, subsciptionName, new SubscriptionMetadata {Description = "very.logn.name.of.an.event.that.would.exceed.subscription.length" }, sqlFilter, namespaceManager);
+            var subscriptionDescription = await creator.Create(topicPath, subsciptionName, new SubscriptionMetadata { Description = "very.logn.name.of.an.event.that.would.exceed.subscription.length" }, sqlFilter, namespaceManager);
 
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subsciptionName));
             Assert.AreEqual("very.logn.name.of.an.event.that.would.exceed.subscription.length", subscriptionDescription.UserMetadata);

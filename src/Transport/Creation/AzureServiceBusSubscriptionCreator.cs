@@ -31,15 +31,22 @@
                     MaxDeliveryCount = setting.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.MaxDeliveryCount),
                     RequiresSession = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.RequiresSession),
                     
+                    // TODO: default forwarding for subscriptions is not clear... need to review this
                     ForwardTo = setting.GetConditional<string>(subscriptionName, WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardTo),
                     ForwardDeadLetteredMessagesTo = setting.GetConditional<string>(subscriptionName, WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo)
                 };
             }
         }
 
-        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager)
+        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo = null)
         {
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
+
+            if (!string.IsNullOrWhiteSpace(forwardTo))
+            {
+                subscriptionDescription.ForwardTo = forwardTo;
+            }
+
             subscriptionDescription.UserMetadata = metadata.Description;
 
             try
@@ -90,7 +97,7 @@
             }
             catch (MessagingException ex)
             {
-                var loggedMessage = $"{(ex.IsTransient ? "Transient" : "Non transient")} {ex.GetType().Name} occured on subscription '{subscriptionDescription.Name}' creation for topic '{subscriptionDescription.TopicPath}";
+                var loggedMessage = $"{(ex.IsTransient ? "Transient" : "Non transient")} {ex.GetType().Name} occured on subscription '{subscriptionDescription.Name}' creation for topic '{subscriptionDescription.TopicPath}'";
 
                 if (!ex.IsTransient)
                 {

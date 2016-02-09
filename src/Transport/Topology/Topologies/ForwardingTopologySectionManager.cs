@@ -27,7 +27,7 @@ namespace NServiceBus.AzureServiceBus
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
 
-            var namespaces = partitioningStrategy.GetNamespaces(inputQueue, PartitioningIntent.Creating).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(inputQueue, PartitioningIntent.Receiving).ToArray();
 
             var inputQueuePath = sanitizationStrategy.Sanitize(inputQueue, EntityType.Queue);
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
@@ -173,6 +173,11 @@ namespace NServiceBus.AzureServiceBus
                         Namespace = ns,
                         Type = EntityType.Subscription,
                         Path = subscriptionPath,
+                        Metadata = new SubscriptionMetadata
+                        {
+                            Description = endpointName + " subscribed to " + eventType.FullName,
+                            SubscriptionNameBasedOnEventWithNamespace = subscriptionPath
+                        },
                         BrokerSideFilter = new SqlSubscriptionFilter(eventType)
                     };
                     sub.RelationShips.Add(new EntityRelationShipInfo
