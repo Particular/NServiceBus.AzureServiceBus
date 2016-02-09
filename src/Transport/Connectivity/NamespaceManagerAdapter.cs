@@ -23,7 +23,7 @@ namespace NServiceBus.AzureServiceBus
         {
             try
             {
-                await _manager.GetQueuesAsync();
+                await _manager.GetQueuesAsync().ConfigureAwait(false);
 
                 return true;
             }

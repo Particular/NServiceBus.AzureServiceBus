@@ -24,9 +24,9 @@ namespace NServiceBus.AzureServiceBus
 
             var tasks = settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces)
                 .Select(x => manageNamespaceManagerLifeCycle.Get(x))
-                .Select(async x => await x.HasManageRights());
+                .Select(async x => await x.HasManageRights().ConfigureAwait(false));
 
-            return (await Task.WhenAll(tasks)).Any(x => !x) ?
+            return (await Task.WhenAll(tasks).ConfigureAwait(false)).Any(x => !x) ?
                 StartupCheckResult.Failed($"Manage rights on namespace is required if {WellKnownConfigurationKeys.Core.CreateTopology} setting is true") : 
                 StartupCheckResult.Success;
         }
