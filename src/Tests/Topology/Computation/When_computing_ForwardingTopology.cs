@@ -94,7 +94,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -108,6 +108,31 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.That(section.Entities.Count(), Is.EqualTo(2));
             // TODO: need to verify that subscription is done on each topic
         }
+
+        [Test]
+        public void Should_creates_subscription_entities_marked_as_not_be_listened_to()
+        {
+            var container = new TransportPartsContainer();
+
+            var settings = new SettingsHolder();
+            container.Register(typeof(SettingsHolder), () => settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            settings.SetDefault<EndpointName>(new EndpointName("sales"));
+            const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+
+            var topology = new ForwardingTopology(container);
+            topology.Initialize(settings);
+
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+            sectionManager.DetermineResourcesToCreate();
+
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeEvent));
+
+            Assert.IsFalse(section.Entities.Any(x => x.ShouldBeListenedTo));
+        }
+
 
         class SomeEvent
         {

@@ -225,6 +225,7 @@ namespace NServiceBus.AzureServiceBus
         public NServiceBus.AzureServiceBus.NamespaceInfo Namespace { get; set; }
         public string Path { get; set; }
         public System.Collections.Generic.IList<NServiceBus.AzureServiceBus.EntityRelationShipInfo> RelationShips { get; }
+        public bool ShouldBeListenedTo { get; set; }
         public NServiceBus.AzureServiceBus.EntityType Type { get; set; }
         protected bool Equals(NServiceBus.AzureServiceBus.EntityInfo other) { }
         public override bool Equals(object obj) { }

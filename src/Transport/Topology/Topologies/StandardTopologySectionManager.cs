@@ -175,7 +175,8 @@ namespace NServiceBus.AzureServiceBus
                             Description = endpointName + " subscribed to " + eventType.FullName,
                             SubscriptionNameBasedOnEventWithNamespace = subscriptionName
                         },
-                        BrokerSideFilter = new SqlSubscriptionFilter(eventType)
+                        BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                        ShouldBeListenedTo = true
                     };
                     sub.RelationShips.Add(new EntityRelationShipInfo
                     {

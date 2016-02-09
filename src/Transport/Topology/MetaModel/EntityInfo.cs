@@ -12,6 +12,8 @@ namespace NServiceBus.AzureServiceBus
 
         public IList<EntityRelationShipInfo> RelationShips { get; private set; }
 
+        public bool ShouldBeListenedTo { get; set; } = true;
+
         public EntityInfo()
         {
             RelationShips = new List<EntityRelationShipInfo>();
