@@ -23,7 +23,7 @@
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             if (!namespaceManager.TopicExists(topicPath).Result)
             {
-                namespaceManager.CreateTopic(new TopicDescription(topicPath)).Wait();
+                namespaceManager.CreateTopic(new TopicDescription(topicPath)).GetAwaiter().GetResult();
             }
         }
 
@@ -31,7 +31,7 @@
         public void TopicCleanUp()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            namespaceManager.DeleteTopic(topicPath).Wait();
+            namespaceManager.DeleteTopic(topicPath).GetAwaiter().GetResult();
         }
 
         [Test]
@@ -342,8 +342,6 @@
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var queueCreator = new AzureServiceBusQueueCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
-            var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
-            var topic = await topicCreator.Create(topicPath, namespaceManager);
             var queueToForwardTo = await queueCreator.Create("forwardto", namespaceManager);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -357,7 +355,6 @@
             Assert.That(foundDescription.ForwardTo.EndsWith(queueToForwardTo.Path));
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-            await namespaceManager.DeleteTopic(topic.Path);
             await namespaceManager.DeleteQueue(queueToForwardTo.Path);
         }
 
@@ -443,17 +440,18 @@
         [Test]
         public async Task Should_store_event_original_name_as_usermetadata()
         {
+            const string subscriptionName = "sub16";
+
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
-            const string subsciptionName = "sub1";
-            var subscriptionDescription = await creator.Create(topicPath, subsciptionName, new SubscriptionMetadata { Description = "very.logn.name.of.an.event.that.would.exceed.subscription.length" }, sqlFilter, namespaceManager);
+            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, new SubscriptionMetadata { Description = "very.logn.name.of.an.event.that.would.exceed.subscription.length" }, sqlFilter, namespaceManager);
 
-            Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subsciptionName));
+            Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
             Assert.AreEqual("very.logn.name.of.an.event.that.would.exceed.subscription.length", subscriptionDescription.UserMetadata);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subsciptionName);
+            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
         }
 
 
