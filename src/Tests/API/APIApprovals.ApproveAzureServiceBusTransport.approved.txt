@@ -801,9 +801,15 @@ namespace NServiceBus
     }
     public class AzureServiceBusTransportInfrastructure : NServiceBus.Transports.TransportInfrastructure
     {
-        public AzureServiceBusTransportInfrastructure(System.Collections.Generic.IEnumerable<System.Type> deliveryConstraints, NServiceBus.TransportTransactionMode transactionMode, NServiceBus.Transports.OutboundRoutingPolicy outboundRoutingPolicy, System.Func<string, NServiceBus.Transports.TransportSendInfrastructure> configureSendInfrastructure, System.Func<string, NServiceBus.Transports.TransportReceiveInfrastructure> configureReceiveInfrastructure = null, System.Func<NServiceBus.Transports.TransportSubscriptionInfrastructure> configureSubscriptionInfrastructure = null) { }
+        public AzureServiceBusTransportInfrastructure(NServiceBus.AzureServiceBus.ITopology topology, NServiceBus.Settings.SettingsHolder settings) { }
+        public override System.Collections.Generic.IEnumerable<System.Type> DeliveryConstraints { get; }
         public override string ExampleConnectionStringForErrorMessage { get; }
+        public override NServiceBus.Transports.OutboundRoutingPolicy OutboundRoutingPolicy { get; }
+        public override NServiceBus.TransportTransactionMode TransactionMode { get; }
         public override NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance, NServiceBus.Settings.ReadOnlySettings settings) { }
+        public override NServiceBus.Transports.TransportReceiveInfrastructure ConfigureReceiveInfrastructure(string connectionString) { }
+        public override NServiceBus.Transports.TransportSendInfrastructure ConfigureSendInfrastructure(string connectionString) { }
+        public override NServiceBus.Transports.TransportSubscriptionInfrastructure ConfigureSubscriptionInfrastructure() { }
         public override string ToTransportAddress(NServiceBus.LogicalAddress logicalAddress) { }
     }
     public class AzureServiceBusValidationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings

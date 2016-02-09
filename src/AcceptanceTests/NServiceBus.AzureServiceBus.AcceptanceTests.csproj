@@ -132,9 +132,12 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\CriticalError\When_raising_critical_error.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\DataBus\When_sending_databus_properties.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\DataBus\When_using_custom_IDataBus.cs" />
+    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\DelayedDelivery\TimeoutManager\When_TimeoutManager_is_disabled.cs" />
+    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\DelayedDelivery\TimeoutManager\When_timeout_dispatch_fails.cs" />
+    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\DelayedDelivery\TimeoutManager\When_timeout_dispatch_fails_on_timeout_data_removal.cs" />
+    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\DelayedDelivery\TimeoutManager\When_timeout_storage_fails.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\DelayedDelivery\When_Deferring_a_message.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\DelayedDelivery\When_deferring_a_message_to_the_past.cs" />
-    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\DelayedDelivery\When_TimeoutManager_is_disabled.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\DeterministicGuid.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Encryption\When_using_encryption_with_custom_service.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Encryption\When_using_Rijndael_with_config.cs" />

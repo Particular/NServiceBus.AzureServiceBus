@@ -127,11 +127,6 @@
 
         private class FakeEndpoint : IEndpointInstance
         {
-            public IBusContext CreateBusContext()
-            {
-                return null;
-            }
-
             public Task Stop()
             {
                 return Task.FromResult(0);

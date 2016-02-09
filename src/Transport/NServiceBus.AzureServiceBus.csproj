@@ -90,6 +90,7 @@
     <Compile Include="Addressing\Sanitization\Strategies\SHA1DeterministicNameBuilder.cs" />
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationV6Rules.cs" />
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
+    <Compile Include="Config\AzureServiceBusTransportInfrastructure.cs" />
     <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
