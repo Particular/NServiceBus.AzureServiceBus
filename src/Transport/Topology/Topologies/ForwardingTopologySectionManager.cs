@@ -155,7 +155,8 @@ namespace NServiceBus.AzureServiceBus
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
 
-            var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Subscription);
+            var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
+            var subscriptionPath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Subscription);
 
             if (!topics.Any())
             {
@@ -166,8 +167,6 @@ namespace NServiceBus.AzureServiceBus
             {
                 subs.AddRange(namespaces.Select(ns =>
                 {
-                    var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
-
                     var sub = new SubscriptionInfo
                     {
                         Namespace = ns,
