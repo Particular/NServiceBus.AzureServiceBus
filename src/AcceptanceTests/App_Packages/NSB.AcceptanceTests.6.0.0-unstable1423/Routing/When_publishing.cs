@@ -83,7 +83,7 @@
                         Assert.True(c.Subscriber2GotTheEvent);
                     })
                     // Hell no! Azure transport and 10 seconds is a SciFi today. Maybe tommorrow. Maybe.
-                    .Run(TimeSpan.FromSeconds(60));
+                    .Run();
         }
 
         public class Context : ScenarioContext
