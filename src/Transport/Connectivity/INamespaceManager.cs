@@ -11,7 +11,7 @@ namespace NServiceBus.AzureServiceBus
         NamespaceManagerSettings Settings { get; }
         Uri Address { get; }
 
-        Task<bool> HasManageRights();
+        Task<bool> CanManageEntities();
         Task CreateQueue(QueueDescription description);
         Task UpdateQueue(QueueDescription description);
         Task DeleteQueue(string path);

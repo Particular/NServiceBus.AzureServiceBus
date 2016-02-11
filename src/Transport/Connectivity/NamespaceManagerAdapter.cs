@@ -19,7 +19,7 @@ namespace NServiceBus.AzureServiceBus
 
         public Uri Address => _manager.Address;
 
-        public async Task<bool> HasManageRights()
+        public async Task<bool> CanManageEntities()
         {
             try
             {

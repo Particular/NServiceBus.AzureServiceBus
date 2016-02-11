@@ -64,7 +64,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 get { throw new NotImplementedException(); }
             }
 
-            public Task<bool> HasManageRights()
+            public Task<bool> CanManageEntities()
             {
                 throw new NotImplementedException(); 
             }
