@@ -260,7 +260,7 @@ namespace NServiceBus.AzureServiceBus
         public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
         public NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
-        public async System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
+        public System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
     }
     public class ForwardingTopologySectionManager : NServiceBus.AzureServiceBus.ITopologySectionManager
     {
@@ -543,7 +543,7 @@ namespace NServiceBus.AzureServiceBus
         public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
         public NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
-        public async System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
+        public System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
     }
     public class StandardTopologySectionManager : NServiceBus.AzureServiceBus.ITopologySectionManager
     {
