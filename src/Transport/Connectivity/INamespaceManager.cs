@@ -30,5 +30,6 @@ namespace NServiceBus.AzureServiceBus
         Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription);
 
         Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription);
+        Task CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription);
     }
 }

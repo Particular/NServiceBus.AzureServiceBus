@@ -93,6 +93,11 @@ namespace NServiceBus.AzureServiceBus
             return _manager.GetRulesAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
         }
 
+        public Task CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription)
+        {
+            return _manager.CreateSubscriptionAsync(subscriptionDescription, ruleDescription);
+        }
+
         public Task<TopicDescription> UpdateTopic(TopicDescription topicDescription)
         {
             return _manager.UpdateTopicAsync(topicDescription);
