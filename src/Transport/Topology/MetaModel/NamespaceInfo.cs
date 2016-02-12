@@ -9,9 +9,9 @@
             Mode = mode;
         }
 
-        public string Name { get; set; }
-        public string ConnectionString { get; set; }
-        public NamespaceMode Mode { get; set; }
+        public string Name { get; private set; }
+        public string ConnectionString { get; private set; }
+        public NamespaceMode Mode { get; private set; }
 
         protected bool Equals(NamespaceInfo other)
         {
