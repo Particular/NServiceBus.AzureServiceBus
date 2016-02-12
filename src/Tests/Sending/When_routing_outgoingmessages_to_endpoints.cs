@@ -37,7 +37,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var @namespace = new NamespaceInfo("name", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var batch = new Batch
             {
@@ -100,7 +100,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var @namespace = new NamespaceInfo("name", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var batch = new Batch
             {
@@ -168,7 +168,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var @namespace = new NamespaceInfo("name", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
             var bytes = Enumerable.Range(0, 220 * 1024).Select(x => (byte)(x % 256)).ToArray();
             var batch = new Batch
             {
@@ -236,7 +236,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var @namespace = new NamespaceInfo("name", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
             var batch = new Batch
@@ -297,7 +297,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var @namespace = new NamespaceInfo("name", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
             var batch = new Batch

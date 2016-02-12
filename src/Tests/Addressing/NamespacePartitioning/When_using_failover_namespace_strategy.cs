@@ -72,7 +72,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var strategy = new FailOverNamespacePartitioningStrategy(settings);
 
 
-            Assert.AreEqual(new NamespaceInfo(primary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating).First());
+            Assert.AreEqual(new NamespaceInfo("name1", primary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating).First());
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             };
 
 
-            Assert.AreEqual(new NamespaceInfo(secondary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new NamespaceInfo("name2", secondary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
         }
 
         [Test]

@@ -63,7 +63,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var strategy = new SingleNamespacePartitioningStrategy(settings);
 
-            Assert.AreEqual(new NamespaceInfo(connectionstring, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating).First());
+            Assert.AreEqual(new NamespaceInfo("name", connectionstring, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating).First());
         }
 
         [Test]
