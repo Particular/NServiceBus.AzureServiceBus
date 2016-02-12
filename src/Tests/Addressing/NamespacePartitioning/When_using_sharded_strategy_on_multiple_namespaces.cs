@@ -19,9 +19,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name1", "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name2", "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name3", "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
 
             var strategy = new ShardedNamespacePartitioningStrategy(settings);
             strategy.SetShardingRule(() => i);
@@ -36,9 +36,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name1", "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name2", "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name3", "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
 
             var strategy = new ShardedNamespacePartitioningStrategy(settings);
             strategy.SetShardingRule(() => i);
@@ -53,9 +53,9 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name1", "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name2", "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name3", "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
 
             var strategy = new ShardedNamespacePartitioningStrategy(settings);
             strategy.SetShardingRule(() => i);
@@ -66,8 +66,6 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Sharded_partitioning_strategy_will_circle__the_active_namespace()
         {
-            var i = 0;
-
             var buckets = new List<String>()
             {
                 "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey",
@@ -77,15 +75,15 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            foreach (var s in buckets)
+            for (var i = 0; i < 3; i++)
             {
-                extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(s);
+                extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name" + i, buckets[i]);
             }
 
             var strategy = new ShardedNamespacePartitioningStrategy(settings);
-            strategy.SetShardingRule(() => i);
+            strategy.SetShardingRule(() => 0);
             
-            for (i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 Assert.AreEqual(new NamespaceInfo(buckets[i], NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
             }
@@ -104,7 +102,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name", "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
 
             Assert.Throws<ConfigurationErrorsException>(() =>
                 new ShardedNamespacePartitioningStrategy(settings));

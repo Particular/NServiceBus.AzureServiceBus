@@ -23,20 +23,20 @@
             return this;
         }
 
-        public AzureServiceBusNamespacePartitioningSettings AddNamespace(string @namespace)
+        public AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString)
         {
-            List<string> namespaces;
+            Dictionary<string, string> namespaces;
             if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces))
             {
-                namespaces = _settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+                namespaces = _settings.Get<Dictionary<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             }
             else
             {
-                namespaces = new List<string>();
+                namespaces = new Dictionary<string, string>();
                 _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
             }
             
-            namespaces.Add(@namespace);
+            namespaces.Add(name, connectionString);
             return this;
         }
     }

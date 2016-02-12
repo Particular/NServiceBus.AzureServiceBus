@@ -686,7 +686,7 @@ namespace NServiceBus
     public class AzureServiceBusNamespacePartitioningSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusNamespacePartitioningSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusNamespacePartitioningSettings AddNamespace(string @namespace) { }
+        public NServiceBus.AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString) { }
         public NServiceBus.AzureServiceBusNamespacePartitioningSettings UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy { }
     }
