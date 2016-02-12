@@ -477,9 +477,9 @@ namespace NServiceBus.AzureServiceBus
     public class NamespaceInfo
     {
         public NamespaceInfo(string name, string connectionString, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
-        public string ConnectionString { get; set; }
-        public NServiceBus.AzureServiceBus.NamespaceMode Mode { get; set; }
-        public string Name { get; set; }
+        public string ConnectionString { get; }
+        public NServiceBus.AzureServiceBus.NamespaceMode Mode { get; }
+        public string Name { get; }
         protected bool Equals(NServiceBus.AzureServiceBus.NamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
