@@ -30,7 +30,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var @namespace = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
 
-            var partitioningSettings = extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(@namespace);
+            var partitioningSettings = extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name", @namespace);
 
             Assert.Contains(@namespace, partitioningSettings.GetSettings().Get<List<String>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces));
         }
