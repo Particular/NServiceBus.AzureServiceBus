@@ -155,8 +155,10 @@ namespace NServiceBus.AzureServiceBus
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
 
-            var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
-            var subscriptionPath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Subscription);
+            var sanitizedInputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
+            var sanitizedSubscriptionPath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Subscription);
+            // rule name needs 1) based on event full name 2) unique 3) deterministic 
+            var ruleName = SHA1DeterministicNameBuilder.Build(eventType.FullName);
 
             if (!topics.Any())
             {
@@ -171,11 +173,12 @@ namespace NServiceBus.AzureServiceBus
                     {
                         Namespace = ns,
                         Type = EntityType.Subscription,
-                        Path = subscriptionPath,
-                        Metadata = new SubscriptionMetadata
+                        Path = sanitizedSubscriptionPath,
+                        Metadata = new ForwardingTopologySubscriptionMetadata
                         {
                             Description = endpointName + " subscribed to " + eventType.FullName,
-                            SubscriptionNameBasedOnEventWithNamespace = subscriptionPath
+                            SubscriptionNameBasedOnEventWithNamespace = ruleName,
+                            NamespaceInfo = ns
                         },
                         BrokerSideFilter = new SqlSubscriptionFilter(eventType),
                         ShouldBeListenedTo = false
@@ -192,7 +195,7 @@ namespace NServiceBus.AzureServiceBus
                         Target = new EntityInfo
                         {
                             Namespace = ns,
-                            Path = inputQueuePath,
+                            Path = sanitizedInputQueuePath,
                             Type = EntityType.Queue
                         },
                         Type = EntityRelationShipType.Forward

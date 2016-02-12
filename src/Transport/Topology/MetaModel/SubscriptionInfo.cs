@@ -14,4 +14,9 @@
         public string Description { get; set; }
         public string SubscriptionNameBasedOnEventWithNamespace { get; set; }
     }
+
+    class ForwardingTopologySubscriptionMetadata : SubscriptionMetadata
+    {
+        public NamespaceInfo NamespaceInfo { get; set; }
+    }
 }

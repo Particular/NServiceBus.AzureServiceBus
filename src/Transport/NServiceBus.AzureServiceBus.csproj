@@ -95,6 +95,7 @@
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
+    <Compile Include="Creation\AzureServiceBusForwardingSubscriptionCreator.cs" />
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
     <Compile Include="Properties\Resharper.Annotations.g.cs" />
     <Compile Include="Receiving\UnsupportedBrokeredMessageBodyTypeException.cs" />
