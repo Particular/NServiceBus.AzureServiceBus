@@ -144,7 +144,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 throw new NotImplementedException();
             }
 
-            public Task CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription)
+            public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription)
             {
                 throw new NotImplementedException();
             }
