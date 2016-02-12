@@ -32,7 +32,8 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var partitioningSettings = extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name", @namespace);
 
-            Assert.Contains(@namespace, partitioningSettings.GetSettings().Get<List<String>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces));
+            var namespaces = partitioningSettings.GetSettings().Get<Dictionary<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            Assert.Contains(@namespace, namespaces.Values);
         }
 
         class MyNamespacePartitioningStrategy : INamespacePartitioningStrategy

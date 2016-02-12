@@ -7,14 +7,14 @@
 
     public class FailOverNamespacePartitioningStrategy : INamespacePartitioningStrategy
     {
-        readonly IReadOnlyCollection<string> _connectionstrings;
+        readonly Dictionary<string, string> _connectionstrings;
 
         public FailOverNamespacePartitioningStrategy(ReadOnlySettings settings)
         {
-            List<string> connectionstrings;
+            Dictionary<string, string> connectionstrings;
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out connectionstrings))
             {
-                connectionstrings = new List<string>();
+                connectionstrings = new Dictionary<string, string>();
             }
 
             if (connectionstrings.Count != 2)
@@ -32,14 +32,14 @@
             if(partitioningIntent == PartitioningIntent.Sending)
             {
                 yield return Mode == FailOverMode.Primary 
-                ? new NamespaceInfo(_connectionstrings.First(), NamespaceMode.Active)
-                : new NamespaceInfo(_connectionstrings.Last(), NamespaceMode.Active);
+                ? new NamespaceInfo(_connectionstrings.First().Key, _connectionstrings.First().Value, NamespaceMode.Active)
+                : new NamespaceInfo(_connectionstrings.Last().Key, _connectionstrings.Last().Value, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Creating || partitioningIntent == PartitioningIntent.Receiving)
             {
-                yield return new NamespaceInfo(_connectionstrings.First(), Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
-                yield return new NamespaceInfo(_connectionstrings.Last(), Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
+                yield return new NamespaceInfo(_connectionstrings.First().Key, _connectionstrings.First().Value, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
+                yield return new NamespaceInfo(_connectionstrings.Last().Key, _connectionstrings.Last().Value, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
             }
         }
 

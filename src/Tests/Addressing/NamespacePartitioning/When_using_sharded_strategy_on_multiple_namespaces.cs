@@ -66,26 +66,29 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Sharded_partitioning_strategy_will_circle__the_active_namespace()
         {
-            var buckets = new List<String>()
+            var i = 0;
+
+            var buckets = new Dictionary<string, string>()
             {
-                "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey",
-                "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey",
-                "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"
+                { "name1", "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"},
+                { "name2", "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"},
+                { "name3", "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey"}
             };
 
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            for (var i = 0; i < 3; i++)
+            foreach (var bucket in buckets)
             {
-                extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name" + i, buckets[i]);
+                extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(bucket.Key, bucket.Value);
             }
 
             var strategy = new ShardedNamespacePartitioningStrategy(settings);
-            strategy.SetShardingRule(() => 0);
-            
-            for (var i = 0; i < 3; i++)
+            strategy.SetShardingRule(() => i);
+
+            for (i = 0; i < 3; i++)
             {
-                Assert.AreEqual(new NamespaceInfo(buckets[i], NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+                var bucket = buckets.ElementAt(i);
+                Assert.AreEqual(new NamespaceInfo(bucket.Key, bucket.Value, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
             }
         }
 

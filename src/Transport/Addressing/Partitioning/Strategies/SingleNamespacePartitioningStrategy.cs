@@ -7,14 +7,14 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
     public class SingleNamespacePartitioningStrategy : INamespacePartitioningStrategy
     {
-        readonly string _connectionstring;
+        readonly KeyValuePair<string, string> _connectionstring;
 
         public SingleNamespacePartitioningStrategy(ReadOnlySettings settings)
         {
-            List<string> connectionstrings;
+            Dictionary<string, string> connectionstrings;
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out connectionstrings))
             {
-                connectionstrings = new List<string>();
+                connectionstrings = new Dictionary<string, string>();
             }
 
             if (connectionstrings.Count == 0)
@@ -32,7 +32,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
         public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
-            yield return new NamespaceInfo(_connectionstring, NamespaceMode.Active);
+            yield return new NamespaceInfo(_connectionstring.Key, _connectionstring.Value, NamespaceMode.Active);
         }
     }
 }

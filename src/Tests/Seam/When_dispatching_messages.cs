@@ -86,7 +86,7 @@
             {
                 // we don't care about incoming operations as we'll fake batcher and return pre-canned batches
 
-                var @namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+                var @namespace = new NamespaceInfo("name", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
 
