@@ -18,5 +18,6 @@
     class ForwardingTopologySubscriptionMetadata : SubscriptionMetadata
     {
         public NamespaceInfo NamespaceInfo { get; set; }
+        public string SubscribedEventFullName { get; set; }
     }
 }

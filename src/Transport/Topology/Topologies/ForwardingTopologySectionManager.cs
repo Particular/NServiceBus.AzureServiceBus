@@ -176,9 +176,10 @@ namespace NServiceBus.AzureServiceBus
                         Path = sanitizedSubscriptionPath,
                         Metadata = new ForwardingTopologySubscriptionMetadata
                         {
-                            Description = endpointName + " subscribed to " + eventType.FullName,
+                            Description = $"Events {endpointName} is subscribed to",
                             SubscriptionNameBasedOnEventWithNamespace = ruleName,
-                            NamespaceInfo = ns
+                            NamespaceInfo = ns,
+                            SubscribedEventFullName = eventType.FullName
                         },
                         BrokerSideFilter = new SqlSubscriptionFilter(eventType),
                         ShouldBeListenedTo = false

@@ -40,8 +40,8 @@
 
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo)
         {
-            var namespaceInfo = (metadata as ForwardingTopologySubscriptionMetadata)?.NamespaceInfo;
-            if (namespaceInfo == null)
+            var meta = (metadata as ForwardingTopologySubscriptionMetadata);
+            if (meta == null)
             {
                 throw new InvalidOperationException($"Cannot create subscription `{subscriptionName}` for topic `{topicPath}` without namespace inforation required.");
             }
@@ -64,7 +64,7 @@
                         };
 
                         await namespaceManager.CreateSubscription(subscriptionDescription, ruleDescription).ConfigureAwait(false);
-                        logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' with rule '{ruleDescription.Name}'");
+                        logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' with rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
 
                         var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
                         await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
@@ -82,15 +82,15 @@
                         }
 
                         // Rules can't be queried, so try to add
-                        logger.Info($"Adding subscription rule for '{metadata.SubscriptionNameBasedOnEventWithNamespace}'");
                         var ruleDescription = new RuleDescription
                         {
                             Filter = new SqlFilter(sqlFilter),
                             Name = metadata.SubscriptionNameBasedOnEventWithNamespace
                         };
+                        logger.Info($"Adding subscription rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
                         try
                         {
-                            var subscriptionClient = SubscriptionClient.CreateFromConnectionString(namespaceInfo.ConnectionString, topicPath, subscriptionName);
+                            var subscriptionClient = SubscriptionClient.CreateFromConnectionString(meta.NamespaceInfo.ConnectionString, topicPath, subscriptionName);
                             await subscriptionClient.AddRuleAsync(ruleDescription).ConfigureAwait(false);
                         }
                         catch (MessagingEntityAlreadyExistsException exception)
@@ -101,17 +101,17 @@
                 }
                 else
                 {
-                    logger.InfoFormat("'{0}' is set to false, skipping the creation of subscription '{0}' aka '{1}'", WellKnownConfigurationKeys.Core.CreateTopology, subscriptionDescription.Name, subscriptionDescription.UserMetadata);
+                    logger.Info($"'{WellKnownConfigurationKeys.Core.CreateTopology}' is set to false, skipping the creation of subscription '{subscriptionDescription.Name}' aka '{meta.SubscribedEventFullName}'");
                 }
             }
             catch (MessagingEntityAlreadyExistsException)
             {
                 // the subscription already exists or another node beat us to it, which is ok
-                logger.InfoFormat("Subscription '{0}' already exists, another node probably beat us to it", subscriptionDescription.Name);
+                logger.Info($"Subscription '{subscriptionDescription.Name}' already exists, another node probably beat us to it");
             }
             catch (TimeoutException)
             {
-                logger.InfoFormat("Timeout occurred on subscription creation for topic '{0}' subscription name '{1}' going to validate if it doesn't exist", subscriptionDescription.TopicPath, subscriptionDescription.Name);
+                logger.Info($"Timeout occurred on subscription creation for topic '{subscriptionDescription.TopicPath}' subscription name '{subscriptionDescription.Name}' going to validate if it doesn't exist");
 
                 // there is a chance that the timeout occured, but the topic was still created, check again
                 if (!await ExistsAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name, metadata.Description, namespaceManager, removeCacheEntry: true).ConfigureAwait(false))
@@ -119,7 +119,7 @@
                     throw;
                 }
 
-                logger.InfoFormat("Looks like subscription '{0}' exists anyway", subscriptionDescription.Name);
+                logger.Info($"Looks like subscription '{subscriptionDescription.Name}' exists anyway");
             }
             catch (MessagingException ex)
             {
@@ -152,11 +152,11 @@
 
             var exists = await rememberExistence.GetOrAdd(key, async notFoundKey =>
             {
-                logger.InfoFormat("Checking namespace for existence of subscription '{0}' for the topic '{1}'", subscriptionName, topicPath);
+                logger.Info($"Checking namespace for existence of subscription '{subscriptionName}' for the topic '{topicPath}'");
                 return await namespaceClient.SubscriptionExists(topicPath, subscriptionName).ConfigureAwait(false);
             }).ConfigureAwait(false);
 
-            logger.InfoFormat("Determined, from cache, that the subscription '{0}' {1}", subscriptionName, exists ? "exists" : "does not exist");
+            logger.Info($"Determined, from cache, that the subscription '{subscriptionName}' {(exists ? "exists" : "does not exist")}");
 
             return exists;
         }
