@@ -19,6 +19,20 @@ namespace NServiceBus.AzureServiceBus
 
         public Uri Address => _manager.Address;
 
+        public async Task<bool> CanManageEntities()
+        {
+            try
+            {
+                await _manager.GetQueuesAsync().ConfigureAwait(false);
+
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+
         public Task CreateQueue(QueueDescription description)
         {
             return _manager.CreateQueueAsync(description);

@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -10,7 +11,7 @@ namespace NServiceBus.AzureServiceBus
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
 
-        public ForwardingTopology() : this(new TransportPartsContainer()){ }
+        public ForwardingTopology() : this(new TransportPartsContainer()) { }
 
         internal ForwardingTopology(ITransportPartsContainer container)
         {
@@ -86,8 +87,6 @@ namespace NServiceBus.AzureServiceBus
 
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
             container.Register(validationStrategyType);
-
-           
         }
 
         public Func<ICreateQueues> GetQueueCreatorFactory()
@@ -107,6 +106,13 @@ namespace NServiceBus.AzureServiceBus
         public Func<IDispatchMessages> GetDispatcherFactory()
         {
             return () => container.Resolve<IDispatchMessages>();
+        }
+
+        public Task<StartupCheckResult> RunPreStartupChecks()
+        {
+            var check = new ManageRightsCheck(this.container);
+
+            return check.Run();
         }
 
         public IManageSubscriptions GetSubscriptionManager()

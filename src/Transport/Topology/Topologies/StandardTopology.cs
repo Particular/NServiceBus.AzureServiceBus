@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -103,6 +104,13 @@ namespace NServiceBus.AzureServiceBus
         public Func<IDispatchMessages> GetDispatcherFactory()
         {
             return () => container.Resolve<IDispatchMessages>();
+        }
+
+        public Task<StartupCheckResult> RunPreStartupChecks()
+        {
+            var check = new ManageRightsCheck(this.container);
+
+            return check.Run();
         }
 
         public IManageSubscriptions GetSubscriptionManager()

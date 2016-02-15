@@ -260,6 +260,7 @@ namespace NServiceBus.AzureServiceBus
         public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
         public NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
+        public System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
     }
     public class ForwardingTopologySectionManager : NServiceBus.AzureServiceBus.ITopologySectionManager
     {
@@ -373,6 +374,7 @@ namespace NServiceBus.AzureServiceBus
     {
         System.Uri Address { get; }
         Microsoft.ServiceBus.NamespaceManagerSettings Settings { get; }
+        System.Threading.Tasks.Task<bool> CanManageEntities();
         System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description);
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter);
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription);
@@ -444,6 +446,7 @@ namespace NServiceBus.AzureServiceBus
         System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory();
         NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager();
         void Initialize(NServiceBus.Settings.SettingsHolder settings);
+        System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks();
     }
     public interface ITopologySectionManager
     {
@@ -488,6 +491,7 @@ namespace NServiceBus.AzureServiceBus
         public NamespaceManagerAdapter(Microsoft.ServiceBus.NamespaceManager manager) { }
         public System.Uri Address { get; }
         public Microsoft.ServiceBus.NamespaceManagerSettings Settings { get; }
+        public async System.Threading.Tasks.Task<bool> CanManageEntities() { }
         public System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter) { }
         public async System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription) { }
@@ -539,6 +543,7 @@ namespace NServiceBus.AzureServiceBus
         public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
         public NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
+        public System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
     }
     public class StandardTopologySectionManager : NServiceBus.AzureServiceBus.ITopologySectionManager
     {

@@ -64,6 +64,11 @@ namespace NServiceBus.AzureServiceBus.Tests
                 get { throw new NotImplementedException(); }
             }
 
+            public Task<bool> CanManageEntities()
+            {
+                throw new NotImplementedException(); 
+            }
+
             public Task CreateQueue(QueueDescription description)
             {
                 throw new NotImplementedException();
