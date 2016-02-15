@@ -479,9 +479,10 @@ namespace NServiceBus.AzureServiceBus
     }
     public class NamespaceInfo
     {
-        public NamespaceInfo(string connectionString, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
-        public string ConnectionString { get; set; }
-        public NServiceBus.AzureServiceBus.NamespaceMode Mode { get; set; }
+        public NamespaceInfo(string name, string connectionString, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
+        public string ConnectionString { get; }
+        public NServiceBus.AzureServiceBus.NamespaceMode Mode { get; }
+        public string Name { get; }
         protected bool Equals(NServiceBus.AzureServiceBus.NamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
@@ -691,7 +692,7 @@ namespace NServiceBus
     public class AzureServiceBusNamespacePartitioningSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusNamespacePartitioningSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusNamespacePartitioningSettings AddNamespace(string @namespace) { }
+        public NServiceBus.AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString) { }
         public NServiceBus.AzureServiceBusNamespacePartitioningSettings UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy { }
     }

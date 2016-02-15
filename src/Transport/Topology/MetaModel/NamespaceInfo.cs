@@ -2,15 +2,16 @@
 {
     public class NamespaceInfo
     {
-        public NamespaceInfo(string connectionString, NamespaceMode mode = NamespaceMode.Active)
+        public NamespaceInfo(string name, string connectionString, NamespaceMode mode = NamespaceMode.Active)
         {
+            Name = name;
             ConnectionString = connectionString;
             Mode = mode;
         }
 
-        public string ConnectionString { get; set; }
-
-        public NamespaceMode Mode { get; set; }
+        public string Name { get; private set; }
+        public string ConnectionString { get; private set; }
+        public NamespaceMode Mode { get; private set; }
 
         protected bool Equals(NamespaceInfo other)
         {

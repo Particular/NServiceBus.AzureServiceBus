@@ -20,7 +20,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name", connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -29,7 +29,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var sectionManager = container.Resolve<ITopologySectionManager>();
             var definition = sectionManager.DetermineResourcesToCreate();
 
-            var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
+            var namespaceInfo = new NamespaceInfo("name", connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
         }
 
@@ -44,7 +44,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name", connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -67,7 +67,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name", connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -94,7 +94,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("name", connectionstring);
 
             var topology = new ForwardingTopology(container);
 

@@ -1,19 +1,20 @@
 namespace NServiceBus.AzureServiceBus.Addressing
 {
+    using System;
     using System.Collections.Generic;
     using System.Configuration;
     using NServiceBus.Settings;
 
     public class RoundRobinNamespacePartitioningStrategy : INamespacePartitioningStrategy
     {
-        readonly CircularBuffer<string> _connectionstrings;
+        readonly CircularBuffer<Tuple<string, string>> _connectionstrings;
 
         public RoundRobinNamespacePartitioningStrategy(ReadOnlySettings settings)
         {
-            List<string> connectionstrings;
+            Dictionary<string, string> connectionstrings;
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out connectionstrings))
             {
-                connectionstrings = new List<string>();
+                connectionstrings = new Dictionary<string, string>();
             }
 
             if (connectionstrings.Count <= 1)
@@ -21,10 +22,10 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 throw new ConfigurationErrorsException("The 'RoundRobin' namespace partitioning strategy requires more than one namespace, please configure multiple azure servicebus namespaces");
             }
 
-            _connectionstrings = new CircularBuffer<string>(connectionstrings.Count);
+            _connectionstrings = new CircularBuffer<Tuple<string, string>>(connectionstrings.Count);
             foreach (var connectionstring in connectionstrings)
             {
-                _connectionstrings.Put(connectionstring);
+                _connectionstrings.Put(new Tuple<string, string>(connectionstring.Key, connectionstring.Value));
             }
         }
 
@@ -32,7 +33,8 @@ namespace NServiceBus.AzureServiceBus.Addressing
         {
             if (partitioningIntent == PartitioningIntent.Sending)
             {
-                yield return new NamespaceInfo(_connectionstrings.Get(), NamespaceMode.Active);    
+                var tuple = _connectionstrings.Get();
+                yield return new NamespaceInfo(tuple.Item1, tuple.Item2, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Receiving || partitioningIntent == PartitioningIntent.Creating)
@@ -40,7 +42,8 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 var mode = NamespaceMode.Active;
                 for(var i = 0; i < _connectionstrings.Size; i++)
                 {
-                    yield return new NamespaceInfo(_connectionstrings.Get(), mode);
+                    var tuple = _connectionstrings.Get();
+                    yield return new NamespaceInfo(tuple.Item1, tuple.Item2, mode);
                     mode = NamespaceMode.Passive;
                 }
             }
