@@ -216,8 +216,11 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Routing\When_publishing_using_root_type.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Routing\When_publishing_with_only_local_messagehandlers.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Routing\When_publishing_with_overridden_local_address.cs" />
+    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Routing\when_replying_to_a_message_sent_to_specific_instance.cs" />
+    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Routing\When_replying_to_a_message_sent_via_a_distributor.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Routing\When_replying_to_message.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Routing\When_subscribing_to_a_polymorphic_event.cs" />
+    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Routing\When_using_instance_ids.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Routing\When_using_legacy_routing_configuration_combined_with_message_driven_pub_sub.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\RunDescriptorExtensions.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Sagas\When_an_endpoint_replies_to_a_saga.cs" />
@@ -255,7 +258,6 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Sagas\When_using_a_received_message_for_timeout.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Sagas\When_using_contain_saga_data.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\Sagas\When_using_ReplyToOriginator.cs" />
-    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\ScaleOut\When_individualization_is_enabled.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\ScenarioDescriptors\AllOutboxCapableStorages.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\ScenarioDescriptors\AllTransports.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-pullrequest3308\ScenarioDescriptors\Builders.cs" />

@@ -783,7 +783,9 @@ namespace NServiceBus
     public class AzureServiceBusTransport : NServiceBus.Transports.TransportDefinition
     {
         public AzureServiceBusTransport() { }
-        protected override NServiceBus.Transports.TransportInfrastructure Initialize(NServiceBus.Settings.SettingsHolder settings) { }
+        public override string ExampleConnectionStringForErrorMessage { get; }
+        public override bool RequiresConnectionString { get; }
+        protected override NServiceBus.Transports.TransportInfrastructure Initialize(NServiceBus.Settings.SettingsHolder settings, string connectionString) { }
     }
     public class static AzureServiceBusTransportExtensions
     {
@@ -803,12 +805,11 @@ namespace NServiceBus
     {
         public AzureServiceBusTransportInfrastructure(NServiceBus.AzureServiceBus.ITopology topology, NServiceBus.Settings.SettingsHolder settings) { }
         public override System.Collections.Generic.IEnumerable<System.Type> DeliveryConstraints { get; }
-        public override string ExampleConnectionStringForErrorMessage { get; }
         public override NServiceBus.Transports.OutboundRoutingPolicy OutboundRoutingPolicy { get; }
         public override NServiceBus.TransportTransactionMode TransactionMode { get; }
-        public override NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance, NServiceBus.Settings.ReadOnlySettings settings) { }
-        public override NServiceBus.Transports.TransportReceiveInfrastructure ConfigureReceiveInfrastructure(string connectionString) { }
-        public override NServiceBus.Transports.TransportSendInfrastructure ConfigureSendInfrastructure(string connectionString) { }
+        public override NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance) { }
+        public override NServiceBus.Transports.TransportReceiveInfrastructure ConfigureReceiveInfrastructure() { }
+        public override NServiceBus.Transports.TransportSendInfrastructure ConfigureSendInfrastructure() { }
         public override NServiceBus.Transports.TransportSubscriptionInfrastructure ConfigureSubscriptionInfrastructure() { }
         public override string ToTransportAddress(NServiceBus.LogicalAddress logicalAddress) { }
     }
