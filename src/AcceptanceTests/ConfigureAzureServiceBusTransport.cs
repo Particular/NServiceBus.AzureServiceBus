@@ -11,7 +11,8 @@ public class ConfigureAzureServiceBusTransport : IConfigureTestExecution
     public Task Configure(BusConfiguration config, IDictionary<string, string> settings)
     {
         var connectionString = settings["Transport.ConnectionString"];
-        var topology = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
+        var topology = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology", EnvironmentVariableTarget.User);
+        topology = topology ?? Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
         
         var transportConfig = config.UseTransport<AzureServiceBusTransport>().ConnectionString(connectionString);
 

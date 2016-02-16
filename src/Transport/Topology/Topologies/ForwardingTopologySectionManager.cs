@@ -27,7 +27,7 @@ namespace NServiceBus.AzureServiceBus
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
 
-            var namespaces = partitioningStrategy.GetNamespaces(inputQueue, PartitioningIntent.Creating).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(inputQueue, PartitioningIntent.Receiving).ToArray();
 
             var inputQueuePath = sanitizationStrategy.Sanitize(inputQueue, EntityType.Queue);
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
@@ -155,7 +155,10 @@ namespace NServiceBus.AzureServiceBus
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
 
-            var subscriptionPath = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Subscription);
+            var sanitizedInputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
+            var sanitizedSubscriptionPath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Subscription);
+            // rule name needs 1) based on event full name 2) unique 3) deterministic 
+            var ruleName = SHA1DeterministicNameBuilder.Build(eventType.FullName);
 
             if (!topics.Any())
             {
@@ -166,14 +169,20 @@ namespace NServiceBus.AzureServiceBus
             {
                 subs.AddRange(namespaces.Select(ns =>
                 {
-                    var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
-
                     var sub = new SubscriptionInfo
                     {
                         Namespace = ns,
                         Type = EntityType.Subscription,
-                        Path = subscriptionPath,
-                        BrokerSideFilter = new SqlSubscriptionFilter(eventType)
+                        Path = sanitizedSubscriptionPath,
+                        Metadata = new ForwardingTopologySubscriptionMetadata
+                        {
+                            Description = $"Events {endpointName} is subscribed to",
+                            SubscriptionNameBasedOnEventWithNamespace = ruleName,
+                            NamespaceInfo = ns,
+                            SubscribedEventFullName = eventType.FullName
+                        },
+                        BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                        ShouldBeListenedTo = false
                     };
                     sub.RelationShips.Add(new EntityRelationShipInfo
                     {
@@ -187,7 +196,7 @@ namespace NServiceBus.AzureServiceBus
                         Target = new EntityInfo
                         {
                             Namespace = ns,
-                            Path = inputQueuePath,
+                            Path = sanitizedInputQueuePath,
                             Type = EntityType.Queue
                         },
                         Type = EntityRelationShipType.Forward

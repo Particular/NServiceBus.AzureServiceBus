@@ -11,19 +11,30 @@
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_creating_subscription
+    public class When_creating_forwarding_subscription
     {
-        const string topicPath = "topic";
-        static SubscriptionMetadata metadata = new SubscriptionMetadata { Description = "eventname" };
+        const string topicPath = "bundle-x";
+        const string forwardToQueue = "forwardToQueue";
         private const string sqlFilter = "1=1";
+        static SubscriptionMetadata metadata = new ForwardingTopologySubscriptionMetadata
+        {
+            Description = "endpoint blah",
+            NamespaceInfo = new NamespaceInfo(AzureServiceBusConnectionString.Value),
+            SubscribedEventFullName = "event.full.name",
+            SubscriptionNameBasedOnEventWithNamespace = "sha1.of.event.full.name"
+        };
 
         [TestFixtureSetUp]
         public void TopicSetup()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            if (!namespaceManager.TopicExists(topicPath).Result)
+            if (!namespaceManager.TopicExists(topicPath).GetAwaiter().GetResult())
             {
                 namespaceManager.CreateTopic(new TopicDescription(topicPath)).GetAwaiter().GetResult();
+            }
+            if (!namespaceManager.QueueExists(forwardToQueue).GetAwaiter().GetResult())
+            {
+                namespaceManager.CreateQueue(new QueueDescription(forwardToQueue)).GetAwaiter().GetResult();
             }
         }
 
@@ -32,6 +43,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             namespaceManager.DeleteTopic(topicPath).GetAwaiter().GetResult();
+            namespaceManager.DeleteQueue(forwardToQueue).GetAwaiter().GetResult();
         }
 
         [Test]
@@ -40,14 +52,14 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, false);
 
-            const string subscriptionName = "mysubscription1";
+            const string subscriptionName = "endpoint0";
             //make sure there is no leftover from previous test
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             Assert.IsFalse(await namespaceManager.TopicExists(subscriptionName));
         }
@@ -58,9 +70,9 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
-            const string subscriptionName = "sub1";
-            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
+            const string subscriptionName = "endpoint1";
+            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
             Assert.AreEqual(TimeSpan.MaxValue, subscriptionDescription.AutoDeleteOnIdle);
@@ -72,7 +84,7 @@
             Assert.IsFalse(subscriptionDescription.RequiresSession);
             Assert.AreEqual(6, subscriptionDescription.MaxDeliveryCount);
             Assert.IsNull(subscriptionDescription.ForwardDeadLetteredMessagesTo);
-            Assert.IsNull(subscriptionDescription.ForwardTo);
+            Assert.That(subscriptionDescription.ForwardTo, Is.StringEnding(forwardToQueue));
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
         }
@@ -85,17 +97,17 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            const string subscriptionName = "sub2";
+            const string subscriptionName = "endpoint2";
             var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName)
             {
                 LockDuration = TimeSpan.FromMinutes(3)
             };
 
-            extensions.UseDefaultTopology().Resources().Subscriptions().DescriptionFactory((_topicPath, subName, _settings) => subscriptionDescription);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().DescriptionFactory((_topicPath, subName, _settings) => subscriptionDescription);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            var foundDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            var foundDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
             Assert.AreEqual(subscriptionDescription, foundDescription);
@@ -112,14 +124,19 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var autoDeleteTime = TimeSpan.FromDays(1);
-            extensions.UseDefaultTopology().Resources().Subscriptions().AutoDeleteOnIdle(autoDeleteTime);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().AutoDeleteOnIdle(autoDeleteTime);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub3";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint3";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
+            // TODO: remove when ASB bug is fixed
+            if (foundDescription.AutoDeleteOnIdle == TimeSpan.MaxValue)
+            {
+                Assert.Inconclusive("Microsoft ASB bug. Pending response from ASB group: https://www.yammer.com/azureadvisors/#/Threads/show?threadId=654972562");
+            }
             Assert.AreEqual(autoDeleteTime, foundDescription.AutoDeleteOnIdle);
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
@@ -134,12 +151,12 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var timeToLive = TimeSpan.FromDays(10);
-            extensions.UseDefaultTopology().Resources().Subscriptions().DefaultMessageTimeToLive(timeToLive);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().DefaultMessageTimeToLive(timeToLive);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub4";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint4";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
@@ -156,12 +173,12 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseDefaultTopology().Resources().Subscriptions().EnableBatchedOperations(false);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().EnableBatchedOperations(false);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub5";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint5";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
@@ -178,12 +195,12 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseDefaultTopology().Resources().Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub6";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint6";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
@@ -200,12 +217,12 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseDefaultTopology().Resources().Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub7";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint7";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
@@ -223,12 +240,12 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var lockDuration = TimeSpan.FromMinutes(2);
-            extensions.UseDefaultTopology().Resources().Subscriptions().LockDuration(lockDuration);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().LockDuration(lockDuration);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub8";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint8";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
@@ -246,12 +263,12 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             const int deliveryCount = 10;
-            extensions.UseDefaultTopology().Resources().Subscriptions().MaxDeliveryCount(deliveryCount);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().MaxDeliveryCount(deliveryCount);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub9";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint9";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
@@ -268,12 +285,12 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseDefaultTopology().Resources().Subscriptions().RequiresSession(true);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().RequiresSession(true);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub10";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint10";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
@@ -283,58 +300,27 @@
         }
 
         [Test]
-        public async Task Should_properly_set_ForwardTo_on_the_created_entity()
+        public async Task Should_not_apply_ForwardTo_set_via_description_factory()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
-            var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
-
-
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseDefaultTopology().Resources().Subscriptions().ForwardTo(topicToForwardTo.Path);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().ForwardTo("abcdef");
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub11";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
-
-            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
-
-            Assert.That(foundDescription.ForwardTo.EndsWith(topicToForwardTo.Path));
-
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-            await namespaceManager.DeleteTopic(topicToForwardTo.Path);
-        }
-
-        [Test]
-        public async Task Should_properly_set_ForwardTo_on_the_created_entity_that_qualifies_the_condition()
-        {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
-            var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
-
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.UseDefaultTopology().Resources().Subscriptions().ForwardTo(subName => subName == "sub12", topicToForwardTo.Path);
-
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
-
-            const string subscriptionName = "sub12";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint11";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
-            Assert.That(foundDescription.ForwardTo.EndsWith(topicToForwardTo.Path));
+            Assert.That(foundDescription.ForwardTo, Is.Not.EndsWith("abcdef"));
+            Assert.That(foundDescription.ForwardTo, Is.StringEnding(forwardToQueue));
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-            await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
+
 
         [Test]
         public async Task Should_set_forwarding_to_an_explicitly_provided_forwardto()
@@ -345,9 +331,9 @@
             var queueToForwardTo = await queueCreator.Create("forwardto", namespaceManager);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub15";
+            const string subscriptionName = "endpoint15";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, queueToForwardTo.Path);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
@@ -370,12 +356,12 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseDefaultTopology().Resources().Subscriptions().ForwardDeadLetteredMessagesTo(topicToForwardTo.Path);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().ForwardDeadLetteredMessagesTo(topicToForwardTo.Path);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub13";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint13";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
@@ -391,25 +377,25 @@
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
-            var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
+            var notUsedEntity = await topicCreator.Create("topic2forward2", namespaceManager);
 
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseDefaultTopology().Resources().Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "sub14", topicToForwardTo.Path);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "endpoint14", notUsedEntity.Path);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
-            const string subscriptionName = "sub14";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            const string subscriptionName = "endpoint14";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
-            Assert.That(foundDescription.ForwardDeadLetteredMessagesTo.EndsWith(topicToForwardTo.Path));
+            Assert.That(foundDescription.ForwardDeadLetteredMessagesTo.EndsWith(notUsedEntity.Path));
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-            await namespaceManager.DeleteTopic(topicToForwardTo.Path);
+            await namespaceManager.DeleteTopic(notUsedEntity.Path);
         }
 
         [Test]
@@ -425,8 +411,8 @@
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
-            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, filter, namespaceManager);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
+            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, filter, namespaceManager, forwardToQueue);
             var rules = await namespaceManager.GetRules(subscriptionDescription);
             var foundFilter = rules.First().Filter as SqlFilter;
 
@@ -437,55 +423,33 @@
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
         }
 
-        [Test]
-        public async Task Should_store_event_original_name_as_usermetadata()
-        {
-            const string subscriptionName = "sub16";
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
-            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, new SubscriptionMetadata { Description = "very.logn.name.of.an.event.that.would.exceed.subscription.length" }, sqlFilter, namespaceManager);
-
-            Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
-            Assert.AreEqual("very.logn.name.of.an.event.that.would.exceed.subscription.length", subscriptionDescription.UserMetadata);
-
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-        }
-
 
         [Test]
         public async Task Should_be_able_to_update_an_existing_subscription_with_new_property_values()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.CreateTopic(new TopicDescription("sometopic1"));
-            await namespaceManager.CreateSubscription(new SubscriptionDescription("sometopic1", "existingsubscription1"), sqlFilter);
+            await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, "existingendpoint1"), sqlFilter);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Resources().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
             {
-                AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
+                MaxDeliveryCount = 100,
                 EnableDeadLetteringOnMessageExpiration = true,
             });
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
-            await creator.Create("sometopic1", "existingsubscription1", metadata, sqlFilter, namespaceManager);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
+            await creator.Create(topicPath, "existingendpoint1", metadata, sqlFilter, namespaceManager, forwardToQueue);
 
-            var subscriptionDescription = await namespaceManager.GetSubscription("sometopic1", "existingsubscription1");
-            Assert.AreEqual(TimeSpan.FromMinutes(100), subscriptionDescription.AutoDeleteOnIdle);
-
-            //cleanup 
-            await namespaceManager.DeleteTopic("sometopic1");
+            var subscriptionDescription = await namespaceManager.GetSubscription(topicPath, "existingendpoint1");
+            Assert.AreEqual(100, subscriptionDescription.MaxDeliveryCount);
         }
 
         [Test]
         public async Task Should_be_able_to_update_an_existing_subscription_with_new_property_values_without_failing_on_readonly_properties()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.CreateTopic(new TopicDescription("sometopic2"));
-            await namespaceManager.CreateSubscription(new SubscriptionDescription("sometopic2", "existingsubscription2")
+            await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, "existingendpoint2")
             {
                 EnableDeadLetteringOnFilterEvaluationExceptions = true,
                 RequiresSession = true,
@@ -493,17 +457,35 @@
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Resources().Subscriptions().DescriptionFactory((topic, sub, readOnlySettings) => new SubscriptionDescription(topic, sub)
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().DescriptionFactory((topic, sub, readOnlySettings) => new SubscriptionDescription(topic, sub)
             {
                 EnableDeadLetteringOnFilterEvaluationExceptions = false,
                 RequiresSession = false,
             });
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
-            Assert.Throws<ArgumentException>(async () => await creator.Create("sometopic2", "existingsubscription2", metadata, sqlFilter, namespaceManager));
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
+            Assert.Throws<ArgumentException>(async () => await creator.Create(topicPath, "existingendpoint2", metadata, sqlFilter, namespaceManager, forwardToQueue));
+        }
 
-            //cleanup 
-            await namespaceManager.DeleteTopic("sometopic2");
+        [Test]
+        public async Task Should_be_idempotent_when_creating_a_subscription()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
+            {
+                MaxDeliveryCount = 100,
+                EnableDeadLetteringOnMessageExpiration = true,
+            });
+
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
+            await creator.Create(topicPath, "someendpoint", metadata, sqlFilter, namespaceManager, forwardToQueue);
+            await creator.Create(topicPath, "someendpoint", metadata, sqlFilter, namespaceManager, forwardToQueue);
+
+            var rules = await namespaceManager.GetRules(new SubscriptionDescription(topicPath, "someendpoint"));
+            Assert.AreEqual(1, rules.Count());
         }
     }
 }
