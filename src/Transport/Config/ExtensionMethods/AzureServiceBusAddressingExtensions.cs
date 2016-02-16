@@ -27,6 +27,6 @@
         public static AzureServiceBusIndividualizationSettings Individualization(this AzureServiceBusAddressingSettings addressingSettings)
         {
             return new AzureServiceBusIndividualizationSettings(addressingSettings.GetSettings());
-        } 
+        }
     }
 }
