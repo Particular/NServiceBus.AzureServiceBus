@@ -148,8 +148,7 @@
                    || existingDescription.EnableBatchedOperations != newDescription.EnableBatchedOperations
                    || existingDescription.SupportOrdering != newDescription.SupportOrdering
                    || existingDescription.EnableExpress != newDescription.EnableExpress
-                   || existingDescription.ForwardDeadLetteredMessagesTo != newDescription.ForwardDeadLetteredMessagesTo
-                   || existingDescription.ForwardTo != newDescription.ForwardTo;
+                   || existingDescription.ForwardDeadLetteredMessagesTo != newDescription.ForwardDeadLetteredMessagesTo;
         }
     }
 }
