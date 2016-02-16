@@ -378,7 +378,7 @@ namespace NServiceBus.AzureServiceBus
         System.Threading.Tasks.Task<bool> CanManageEntities();
         System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description);
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter);
-        System.Threading.Tasks.Task CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription);
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription);
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription);
         System.Threading.Tasks.Task DeleteQueue(string path);
         System.Threading.Tasks.Task DeleteTopic(string path);
@@ -496,7 +496,7 @@ namespace NServiceBus.AzureServiceBus
         public async System.Threading.Tasks.Task<bool> CanManageEntities() { }
         public System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter) { }
-        public System.Threading.Tasks.Task CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription) { }
+        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription) { }
         public async System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription) { }
         public async System.Threading.Tasks.Task DeleteQueue(string path) { }
         public System.Threading.Tasks.Task DeleteSubscriptionAsync(string topicPath, string subscriptionName) { }
