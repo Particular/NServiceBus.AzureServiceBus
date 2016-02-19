@@ -8,10 +8,10 @@
     using NServiceBus.Settings;
     using NUnit.Framework;
 
-    public class When_subscribing_to_a_derived_polymorphic_event_with_forwarding_topology : NServiceBusAcceptanceTest
+    public class When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology : NServiceBusAcceptanceTest
     {
         [Test]
-        public async Task Event_should_once_only()
+        public async Task Should_handle_each_event_once_only()
         {
             var context = await Scenario.Define<Context>()
                     .WithEndpoint<Publisher>(b => b.When(bus => bus.Publish<DerivedEvent>()))
@@ -20,7 +20,6 @@
                         await session.Subscribe<BaseEvent>();
                         await session.Subscribe<DerivedEvent>();
                     }))
-                    .Done(c => c.SubscriberGotTheDerivedEvent >= 1 && c.SubscriberGotTheBaseEvent >= 1 && c.IsForwardingTopology || !c.IsForwardingTopology)
                     .Run();
 
             if (!context.IsForwardingTopology)
@@ -28,8 +27,8 @@
                 Assert.Inconclusive($"The test is designed for {typeof(ForwardingTopology).Name} only.");
             }
 
-            Assert.That(context.SubscriberGotTheBaseEvent, Is.EqualTo(1), "Should only receive BaseEvent once.");
-            Assert.That(context.SubscriberGotTheDerivedEvent, Is.EqualTo(1), "Should only receive DerivedEvent once.");
+            Assert.That(context.SubscriberGotTheBaseEvent, Is.EqualTo(1), $"Should only receive BaseEvent once, but it was {context.SubscriberGotTheBaseEvent}");
+            Assert.That(context.SubscriberGotTheDerivedEvent, Is.EqualTo(1), $"Should only receive DerivedEvent once, but it was {context.SubscriberGotTheDerivedEvent}");
         }
 
         public class Context : ScenarioContext

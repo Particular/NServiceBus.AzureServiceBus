@@ -15,6 +15,7 @@ namespace NServiceBus.AzureServiceBus
 
         readonly ConcurrentDictionary<Type, TopologySection> subscriptions = new ConcurrentDictionary<Type, TopologySection>();
         readonly List<EntityInfo> topics = new List<EntityInfo>();
+        readonly Random randomGenerator = new Random();
 
         public ForwardingTopologySectionManager(SettingsHolder settings, ITransportPartsContainer container)
         {
@@ -100,9 +101,15 @@ namespace NServiceBus.AzureServiceBus
 
             return new TopologySection()
             {
-                Entities = topics,
+                Entities = SelectSingleRandomTopicFromBundle(topics),
                 Namespaces = namespaces
             };
+        }
+
+        private IEnumerable<EntityInfo> SelectSingleRandomTopicFromBundle(List<EntityInfo> entityInfos)
+        {
+            var index = randomGenerator.Next(1, entityInfos.Count);
+            yield return entityInfos[index];
         }
 
         public TopologySection DetermineSendDestination(string destination)
