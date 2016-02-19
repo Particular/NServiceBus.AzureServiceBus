@@ -65,7 +65,7 @@
                 }
                 else
                 {
-                    logger.InfoFormat("'{0}' is set to false, skipping the creation of topic '{0}'", WellKnownConfigurationKeys.Core.CreateTopology, topicDescription.Path);
+                    logger.InfoFormat("'{0}' is set to false, skipping the creation of topic '{1}'", WellKnownConfigurationKeys.Core.CreateTopology, topicDescription.Path);
                 }
             }
             catch (MessagingEntityAlreadyExistsException)

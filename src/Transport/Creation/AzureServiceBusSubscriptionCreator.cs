@@ -75,7 +75,7 @@
                 }
                 else
                 {
-                    logger.InfoFormat("'{0}' is set to false, skipping the creation of subscription '{0}' aka '{1}'", WellKnownConfigurationKeys.Core.CreateTopology, subscriptionDescription.Name, subscriptionDescription.UserMetadata);
+                    logger.InfoFormat("'{0}' is set to false, skipping the creation of subscription '{1}' aka '{2}'", WellKnownConfigurationKeys.Core.CreateTopology, subscriptionDescription.Name, subscriptionDescription.UserMetadata);
                 }
             }
             catch (MessagingEntityAlreadyExistsException)
