@@ -1,6 +1,5 @@
 ﻿namespace NServiceBus
 {
-    using System.Collections.Generic;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Configuration.AdvanceExtensibility;
@@ -23,20 +22,16 @@
             return this;
         }
 
-        public AzureServiceBusNamespacePartitioningSettings AddNamespace(string @namespace)
+        public AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString)
         {
-            List<string> namespaces;
-            if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces))
+            NamespacesDefinition namespaces;
+            if (!_settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces))
             {
-                namespaces = _settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            }
-            else
-            {
-                namespaces = new List<string>();
+                namespaces = new NamespacesDefinition();
                 _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
             }
             
-            namespaces.Add(@namespace);
+            namespaces.Add(name, connectionString);
             return this;
         }
     }

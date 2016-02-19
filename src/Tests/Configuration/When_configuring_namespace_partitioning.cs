@@ -25,14 +25,16 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Should_be_able_to_add_a_namespace()
         {
+            var connectionString = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            var name = "namespace1";
+
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(name, connectionString);
 
-            var @namespace = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
 
-            var partitioningSettings = extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(@namespace);
-
-            Assert.Contains(@namespace, partitioningSettings.GetSettings().Get<List<String>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces));
+            CollectionAssert.Contains(namespacesDefinition, new NamespaceDefinition(name, connectionString));
         }
 
         class MyNamespacePartitioningStrategy : INamespacePartitioningStrategy

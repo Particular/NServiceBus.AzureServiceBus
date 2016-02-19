@@ -7,27 +7,19 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
     public class ReplicatedNamespacePartitioningStrategy : INamespacePartitioningStrategy
     {
-        readonly IReadOnlyCollection<string> _connectionstrings;
+        private readonly NamespacesDefinition _namespaces;
 
         public ReplicatedNamespacePartitioningStrategy(ReadOnlySettings settings)
         {
-            List<string> connectionstrings;
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out connectionstrings))
-            {
-                connectionstrings = new List<string>();
-            }
-
-            if (connectionstrings.Count <= 1)
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out _namespaces) || _namespaces.Count <= 1)
             {
                 throw new ConfigurationErrorsException("The 'Replicated' namespace partitioning strategy requires more than one namespace, please configure additional connection strings");
             }
-            
-            _connectionstrings = connectionstrings;
         }
 
         public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
-            return _connectionstrings.Select(connectionstring => new NamespaceInfo(connectionstring, NamespaceMode.Active));
+            return _namespaces.Select(x => new NamespaceInfo(x.ConnectionString, NamespaceMode.Active));
         }
     }
 }

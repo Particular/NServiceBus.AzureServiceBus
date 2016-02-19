@@ -1,7 +1,5 @@
 ﻿namespace NServiceBus
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -22,13 +20,10 @@
             return new AzureServiceBusTransportInfrastructure(topology, settings);
         }
 
-        private void RegisterConnectionStringAsNamespace(string connectionstring, ReadOnlySettings settings)
+        private void RegisterConnectionStringAsNamespace(string connectionString, ReadOnlySettings settings)
         {
-            var namespaces = settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            if (namespaces.All(n => n != connectionstring))
-            {
-                namespaces.Add(connectionstring);
-            }
+            var namespaces = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            namespaces.AddDefault(connectionString);
         }
 
         public override bool RequiresConnectionString { get; } = true;

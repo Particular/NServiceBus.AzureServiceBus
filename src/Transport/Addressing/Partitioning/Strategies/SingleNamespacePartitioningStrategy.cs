@@ -7,32 +7,20 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
     public class SingleNamespacePartitioningStrategy : INamespacePartitioningStrategy
     {
-        readonly string _connectionstring;
+        private readonly NamespacesDefinition _namespaces;
 
         public SingleNamespacePartitioningStrategy(ReadOnlySettings settings)
         {
-            List<string> connectionstrings;
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out connectionstrings))
-            {
-                connectionstrings = new List<string>();
-            }
-
-            if (connectionstrings.Count == 0)
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out _namespaces) || _namespaces.Count != 1)
             {
                 throw new ConfigurationErrorsException("The 'Single' namespace partitioning strategy requires exactly one namespace, please configure the connection string to your azure servicebus namespace");
             }
-
-            if (connectionstrings.Count > 1)
-            {
-                throw new ConfigurationErrorsException("The 'Single' namespace partitioning strategy does not support multiple namespaces");
-            }
-
-            _connectionstring = connectionstrings.First();
         }
 
         public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
-            yield return new NamespaceInfo(_connectionstring, NamespaceMode.Active);
+            var definition = _namespaces.First();
+            yield return new NamespaceInfo(definition.ConnectionString, NamespaceMode.Active);
         }
     }
 }
