@@ -479,6 +479,15 @@ namespace NServiceBus.AzureServiceBus
         public System.Threading.Tasks.Task Send(Microsoft.ServiceBus.Messaging.BrokeredMessage message) { }
         public System.Threading.Tasks.Task SendBatch(System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> messages) { }
     }
+    public class NamespaceDefinition : System.IEquatable<NServiceBus.AzureServiceBus.NamespaceDefinition>
+    {
+        public NamespaceDefinition(string name, string connectionString) { }
+        public string ConnectionString { get; }
+        public string Name { get; }
+        public bool Equals(NServiceBus.AzureServiceBus.NamespaceDefinition other) { }
+        public override bool Equals(object obj) { }
+        public override int GetHashCode() { }
+    }
     public class NamespaceInfo
     {
         public NamespaceInfo(string connectionString, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
@@ -516,6 +525,16 @@ namespace NServiceBus.AzureServiceBus
     {
         Active = 0,
         Passive = 1,
+    }
+    public class NamespacesDefinition : System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.NamespaceDefinition>, System.Collections.IEnumerable
+    {
+        public NamespacesDefinition() { }
+        public int Count { get; }
+        public void Add(string name, string connectionString) { }
+        public void Add(string connectionString) { }
+        public void AddDefault(string connectionString) { }
+        public string GetConnectionString(string name) { }
+        public System.Collections.Generic.IEnumerator<NServiceBus.AzureServiceBus.NamespaceDefinition> GetEnumerator() { }
     }
     public class NoTransaction : NServiceBus.Transports.TransportTransaction
     {
