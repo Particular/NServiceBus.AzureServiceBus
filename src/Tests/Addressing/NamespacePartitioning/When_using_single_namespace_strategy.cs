@@ -11,7 +11,10 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_using_single_namespace_strategy
     {
         private static readonly string ConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private static readonly string Other = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        private static readonly string OtherConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+
+        private static readonly string Name = "namespace1";
+        private static readonly string OtherName = "namespace2";
 
         private SingleNamespacePartitioningStrategy _strategy;
 
@@ -20,7 +23,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace1", ConnectionString);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, ConnectionString);
 
             _strategy = new SingleNamespacePartitioningStrategy(settings);
         }
@@ -54,7 +57,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
 
-            Assert.AreEqual(new NamespaceInfo(ConnectionString, NamespaceMode.Active), namespaces.First());
+            Assert.AreEqual(new NamespaceInfo(Name, ConnectionString, NamespaceMode.Active), namespaces.First());
         }
 
         [Test]
@@ -70,8 +73,8 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace1", ConnectionString);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace2", Other);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, ConnectionString);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
 
             Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioningStrategy(settings));
         }

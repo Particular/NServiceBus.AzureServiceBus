@@ -27,14 +27,14 @@
             if (partitioningIntent == PartitioningIntent.Sending)
             {
                 yield return Mode == FailOverMode.Primary
-                ? new NamespaceInfo(primary.ConnectionString, NamespaceMode.Active)
-                : new NamespaceInfo(secondary.ConnectionString, NamespaceMode.Active);
+                ? new NamespaceInfo(primary.Name, primary.ConnectionString, NamespaceMode.Active)
+                : new NamespaceInfo(secondary.Name, secondary.ConnectionString, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Creating || partitioningIntent == PartitioningIntent.Receiving)
             {
-                yield return new NamespaceInfo(primary.ConnectionString, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
-                yield return new NamespaceInfo(secondary.ConnectionString, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
+                yield return new NamespaceInfo(primary.Name, primary.ConnectionString, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
+                yield return new NamespaceInfo(secondary.Name, secondary.ConnectionString, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
             }
         }
     }

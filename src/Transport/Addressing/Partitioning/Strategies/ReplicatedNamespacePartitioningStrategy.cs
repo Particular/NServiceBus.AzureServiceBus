@@ -19,7 +19,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
         public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
-            return _namespaces.Select(x => new NamespaceInfo(x.ConnectionString, NamespaceMode.Active));
+            return _namespaces.Select(x => new NamespaceInfo(x.Name, x.ConnectionString, NamespaceMode.Active));
         }
     }
 }

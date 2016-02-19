@@ -34,7 +34,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
-            notifier.Initialize(new EntityInfo { Path =  "myqueue", Namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value)}, (message, context) => Task.FromResult(true), null, 10);
+            notifier.Initialize(new EntityInfo { Path =  "myqueue", Namespace = new NamespaceInfo("name", AzureServiceBusConnectionString.Value)}, (message, context) => Task.FromResult(true), null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -66,7 +66,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
-            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value) }, (message, context) => Task.FromResult(true), null, 10);
+            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new NamespaceInfo("name", AzureServiceBusConnectionString.Value) }, (message, context) => Task.FromResult(true), null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -112,7 +112,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             Exception ex = null;
             var received = false;
 
-            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new NamespaceInfo(AzureServiceBusConnectionString.Value) }, (message, context) =>
+            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new NamespaceInfo("name", AzureServiceBusConnectionString.Value) }, (message, context) =>
             {
                 received = true;
 

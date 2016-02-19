@@ -488,12 +488,13 @@ namespace NServiceBus.AzureServiceBus
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
     }
-    public class NamespaceInfo
+    public class NamespaceInfo : System.IEquatable<NServiceBus.AzureServiceBus.NamespaceInfo>
     {
-        public NamespaceInfo(string connectionString, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
-        public string ConnectionString { get; set; }
-        public NServiceBus.AzureServiceBus.NamespaceMode Mode { get; set; }
-        protected bool Equals(NServiceBus.AzureServiceBus.NamespaceInfo other) { }
+        public NamespaceInfo(string name, string connectionString, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
+        public string ConnectionString { get; }
+        public NServiceBus.AzureServiceBus.NamespaceMode Mode { get; }
+        public string Name { get; }
+        public bool Equals(NServiceBus.AzureServiceBus.NamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
     }

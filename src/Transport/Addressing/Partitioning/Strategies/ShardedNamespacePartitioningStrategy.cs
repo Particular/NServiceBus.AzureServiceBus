@@ -35,16 +35,16 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
             if (partitioningIntent == PartitioningIntent.Sending)
             {
-                var namespaceDefinition = _namespaces.ElementAt(index);
-                yield return new NamespaceInfo(namespaceDefinition.ConnectionString, NamespaceMode.Active);
+                var @namespace = _namespaces.ElementAt(index);
+                yield return new NamespaceInfo(@namespace.Name, @namespace.ConnectionString, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Creating || partitioningIntent == PartitioningIntent.Receiving)
             {
                 for (var i = 0; i < _namespaces.Count; i++)
                 {
-                    var namespaceDefinition = _namespaces.ElementAt(i);
-                    yield return new NamespaceInfo(namespaceDefinition.ConnectionString, i == index ? NamespaceMode.Active : NamespaceMode.Passive);
+                    var @namespace = _namespaces.ElementAt(i);
+                    yield return new NamespaceInfo(@namespace.Name, @namespace.ConnectionString, i == index ? NamespaceMode.Active : NamespaceMode.Passive);
                 }
             }
         }

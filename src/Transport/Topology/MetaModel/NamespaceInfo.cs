@@ -1,45 +1,36 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
-    public class NamespaceInfo
+    using System;
+
+    // NOTE: Can namespaces switch mode?
+    public class NamespaceInfo : IEquatable<NamespaceInfo>
     {
-        public NamespaceInfo(string connectionString, NamespaceMode mode = NamespaceMode.Active)
+        private readonly NamespaceDefinition _definition;
+
+        public NamespaceInfo(string name, string connectionString, NamespaceMode mode = NamespaceMode.Active)
         {
-            ConnectionString = connectionString;
+            _definition = new NamespaceDefinition(name, connectionString);
             Mode = mode;
         }
 
-        public string ConnectionString { get; set; }
+        public string Name => _definition.Name;
+        public string ConnectionString => _definition.ConnectionString;
+        public NamespaceMode Mode { get; }
 
-        public NamespaceMode Mode { get; set; }
-
-        protected bool Equals(NamespaceInfo other)
+        public bool Equals(NamespaceInfo other)
         {
-            return string.Equals(ConnectionString, other.ConnectionString); // && Mode == other.Mode; // namespaces can switch mode, so should not be included in the equality check
+            return other != null && _definition.Equals(other._definition);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-            return Equals((NamespaceInfo)obj);
+            var target = obj as NamespaceInfo;
+            return Equals(target);
         }
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return ((ConnectionString != null ? ConnectionString.GetHashCode() : 0) * 397); // ^ (int)Mode; // namespaces can switch mode, so should not be included in the equality check
-            }
+            return _definition.GetHashCode(); 
         }
 
         public static bool operator ==(NamespaceInfo left, NamespaceInfo right)

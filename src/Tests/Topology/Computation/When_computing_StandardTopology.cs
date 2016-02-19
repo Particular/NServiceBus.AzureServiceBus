@@ -9,6 +9,9 @@ namespace NServiceBus.AzureServiceBus.Tests
     [Category("AzureServiceBus")]
     public class When_computing_StandardTopology
     {
+        private static readonly string Connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        private static readonly string Name = "name";
+
         [Test]
         public void Determines_the_namespace_from_partitioning_strategy()
         {
@@ -17,14 +20,13 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace1", connectionstring);
+            
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
-            var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
+            var namespaceInfo = new NamespaceInfo(Name, Connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
         }
 
@@ -38,12 +40,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace1", connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
-            Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == connectionstring));
+            Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == Connectionstring));
         }
 
         [Test]
@@ -56,12 +57,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace1", connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
-            Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales.events" && ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == connectionstring ));
+            Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales.events" && ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring));
         }
 
         private static TopologySection DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)

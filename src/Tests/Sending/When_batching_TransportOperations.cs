@@ -132,7 +132,7 @@
         {
             return new TopologySection
             {
-                Namespaces = new List<NamespaceInfo> { new NamespaceInfo("") },
+                Namespaces = new List<NamespaceInfo> { new NamespaceInfo("name", "connectionString") },
                 Entities = new List<EntityInfo> { new EntityInfo() }
             };
         }
@@ -141,7 +141,7 @@
         {
             return new TopologySection
             {
-                Namespaces = new List<NamespaceInfo> { new NamespaceInfo("") },
+                Namespaces = new List<NamespaceInfo> { new NamespaceInfo("name", "connectionString") },
                 Entities = new List<EntityInfo> { new EntityInfo() }
             };
 

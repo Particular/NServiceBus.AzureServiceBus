@@ -19,7 +19,7 @@
         static SubscriptionMetadata metadata = new ForwardingTopologySubscriptionMetadata
         {
             Description = "endpoint blah",
-            NamespaceInfo = new NamespaceInfo(AzureServiceBusConnectionString.Value),
+            NamespaceInfo = new NamespaceInfo("name", AzureServiceBusConnectionString.Value),
             SubscribedEventFullName = "event.full.name",
             SubscriptionNameBasedOnEventWithNamespace = "sha1.of.event.full.name"
         };
