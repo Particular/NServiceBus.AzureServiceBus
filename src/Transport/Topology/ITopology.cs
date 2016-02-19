@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBus
         Func<IPushMessages> GetMessagePumpFactory();
         Func<IDispatchMessages> GetDispatcherFactory();
         Task<StartupCheckResult> RunPreStartupChecks();
-        IManageSubscriptions GetSubscriptionManager();
+        Func<IManageSubscriptions> GetSubscriptionManagerFactory();
         OutboundRoutingPolicy GetOutboundRoutingPolicy();
         bool HasNativePubSubSupport { get; }
         bool HasSupportForCentralizedPubSub { get;}

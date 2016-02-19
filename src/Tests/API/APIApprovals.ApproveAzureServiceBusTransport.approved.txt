@@ -259,7 +259,7 @@ namespace NServiceBus.AzureServiceBus
         public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
         public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
         public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
-        public NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager() { }
+        public System.Func<NServiceBus.Transports.IManageSubscriptions> GetSubscriptionManagerFactory() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
         public System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
     }
@@ -446,7 +446,7 @@ namespace NServiceBus.AzureServiceBus
         System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory();
         NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy();
         System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory();
-        NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager();
+        System.Func<NServiceBus.Transports.IManageSubscriptions> GetSubscriptionManagerFactory();
         void Initialize(NServiceBus.Settings.SettingsHolder settings);
         System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks();
     }
@@ -544,7 +544,7 @@ namespace NServiceBus.AzureServiceBus
         public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
         public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
         public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
-        public NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager() { }
+        public System.Func<NServiceBus.Transports.IManageSubscriptions> GetSubscriptionManagerFactory() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
         public System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
     }
@@ -792,18 +792,8 @@ namespace NServiceBus
     {
         public AzureServiceBusTransport() { }
         public override string ExampleConnectionStringForErrorMessage { get; }
-        public override NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance, NServiceBus.Settings.ReadOnlySettings settings) { }
-        protected override NServiceBus.Transports.TransportReceivingConfigurationResult ConfigureForReceiving(NServiceBus.Transports.TransportReceivingConfigurationContext context) { }
-        protected override NServiceBus.Transports.TransportSendingConfigurationResult ConfigureForSending(NServiceBus.Transports.TransportSendingConfigurationContext context) { }
-        public override NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public override NServiceBus.Transports.IManageSubscriptions GetSubscriptionManager() { }
-        public override System.Collections.Generic.IEnumerable<System.Type> GetSupportedDeliveryConstraints() { }
-        public override NServiceBus.TransportTransactionMode GetSupportedTransactionMode() { }
-        public override string ToTransportAddress(NServiceBus.LogicalAddress logicalAddress) { }
-    }
-    public class AzureServiceBusTransportConfigurator : NServiceBus.Features.Feature
-    {
-        protected override void Setup(NServiceBus.Features.FeatureConfigurationContext context) { }
+        public override bool RequiresConnectionString { get; }
+        protected override NServiceBus.Transports.TransportInfrastructure Initialize(NServiceBus.Settings.SettingsHolder settings, string connectionString) { }
     }
     public class static AzureServiceBusTransportExtensions
     {
@@ -818,6 +808,18 @@ namespace NServiceBus
             where T : NServiceBus.AzureServiceBus.ITopology { }
         public static NServiceBus.AzureServiceBusTopologySettings UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, T topology)
             where T : NServiceBus.AzureServiceBus.ITopology { }
+    }
+    public class AzureServiceBusTransportInfrastructure : NServiceBus.Transports.TransportInfrastructure
+    {
+        public AzureServiceBusTransportInfrastructure(NServiceBus.AzureServiceBus.ITopology topology, NServiceBus.Settings.SettingsHolder settings) { }
+        public override System.Collections.Generic.IEnumerable<System.Type> DeliveryConstraints { get; }
+        public override NServiceBus.Transports.OutboundRoutingPolicy OutboundRoutingPolicy { get; }
+        public override NServiceBus.TransportTransactionMode TransactionMode { get; }
+        public override NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance) { }
+        public override NServiceBus.Transports.TransportReceiveInfrastructure ConfigureReceiveInfrastructure() { }
+        public override NServiceBus.Transports.TransportSendInfrastructure ConfigureSendInfrastructure() { }
+        public override NServiceBus.Transports.TransportSubscriptionInfrastructure ConfigureSubscriptionInfrastructure() { }
+        public override string ToTransportAddress(NServiceBus.LogicalAddress logicalAddress) { }
     }
     public class AzureServiceBusValidationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {

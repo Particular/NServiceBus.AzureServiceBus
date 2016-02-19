@@ -3,12 +3,22 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
+using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 using NServiceBus.AzureServiceBus;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
 
 public class ConfigureAzureServiceBusTransport : IConfigureTestExecution
 {
-    public Task Configure(BusConfiguration config, IDictionary<string, string> settings)
+    public IEnumerable<Type> UnsupportedScenarioDescriptorTypes { get; } = new[]
+    {
+        typeof(AllDtcTransports),
+        typeof(AllTransportsWithMessageDrivenPubSub),
+        typeof(AllTransportsWithoutNativeDeferral),
+        typeof(AllNativeMultiQueueTransactionTransports)
+        //typeof(AllNativeMultiQueueTransactionTransports)
+    };
+
+    public Task Configure(EndpointConfiguration config, IDictionary<string, string> settings)
     {
         var connectionString = settings["Transport.ConnectionString"];
         var topology = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology", EnvironmentVariableTarget.User);

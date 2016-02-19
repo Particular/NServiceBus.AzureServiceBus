@@ -40,7 +40,7 @@
 
             // perform the test
             var dispatcher = new Dispatcher(router, new FakeBatcher());
-            await dispatcher.Dispatch(new TransportOperations(new List<MulticastTransportOperation>(), new List<UnicastTransportOperation>()), new ContextBag());
+            await dispatcher.Dispatch(new TransportOperations(), new ContextBag());
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -76,7 +76,7 @@
             var dispatcher = new Dispatcher(router, new FakeBatcher());
 
             // validate
-            Assert.That(async () => await dispatcher.Dispatch(new TransportOperations(new List<MulticastTransportOperation>(), new List<UnicastTransportOperation>()), new ContextBag()), Throws.Exception);
+            Assert.That(async () => await dispatcher.Dispatch(new TransportOperations(), new ContextBag()), Throws.Exception);
         }
 
 

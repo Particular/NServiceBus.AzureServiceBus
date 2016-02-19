@@ -93,7 +93,7 @@ namespace NServiceBus.AzureServiceBus
         {
             return () => container.Resolve<ICreateQueues>();
         }
-
+        
         public Func<IPushMessages> GetMessagePumpFactory()
         {
             return () =>
@@ -108,16 +108,16 @@ namespace NServiceBus.AzureServiceBus
             return () => container.Resolve<IDispatchMessages>();
         }
 
+        public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
+        {
+            return () => container.Resolve<IManageSubscriptions>();
+        }
+
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
             var check = new ManageRightsCheck(this.container);
 
             return check.Run();
-        }
-
-        public IManageSubscriptions GetSubscriptionManager()
-        {
-            return container.Resolve<IManageSubscriptions>();
         }
 
         public OutboundRoutingPolicy GetOutboundRoutingPolicy()
