@@ -76,6 +76,8 @@ namespace NServiceBus.AzureServiceBus
 
             public static class Addressing
             {
+                public const string UseLogicalNamespaceName = "AzureServiceBus.Settings.Topology.Addressing.UseLogicalNamespaceName";
+
                 public static class Partitioning
                 {
                     public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Partitioning.Strategy";
