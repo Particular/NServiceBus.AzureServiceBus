@@ -16,9 +16,9 @@ namespace NServiceBus.AzureServiceBus
         }
 
 
-        public async Task<IMessageSender> Create(string entitypath, string viaEntityPath, string connectionstring)
+        public async Task<IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName)
         {
-            var factory = _factories.Get(connectionstring);
+            var factory = _factories.Get(namespaceName);
 
             var sender = viaEntityPath != null 
                 ? await factory.CreateMessageSender(entitypath, viaEntityPath).ConfigureAwait(false)

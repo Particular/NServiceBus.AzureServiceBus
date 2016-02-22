@@ -15,9 +15,11 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
 
             // setup the infrastructure
-            var namespaceManagerCreator = new NamespaceManagerCreator();
+            var namespaceManagerCreator = new NamespaceManagerCreator(settings);
             var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
@@ -25,11 +27,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             var creator = new AzureServiceBusQueueCreator(settings);
 
             // create the queue
-            var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceManagerLifeCycleManager.Get("default");
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var sender = await messageSenderCreator.Create("myqueue", null, AzureServiceBusConnectionString.Value);
+            var sender = await messageSenderCreator.Create("myqueue", null, "default");
             await sender.Send(new BrokeredMessage());
 
             //validate

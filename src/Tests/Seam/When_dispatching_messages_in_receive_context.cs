@@ -43,7 +43,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // create the destination queue
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
-            var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the test
@@ -78,7 +78,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to local queue
             var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage {MessageId = "id-incoming"});
 
             await completed.WaitOne();
@@ -121,7 +121,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // create the destination queue
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
-            var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the test
@@ -163,7 +163,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to local queue
             var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage());
 
             await errored.WaitOne();
@@ -213,7 +213,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // create the destination queue
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
-            var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the test
@@ -248,7 +248,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to local queue
             var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage
             {
                 MessageId = "id-init"
@@ -296,7 +296,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // create the destination queue
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
-            var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the test
@@ -339,7 +339,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to local queue
             var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage());
 
             await errored.WaitOne();
@@ -391,7 +391,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // create the destination queue
             var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
             var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
-            var namespaceManager = namespaceLifeCycle.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the test
@@ -441,7 +441,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // send message to local queue
             var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, AzureServiceBusConnectionString.Value);
+            var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage());
 
             await retried.WaitOne();
@@ -462,7 +462,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
             var topology = new StandardTopology(container);
             topology.Initialize(settings);

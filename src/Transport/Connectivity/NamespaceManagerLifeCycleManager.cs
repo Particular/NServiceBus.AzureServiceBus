@@ -12,9 +12,9 @@ namespace NServiceBus.AzureServiceBus
             this._factory = factory;
         }
 
-        public INamespaceManager Get(string @namespace)
+        public INamespaceManager Get(string namespaceName)
         {
-            return namespaceManagers.GetOrAdd(@namespace, s => _factory.Create(s));
+            return namespaceManagers.GetOrAdd(namespaceName, s => _factory.Create(s));
         }
 
     }

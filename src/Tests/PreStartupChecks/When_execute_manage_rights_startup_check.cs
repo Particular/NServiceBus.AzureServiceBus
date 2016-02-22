@@ -104,9 +104,9 @@
             var falseNamespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => falseNamespaceManager.CanManageEntities()).Returns(Task.FromResult(false));
             var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycle>();
-            A.CallTo(() => manageNamespaceLifeCycle.Get("connectionString1")).Returns(trueNamespaceManager);
-            A.CallTo(() => manageNamespaceLifeCycle.Get("connectionString2")).Returns(falseNamespaceManager);
-            A.CallTo(() => manageNamespaceLifeCycle.Get("connectionString3")).Returns(falseNamespaceManager);
+            A.CallTo(() => manageNamespaceLifeCycle.Get("name1")).Returns(trueNamespaceManager);
+            A.CallTo(() => manageNamespaceLifeCycle.Get("name2")).Returns(falseNamespaceManager);
+            A.CallTo(() => manageNamespaceLifeCycle.Get("name3")).Returns(falseNamespaceManager);
             container.Register<IManageNamespaceManagerLifeCycle>(() => manageNamespaceLifeCycle);
 
             var check = new ManageRightsCheck(container);

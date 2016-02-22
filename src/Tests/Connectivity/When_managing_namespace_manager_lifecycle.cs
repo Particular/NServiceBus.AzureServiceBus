@@ -43,7 +43,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             public bool HasBeenInvoked;
             public int InvocationCount = 0;
 
-            public INamespaceManager Create(string connectionstring)
+            public INamespaceManager Create(string namespaceName)
             {
                 HasBeenInvoked = true;
                 InvocationCount++;

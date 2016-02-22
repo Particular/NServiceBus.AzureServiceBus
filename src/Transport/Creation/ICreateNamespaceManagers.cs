@@ -2,6 +2,6 @@ namespace NServiceBus.AzureServiceBus
 {
     public interface ICreateNamespaceManagers
     {
-        INamespaceManager Create(string connectionstring);
+        INamespaceManager Create(string namespaceName);
     }
 }

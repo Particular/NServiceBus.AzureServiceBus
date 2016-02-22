@@ -2,6 +2,6 @@ namespace NServiceBus.AzureServiceBus
 {
     public interface IManageMessageReceiverLifeCycle
     {
-        IMessageReceiver Get(string entitypath, string connectionstring);
+        IMessageReceiver Get(string entitypath, string namespaceName);
     }
 }

@@ -16,7 +16,7 @@ namespace NServiceBus.AzureServiceBus
             this._numberOfSendersPerEntity = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
         }
 
-        public IMessageSender Get(string entitypath, string viaEntityPath, string connectionstring)
+        public IMessageSender Get(string entitypath, string viaEntityPath, string namespaceName)
         {
             var buffer = MessageSenders.GetOrAdd(entitypath + viaEntityPath, s =>
             {
@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus
                     var e = new EntityClientEntry();
                     lock (e.Mutex)
                     {
-                        e.ClientEntity = _senderFactory.Create(entitypath, viaEntityPath, connectionstring).Result;
+                        e.ClientEntity = _senderFactory.Create(entitypath, viaEntityPath, namespaceName).Result;
                     }
                     b.Put(e);
                 }
@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus
                 {
                     if (entry.ClientEntity.IsClosed)
                     {
-                        entry.ClientEntity = _senderFactory.Create(entitypath, viaEntityPath, connectionstring).Result;
+                        entry.ClientEntity = _senderFactory.Create(entitypath, viaEntityPath, namespaceName).Result;
                     }
                 }
             }

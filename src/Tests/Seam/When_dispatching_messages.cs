@@ -22,9 +22,11 @@
 
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
 
             // setup the infrastructure
-            var namespaceManagerCreator = new NamespaceManagerCreator();
+            var namespaceManagerCreator = new NamespaceManagerCreator(settings);
             var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
@@ -34,7 +36,7 @@
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceManagerLifeCycleManager.Get("default");
             await creator.Create("myqueue", namespaceManager);
             await creator.Create("myqueue2", namespaceManager);
 
@@ -57,9 +59,11 @@
 
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
 
             // setup the infrastructure
-            var namespaceManagerCreator = new NamespaceManagerCreator();
+            var namespaceManagerCreator = new NamespaceManagerCreator(settings);
             var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
@@ -69,7 +73,7 @@
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceManagerLifeCycleManager.Get("default");
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
@@ -86,7 +90,7 @@
             {
                 // we don't care about incoming operations as we'll fake batcher and return pre-canned batches
 
-                var @namespace = new NamespaceInfo("name", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+                var @namespace = new NamespaceInfo("default", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
 

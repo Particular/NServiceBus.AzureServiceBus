@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus.Tests
 {
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -10,10 +11,14 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Creates_new_namespace_managers()
         {
-            var creator = new NamespaceManagerCreator();
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
 
-            var first = creator.Create(AzureServiceBusConnectionString.Value);
-            var second = creator.Create(AzureServiceBusConnectionString.Value);
+            var creator = new NamespaceManagerCreator(settings);
+
+            var first = creator.Create("default");
+            var second = creator.Create("default");
 
             Assert.IsInstanceOf<INamespaceManager>(first);
             Assert.IsInstanceOf<INamespaceManager>(second);

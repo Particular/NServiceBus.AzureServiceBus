@@ -27,7 +27,7 @@ namespace NServiceBus.AzureServiceBus
             var namespaces = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             foreach (var @namespace in namespaces)
             {
-                var namespaceManager = manageNamespaceManagerLifeCycle.Get(@namespace.ConnectionString);
+                var namespaceManager = manageNamespaceManagerLifeCycle.Get(@namespace.Name);
                 var canManageEntities = await namespaceManager.CanManageEntities().ConfigureAwait(false);
 
                 if (!canManageEntities)

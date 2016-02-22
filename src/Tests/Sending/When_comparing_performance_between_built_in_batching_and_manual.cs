@@ -19,6 +19,8 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -29,7 +31,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 .BatchFlushInterval(TimeSpan.FromMilliseconds(100));
 
             // setup the infrastructure
-            var namespaceManagerCreator = new NamespaceManagerCreator();
+            var namespaceManagerCreator = new NamespaceManagerCreator(settings);
             var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
@@ -38,7 +40,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var creator = new AzureServiceBusQueueCreator(settings);
 
             // create the queue
-            var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceManagerLifeCycleManager.Get("default");
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
@@ -52,7 +54,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 for (var i = 0; i < 1000; i++)
                 {
-                    var sender = entityLifecycleManager.Get("myqueue", null, AzureServiceBusConnectionString.Value);
+                    var sender = entityLifecycleManager.Get("myqueue", null, "default");
                     tasks.Add(sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
 
                     counter++;
@@ -77,6 +79,8 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -87,7 +91,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 .BatchFlushInterval(TimeSpan.FromMilliseconds(0)); // turns of native batching
 
             // setup the infrastructure
-            var namespaceManagerCreator = new NamespaceManagerCreator();
+            var namespaceManagerCreator = new NamespaceManagerCreator(settings);
             var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
@@ -96,7 +100,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var creator = new AzureServiceBusQueueCreator(settings);
 
             // create the queue
-            var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceManagerLifeCycleManager.Get("default");
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
@@ -117,7 +121,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     batch.Add(new BrokeredMessage());
                     counter++;
                 }
-                var sender = entityLifecycleManager.Get("myqueue", null, AzureServiceBusConnectionString.Value);
+                var sender = entityLifecycleManager.Get("myqueue", null, "default");
                 tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatch(batch), s => s.SendBatch(batch.Select(x => x.Clone())), TimeSpan.FromSeconds(10), 5));
             }
             await Task.WhenAll(tasks);

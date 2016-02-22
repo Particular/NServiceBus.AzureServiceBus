@@ -313,19 +313,19 @@ namespace NServiceBus.AzureServiceBus
     }
     public interface ICreateMessageReceivers
     {
-        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageReceiver> Create(string entitypath, string connectionstring);
+        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageReceiver> Create(string entitypath, string namespaceName);
     }
     public interface ICreateMessageSenders
     {
-        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageSender> Create(string entitypath, string viaEntityPath, string connectionstring);
+        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName);
     }
     public interface ICreateMessagingFactories
     {
-        NServiceBus.AzureServiceBus.IMessagingFactory Create(string connectionstring);
+        NServiceBus.AzureServiceBus.IMessagingFactory Create(string namespaceName);
     }
     public interface ICreateNamespaceManagers
     {
-        NServiceBus.AzureServiceBus.INamespaceManager Create(string connectionstring);
+        NServiceBus.AzureServiceBus.INamespaceManager Create(string namespaceName);
     }
     public interface ICreateTopology
     {
@@ -337,20 +337,20 @@ namespace NServiceBus.AzureServiceBus
     }
     public interface IManageMessageReceiverLifeCycle
     {
-        NServiceBus.AzureServiceBus.IMessageReceiver Get(string entitypath, string connectionstring);
+        NServiceBus.AzureServiceBus.IMessageReceiver Get(string entitypath, string namespaceName);
     }
     public interface IManageMessageSenderLifeCycle
     {
-        NServiceBus.AzureServiceBus.IMessageSender Get(string entitypath, string viaEntityPath, string connectionstring);
+        NServiceBus.AzureServiceBus.IMessageSender Get(string entitypath, string viaEntityPath, string namespaceName);
     }
     public interface IManageMessagingFactoryLifeCycle
     {
         System.Threading.Tasks.Task CloseAll();
-        NServiceBus.AzureServiceBus.IMessagingFactory Get(string @namespace);
+        NServiceBus.AzureServiceBus.IMessagingFactory Get(string namespaceName);
     }
     public interface IManageNamespaceManagerLifeCycle
     {
-        NServiceBus.AzureServiceBus.INamespaceManager Get(string @namespace);
+        NServiceBus.AzureServiceBus.INamespaceManager Get(string namespaceName);
     }
     public interface IMessageReceiver : NServiceBus.AzureServiceBus.IClientEntity
     {
