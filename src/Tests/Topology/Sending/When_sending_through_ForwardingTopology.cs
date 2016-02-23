@@ -11,7 +11,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     public class When_sending_through_ForwardingTopology
     {
         [Test]
-        public void Determines_that_sends_go_to_a_single_queue()
+        public void Should_set_a_signle_queue_as_destination_for_command()
         {
             // setting up the environment
             var container = new TransportPartsContainer();
@@ -25,7 +25,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Determines_that_sends_can_go_to_any_topic_that_belongs_to_a_bundle()
+        public void Should_set_a_signle_topic_as_destination_for_events()
         {
             var container = new TransportPartsContainer();
 
@@ -33,9 +33,8 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var destination = topology.DeterminePublishDestination(typeof(SomeMessageType));
 
-            Assert.IsTrue(destination.Entities.Count() > 1);
-            Assert.IsTrue(destination.Entities.First().Type == EntityType.Topic);
-            Assert.IsTrue(destination.Entities.First().Path.StartsWith("bundle"));
+            Assert.IsTrue(destination.Entities.Single().Type == EntityType.Topic);
+            Assert.IsTrue(destination.Entities.Single().Path.StartsWith("bundle"));
         }
 
         ITopologySectionManager SetupForwardingTopology(TransportPartsContainer container, string enpointname)
