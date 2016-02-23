@@ -8,26 +8,16 @@
 
     internal class Program
     {
-        private static void WaitForUserInput()
-        {
-            if (Environment.UserInteractive)
-            {
-                Console.ReadLine();
-            }
-        }
-
         private static void Main(string[] args)
         {
             LoggingHelper.Configure();
-
-
 
             var cts = new CancellationTokenSource();
 
             const string endpointName = "EnduranceTest";
 
             Console.WriteLine("CTRL + C to stop test. Press Enter to continue.");
-            WaitForUserInput();
+            Console.ReadLine();
 
             Console.CancelKeyPress += (s, e) =>
             {
@@ -46,7 +36,7 @@
                 catch (OperationCanceledException)
                 {
                     Console.WriteLine("Test Cancelled. Press ENTER to continue.");
-                    WaitForUserInput();
+                    Console.ReadLine();
 
                     break;
                 }
