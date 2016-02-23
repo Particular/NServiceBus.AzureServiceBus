@@ -33,35 +33,31 @@
             logConfig.AddTarget("console", consoleTarget);
             logConfig.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, consoleTarget));
 
-            var webhookUri = TestEnvironment.SlackWebhookUri;
 
-            if (!string.IsNullOrWhiteSpace(webhookUri))
+            var bufferedTarget = new BufferingTargetWrapper
             {
-                var bufferedTarget = new BufferingTargetWrapper
+                WrappedTarget = new SlackTarget
                 {
-                    WrappedTarget = new SlackTarget
-                    {
-                        Layout = @"${date:format=yyyy-MM-dd HH\:mm\:ss} ${message}",
-                        WebhookUri = webhookUri
-                    },
-                    BufferSize = TestSettings.SlackBufferSize,
-                    FlushTimeout = TestSettings.SlackTimeoutInMilliseconds
-                };
+                    Layout = @"${date:format=yyyy-MM-dd HH\:mm\:ss} ${message}",
+                    WebhookUri = TestEnvironment.SlackWebhookUri
+                },
+                BufferSize = TestSettings.SlackBufferSize,
+                FlushTimeout = TestSettings.SlackTimeoutInMilliseconds
+            };
 
-                logConfig.AddTarget("slack", bufferedTarget);
-                logConfig.LoggingRules.Add(new LoggingRule("*", LogLevel.Error, bufferedTarget));
+            logConfig.AddTarget("slack", bufferedTarget);
+            logConfig.LoggingRules.Add(new LoggingRule("*", LogLevel.Error, bufferedTarget));
 
-                var blobTarget = new AzureBlobErrorOnlyTarget
-                {
-                    StorageAccount = TestEnvironment.AzureStorage,
-                    Layout = @"TimeStamp: ${date:format=yyyy-MM-dd HH\:mm\:ss}${newline}Logger: ${logger}${newline}Message: ${message}${newline}Exception:${newline}${aggregateexception:format=type,message,method,stacktrace:Separator=\r\n:InnerExceptionSeparator=\r\n:maxInnerExceptionLevel=5:innerFormat=shortType,message,method,stacktrace}"
-                };
+            var blobTarget = new AzureBlobErrorOnlyTarget
+            {
+                StorageAccount = TestEnvironment.AzureStorage,
+                Layout = @"TimeStamp: ${date:format=yyyy-MM-dd HH\:mm\:ss}${newline}Logger: ${logger}${newline}Message: ${message}${newline}Exception:${newline}${aggregateexception:format=type,message,method,stacktrace:Separator=\r\n:InnerExceptionSeparator=\r\n:maxInnerExceptionLevel=5:innerFormat=shortType,message,method,stacktrace}"
+            };
 
-                logConfig.AddTarget("blob", blobTarget);
-                logConfig.LoggingRules.Add(new LoggingRule("*", LogLevel.Error, blobTarget));
+            logConfig.AddTarget("blob", blobTarget);
+            logConfig.LoggingRules.Add(new LoggingRule("*", LogLevel.Error, blobTarget));
 
-                Console.WriteLine("Batched Errors to Slack w/Exception Blobs Links Configured");
-            }
+            Console.WriteLine("Batched Errors to Slack w/Exception Blobs Links Configured");
 
             LogManager.Configuration = logConfig;
 

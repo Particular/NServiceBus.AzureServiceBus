@@ -5,40 +5,24 @@
 
     internal static class TestEnvironment
     {
-        public static string AzureServiceBus
-        {
-            get
-            {
-                var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString");
-                if (connectionString != null)
-                {
-                    return connectionString;
-                }
-
-                throw new InvalidOperationException("Failed to get a value from `AzureServiceBus.ConnectionString`. Please add it to your environment variables to run tests.");
-            }
-        }
+        public static string AzureServiceBus => GetCriticalEnvironmentVariable("AzureServiceBus.ConnectionString");
 
         public static CloudStorageAccount AzureStorage
         {
             get
             {
-                var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.EnduranceTests.StorageConnectionString");
-                if (connectionString != null)
-                {
-                    return CloudStorageAccount.Parse(connectionString);
-                }
-
-                throw new InvalidOperationException("Failed to get a value from AzureServiceBus.EnduranceTests.StorageConnectionString`. Please add it to your environment variables to run tests.");
+                var connectionString = GetCriticalEnvironmentVariable("AzureServiceBus.EnduranceTests.StorageConnectionString");
+                return CloudStorageAccount.Parse(connectionString);
             }
         }
-        public static string SlackWebhookUri
+        public static string SlackWebhookUri => GetCriticalEnvironmentVariable("AzureServiceBus.EnduranceTests.SlackWebhookUri");
+
+        private static string GetCriticalEnvironmentVariable(string key)
         {
-            get
-            {
-                var webUri = Environment.GetEnvironmentVariable("AzureServiceBus.EnduranceTests.SlackWebhookUri");
-                return webUri;
-            }
+            var value = Environment.GetEnvironmentVariable(key);
+            if (string.IsNullOrWhiteSpace(value)) throw new InvalidOperationException($"Failed to get a value from {key}. Please add it to your environment variables to run tests.");
+
+            return value;
         }
     }
 }
