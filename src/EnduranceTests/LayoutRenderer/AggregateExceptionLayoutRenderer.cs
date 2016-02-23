@@ -30,6 +30,8 @@
             builder.AppendLine(string.Empty);
             builder.AppendLine("AggregateException Inner Exceptions:");
 
+            exception.Flatten();
+
             foreach (var innerLogEvent in exception.InnerExceptions.Select(iex => new LogEventInfo
             {
                 Exception = iex
