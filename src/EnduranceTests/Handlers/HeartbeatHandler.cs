@@ -12,15 +12,9 @@
         {
             log.InfoFormat("HeartbeatHandler Heartbeat with Wait of {0}", TestSettings.Rate);
 
-            if (TestSettings.TestRunId != message.TestRunId)
-            {
-                return;
-            }
-
             await Task.Delay(TestSettings.Rate);
             await context.Send<Heartbeat>(cmd =>
             {
-                cmd.TestRunId = TestSettings.TestRunId;
             }, TestSettings.SendOptions);
         }
     }

@@ -73,11 +73,8 @@
 
             Console.WriteLine(endpointName + " started");
 
-            TestSettings.TestRunId = Guid.NewGuid();
-
             await endpoint.Send<Heartbeat>(cmd =>
             {
-                cmd.TestRunId = TestSettings.TestRunId;
             }, TestSettings.SendOptions);
             try
             {

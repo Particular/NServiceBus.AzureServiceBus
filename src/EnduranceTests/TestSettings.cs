@@ -1,6 +1,5 @@
 ﻿namespace NServiceBus.AzureServiceBus.EnduranceTests
 {
-    using System;
     using System.Threading;
 
     internal static class TestSettings
@@ -8,8 +7,6 @@
         private static SemaphoreSlim rateMutex = new SemaphoreSlim(1);
 
         private static int rate = 1000;
-
-        public static Guid TestRunId { get; set; }
 
         public static int Rate
         {
