@@ -26,8 +26,6 @@ namespace NServiceBus.AzureServiceBus.EnduranceTests.Targets
         {
             if (logEvent.Level < LogLevel.Error || logEvent.Exception == null) return;
 
-            if (_client == null) return;
-
             var container = _client.GetContainerReference(BlobHelper.BuildContainerName(logEvent));
             container.CreateIfNotExists();
 
