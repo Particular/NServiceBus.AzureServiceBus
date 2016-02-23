@@ -17,7 +17,8 @@
             var context = await Scenario.Define<Context>(c => { c.Id = Guid.NewGuid(); })
                     .WithEndpoint<Endpoint>(b => b.When((session, c) => session.SendLocal(new StartSaga1 { ContextId = c.Id })))
                     .Done(c => (c.Saga1TimeoutFired && c.Saga2TimeoutFired) || c.SagaNotFound)
-                    .Run(TimeSpan.FromSeconds(20));
+                    // another test that can't ran on Azure with 20 seconds constraint
+                    .Run(TimeSpan.FromSeconds(60));
 
             Assert.IsFalse(context.SagaNotFound);
             Assert.IsTrue(context.Saga1TimeoutFired);

@@ -26,7 +26,8 @@ namespace NServiceBus.AcceptanceTests.Recoverability.Retries
                     .When(session => session.SendLocal(new MessageToBeRetried()))
                     .DoNotFailOnErrorMessages())
                 .Done(c => c.SlrChecksum != default(byte))
-                .Run();
+                // failing with 90 secs on build server
+                .Run(TimeSpan.FromSeconds(120));
 
             Assert.AreEqual(context.OriginalBodyChecksum, context.SlrChecksum, "The body of the message sent to slr should be the same as the original message coming off the queue");
         }

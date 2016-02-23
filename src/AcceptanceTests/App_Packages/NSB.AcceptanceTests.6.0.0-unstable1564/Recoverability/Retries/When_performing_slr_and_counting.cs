@@ -25,7 +25,8 @@ namespace NServiceBus.AcceptanceTests.Recoverability.Retries
                     .When(session => session.SendLocal(new MessageToBeRetried()))
                     .DoNotFailOnErrorMessages())
                 .Done(c => c.ForwardedToErrorQueue)
-                .Run();
+                // failing with 90 secs on build server
+                .Run(TimeSpan.FromSeconds(120));
 
             Assert.IsTrue(context.ForwardedToErrorQueue);
             Assert.AreEqual(3, context.Logs.Count(l => l.Message
