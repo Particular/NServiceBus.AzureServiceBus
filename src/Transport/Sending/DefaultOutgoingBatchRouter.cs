@@ -61,12 +61,15 @@ namespace NServiceBus.AzureServiceBus
                     Logger.InfoFormat("Routing {0} messages to {1}", outgoingBatches.Count, entity.Path);
                 }
 
-                var fallbacks = passiveNamespaces.Select(ns => senders.Get(entity.Path, routingOptions.ViaEntityPath, ns.ConnectionString)).ToList();
+                // don't use via on fallback, not supported across namespaces
+                var fallbacks = passiveNamespaces.Select(ns => senders.Get(entity.Path, null, ns.Name)).ToList();
 
                 var pendingSends = new List<Task>();
                 foreach (var ns in activeNamespaces)
                 {
-                    var messageSender = senders.Get(entity.Path, routingOptions.ViaEntityPath, ns.Name);
+                    // only use via if the destination and via namespace are the same
+                    var via = ns.ConnectionString == routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
+                    var messageSender = senders.Get(entity.Path, via, ns.Name);
 
                     var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
 
