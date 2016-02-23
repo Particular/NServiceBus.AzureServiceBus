@@ -51,15 +51,15 @@
         {
             var connectionString = TestEnvironment.AzureServiceBus;
 
-            var busConfiguration = new BusConfiguration();
-            busConfiguration.UseTransport<AzureServiceBusTransport>()
+            var endpointConfiguration = new EndpointConfiguration();
+            endpointConfiguration.UseTransport<AzureServiceBusTransport>()
                 .ConnectionString(connectionString);
-            busConfiguration.EndpointName(endpointName);
-            busConfiguration.UseSerialization<JsonSerializer>();
-            busConfiguration.UsePersistence<InMemoryPersistence>();
-            busConfiguration.SendFailedMessagesTo("error");
+            endpointConfiguration.EndpointName(endpointName);
+            endpointConfiguration.UseSerialization<JsonSerializer>();
+            endpointConfiguration.UsePersistence<InMemoryPersistence>();
+            endpointConfiguration.SendFailedMessagesTo("error");
 
-            var endpoint = await Endpoint.Start(busConfiguration);
+            var endpoint = await Endpoint.Start(endpointConfiguration);
 
             Console.WriteLine(endpointName + " started");
 

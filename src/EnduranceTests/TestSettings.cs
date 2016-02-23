@@ -9,7 +9,7 @@
             get
             {
                 var options = new SendOptions();
-                options.RouteToLocalEndpointInstance();
+                options.RouteToThisEndpoint();
                 return options;
             }
         }
