@@ -103,7 +103,7 @@
     <Compile Include="Commands\Heartbeat.cs" />
     <Compile Include="Handlers\HeartbeatHandler.cs" />
     <Compile Include="TestSettings.cs" />
-    <Compile Include="TestUtils\BlobNameBuilder.cs" />
+    <Compile Include="TestUtils\BlobHelper.cs" />
     <Compile Include="TestUtils\LoggingHelper.cs" />
     <Compile Include="TestUtils\TestEnvironment.cs" />
   </ItemGroup>

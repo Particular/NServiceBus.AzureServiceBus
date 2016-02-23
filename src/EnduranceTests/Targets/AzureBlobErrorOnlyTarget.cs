@@ -28,10 +28,10 @@ namespace NServiceBus.AzureServiceBus.EnduranceTests.Targets
 
             if (_client == null) return;
 
-            var container = _client.GetContainerReference(BlobNameBuilder.BuildContainerName(logEvent));
+            var container = _client.GetContainerReference(BlobHelper.BuildContainerName(logEvent));
             container.CreateIfNotExists();
 
-            var blobName = BlobNameBuilder.Build(logEvent);
+            var blobName = BlobHelper.BuildNameFromLogEvent(logEvent);
 
             var blob = container.GetBlockBlobReference(blobName);
 

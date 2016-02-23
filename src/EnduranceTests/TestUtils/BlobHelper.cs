@@ -5,9 +5,9 @@
     using Microsoft.WindowsAzure.Storage.Blob;
     using NLog;
 
-    public static class BlobNameBuilder
+    public static class BlobHelper
     {
-        public static string Build(LogEventInfo logEvent)
+        public static string BuildNameFromLogEvent(LogEventInfo logEvent)
         {
             return $"{logEvent.TimeStamp.Ticks}_{logEvent.Exception.GetType().Name}";
         }
@@ -18,7 +18,7 @@
             return name.Length > 63 ? name.Substring(0, 63) : name;
         }
 
-        public static string Build(CloudStorageAccount storageAccount, LogEventInfo logEvent)
+        public static string BuildBlobUrlFromLogEvent(CloudStorageAccount storageAccount, LogEventInfo logEvent)
         {
             var sap = new SharedAccessBlobPolicy
             {
@@ -28,7 +28,7 @@
 
             var containerName = BuildContainerName(logEvent);
 
-            return $"{storageAccount.BlobEndpoint}{containerName}/{Build(logEvent)}{storageAccount.CreateCloudBlobClient().GetContainerReference(containerName).GetSharedAccessSignature(sap)}";
+            return $"{storageAccount.BlobEndpoint}{containerName}/{BuildNameFromLogEvent(logEvent)}{storageAccount.CreateCloudBlobClient().GetContainerReference(containerName).GetSharedAccessSignature(sap)}";
         }
     }
 }

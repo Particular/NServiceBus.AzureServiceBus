@@ -32,7 +32,7 @@
                     new SlackAttachment
                     {
                         title = logEvent.LoggerName,
-                        title_link = BlobNameBuilder.Build(TestEnvironment.AzureStorage, logEvent),
+                        title_link = BlobHelper.BuildBlobUrlFromLogEvent(TestEnvironment.AzureStorage, logEvent),
                         text = logMessage,
                         fallback = logMessage,
                         color = "danger"
