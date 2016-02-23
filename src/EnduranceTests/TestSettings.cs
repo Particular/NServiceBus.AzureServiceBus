@@ -1,22 +1,8 @@
 ﻿namespace NServiceBus.AzureServiceBus.EnduranceTests
 {
-    using System.Threading;
-
     internal static class TestSettings
     {
-        private static SemaphoreSlim rateMutex = new SemaphoreSlim(1);
-
-        private static int rate = 1000;
-
-        public static int Rate
-        {
-            get { return rate; }
-            set
-            {
-                rateMutex.Wait();
-                rate = value;
-            }
-        }
+        public static int Rate { get; private set; } = 1000;
 
         public static SendOptions SendOptions
         {
