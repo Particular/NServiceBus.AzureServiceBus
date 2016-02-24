@@ -52,7 +52,7 @@
             }
             catch (InvalidOperationException ex)
             {
-                throw new KeyNotFoundException($"Namespace with name {name} hasn't been registered", ex);
+                throw new KeyNotFoundException($"Namespace with name `{name}` hasn't been registered", ex);
             }
         }
 
