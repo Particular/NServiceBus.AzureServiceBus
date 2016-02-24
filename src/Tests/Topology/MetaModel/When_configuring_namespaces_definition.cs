@@ -24,7 +24,8 @@
         [TestCase(null)]
         public void Should_throws_an_exception_if_name_is_not_valid(string name)
         {
-            Assert.Throws<ArgumentNullException>(() => _namespaces.Add(name, "connectionString"));
+            var exception = Assert.Throws<ArgumentException>(() => _namespaces.Add(name, "connectionString"));
+            Assert.AreEqual("name", exception.ParamName);
         }
 
         [Test]
@@ -33,7 +34,8 @@
         [TestCase(null)]
         public void Should_throws_an_exception_if_connection_string_is_not_valid(string connectionString)
         {
-            Assert.Throws<ArgumentNullException>(() => _namespaces.Add("name", connectionString));
+            var exception = Assert.Throws<ArgumentException>(() => _namespaces.Add("name", connectionString));
+            Assert.AreEqual("connectionString", exception.ParamName);
         }
 
         [Test]

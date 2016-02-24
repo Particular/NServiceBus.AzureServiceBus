@@ -9,10 +9,10 @@
         public NamespaceDefinition(string name, string connectionString)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException(nameof(name), "Namespace name can't be null");
+                throw new ArgumentException("Namespace name can't be null or empty", nameof(name));
 
             if (string.IsNullOrWhiteSpace(connectionString))
-                throw new ArgumentNullException(nameof(name), "Namespace connection string can't be null");
+                throw new ArgumentException("Namespace connection string can't be null or empty", nameof(connectionString));
 
             Name = name;
             ConnectionString = connectionString;
