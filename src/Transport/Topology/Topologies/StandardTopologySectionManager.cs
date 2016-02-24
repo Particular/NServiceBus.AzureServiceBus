@@ -234,7 +234,7 @@ namespace NServiceBus.AzureServiceBus
                 result = new TopologySection
                 {
                     Entities = new List<SubscriptionInfo>(),
-                    Namespaces = new List<NamespaceInfo>()
+                    Namespaces = new List<RuntimeNamespaceInfo>()
                 };
             }
            

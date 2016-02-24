@@ -17,7 +17,7 @@
 
         public AzureServiceBusAddressingSettings UseLogicalNamespaceName()
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName, (Func<NamespaceDefinition, string>)(x => x.Name));
+            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName, (Func<NamespaceInfo, string>)(x => x.Name));
             return this;
         }
     }

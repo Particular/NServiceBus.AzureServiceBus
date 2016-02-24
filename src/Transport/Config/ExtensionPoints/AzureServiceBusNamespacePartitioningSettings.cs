@@ -24,10 +24,10 @@
 
         public AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString)
         {
-            NamespacesDefinition namespaces;
+            NamespaceConfigurations namespaces;
             if (!_settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces))
             {
-                namespaces = new NamespacesDefinition();
+                namespaces = new NamespaceConfigurations();
                 _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
             }
             

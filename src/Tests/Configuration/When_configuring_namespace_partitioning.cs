@@ -32,14 +32,14 @@ namespace NServiceBus.AzureServiceBus.Tests
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(name, connectionString);
 
-            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
 
-            CollectionAssert.Contains(namespacesDefinition, new NamespaceDefinition(name, connectionString));
+            CollectionAssert.Contains(namespacesDefinition, new NamespaceInfo(name, connectionString));
         }
 
         class MyNamespacePartitioningStrategy : INamespacePartitioningStrategy
         {
-            public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
+            public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
             {
                 throw new NotImplementedException(); // not relevant for the test
             }

@@ -35,7 +35,7 @@
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
 
-            var namespaces = new NamespacesDefinition();
+            var namespaces = new NamespaceConfigurations();
             namespaces.Add("name1", "connectionString1");
             namespaces.Add("name2", "connectionString2");
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
@@ -62,7 +62,7 @@
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
 
-            var namespaces = new NamespacesDefinition();
+            var namespaces = new NamespaceConfigurations();
             namespaces.Add("name1", "connectionString1");
             namespaces.Add("name2", "connectionString2");
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
@@ -92,7 +92,7 @@
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
 
-            var namespaces = new NamespacesDefinition();
+            var namespaces = new NamespaceConfigurations();
             namespaces.Add("name1", "connectionString1");
             namespaces.Add("name2", "connectionString2");
             namespaces.Add("name3", "connectionString3");

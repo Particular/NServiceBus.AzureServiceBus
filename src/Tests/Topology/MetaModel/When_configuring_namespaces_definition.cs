@@ -10,12 +10,12 @@
     [Category("AzureServiceBus")]
     public class When_configuring_namespaces_definition
     {
-        private NamespacesDefinition _namespaces;
+        private NamespaceConfigurations _namespaces;
 
         [SetUp]
         public void SetUp()
         {
-            _namespaces = new NamespacesDefinition();
+            _namespaces = new NamespaceConfigurations();
         }
 
         [Test]

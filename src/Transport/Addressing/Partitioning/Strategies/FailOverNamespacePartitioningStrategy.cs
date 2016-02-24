@@ -7,7 +7,7 @@
 
     public class FailOverNamespacePartitioningStrategy : INamespacePartitioningStrategy
     {
-        private readonly NamespacesDefinition _namespaces;
+        private readonly NamespaceConfigurations _namespaces;
 
         public FailOverNamespacePartitioningStrategy(ReadOnlySettings settings)
         {
@@ -19,7 +19,7 @@
 
         public FailOverMode Mode { get; set; }
 
-        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
+        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
             var primary = _namespaces.First();
             var secondary = _namespaces.Last();
@@ -27,14 +27,14 @@
             if (partitioningIntent == PartitioningIntent.Sending)
             {
                 yield return Mode == FailOverMode.Primary
-                ? new NamespaceInfo(primary.Name, primary.ConnectionString, NamespaceMode.Active)
-                : new NamespaceInfo(secondary.Name, secondary.ConnectionString, NamespaceMode.Active);
+                ? new RuntimeNamespaceInfo(primary.Name, primary.ConnectionString, NamespaceMode.Active)
+                : new RuntimeNamespaceInfo(secondary.Name, secondary.ConnectionString, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Creating || partitioningIntent == PartitioningIntent.Receiving)
             {
-                yield return new NamespaceInfo(primary.Name, primary.ConnectionString, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
-                yield return new NamespaceInfo(secondary.Name, secondary.ConnectionString, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
+                yield return new RuntimeNamespaceInfo(primary.Name, primary.ConnectionString, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
+                yield return new RuntimeNamespaceInfo(secondary.Name, secondary.ConnectionString, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
             }
         }
     }

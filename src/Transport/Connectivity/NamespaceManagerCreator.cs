@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBus
 
         public INamespaceManager Create(string namespaceName)
         {
-            var namespacesDefinition = _settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespacesDefinition = _settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             var connectionString = namespacesDefinition.GetConnectionString(namespaceName);
 
             return new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(connectionString));

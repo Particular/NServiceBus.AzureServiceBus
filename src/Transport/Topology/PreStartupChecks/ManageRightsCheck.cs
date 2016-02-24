@@ -22,9 +22,9 @@ namespace NServiceBus.AzureServiceBus
             if (!settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 return StartupCheckResult.Success;
 
-            var namespacesWithWrongRights = new List<NamespaceDefinition>();
+            var namespacesWithWrongRights = new List<NamespaceInfo>();
 
-            var namespaces = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             foreach (var @namespace in namespaces)
             {
                 var namespaceManager = manageNamespaceManagerLifeCycle.Get(@namespace.Name);

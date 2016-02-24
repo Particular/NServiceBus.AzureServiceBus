@@ -22,7 +22,7 @@
 
         private void RegisterConnectionStringAsNamespace(string connectionString, ReadOnlySettings settings)
         {
-            var namespaces = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             namespaces.AddDefault(connectionString);
         }
 

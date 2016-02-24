@@ -63,11 +63,11 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Sharded_partitioning_strategy_will_circle__the_active_namespace()
         {
             _strategy.SetShardingRule(() => 0);
-            Assert.AreEqual(new NamespaceInfo(Name1, ConnectionString1, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(Name1, ConnectionString1, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
             _strategy.SetShardingRule(() => 1);
-            Assert.AreEqual(new NamespaceInfo(Name2, ConnectionString2, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(Name2, ConnectionString2, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
             _strategy.SetShardingRule(() => 2);
-            Assert.AreEqual(new NamespaceInfo(Name3, ConnectionString3, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(Name3, ConnectionString3, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
         }
 
         [Test]

@@ -10,7 +10,7 @@
     {
         private SettingsHolder settingsHolder;
         private TransportExtensions<AzureServiceBusTransport> extensions;
-        private NamespaceDefinition definition;
+        private NamespaceInfo info;
 
         [SetUp]
         public void SetUp()
@@ -19,15 +19,15 @@
             new DefaultConfigurationValues().Apply(settingsHolder);
             extensions = new TransportExtensions<AzureServiceBusTransport>(settingsHolder);
 
-            definition = new NamespaceDefinition("name", "connection string");
+            info = new NamespaceInfo("name", "connection string");
         }
 
         [Test]
         public void Default_should_use_namespace_connection_string()
         {
-            var resolver = settingsHolder.Get<Func<NamespaceDefinition, string>>(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName);
+            var resolver = settingsHolder.Get<Func<NamespaceInfo, string>>(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName);
 
-            Assert.AreEqual("connection string", resolver(definition));
+            Assert.AreEqual("connection string", resolver(info));
         }
 
         [Test]
@@ -35,9 +35,9 @@
         {
             extensions.UseDefaultTopology().Addressing().UseLogicalNamespaceName();
 
-            var resolver = settingsHolder.Get<Func<NamespaceDefinition, string>>(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName);
+            var resolver = settingsHolder.Get<Func<NamespaceInfo, string>>(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName);
 
-            Assert.AreEqual("name", resolver(definition));
+            Assert.AreEqual("name", resolver(info));
         }
     }
 }

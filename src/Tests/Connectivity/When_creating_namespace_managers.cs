@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Creates_new_namespace_managers()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
 
             var creator = new NamespaceManagerCreator(settings);

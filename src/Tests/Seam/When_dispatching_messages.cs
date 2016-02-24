@@ -22,7 +22,7 @@
 
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
 
             // setup the infrastructure
@@ -59,7 +59,7 @@
 
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
 
             // setup the infrastructure
@@ -90,7 +90,7 @@
             {
                 // we don't care about incoming operations as we'll fake batcher and return pre-canned batches
 
-                var @namespace = new NamespaceInfo("default", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+                var @namespace = new RuntimeNamespaceInfo("default", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
 
@@ -108,7 +108,7 @@
                                 Type = EntityType.Queue
                             }
                         },
-                        Namespaces = new List<NamespaceInfo>
+                        Namespaces = new List<RuntimeNamespaceInfo>
                         {
                             @namespace
                         }
@@ -142,7 +142,7 @@
                                 Type = EntityType.Queue
                             }
                         },
-                        Namespaces = new List<NamespaceInfo>
+                        Namespaces = new List<RuntimeNamespaceInfo>
                         {
                             @namespace
                         }

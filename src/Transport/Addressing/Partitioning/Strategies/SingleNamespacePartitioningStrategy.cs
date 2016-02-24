@@ -7,7 +7,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
     public class SingleNamespacePartitioningStrategy : INamespacePartitioningStrategy
     {
-        private readonly NamespacesDefinition _namespaces;
+        private readonly NamespaceConfigurations _namespaces;
 
         public SingleNamespacePartitioningStrategy(ReadOnlySettings settings)
         {
@@ -17,10 +17,10 @@ namespace NServiceBus.AzureServiceBus.Addressing
             }
         }
 
-        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
+        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
             var @namespace = _namespaces.First();
-            yield return new NamespaceInfo(@namespace.Name, @namespace.ConnectionString, NamespaceMode.Active);
+            yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, NamespaceMode.Active);
         }
     }
 }

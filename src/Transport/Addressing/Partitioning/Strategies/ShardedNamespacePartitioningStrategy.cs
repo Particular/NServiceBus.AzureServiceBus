@@ -8,7 +8,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
     public class ShardedNamespacePartitioningStrategy : INamespacePartitioningStrategy
     {
-        private readonly NamespacesDefinition _namespaces;
+        private readonly NamespaceConfigurations _namespaces;
         private Func<int> _shardingRule;
 
         public ShardedNamespacePartitioningStrategy(ReadOnlySettings settings)
@@ -24,7 +24,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             _shardingRule = rule;
         }
 
-        public IEnumerable<NamespaceInfo> GetNamespaces(string endpointname, PartitioningIntent partitioningIntent)
+        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointname, PartitioningIntent partitioningIntent)
         {
             if (_shardingRule == null)
             {
@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             if (partitioningIntent == PartitioningIntent.Sending)
             {
                 var @namespace = _namespaces.ElementAt(index);
-                yield return new NamespaceInfo(@namespace.Name, @namespace.ConnectionString, NamespaceMode.Active);
+                yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Creating || partitioningIntent == PartitioningIntent.Receiving)
@@ -44,7 +44,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 for (var i = 0; i < _namespaces.Count; i++)
                 {
                     var @namespace = _namespaces.ElementAt(i);
-                    yield return new NamespaceInfo(@namespace.Name, @namespace.ConnectionString, i == index ? NamespaceMode.Active : NamespaceMode.Passive);
+                    yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, i == index ? NamespaceMode.Active : NamespaceMode.Passive);
                 }
             }
         }

@@ -141,7 +141,7 @@ namespace NServiceBus.AzureServiceBus
                 result = new TopologySection
                 {
                     Entities = new List<SubscriptionInfo>(),
-                    Namespaces = new List<NamespaceInfo>()
+                    Namespaces = new List<RuntimeNamespaceInfo>()
                 };
             }
 
@@ -211,7 +211,7 @@ namespace NServiceBus.AzureServiceBus
             };
         }
         
-        void BuildTopicBundles(NamespaceInfo[] namespaces, ISanitizationStrategy sanitizationStrategy)
+        void BuildTopicBundles(RuntimeNamespaceInfo[] namespaces, ISanitizationStrategy sanitizationStrategy)
         {
             var numberOfEntitiesInBundle = settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
             var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);

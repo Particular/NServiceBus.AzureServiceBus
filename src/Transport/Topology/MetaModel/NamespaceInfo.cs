@@ -1,46 +1,39 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
-
-    // NOTE: Can namespaces switch mode?
     public class NamespaceInfo : IEquatable<NamespaceInfo>
     {
-        private readonly NamespaceDefinition _definition;
+        public string Name { get; }
+        public string ConnectionString { get; }
 
-        public NamespaceInfo(string name, string connectionString, NamespaceMode mode = NamespaceMode.Active)
+        public NamespaceInfo(string name, string connectionString)
         {
-            _definition = new NamespaceDefinition(name, connectionString);
-            Mode = mode;
-        }
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Namespace name can't be null or empty", nameof(name));
 
-        public string Name => _definition.Name;
-        public string ConnectionString => _definition.ConnectionString;
-        public NamespaceMode Mode { get; }
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Namespace connection string can't be null or empty", nameof(connectionString));
+
+            Name = name;
+            ConnectionString = connectionString;
+        }
 
         public bool Equals(NamespaceInfo other)
         {
-            return other != null && _definition.Equals(other._definition);
+            return other != null
+                   && Name.Equals(other.Name)
+                   && ConnectionString.Equals(other.ConnectionString);
         }
 
         public override bool Equals(object obj)
         {
             var target = obj as NamespaceInfo;
-            return Equals(target);
+            return this.Equals(target);
         }
 
         public override int GetHashCode()
         {
-            return _definition.GetHashCode(); 
-        }
-
-        public static bool operator ==(NamespaceInfo left, NamespaceInfo right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(NamespaceInfo left, NamespaceInfo right)
-        {
-            return !(left == right);
+            return String.Concat(Name, "-", ConnectionString).GetHashCode();
         }
     }
 }

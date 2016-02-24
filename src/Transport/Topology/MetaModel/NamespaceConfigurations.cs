@@ -5,23 +5,23 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class NamespacesDefinition : IEnumerable<NamespaceDefinition>
+    public class NamespaceConfigurations : IEnumerable<NamespaceInfo>
     {
         private static readonly string DefaultName = "default";
         private static readonly string Prefix = "namespace-";
 
-        private readonly List<NamespaceDefinition> _inner;
+        private readonly List<NamespaceInfo> _inner;
 
-        public NamespacesDefinition()
+        public NamespaceConfigurations()
         {
-            _inner = new List<NamespaceDefinition>();
+            _inner = new List<NamespaceInfo>();
         }
 
         public int Count => _inner.Count;
 
         public void Add(string name, string connectionString)
         {
-            var definition = new NamespaceDefinition(name, connectionString);
+            var definition = new NamespaceInfo(name, connectionString);
             if (_inner.Contains(definition)) return;
 
             var defaultDefinition = _inner.SingleOrDefault(x => x.Name == DefaultName && x.ConnectionString == connectionString);
@@ -37,7 +37,7 @@
 
         public void AddDefault(string connectionString)
         {
-            var definition = new NamespaceDefinition(DefaultName, connectionString);
+            var definition = new NamespaceInfo(DefaultName, connectionString);
             if (_inner.Any(x => x.ConnectionString == connectionString)) return;
 
             _inner.Add(definition);
@@ -56,7 +56,7 @@
             }
         }
 
-        public IEnumerator<NamespaceDefinition> GetEnumerator()
+        public IEnumerator<NamespaceInfo> GetEnumerator()
         {
             return _inner.GetEnumerator();
         }

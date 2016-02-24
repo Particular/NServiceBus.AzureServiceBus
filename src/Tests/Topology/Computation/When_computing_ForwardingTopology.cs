@@ -31,7 +31,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var sectionManager = container.Resolve<ITopologySectionManager>();
             var definition = sectionManager.DetermineResourcesToCreate();
 
-            var namespaceInfo = new NamespaceInfo(Name, Connectionstring, NamespaceMode.Active);
+            var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
         }
 

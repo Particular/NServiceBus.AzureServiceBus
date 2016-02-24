@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var definition = DetermineResourcesToCreate(settings, container);
 
-            var namespaceInfo = new NamespaceInfo(Name, Connectionstring, NamespaceMode.Active);
+            var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
         }
 

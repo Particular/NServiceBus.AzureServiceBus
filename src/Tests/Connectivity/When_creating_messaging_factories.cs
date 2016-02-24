@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Creates_new_factories_for_namespace()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespacesDefinition>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
 
             var lifecycleManager = new MessagingFactoryCreator(new NamespaceManagerLifeCycleManager(new NamespaceManagerCreator(settings)) , settings);

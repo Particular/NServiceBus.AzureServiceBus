@@ -101,8 +101,8 @@
     <Compile Include="Properties\Resharper.Annotations.g.cs" />
     <Compile Include="Receiving\UnsupportedBrokeredMessageBodyTypeException.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
-    <Compile Include="Topology\MetaModel\NamespaceDefinition.cs" />
-    <Compile Include="Topology\MetaModel\NamespacesDefinition.cs" />
+    <Compile Include="Topology\MetaModel\NamespaceInfo.cs" />
+    <Compile Include="Topology\MetaModel\NamespaceConfigurations.cs" />
     <Compile Include="Topology\PreStartupChecks\ManageRightsCheck.cs" />
     <Compile Include="Utils\BrokeredMessageHeaders.cs" />
     <Compile Include="Sending\IHandleOversizedBrokeredMessages.cs" />
@@ -211,7 +211,7 @@
     <Compile Include="Topology\ICreateTopology.cs" />
     <Compile Include="Topology\IOperateTopology.cs" />
     <Compile Include="Topology\ITopologySectionManager.cs" />
-    <Compile Include="Topology\MetaModel\NamespaceInfo.cs" />
+    <Compile Include="Topology\MetaModel\RuntimeNamespaceInfo.cs" />
     <Compile Include="Topology\MetaModel\NamespaceMode.cs" />
     <Compile Include="Topology\MetaModel\SqlSubscriptionFilter.cs" />
     <Compile Include="Topology\MetaModel\SubscriptionInfo.cs" />

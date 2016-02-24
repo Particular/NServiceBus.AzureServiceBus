@@ -4,7 +4,7 @@
 
     public class TopologySection
     {
-        public IEnumerable<NamespaceInfo> Namespaces { get; set; }
+        public IEnumerable<RuntimeNamespaceInfo> Namespaces { get; set; }
         public IEnumerable<EntityInfo> Entities { get; set; }
         public IEnumerable<EntityRelationShipInfo> Relationships { get; set; }
     }

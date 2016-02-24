@@ -57,7 +57,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
 
-            Assert.AreEqual(new NamespaceInfo(Name, ConnectionString, NamespaceMode.Active), namespaces.First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(Name, ConnectionString, NamespaceMode.Active), namespaces.First());
         }
 
         [Test]
