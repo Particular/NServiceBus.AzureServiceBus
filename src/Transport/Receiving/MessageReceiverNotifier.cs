@@ -3,7 +3,6 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Transactions;
@@ -120,7 +119,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 incomingMessage = brokeredMessageConverter.Convert(message);
             }
-            catch (ConfigurationErrorsException exception)
+            catch (UnsupportedBrokeredMessageBodyTypeException exception)
             {
                 await message.DeadLetterAsync("BrokeredMessage to IncomingMessageDetails conversion failure", exception.ToString()).ConfigureAwait(false);
                 return;
