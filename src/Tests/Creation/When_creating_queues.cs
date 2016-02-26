@@ -54,62 +54,6 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public async Task Properly_sets_ForwardTo_on_the_created_entity()
-        {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            // forwarding queue needs to exist before you can use it as a forwarding target
-            // needs to be created with different settings as it cannot forward to itself obviously
-            var originalsettings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var originalcreator = new AzureServiceBusQueueCreator(originalsettings);
-            await originalcreator.Create("myotherqueue", namespaceManager);
-
-            // actual test
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.UseDefaultTopology().Resources().Queues().ForwardTo("myotherqueue");
-
-            var creator = new AzureServiceBusQueueCreator(settings);
-
-            await creator.Create("myqueue", namespaceManager);
-
-            var real = await namespaceManager.GetQueue("myqueue");
-
-            Assert.IsTrue(real.ForwardTo.EndsWith("myotherqueue"));
-
-            //cleanup 
-            await namespaceManager.DeleteQueue("myqueue");
-            await namespaceManager.DeleteQueue("myotherqueue");
-        }
-
-        [Test]
-        public async Task Properly_sets_ForwardTo_on_the_created_entity_that_qualifies_condition()
-        {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-           
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.UseDefaultTopology().Resources().Queues().ForwardTo(name => name == "myqueue", "myotherqueue");
-
-            var creator = new AzureServiceBusQueueCreator(settings);
-
-            await creator.Create("myotherqueue", namespaceManager);
-            await creator.Create("myqueue", namespaceManager);
-
-            var real = await namespaceManager.GetQueue("myqueue");
-            var forwardReal = await namespaceManager.GetQueue("myotherqueue");
-
-            Assert.IsTrue(real.ForwardTo.EndsWith("myotherqueue"));
-            Assert.IsTrue(string.IsNullOrEmpty(forwardReal.ForwardTo));
-
-            //cleanup 
-            await namespaceManager.DeleteQueue("myqueue");
-            await namespaceManager.DeleteQueue("myotherqueue");
-        }
-
-        [Test]
         public async Task Properly_sets_ForwardDeadLetteredMessagesTo_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));

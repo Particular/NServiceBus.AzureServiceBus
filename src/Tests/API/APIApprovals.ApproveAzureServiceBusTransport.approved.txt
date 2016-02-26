@@ -712,8 +712,6 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings EnablePartitioning(bool enablePartitioning) { }
         public NServiceBus.AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(System.Func<string, bool> condition, string forwardDeadLetteredMessagesTo) { }
-        public NServiceBus.AzureServiceBusQueueSettings ForwardTo(string forwardTo) { }
-        public NServiceBus.AzureServiceBusQueueSettings ForwardTo(System.Func<string, bool> condition, string forwardTo) { }
         public NServiceBus.AzureServiceBusQueueSettings LockDuration(System.TimeSpan duration) { }
         public NServiceBus.AzureServiceBusQueueSettings MaxDeliveryCount(int maxDeliveryCount) { }
         public NServiceBus.AzureServiceBusQueueSettings MaxSizeInMegabytes(long maxSizeInMegabytes) { }
@@ -753,8 +751,6 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusSubscriptionSettings EnableDeadLetteringOnMessageExpiration(bool enableDeadLetteringOnMessageExpiration) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings ForwardDeadLetteredMessagesTo(System.Func<string, bool> condition, string forwardDeadLetteredMessagesTo) { }
-        public NServiceBus.AzureServiceBusSubscriptionSettings ForwardTo(string forwardTo) { }
-        public NServiceBus.AzureServiceBusSubscriptionSettings ForwardTo(System.Func<string, bool> condition, string forwardTo) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings LockDuration(System.TimeSpan lockDuration) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings MaxDeliveryCount(int maxDeliveryCount) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings RequiresSession(bool requiresSession) { }

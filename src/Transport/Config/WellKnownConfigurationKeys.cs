@@ -28,9 +28,6 @@ namespace NServiceBus.AzureServiceBus
 
                     public const string ForwardDeadLetteredMessagesToCondition = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardDeadLetteredMessagesToCondition";
                     public const string ForwardDeadLetteredMessagesTo = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo";
-
-                    public const string ForwardToCondition = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardToCondition";
-                    public const string ForwardTo = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardTo";
                 }
 
                 public static class Topics
@@ -66,9 +63,6 @@ namespace NServiceBus.AzureServiceBus
 
                     public const string ForwardDeadLetteredMessagesTo = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo";
                     public const string ForwardDeadLetteredMessagesToCondition = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition";
-
-                    public const string ForwardTo = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.ForwardTo";
-                    public const string ForwardToCondition = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.ForwardToCondition";
                 }
 
                 

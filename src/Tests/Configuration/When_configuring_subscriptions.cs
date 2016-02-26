@@ -91,30 +91,6 @@
         }
 
         [Test]
-        public void Should_be_able_to_set_ForwardTo()
-        {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
-
-            var subscriptionSettings = extensions.UseDefaultTopology().Resources().Subscriptions().ForwardTo("forwardto");
-
-            Assert.AreEqual("forwardto", subscriptionSettings.GetSettings().Get<string>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardTo));
-        }
-
-        [Test]
-        public void Should_be_able_to_set_ForwardTo_conditionally()
-        {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
-
-            Func<string, bool> condition = n => n != "forwarded";
-            var subscriptionSettings = extensions.UseDefaultTopology().Resources().Subscriptions().ForwardTo(condition, "forwarded");
-
-            Assert.AreEqual("forwarded", subscriptionSettings.GetSettings().Get<string>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardTo));
-            Assert.AreEqual(condition, subscriptionSettings.GetSettings().Get<Func<string, bool>>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardToCondition));
-        }
-
-        [Test]
         public void Should_be_able_to_set_LockDuration()
         {
             var setting = new SettingsHolder();

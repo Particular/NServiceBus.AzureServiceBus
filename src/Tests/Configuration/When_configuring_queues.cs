@@ -125,30 +125,6 @@ namespace NServiceBus.AzureServiceBus.Tests
         }
 
         [Test]
-        public void Should_be_able_to_set_ForwardTo()
-        {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
-
-            var queueSettings = extensions.UseDefaultTopology().Resources().Queues().ForwardTo("forwardto");
-
-            Assert.AreEqual("forwardto", queueSettings.GetSettings().Get<string>(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo));
-        }
-
-        [Test]
-        public void Should_be_able_to_set_ForwardTo_conditionally()
-        {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
-
-            Func<string, bool> condition = n => n != "forwarded";
-            var queueSettings = extensions.UseDefaultTopology().Resources().Queues().ForwardTo(condition, "forwarded");
-
-            Assert.AreEqual("forwarded", queueSettings.GetSettings().Get<string>(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo));
-            Assert.AreEqual(condition, queueSettings.GetSettings().Get<Func<string, bool>>(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardToCondition));
-        }
-
-        [Test]
         public void Should_be_able_to_set_LockDuration()
         {
             var setting = new SettingsHolder();
