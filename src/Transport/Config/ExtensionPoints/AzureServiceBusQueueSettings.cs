@@ -23,18 +23,6 @@
             return this;
         }
 
-        public AzureServiceBusQueueSettings ForwardTo(string forwardTo)
-        {
-            return ForwardTo(n => true, forwardTo);
-        }
-        public AzureServiceBusQueueSettings ForwardTo(Func<string, bool> condition, string forwardTo)
-        {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardToCondition, condition);
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo, forwardTo);
-
-            return this;
-        }
-
         public AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo)
         {
             return ForwardDeadLetteredMessagesTo(n => true, forwardDeadLetteredMessagesTo);

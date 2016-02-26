@@ -60,18 +60,6 @@ namespace NServiceBus
             return this;
         }
 
-        public AzureServiceBusSubscriptionSettings ForwardTo(string forwardTo)
-        {
-            return ForwardTo(n => true, forwardTo);
-        }
-        public AzureServiceBusSubscriptionSettings ForwardTo(Func<string, bool> condition, string forwardTo)
-        {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardTo, forwardTo);
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardToCondition, condition);
-
-            return this;
-        }
-
         public AzureServiceBusSubscriptionSettings LockDuration(TimeSpan lockDuration)
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.LockDuration, lockDuration);

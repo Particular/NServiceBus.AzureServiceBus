@@ -300,29 +300,6 @@
         }
 
         [Test]
-        public async Task Should_not_apply_ForwardTo_set_via_description_factory()
-        {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.UseTopology<ForwardingTopology>().Resources().Subscriptions().ForwardTo("abcdef");
-
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
-
-            const string subscriptionName = "endpoint11";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
-
-            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
-
-            Assert.That(foundDescription.ForwardTo, Is.Not.EndsWith("abcdef"));
-            Assert.That(foundDescription.ForwardTo, Is.StringEnding(forwardToQueue));
-
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-        }
-
-
-        [Test]
         public async Task Should_set_forwarding_to_an_explicitly_provided_forwardto()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));

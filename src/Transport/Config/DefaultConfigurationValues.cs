@@ -78,9 +78,6 @@
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesToCondition, new Func<string, bool>(name => true));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo, null);
-
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardToCondition, new Func<string, bool>( name => true) );
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardTo, null);
         }
 
         void ApplyDefaultValuesForTopics(SettingsHolder settings)
@@ -111,9 +108,6 @@
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition, new Func<string, bool>(name => true));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo, null);
-
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardToCondition, new Func<string, bool>(name => true));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardTo, null);
         }
     }
 }
