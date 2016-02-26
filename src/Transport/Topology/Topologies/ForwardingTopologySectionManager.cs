@@ -91,7 +91,7 @@ namespace NServiceBus.AzureServiceBus
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var endpointName = settings.EndpointName();
-            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).Where(n => n.Mode == NamespaceMode.Active).ToArray();
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
             
             if (!topics.Any())
@@ -117,7 +117,7 @@ namespace NServiceBus.AzureServiceBus
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
 
-            var namespaces = partitioningStrategy.GetNamespaces(destination, PartitioningIntent.Sending).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(destination, PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
 
             var inputQueuePath = sanitizationStrategy.Sanitize(destination, EntityType.Queue);
             var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();

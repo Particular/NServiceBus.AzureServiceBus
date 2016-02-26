@@ -121,6 +121,10 @@ namespace NServiceBus.AzureServiceBus
                 var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", messagesToSend.Select(x => x.MessageId));
                 logger.Error(message, exception);
 
+                // no need to try and send too large messages to another namespace, won't work
+                if (exception is MessageTooLargeException)
+                    throw;
+
                 var fallBackSucceeded = false;
                 if (fallbacks.Any())
                 {
