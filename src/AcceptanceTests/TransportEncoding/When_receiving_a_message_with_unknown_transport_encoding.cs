@@ -34,6 +34,7 @@
                         var queueClient = factory.CreateQueueClient("receivingamessagewithunknowntransportencoding.receiver/$DeadLetterQueue", ReceiveMode.ReceiveAndDelete); // queue name from the test name
                         var message = queueClient.Receive();
                         ctx.MessageWasMovedToDlq = message.MessageId == ctx.OriginalMessageId && (message.Properties["$AcceptanceTesting.TestRunId"] as string) == ctx.TestRunId.ToString();
+                        ctx.MessageWasMovedToDlq &= message.DeliveryCount == 1;
                         return ctx.MessageWasMovedToDlq;
                     })
                     .Run(new RunSettings() {TestExecutionTimeout = TimeSpan.FromMinutes(2)});
