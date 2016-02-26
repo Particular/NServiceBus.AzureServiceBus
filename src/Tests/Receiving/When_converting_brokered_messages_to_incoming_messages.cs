@@ -59,11 +59,30 @@ namespace NServiceBus.AzureServiceBus.Tests
                 ReplyTo = "MyQueue"
             };
 
-
             var incomingMessage = converter.Convert(brokeredMessage);
 
             Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.ReplyToAddress));
             Assert.AreEqual("MyQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
+        }
+
+        [Test]
+        public void Should_not_complete_replyto_address_if_already_present_in_headers()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var brokeredMessage = new BrokeredMessage(new byte[] { })
+            {
+                ReplyTo = "MyQueue"
+            };
+            brokeredMessage.Properties.Add(Headers.ReplyToAddress, "OtherQueue");
+
+            var incomingMessage = converter.Convert(brokeredMessage);
+
+            Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.ReplyToAddress));
+            Assert.AreEqual("OtherQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
         }
 
         [Test]
@@ -197,8 +216,8 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Assert.Throws<UnsupportedBrokeredMessageBodyTypeException>(() => converter.Convert(brokeredMessage));
         }
-        [Test]
 
+        [Test]
         public void Should_not_propagate_transport_encoding_header_from_brokered_message()
         {
             // default settings
