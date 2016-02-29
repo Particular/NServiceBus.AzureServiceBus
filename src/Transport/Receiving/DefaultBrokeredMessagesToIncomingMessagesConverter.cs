@@ -5,17 +5,21 @@ namespace NServiceBus.AzureServiceBus
     using System.IO;
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Logging;
     using NServiceBus.Settings;
 
     class DefaultBrokeredMessagesToIncomingMessagesConverter : IConvertBrokeredMessagesToIncomingMessages
     {
         ILog logger = LogManager.GetLogger<DefaultBrokeredMessagesToIncomingMessagesConverter>();
-        readonly ReadOnlySettings settings;
 
-        public DefaultBrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings)
+        private readonly ReadOnlySettings _settings;
+        private readonly ICanMapConnectionStringToNamespaceName _mapper;
+
+        public DefaultBrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings, ICanMapConnectionStringToNamespaceName mapper)
         {
-            this.settings = settings;
+            this._settings = settings;
+            this._mapper = mapper;
         }
 
         public IncomingMessageDetails Convert(BrokeredMessage brokeredMessage)
@@ -58,10 +62,12 @@ namespace NServiceBus.AzureServiceBus
                     throw new UnsupportedBrokeredMessageBodyTypeException("Unsupported brokered message body type configured");
             }
 
-
-            if (!string.IsNullOrWhiteSpace(brokeredMessage.ReplyTo) && !headers.ContainsKey(Headers.ReplyToAddress))
+            var replyToHeaderValue = headers.ContainsKey(Headers.ReplyToAddress) ?
+                headers[Headers.ReplyToAddress] : brokeredMessage.ReplyTo;
+                
+            if (!string.IsNullOrWhiteSpace(replyToHeaderValue))
             {
-                headers[Headers.ReplyToAddress] = brokeredMessage.ReplyTo;
+                headers[Headers.ReplyToAddress] = _mapper.Map(replyToHeaderValue);
             }
 
             if (!string.IsNullOrWhiteSpace(brokeredMessage.CorrelationId) && !headers.ContainsKey(Headers.CorrelationId))
@@ -79,7 +85,7 @@ namespace NServiceBus.AzureServiceBus
 
         private string GetDefaultTransportEncoding()
         {
-            var configuredDefault = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
+            var configuredDefault = _settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
             return configuredDefault == SupportedBrokeredMessageBodyTypes.ByteArray ? "wcf/byte-array" : "application/octect-stream";
         }
     }

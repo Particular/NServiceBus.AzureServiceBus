@@ -101,6 +101,10 @@
     <Compile Include="Properties\Resharper.Annotations.g.cs" />
     <Compile Include="Receiving\UnsupportedBrokeredMessageBodyTypeException.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
+    <Compile Include="Topology\MetaModel\ConnectionString.cs" />
+    <Compile Include="Topology\MetaModel\DefaultConnectionStringToNamespaceNameMapper.cs" />
+    <Compile Include="Topology\MetaModel\EntityAddress.cs" />
+    <Compile Include="Topology\MetaModel\ICanMapConnectionStringToNamespaceName.cs" />
     <Compile Include="Topology\MetaModel\NamespaceInfo.cs" />
     <Compile Include="Topology\MetaModel\NamespaceConfigurations.cs" />
     <Compile Include="Topology\PreStartupChecks\ManageRightsCheck.cs" />

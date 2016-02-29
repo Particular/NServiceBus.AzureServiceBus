@@ -3,6 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.Addressing;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
@@ -87,6 +88,8 @@ namespace NServiceBus.AzureServiceBus
 
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
             container.Register(validationStrategyType);
+
+            container.RegisterSingleton<DefaultConnectionStringToNamespaceNameMapper>();
         }
 
         public Func<ICreateQueues> GetQueueCreatorFactory()

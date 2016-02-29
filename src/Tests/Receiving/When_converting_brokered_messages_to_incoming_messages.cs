@@ -5,6 +5,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System.Linq;
     using System.Text;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Settings;
     using NUnit.Framework;
 
@@ -18,7 +19,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
             var brokeredMessage = new BrokeredMessage
             {
@@ -35,8 +36,8 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
             var brokeredMessage = new BrokeredMessage();
             brokeredMessage.Properties.Add("my-test-prop", "myvalue");
@@ -51,8 +52,8 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MappedMyQueue"));
 
             var brokeredMessage = new BrokeredMessage(new byte[] { })
             {
@@ -62,7 +63,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var incomingMessage = converter.Convert(brokeredMessage);
 
             Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.ReplyToAddress));
-            Assert.AreEqual("MyQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
+            Assert.AreEqual("MappedMyQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
         }
 
         [Test]
@@ -71,7 +72,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("OtherQueue", "MappedOtherQueue"));
 
             var brokeredMessage = new BrokeredMessage(new byte[] { })
             {
@@ -82,7 +83,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var incomingMessage = converter.Convert(brokeredMessage);
 
             Assert.IsTrue(incomingMessage.Headers.ContainsKey(Headers.ReplyToAddress));
-            Assert.AreEqual("OtherQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
+            Assert.AreEqual("MappedOtherQueue", incomingMessage.Headers[Headers.ReplyToAddress]);
         }
 
         [Test]
@@ -91,7 +92,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("",""));
 
             var brokeredMessage = new BrokeredMessage(new byte[] {})
             {
@@ -111,7 +112,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
             var timespan = TimeSpan.FromHours(1);
             var brokeredMessage = new BrokeredMessage(new byte[] { })
@@ -131,8 +132,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var brokeredMessage = new BrokeredMessage(bytes);
@@ -152,7 +152,8 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Serialization().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
@@ -177,7 +178,8 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
+
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var brokeredMessage = new BrokeredMessage(bytes);
             brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "wcf/byte-array";
@@ -196,7 +198,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
             var brokeredMessage = new BrokeredMessage("non-default-type");
 
@@ -209,7 +211,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
             var brokeredMessage = new BrokeredMessage("non-default-type");
             brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "unknown";
@@ -226,11 +228,32 @@ namespace NServiceBus.AzureServiceBus.Tests
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var brokeredMessage = new BrokeredMessage(bytes);
             brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "wcf/byte-array";
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings);
+            
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
             var incomingMessageDetails = converter.Convert(brokeredMessage);
 
             CollectionAssert.DoesNotContain(incomingMessageDetails.Headers, BrokeredMessageHeaders.TransportEncoding, $"Headers should not contain `{BrokeredMessageHeaders.TransportEncoding}`, but it was found.");
+        }
+
+        private class FakeMapper : ICanMapConnectionStringToNamespaceName
+        {
+            private readonly string _input;
+            private readonly string _output;
+
+            public FakeMapper(string input, string output)
+            {
+                _input = input;
+                _output = output;
+            }
+
+            public EntityAddress Map(EntityAddress value)
+            {
+                if (_input != value)
+                    throw new InvalidOperationException();
+
+                return _output;
+            }
         }
     }
 }
