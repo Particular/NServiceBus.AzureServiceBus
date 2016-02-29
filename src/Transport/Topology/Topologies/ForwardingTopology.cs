@@ -1,6 +1,8 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
@@ -118,11 +120,25 @@ namespace NServiceBus.AzureServiceBus
             return () => container.Resolve<IManageSubscriptions>();
         }
 
-        public Task<StartupCheckResult> RunPreStartupChecks()
+        public async Task<StartupCheckResult> RunPreStartupChecks()
         {
-            var check = new ManageRightsCheck(this.container);
+            var settings = container.Resolve<ReadOnlySettings>();
 
-            return check.Run();
+            var manageRightsCheck = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycle>(), settings);
+            var topicPartitioningCheck = new TopicPartitioningCheckForForwardingTopology(settings);
+
+            var results = new List<StartupCheckResult>
+            {
+                await manageRightsCheck.Run().ConfigureAwait(false),
+                await topicPartitioningCheck.Run().ConfigureAwait(false)
+            };
+
+            if (results.Any(x => x.Succeeded == false))
+            {
+                return StartupCheckResult.Failed(string.Join(Environment.NewLine, results.Select(x => x.ErrorMessage)));
+            }
+
+            return StartupCheckResult.Success;
         }
 
         public OutboundRoutingPolicy GetOutboundRoutingPolicy()

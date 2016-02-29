@@ -118,7 +118,7 @@ namespace NServiceBus.AzureServiceBus
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
-            var check = new ManageRightsCheck(this.container);
+            var check = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycle>(), container.Resolve<ReadOnlySettings>());
 
             return check.Run();
         }
