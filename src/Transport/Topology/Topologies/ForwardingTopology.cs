@@ -60,7 +60,7 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<AzureServiceBusForwardingSubscriptionCreator>();
 
             container.RegisterSingleton<DefaultConnectionStringToNamespaceNameMapper>();
-            container.RegisterSingleton(settings.Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName));
+            container.RegisterSingleton(settings.Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings));
 
             container.Register<DefaultBrokeredMessagesToIncomingMessagesConverter>();
             container.Register<DefaultBatchedOperationsToBrokeredMessagesConverter>();

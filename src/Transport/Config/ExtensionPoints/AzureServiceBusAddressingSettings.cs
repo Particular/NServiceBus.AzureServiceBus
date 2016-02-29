@@ -15,9 +15,9 @@
             _settings = settings;
         }
 
-        public AzureServiceBusAddressingSettings UseLogicalNamespaceName()
+        public AzureServiceBusAddressingSettings UseNamespaceNamesInsteadOfConnectionStrings()
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName, typeof(PassThroughNamespaceNameToConnectionStringMapper));
+            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings, typeof(PassThroughNamespaceNameToConnectionStringMapper));
             return this;
         }
     }
