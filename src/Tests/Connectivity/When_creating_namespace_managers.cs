@@ -13,12 +13,12 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
 
             var creator = new NamespaceManagerCreator(settings);
 
-            var first = creator.Create("default");
-            var second = creator.Create("default");
+            var first = creator.Create("namespace");
+            var second = creator.Create("namespace");
 
             Assert.IsInstanceOf<INamespaceManager>(first);
             Assert.IsInstanceOf<INamespaceManager>(second);

@@ -16,7 +16,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.AddDefault(AzureServiceBusConnectionString.Value);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -27,11 +27,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             var creator = new AzureServiceBusQueueCreator(settings);
 
             // create the queue
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("default");
+            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var sender = await messageSenderCreator.Create("myqueue", null, "default");
+            var sender = await messageSenderCreator.Create("myqueue", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
             //validate
