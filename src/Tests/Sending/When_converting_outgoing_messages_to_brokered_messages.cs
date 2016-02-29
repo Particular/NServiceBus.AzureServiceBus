@@ -4,6 +4,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.DelayedDelivery;
     using NServiceBus.DeliveryConstraints;
     using NServiceBus.Settings;
@@ -20,7 +21,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
 
@@ -46,7 +47,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             extensions.Serialization().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
 
@@ -69,7 +70,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var batchedOperation = new BatchedOperation
             {
@@ -88,7 +89,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var headers = new Dictionary<string, string>
             {
@@ -113,7 +114,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var now = DateTime.UtcNow;
             Time.UtcNow = () => now;
@@ -139,7 +140,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var now = DateTime.UtcNow;
             Time.UtcNow = () => now;
@@ -163,7 +164,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var ttl = TimeSpan.FromMinutes(1);
 
@@ -188,7 +189,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var correlationId = "SomeId";
             var headers = new Dictionary<string, string>
@@ -212,7 +213,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper("MyQueue", "MappedMyQueue"));
 
             var headers = new Dictionary<string, string>()
             {
@@ -227,14 +228,14 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
-            Assert.IsTrue(brokeredMessage.ReplyTo == "MyQueue");
+            Assert.IsTrue(brokeredMessage.ReplyTo == "MappedMyQueue");
         }
 
         [Test]
         public void Should_set_ViaPartitionKey_if_partition_key_is_available_and_sending_via_option_is_enabled()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var routingOptions = new RoutingOptions
             {
@@ -263,7 +264,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             extensions.Serialization().BrokeredMessageBodyType(bodyType);
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
 
@@ -284,7 +285,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
             var body = Encoding.UTF8.GetBytes("Whatever");
             var headers = new Dictionary<string, string> { { "header", "value" } };
@@ -297,6 +298,32 @@ namespace NServiceBus.AzureServiceBus.Tests
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
             Assert.That(brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize], Is.GreaterThan(0)); 
+        }
+
+        private class FakeMapper : ICanMapNamespaceNameToConnectionString
+        {
+            private readonly string _input;
+            private readonly string _output;
+
+            public FakeMapper()
+                : this ("input", "output")
+            {
+                
+            }
+
+            public FakeMapper(string input, string output)
+            {
+                _input = input;
+                _output = output;
+            }
+
+            public EntityAddress Map(EntityAddress value)
+            {
+                if (_input != value)
+                    throw new InvalidOperationException();
+
+                return _output;
+            }
         }
     }
 }

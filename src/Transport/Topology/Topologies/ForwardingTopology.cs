@@ -58,6 +58,10 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<AzureServiceBusQueueCreator>();
             container.RegisterSingleton<AzureServiceBusTopicCreator>();
             container.RegisterSingleton<AzureServiceBusForwardingSubscriptionCreator>();
+
+            container.RegisterSingleton<DefaultConnectionStringToNamespaceNameMapper>();
+            container.RegisterSingleton(settings.Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName));
+
             container.Register<DefaultBrokeredMessagesToIncomingMessagesConverter>();
             container.Register<DefaultBatchedOperationsToBrokeredMessagesConverter>();
             container.Register<TopologyCreator>();
@@ -88,8 +92,6 @@ namespace NServiceBus.AzureServiceBus
 
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
             container.Register(validationStrategyType);
-
-            container.RegisterSingleton<DefaultConnectionStringToNamespaceNameMapper>();
         }
 
         public Func<ICreateQueues> GetQueueCreatorFactory()

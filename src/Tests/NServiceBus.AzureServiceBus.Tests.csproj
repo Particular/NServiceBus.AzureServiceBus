@@ -153,6 +153,7 @@
     <Compile Include="Sending\When_sending_brokeredmessages_to_queues.cs" />
     <Compile Include="Topology\MetaModel\When_configuring_entity_address.cs" />
     <Compile Include="Topology\MetaModel\When_configuring_namespaces_definition.cs" />
+    <Compile Include="Topology\MetaModel\When_mapping_namespace_name_to_connection_string.cs" />
     <Compile Include="Topology\MetaModel\When_mapping_connection_string_to_namespace_name.cs" />
     <Compile Include="Topology\MetaModel\When_parsing_string_to_connection_string.cs" />
     <Compile Include="Topology\MetaModel\When_SqlSubscriptionFilter_is_serializing_an_event.cs" />

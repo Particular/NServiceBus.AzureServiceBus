@@ -7,6 +7,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.DeliveryConstraints;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -31,7 +32,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
+            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new PassThroughMapper()), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -96,7 +97,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
+            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new PassThroughMapper()), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -166,7 +167,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
+            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new PassThroughMapper()), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -236,7 +237,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
+            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new PassThroughMapper()), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
             
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -300,7 +301,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, oversizedHandler);
+            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new PassThroughMapper()), clientLifecycleManager, settings, oversizedHandler);
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -350,7 +351,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueue("myqueue");
         }
 
-        public class MyOversizedBrokeredMessageHandler : IHandleOversizedBrokeredMessages
+        private class MyOversizedBrokeredMessageHandler : IHandleOversizedBrokeredMessages
         {
             public bool Invoked { get; set; }
 
@@ -358,6 +359,14 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 Invoked = true;
                 return TaskEx.Completed;
+            }
+        }
+
+        private class PassThroughMapper : ICanMapNamespaceNameToConnectionString
+        {
+            public EntityAddress Map(EntityAddress value)
+            {
+                return value;
             }
         }
     }

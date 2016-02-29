@@ -2,6 +2,7 @@
 {
     using System;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Settings;
 
     public class DefaultConfigurationValues
@@ -34,7 +35,7 @@
         void ApplyDefaultValuesForAddressing(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new NamespaceConfigurations());
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName, (Func<NamespaceInfo, string>)(x => x.ConnectionString));
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName, typeof(DefaultNamespaceNameToConnectionStringMapper));
         }
 
         void ApplyDefaultsForConnectivity(SettingsHolder settings)

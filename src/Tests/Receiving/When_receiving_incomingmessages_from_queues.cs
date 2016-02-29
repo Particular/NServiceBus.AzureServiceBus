@@ -29,7 +29,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughtMapper());
+            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper());
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get("default");
@@ -64,7 +64,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughtMapper());
+            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper());
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get("default");
@@ -103,7 +103,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughtMapper());
+            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper());
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get("default");
@@ -152,7 +152,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteQueue("myqueue");
         }
 
-        private class PassThroughtMapper : ICanMapConnectionStringToNamespaceName
+        private class PassThroughMapper : ICanMapConnectionStringToNamespaceName
         {
             public EntityAddress Map(EntityAddress value)
             {

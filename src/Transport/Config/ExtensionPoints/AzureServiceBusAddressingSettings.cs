@@ -1,7 +1,7 @@
 ﻿namespace NServiceBus
 {
-    using System;
     using NServiceBus.AzureServiceBus;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
 
@@ -17,7 +17,7 @@
 
         public AzureServiceBusAddressingSettings UseLogicalNamespaceName()
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName, (Func<NamespaceInfo, string>)(x => x.Name));
+            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName, typeof(PassThroughNamespaceNameToConnectionStringMapper));
             return this;
         }
     }

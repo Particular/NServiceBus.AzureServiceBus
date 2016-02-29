@@ -5,17 +5,20 @@ namespace NServiceBus.AzureServiceBus
     using System.IO;
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.DelayedDelivery;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
-    public class DefaultBatchedOperationsToBrokeredMessagesConverter : IConvertOutgoingMessagesToBrokeredMessages
+    class DefaultBatchedOperationsToBrokeredMessagesConverter : IConvertOutgoingMessagesToBrokeredMessages
     {
-        readonly ReadOnlySettings settings;
+        private readonly ReadOnlySettings _settings;
+        private readonly ICanMapNamespaceNameToConnectionString _mapper;
 
-        public DefaultBatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings)
+        public DefaultBatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings, ICanMapNamespaceNameToConnectionString mapper)
         {
-            this.settings = settings;
+            _settings = settings;
+            _mapper = mapper;
         }
 
         public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperation> outgoingMessages, RoutingOptions routingOptions)
@@ -63,7 +66,7 @@ namespace NServiceBus.AzureServiceBus
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
-                brokeredMessage.ReplyTo = outgoingMessage.Headers[Headers.ReplyToAddress];
+                brokeredMessage.ReplyTo = _mapper.Map(outgoingMessage.Headers[Headers.ReplyToAddress]);
             }
         }
 
@@ -129,7 +132,7 @@ namespace NServiceBus.AzureServiceBus
         private BrokeredMessage CreateBrokeredMessage(OutgoingMessage outgoingMessage)
         {
             BrokeredMessage brokeredMessage;
-            var bodyType = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
+            var bodyType = _settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
             switch (bodyType)
             {
                 case SupportedBrokeredMessageBodyTypes.ByteArray:

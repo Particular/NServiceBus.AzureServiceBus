@@ -17,6 +17,7 @@
                 return ConnectionString.TryParse(Suffix, out connectionString);
             }
         }
+        public bool HasSuffix => !string.IsNullOrWhiteSpace(Suffix);
 
         public EntityAddress(string value)
         {

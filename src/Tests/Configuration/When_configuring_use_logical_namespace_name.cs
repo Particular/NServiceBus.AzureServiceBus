@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus.Tests
 {
     using System;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Settings;
     using NUnit.Framework;
 
@@ -10,7 +11,6 @@
     {
         private SettingsHolder settingsHolder;
         private TransportExtensions<AzureServiceBusTransport> extensions;
-        private NamespaceInfo info;
 
         [SetUp]
         public void SetUp()
@@ -18,26 +18,24 @@
             settingsHolder = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settingsHolder);
             extensions = new TransportExtensions<AzureServiceBusTransport>(settingsHolder);
-
-            info = new NamespaceInfo("name", "connection string");
         }
 
         [Test]
-        public void Default_should_use_namespace_connection_string()
+        public void Default_should_use_mapper_that_converts_namespace_name_to_connection_string()
         {
-            var resolver = settingsHolder.Get<Func<NamespaceInfo, string>>(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName);
+            var mapper = settingsHolder.Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName);
 
-            Assert.AreEqual("connection string", resolver(info));
+            Assert.AreEqual(typeof(DefaultNamespaceNameToConnectionStringMapper), mapper);
         }
 
         [Test]
-        public void Should_use_namespace_name()
+        public void Should_use_pass_throught_mapper()
         {
             extensions.UseDefaultTopology().Addressing().UseLogicalNamespaceName();
 
-            var resolver = settingsHolder.Get<Func<NamespaceInfo, string>>(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName);
+            var mapper = settingsHolder.Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.UseLogicalNamespaceName);
 
-            Assert.AreEqual("name", resolver(info));
+            Assert.AreEqual(typeof(PassThroughNamespaceNameToConnectionStringMapper), mapper);
         }
     }
 }

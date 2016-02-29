@@ -202,12 +202,6 @@ namespace NServiceBus.AzureServiceBus
         public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; set; }
         public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; set; }
     }
-    public class DefaultBatchedOperationsToBrokeredMessagesConverter : NServiceBus.AzureServiceBus.IConvertOutgoingMessagesToBrokeredMessages
-    {
-        public DefaultBatchedOperationsToBrokeredMessagesConverter(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> Convert(System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.BatchedOperation> outgoingMessages, NServiceBus.AzureServiceBus.RoutingOptions routingOptions) { }
-        public Microsoft.ServiceBus.Messaging.BrokeredMessage Convert(NServiceBus.AzureServiceBus.BatchedOperation outgoingOperation, NServiceBus.AzureServiceBus.RoutingOptions routingOptions) { }
-    }
     public class DefaultConfigurationValues
     {
         public DefaultConfigurationValues() { }

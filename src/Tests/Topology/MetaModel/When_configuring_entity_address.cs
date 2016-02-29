@@ -33,6 +33,7 @@
             var address = new EntityAddress("EntityName@suffix");
 
             Assert.AreEqual("suffix", address.Suffix);
+            Assert.True(address.HasSuffix);
         }
 
         [Test]
