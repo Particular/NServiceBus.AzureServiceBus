@@ -24,7 +24,8 @@
             if (_inner.Contains(definition)) return;
 
             var defaultDefinition = _inner.SingleOrDefault(x => x.Name == DefaultName && x.ConnectionString == connectionString);
-            _inner.Remove(defaultDefinition);
+            if (defaultDefinition != null)
+                _inner.Remove(defaultDefinition);
             _inner.Add(definition);
         }
 
