@@ -47,16 +47,6 @@
         }
 
         [Test]
-        public void Should_add_connection_string_without_specifying_name_building_it()
-        {
-            _namespaces.Add("name", "connectionString1");
-            _namespaces.Add("connectionString2");
-
-            var exists = _namespaces.Any(x => x.Name == "namespace-2");
-            Assert.True(exists);
-        }
-
-        [Test]
         public void Should_does_not_add_definition_if_exists()
         {
             _namespaces.Add("name", "connectionString");

@@ -478,7 +478,6 @@ namespace NServiceBus.AzureServiceBus
         public NamespaceConfigurations() { }
         public int Count { get; }
         public void Add(string name, string connectionString) { }
-        public void Add(string connectionString) { }
         public void AddDefault(string connectionString) { }
         public string GetConnectionString(string name) { }
         public System.Collections.Generic.IEnumerator<NServiceBus.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
@@ -648,7 +647,7 @@ namespace NServiceBus
     public class AzureServiceBusAddressingSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusAddressingSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusAddressingSettings UseLogicalNamespaceName() { }
+        public NServiceBus.AzureServiceBusAddressingSettings UseNamespaceNamesInsteadOfConnectionStrings() { }
     }
     public class AzureServiceBusBatchingSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {

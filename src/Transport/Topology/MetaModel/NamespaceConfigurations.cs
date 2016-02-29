@@ -8,7 +8,6 @@
     public class NamespaceConfigurations : IEnumerable<NamespaceInfo>
     {
         private static readonly string DefaultName = "default";
-        private static readonly string Prefix = "namespace-";
 
         private readonly List<NamespaceInfo> _inner;
 
@@ -27,12 +26,6 @@
             var defaultDefinition = _inner.SingleOrDefault(x => x.Name == DefaultName && x.ConnectionString == connectionString);
             _inner.Remove(defaultDefinition);
             _inner.Add(definition);
-        }
-
-        public void Add(string connectionString)
-        {
-            var name = $"{Prefix}{_inner.Count + 1}";
-            Add(name, connectionString);
         }
 
         public void AddDefault(string connectionString)
