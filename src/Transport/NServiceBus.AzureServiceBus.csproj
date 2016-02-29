@@ -111,6 +111,7 @@
     <Compile Include="Topology\MetaModel\NamespaceConfigurations.cs" />
     <Compile Include="Topology\MetaModel\PassThroughNamespaceNameToConnectionStringMapper.cs" />
     <Compile Include="Topology\PreStartupChecks\ManageRightsCheck.cs" />
+    <Compile Include="Topology\PreStartupChecks\TopicPartitioningCheckForForwardingTopology.cs" />
     <Compile Include="Utils\BrokeredMessageHeaders.cs" />
     <Compile Include="Sending\IHandleOversizedBrokeredMessages.cs" />
     <Compile Include="Sending\ThrowOnOversizedBrokeredMessages.cs" />
