@@ -1,7 +1,6 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.PreStartupChecks
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using FakeItEasy;
     using NServiceBus.AzureServiceBus;
@@ -19,7 +18,7 @@
             var container = new TransportPartsContainer();
 
             settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string> { "namespace1" });
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new NamespaceConfigurations { {"namespace1", "namespace1-connString"} });
             settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnablePartitioning, true);
 
             container.Register(typeof(SettingsHolder), () => settings);

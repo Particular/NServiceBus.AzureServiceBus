@@ -22,7 +22,7 @@ namespace NServiceBus.AzureServiceBus
             if (!settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 return StartupCheckResult.Success;
 
-            var namespacesWithWrongRights = new List<NamespaceInfo>();
+            var namespacesWithoutManageRights = new List<string>();
 
             var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             foreach (var @namespace in namespaces)
@@ -31,7 +31,7 @@ namespace NServiceBus.AzureServiceBus
                 var canManageEntities = await namespaceManager.CanManageEntities().ConfigureAwait(false);
 
                 if (!canManageEntities)
-                    namespacesWithWrongRights.Add(@namespace);
+                    namespacesWithoutManageRights.Add(@namespace.Name);
             }
 
             if (namespacesWithoutManageRights.Any() == false)

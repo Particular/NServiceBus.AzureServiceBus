@@ -1,6 +1,5 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.PreStartupChecks
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using FakeItEasy;
     using NServiceBus.AzureServiceBus;
@@ -28,7 +27,13 @@
         {
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string> { "namespace1", "namespace2" });
+
+            var namespaces = new NamespaceConfigurations
+            {
+                {"name1", "connectionString1"},
+                {"name2", "connectionString2"}
+            };
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
 
             var namespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => namespaceManager.CanManageEntities()).Returns(Task.FromResult(true));
@@ -46,15 +51,21 @@
         {
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string> { "namespace1", "namespace2" });
+
+            var namespaces = new NamespaceConfigurations
+            {
+                {"name1", "connectionString1"},
+                {"name2", "connectionString2"}
+            };
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
 
             var trueNamespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => trueNamespaceManager.CanManageEntities()).Returns(Task.FromResult(true));
             var falseNamespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => falseNamespaceManager.CanManageEntities()).Returns(Task.FromResult(false));
             var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycle>();
-            A.CallTo(() => manageNamespaceLifeCycle.Get("namespace1")).Returns(trueNamespaceManager);
-            A.CallTo(() => manageNamespaceLifeCycle.Get("namespace2")).Returns(falseNamespaceManager);
+            A.CallTo(() => manageNamespaceLifeCycle.Get("connectionString1")).Returns(trueNamespaceManager);
+            A.CallTo(() => manageNamespaceLifeCycle.Get("connectionString2")).Returns(falseNamespaceManager);
 
             var check = new ManageRightsCheck(manageNamespaceLifeCycle, settings);
             var result = await check.Run();
@@ -67,21 +78,30 @@
         {
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string> { "namespace1", "namespace2", "namespace3" });
+
+            var namespaces = new NamespaceConfigurations
+            {
+                {"name1", "connectionString1"},
+                {"name2", "connectionString2"},
+                {"name3", "connectionString3"}
+            };
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
 
             var trueNamespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => trueNamespaceManager.CanManageEntities()).Returns(Task.FromResult(true));
             var falseNamespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => falseNamespaceManager.CanManageEntities()).Returns(Task.FromResult(false));
             var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycle>();
-            A.CallTo(() => manageNamespaceLifeCycle.Get("namespace1")).Returns(trueNamespaceManager);
-            A.CallTo(() => manageNamespaceLifeCycle.Get("namespace2")).Returns(falseNamespaceManager);
-            A.CallTo(() => manageNamespaceLifeCycle.Get("namespace3")).Returns(falseNamespaceManager);
+            A.CallTo(() => manageNamespaceLifeCycle.Get("name1")).Returns(trueNamespaceManager);
+            A.CallTo(() => manageNamespaceLifeCycle.Get("name2")).Returns(falseNamespaceManager);
+            A.CallTo(() => manageNamespaceLifeCycle.Get("name3")).Returns(falseNamespaceManager);
 
             var check = new ManageRightsCheck(manageNamespaceLifeCycle, settings);
             var result = await check.Run();
 
-            StringAssert.Contains("`namespace2`, `namespace3`", result.ErrorMessage);
+            StringAssert.DoesNotContain("name1", result.ErrorMessage);
+            StringAssert.Contains("name2", result.ErrorMessage);
+            StringAssert.Contains("name3", result.ErrorMessage);
         }
     }
 }
