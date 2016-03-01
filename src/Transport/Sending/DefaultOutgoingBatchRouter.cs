@@ -65,7 +65,7 @@ namespace NServiceBus.AzureServiceBus
                 // TODO: ensure fallback to passives
                 foreach (var ns in activeNamespaces)
                 {
-                    var messageSender = senders.Get(entity.Path, routingOptions.ViaEntityPath, ns.ConnectionString);
+                    var messageSender = senders.Get(entity.Path, routingOptions.ViaEntityPath, ns.Name);
 
                     var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions);
 

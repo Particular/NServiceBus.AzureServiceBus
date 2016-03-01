@@ -58,7 +58,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 this.factory = factory;
             }
 
-            public IMessagingFactory Get(string @namespace)
+            public IMessagingFactory Get(string namespaceName)
             {
                 return factory;
             }

@@ -8,7 +8,7 @@ namespace NServiceBus.AzureServiceBus
 
         public EntityType Type { get; set; }
 
-        public NamespaceInfo Namespace { get; set; }
+        public RuntimeNamespaceInfo Namespace { get; set; }
 
         public IList<EntityRelationShipInfo> RelationShips { get; private set; }
 

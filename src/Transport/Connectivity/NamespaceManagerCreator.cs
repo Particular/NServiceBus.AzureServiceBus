@@ -1,12 +1,23 @@
 namespace NServiceBus.AzureServiceBus
 {
     using Microsoft.ServiceBus;
+    using NServiceBus.Settings;
 
     class NamespaceManagerCreator : ICreateNamespaceManagers
     {
-        public INamespaceManager Create(string connectionstring)
+        private readonly ReadOnlySettings _settings;
+
+        public NamespaceManagerCreator(ReadOnlySettings settings)
         {
-            return new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(connectionstring));
+            _settings = settings;
+        }
+
+        public INamespaceManager Create(string namespaceName)
+        {
+            var namespacesDefinition = _settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var connectionString = namespacesDefinition.GetConnectionString(namespaceName);
+
+            return new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(connectionString));
         }
     }
 }

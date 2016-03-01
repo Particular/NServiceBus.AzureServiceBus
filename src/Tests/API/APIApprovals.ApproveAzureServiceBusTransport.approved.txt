@@ -109,7 +109,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
         public FailOverNamespacePartitioningStrategy(NServiceBus.Settings.ReadOnlySettings settings) { }
         public NServiceBus.AzureServiceBus.Addressing.FailOverMode Mode { get; set; }
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.FailOverNamespacePartitioningStrategy.<GetNamespaces>d__6))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.NamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
     public class FlatCompositionStrategy : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
     {
@@ -132,7 +132,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
     }
     public interface INamespacePartitioningStrategy
     {
-        System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.NamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent);
+        System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent);
     }
     public interface ISanitizationStrategy
     {
@@ -151,26 +151,26 @@ namespace NServiceBus.AzureServiceBus.Addressing
     public class ReplicatedNamespacePartitioningStrategy : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
         public ReplicatedNamespacePartitioningStrategy(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.NamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
     public class RoundRobinNamespacePartitioningStrategy : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
         public RoundRobinNamespacePartitioningStrategy(NServiceBus.Settings.ReadOnlySettings settings) { }
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.RoundRobinNamespacePartitioningStrategy.<GetNamespaces>d__2))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.NamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
     public class ShardedNamespacePartitioningStrategy : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
         public ShardedNamespacePartitioningStrategy(NServiceBus.Settings.ReadOnlySettings settings) { }
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.ShardedNamespacePartitioningStrategy.<GetNamespaces>d__4))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.NamespaceInfo> GetNamespaces(string endpointname, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointname, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
         public void SetShardingRule(System.Func<int> rule) { }
     }
     public class SingleNamespacePartitioningStrategy : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
         public SingleNamespacePartitioningStrategy(NServiceBus.Settings.ReadOnlySettings settings) { }
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.SingleNamespacePartitioningStrategy.<GetNamespaces>d__2))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.NamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
     public class ThrowOnFailingSanitizationStrategy : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
@@ -202,12 +202,6 @@ namespace NServiceBus.AzureServiceBus
         public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; set; }
         public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; set; }
     }
-    public class DefaultBatchedOperationsToBrokeredMessagesConverter : NServiceBus.AzureServiceBus.IConvertOutgoingMessagesToBrokeredMessages
-    {
-        public DefaultBatchedOperationsToBrokeredMessagesConverter(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> Convert(System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.BatchedOperation> outgoingMessages, NServiceBus.AzureServiceBus.RoutingOptions routingOptions) { }
-        public Microsoft.ServiceBus.Messaging.BrokeredMessage Convert(NServiceBus.AzureServiceBus.BatchedOperation outgoingOperation, NServiceBus.AzureServiceBus.RoutingOptions routingOptions) { }
-    }
     public class DefaultConfigurationValues
     {
         public DefaultConfigurationValues() { }
@@ -222,7 +216,7 @@ namespace NServiceBus.AzureServiceBus
     public class EntityInfo
     {
         public EntityInfo() { }
-        public NServiceBus.AzureServiceBus.NamespaceInfo Namespace { get; set; }
+        public NServiceBus.AzureServiceBus.RuntimeNamespaceInfo Namespace { get; set; }
         public string Path { get; set; }
         public System.Collections.Generic.IList<NServiceBus.AzureServiceBus.EntityRelationShipInfo> RelationShips { get; }
         public bool ShouldBeListenedTo { get; set; }
@@ -313,19 +307,19 @@ namespace NServiceBus.AzureServiceBus
     }
     public interface ICreateMessageReceivers
     {
-        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageReceiver> Create(string entitypath, string connectionstring);
+        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageReceiver> Create(string entitypath, string namespaceName);
     }
     public interface ICreateMessageSenders
     {
-        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageSender> Create(string entitypath, string viaEntityPath, string connectionstring);
+        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName);
     }
     public interface ICreateMessagingFactories
     {
-        NServiceBus.AzureServiceBus.IMessagingFactory Create(string connectionstring);
+        NServiceBus.AzureServiceBus.IMessagingFactory Create(string namespaceName);
     }
     public interface ICreateNamespaceManagers
     {
-        NServiceBus.AzureServiceBus.INamespaceManager Create(string connectionstring);
+        NServiceBus.AzureServiceBus.INamespaceManager Create(string namespaceName);
     }
     public interface ICreateTopology
     {
@@ -337,20 +331,20 @@ namespace NServiceBus.AzureServiceBus
     }
     public interface IManageMessageReceiverLifeCycle
     {
-        NServiceBus.AzureServiceBus.IMessageReceiver Get(string entitypath, string connectionstring);
+        NServiceBus.AzureServiceBus.IMessageReceiver Get(string entitypath, string namespaceName);
     }
     public interface IManageMessageSenderLifeCycle
     {
-        NServiceBus.AzureServiceBus.IMessageSender Get(string entitypath, string viaEntityPath, string connectionstring);
+        NServiceBus.AzureServiceBus.IMessageSender Get(string entitypath, string viaEntityPath, string namespaceName);
     }
     public interface IManageMessagingFactoryLifeCycle
     {
         System.Threading.Tasks.Task CloseAll();
-        NServiceBus.AzureServiceBus.IMessagingFactory Get(string @namespace);
+        NServiceBus.AzureServiceBus.IMessagingFactory Get(string namespaceName);
     }
     public interface IManageNamespaceManagerLifeCycle
     {
-        NServiceBus.AzureServiceBus.INamespaceManager Get(string @namespace);
+        NServiceBus.AzureServiceBus.INamespaceManager Get(string namespaceName);
     }
     public interface IMessageReceiver : NServiceBus.AzureServiceBus.IClientEntity
     {
@@ -479,12 +473,21 @@ namespace NServiceBus.AzureServiceBus
         public System.Threading.Tasks.Task Send(Microsoft.ServiceBus.Messaging.BrokeredMessage message) { }
         public System.Threading.Tasks.Task SendBatch(System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> messages) { }
     }
-    public class NamespaceInfo
+    public class NamespaceConfigurations : System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.NamespaceInfo>, System.Collections.IEnumerable
     {
-        public NamespaceInfo(string connectionString, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
-        public string ConnectionString { get; set; }
-        public NServiceBus.AzureServiceBus.NamespaceMode Mode { get; set; }
-        protected bool Equals(NServiceBus.AzureServiceBus.NamespaceInfo other) { }
+        public NamespaceConfigurations() { }
+        public int Count { get; }
+        public void Add(string name, string connectionString) { }
+        public void AddDefault(string connectionString) { }
+        public string GetConnectionString(string name) { }
+        public System.Collections.Generic.IEnumerator<NServiceBus.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
+    }
+    public class NamespaceInfo : System.IEquatable<NServiceBus.AzureServiceBus.NamespaceInfo>
+    {
+        public NamespaceInfo(string name, string connectionString) { }
+        public string ConnectionString { get; }
+        public string Name { get; }
+        public bool Equals(NServiceBus.AzureServiceBus.NamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
     }
@@ -534,6 +537,16 @@ namespace NServiceBus.AzureServiceBus
         public string ViaConnectionString { get; set; }
         public string ViaEntityPath { get; set; }
         public string ViaPartitionKey { get; set; }
+    }
+    public class RuntimeNamespaceInfo : System.IEquatable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo>
+    {
+        public RuntimeNamespaceInfo(string name, string connectionString, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
+        public string ConnectionString { get; }
+        public NServiceBus.AzureServiceBus.NamespaceMode Mode { get; }
+        public string Name { get; }
+        public bool Equals(NServiceBus.AzureServiceBus.RuntimeNamespaceInfo other) { }
+        public override bool Equals(object obj) { }
+        public override int GetHashCode() { }
     }
     public class StandardTopology : NServiceBus.AzureServiceBus.ITopology
     {
@@ -595,7 +608,7 @@ namespace NServiceBus.AzureServiceBus
     {
         public TopologySection() { }
         public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.EntityInfo> Entities { get; set; }
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.NamespaceInfo> Namespaces { get; set; }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> Namespaces { get; set; }
         public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.EntityRelationShipInfo> Relationships { get; set; }
     }
     public class TransportPartsContainer : NServiceBus.AzureServiceBus.IRegisterTransportParts, NServiceBus.AzureServiceBus.IResolveTransportParts, NServiceBus.AzureServiceBus.ITransportPartsContainer
@@ -634,6 +647,7 @@ namespace NServiceBus
     public class AzureServiceBusAddressingSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusAddressingSettings(NServiceBus.Settings.SettingsHolder settings) { }
+        public NServiceBus.AzureServiceBusAddressingSettings UseNamespaceNamesInsteadOfConnectionStrings() { }
     }
     public class AzureServiceBusBatchingSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
@@ -694,7 +708,7 @@ namespace NServiceBus
     public class AzureServiceBusNamespacePartitioningSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusNamespacePartitioningSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusNamespacePartitioningSettings AddNamespace(string @namespace) { }
+        public NServiceBus.AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString) { }
         public NServiceBus.AzureServiceBusNamespacePartitioningSettings UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy { }
     }

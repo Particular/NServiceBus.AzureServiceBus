@@ -22,9 +22,9 @@ namespace NServiceBus.AzureServiceBus
             }
             else
             {
-                _settingsFactory = connectionstring =>
+                _settingsFactory = namespaceName =>
                 {
-                    var namespaceManager = _namespaceManagers.Get(connectionstring);
+                    var namespaceManager = _namespaceManagers.Get(namespaceName);
 
                     var s = new MessagingFactorySettings
                     {
@@ -40,10 +40,10 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        public IMessagingFactory Create(string connectionstring)
+        public IMessagingFactory Create(string namespaceName)
         {
-            var namespaceManager = _namespaceManagers.Get(connectionstring);
-            var factorySettings = _settingsFactory(connectionstring);
+            var namespaceManager = _namespaceManagers.Get(namespaceName);
+            var factorySettings = _settingsFactory(namespaceName);
             var inner = MessagingFactory.Create(namespaceManager.Address, factorySettings);
             if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.PrefetchCount))
             {

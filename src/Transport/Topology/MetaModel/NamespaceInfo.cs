@@ -1,55 +1,39 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
-    public class NamespaceInfo
+    using System;
+    public class NamespaceInfo : IEquatable<NamespaceInfo>
     {
-        public NamespaceInfo(string connectionString, NamespaceMode mode = NamespaceMode.Active)
+        public string Name { get; }
+        public string ConnectionString { get; }
+
+        public NamespaceInfo(string name, string connectionString)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Namespace name can't be null or empty", nameof(name));
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Namespace connection string can't be null or empty", nameof(connectionString));
+
+            Name = name;
             ConnectionString = connectionString;
-            Mode = mode;
         }
 
-        public string ConnectionString { get; set; }
-
-        public NamespaceMode Mode { get; set; }
-
-        protected bool Equals(NamespaceInfo other)
+        public bool Equals(NamespaceInfo other)
         {
-            return string.Equals(ConnectionString, other.ConnectionString); // && Mode == other.Mode; // namespaces can switch mode, so should not be included in the equality check
+            return other != null
+                   && Name.Equals(other.Name)
+                   && ConnectionString.Equals(other.ConnectionString);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-            return Equals((NamespaceInfo)obj);
+            var target = obj as NamespaceInfo;
+            return this.Equals(target);
         }
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return ((ConnectionString != null ? ConnectionString.GetHashCode() : 0) * 397); // ^ (int)Mode; // namespaces can switch mode, so should not be included in the equality check
-            }
-        }
-
-        public static bool operator ==(NamespaceInfo left, NamespaceInfo right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(NamespaceInfo left, NamespaceInfo right)
-        {
-            return !(left == right);
+            return String.Concat(Name, "-", ConnectionString).GetHashCode();
         }
     }
 }

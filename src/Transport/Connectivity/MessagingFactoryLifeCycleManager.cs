@@ -17,9 +17,9 @@ namespace NServiceBus.AzureServiceBus
             this._numberOfFactoriesPerNamespace = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);
         }
 
-        public IMessagingFactory Get(string @namespace)
+        public IMessagingFactory Get(string namespaceName)
         {
-            var buffer = MessagingFactories.GetOrAdd(@namespace, s =>
+            var buffer = MessagingFactories.GetOrAdd(namespaceName, s =>
             {
                 var b = new CircularBuffer<FactoryEntry>(_numberOfFactoriesPerNamespace);
                 for (var i = 0; i < _numberOfFactoriesPerNamespace; i++)
@@ -27,7 +27,7 @@ namespace NServiceBus.AzureServiceBus
                     var e = new FactoryEntry();
                     lock (e.Mutex)
                     {
-                        e.Factory = _createMessagingFactories.Create(@namespace);
+                        e.Factory = _createMessagingFactories.Create(namespaceName);
                     }
                     b.Put(e);
                 }
@@ -42,7 +42,7 @@ namespace NServiceBus.AzureServiceBus
                 {
                     if (entry.Factory.IsClosed)
                     {
-                        entry.Factory = _createMessagingFactories.Create(@namespace);
+                        entry.Factory = _createMessagingFactories.Create(namespaceName);
                     }
                 }
             }

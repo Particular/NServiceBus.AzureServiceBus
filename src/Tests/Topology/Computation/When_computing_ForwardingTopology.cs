@@ -9,6 +9,9 @@ namespace NServiceBus.AzureServiceBus.Tests
     [Category("AzureServiceBus")]
     public class When_computing_ForwardingTopology
     {
+        private static readonly string Connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        private static readonly string Name = "name";
+
         [Test]
         public void Determines_the_namespace_from_partitioning_strategy()
         {
@@ -19,8 +22,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -29,7 +31,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var sectionManager = container.Resolve<ITopologySectionManager>();
             var definition = sectionManager.DetermineResourcesToCreate();
 
-            var namespaceInfo = new NamespaceInfo(connectionstring, NamespaceMode.Active);
+            var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
         }
 
@@ -43,8 +45,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            var connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -53,7 +54,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var sectionManager = container.Resolve<ITopologySectionManager>();
             var definition = sectionManager.DetermineResourcesToCreate();
 
-            Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == connectionstring));
+            Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == Connectionstring));
         }
 
         [Test]
@@ -66,8 +67,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -76,7 +76,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var sectionManager = container.Resolve<ITopologySectionManager>();
             var definition = sectionManager.DetermineResourcesToCreate();
 
-            var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == connectionstring && ei.Path.StartsWith("bundle-"));
+            var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring && ei.Path.StartsWith("bundle-"));
 
             Assert.That(result.Count(), Is.EqualTo(2));
             Assert.That(result, Has.Exactly(1).Matches<EntityInfo>(x => x.Path == "bundle-1"));
@@ -93,8 +93,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -119,8 +118,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -144,8 +142,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            const string connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(connectionstring);
+            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
             topology.Initialize(settings);

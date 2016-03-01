@@ -10,81 +10,62 @@ namespace NServiceBus.AzureServiceBus.Tests
     [Category("AzureServiceBus")]
     public class When_using_roundrobin_strategy_on_multiple_namespaces
     {
+        private static readonly string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        private static readonly string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        private static readonly string TertiaryConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+
+        private static readonly string PrimaryName = "namespace1";
+        private static readonly string SecondaryName = "namespace2";
+        private static readonly string TertiaryName = "namespace3";
+
+        private RoundRobinNamespacePartitioningStrategy _strategy;
+
+        [SetUp]
+        public void SetUp()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(TertiaryName, TertiaryConnectionString);
+
+            _strategy = new RoundRobinNamespacePartitioningStrategy(settings);
+        }
+
         [Test]
         public void Roundrobin_partitioning_strategy_will_return_a_single_connectionstring_for_purpose_of_sending()
         {
-            const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            const string tertiary = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending);
 
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(primary);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(secondary);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
-
-            var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
-
-            Assert.AreEqual(1, strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).Count());
+            Assert.AreEqual(1, namespaces.Count());
         }
 
         [Test]
         public void Roundrobin_partitioning_strategy_will_return_all_connectionstrings_for_purpose_of_creating()
         {
-            const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            const string tertiary = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
 
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(primary);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(secondary);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
-
-            var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
-
-            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating).Count());
+            Assert.AreEqual(3, namespaces.Count());
         }
 
         [Test]
         public void Roundrobin_partitioning_strategy_will_return_all_connectionstrings_for_purpose_of_receiving()
         {
-            const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            const string tertiary = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Receiving);
 
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(primary);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(secondary);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
-
-            var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
-
-            Assert.AreEqual(3, strategy.GetNamespaces("endpoint1", PartitioningIntent.Receiving).Count());
+            Assert.AreEqual(3, namespaces.Count());
         }
 
         [Test]
         public void Roundrobin_partitioning_strategy_will_circle_active_namespace()
         {
-            const string primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            const string secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            const string tertiary = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
 
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(primary);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(secondary);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(tertiary);
-
-            var strategy = new RoundRobinNamespacePartitioningStrategy(settings);
-
-            for (var i = 0; i < 2; i++)
-            {
-                Assert.AreEqual(new NamespaceInfo(primary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
-                Assert.AreEqual(new NamespaceInfo(secondary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
-                Assert.AreEqual(new NamespaceInfo(tertiary, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
-            }
+            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString, NamespaceMode.Active), _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
         }
         
         [Test]
@@ -100,7 +81,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey");
+            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
             
             Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioningStrategy(settings));
         }

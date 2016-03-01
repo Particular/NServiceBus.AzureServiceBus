@@ -78,7 +78,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             public int InvocationCount = 0;
 
-            public IMessagingFactory Create(string connectionstring)
+            public IMessagingFactory Create(string namespaceName)
             {
                 InvocationCount++;
 

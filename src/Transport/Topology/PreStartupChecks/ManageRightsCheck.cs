@@ -1,6 +1,5 @@
 namespace NServiceBus.AzureServiceBus
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -23,21 +22,23 @@ namespace NServiceBus.AzureServiceBus
             if (!settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 return StartupCheckResult.Success;
 
-            var namespaces = new List<string>();
-            foreach (var @namespace in settings.Get<List<string>>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces))
+            var namespacesWithWrongRights = new List<NamespaceInfo>();
+
+            var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            foreach (var @namespace in namespaces)
             {
-                var namespaceManager = manageNamespaceManagerLifeCycle.Get(@namespace);
+                var namespaceManager = manageNamespaceManagerLifeCycle.Get(@namespace.Name);
                 var canManageEntities = await namespaceManager.CanManageEntities().ConfigureAwait(false);
 
                 if (!canManageEntities)
-                    namespaces.Add(@namespace);
+                    namespacesWithWrongRights.Add(@namespace);
             }
 
-            if (!namespaces.Any())
+            if (!namespacesWithWrongRights.Any())
                 return StartupCheckResult.Success;
 
             return StartupCheckResult.Failed($"Manage rights on namespace(s) is required if {WellKnownConfigurationKeys.Core.CreateTopology} setting is true." +
-                                             $"Configure namespace(s) {namespaces.Aggregate((curr, next) => String.Concat(curr, ", ", next))} with manage rights");
+                                             $"Configure namespace(s) {namespacesWithWrongRights.Select(x => x.Name).Aggregate((curr, next) => string.Concat(curr, ", ", next))} with manage rights");
         }
     }
 }

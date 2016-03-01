@@ -1,8 +1,8 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
-    using System.Collections.Generic;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Settings;
 
     public class DefaultConfigurationValues
@@ -34,7 +34,8 @@
 
         void ApplyDefaultValuesForAddressing(SettingsHolder settings)
         {
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new List<string>());
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new NamespaceConfigurations());
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings, typeof(DefaultNamespaceNameToConnectionStringMapper));
         }
 
         void ApplyDefaultsForConnectivity(SettingsHolder settings)

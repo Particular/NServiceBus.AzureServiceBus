@@ -3,6 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.Addressing;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
@@ -55,6 +56,10 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<AzureServiceBusQueueCreator>();
             container.RegisterSingleton<AzureServiceBusTopicCreator>();
             container.RegisterSingleton<AzureServiceBusSubscriptionCreatorV6>();
+
+            container.RegisterSingleton<DefaultConnectionStringToNamespaceNameMapper>();
+            container.RegisterSingleton(settings.Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings));
+
             container.Register<DefaultBrokeredMessagesToIncomingMessagesConverter>();
             container.Register<DefaultBatchedOperationsToBrokeredMessagesConverter>();
             container.Register<TopologyCreator>();

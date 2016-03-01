@@ -4,6 +4,6 @@
 
     public interface INamespacePartitioningStrategy
     {
-        IEnumerable<NamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent);
+        IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent);
     }
 }
