@@ -356,6 +356,9 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value);
+            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -368,7 +371,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the fallback queue (but not the queue in the primary to emulate that it is down)
             var creator = new AzureServiceBusQueueCreator(settings);
-            var fallbackNamespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Fallback);
+            var fallbackNamespaceManager = namespaceManagerLifeCycleManager.Get("fallback");
             await creator.Create("myqueue", fallbackNamespaceManager);
 
             // setup the batch
@@ -421,6 +424,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value);
+            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback);
+
             var oversizedHandler = new MyOversizedBrokeredMessageHandler();
 
             // setup the infrastructure
@@ -434,10 +441,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the queue & fallback queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceManagerLifeCycleManager.Get("primary");
             await creator.Create("myqueue", namespaceManager);
 
-            var fallbackNamespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Fallback);
+            var fallbackNamespaceManager = namespaceManagerLifeCycleManager.Get("fallback");
             await creator.Create("myqueue", fallbackNamespaceManager);
 
             // setup the batch
@@ -491,6 +498,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value);
+            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback);
+
             var oversizedHandler = new MyThrowingOversizedBrokeredMessageHandler();
 
             // setup the infrastructure
@@ -504,7 +515,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get(AzureServiceBusConnectionString.Value);
+            var namespaceManager = namespaceManagerLifeCycleManager.Get("primary");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch

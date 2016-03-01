@@ -140,7 +140,7 @@ namespace NServiceBus.AzureServiceBus
                         }
                         catch (Exception ex)
                         {
-                            logger.Error("Failed to dispatch a batch with the following message IDs: " + string.Join(", ", clones.Select(x => x.MessageId) + " to fallback namespace"), ex);
+                            logger.Error($"Failed to dispatch batch to fallback namespace: ${ex}");
                         }
                     }
                 }
