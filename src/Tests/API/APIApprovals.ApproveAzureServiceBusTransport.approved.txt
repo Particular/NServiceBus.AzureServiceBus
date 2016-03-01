@@ -255,7 +255,7 @@ namespace NServiceBus.AzureServiceBus
         public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
         public System.Func<NServiceBus.Transports.IManageSubscriptions> GetSubscriptionManagerFactory() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
-        public System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
+        public async System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
     }
     public class ForwardingTopologySectionManager : NServiceBus.AzureServiceBus.ITopologySectionManager
     {

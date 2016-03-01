@@ -11,10 +11,10 @@ namespace NServiceBus.AzureServiceBus
         private readonly IManageNamespaceManagerLifeCycle manageNamespaceManagerLifeCycle;
         private readonly ReadOnlySettings settings;
 
-        public ManageRightsCheck(ITransportPartsContainer container)
+        public ManageRightsCheck(IManageNamespaceManagerLifeCycle manageNamespaceManagerLifeCycle, ReadOnlySettings settings)
         {
-            this.manageNamespaceManagerLifeCycle = container.Resolve<IManageNamespaceManagerLifeCycle>();
-            this.settings = container.Resolve<ReadOnlySettings>();
+            this.manageNamespaceManagerLifeCycle = manageNamespaceManagerLifeCycle;
+            this.settings = settings;
         }
 
         public async Task<StartupCheckResult> Run()
@@ -22,7 +22,7 @@ namespace NServiceBus.AzureServiceBus
             if (!settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 return StartupCheckResult.Success;
 
-            var namespacesWithWrongRights = new List<NamespaceInfo>();
+            var namespacesWithoutManageRights = new List<string>();
 
             var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             foreach (var @namespace in namespaces)
@@ -31,14 +31,13 @@ namespace NServiceBus.AzureServiceBus
                 var canManageEntities = await namespaceManager.CanManageEntities().ConfigureAwait(false);
 
                 if (!canManageEntities)
-                    namespacesWithWrongRights.Add(@namespace);
+                    namespacesWithoutManageRights.Add(@namespace.Name);
             }
 
-            if (!namespacesWithWrongRights.Any())
+            if (namespacesWithoutManageRights.Any() == false)
                 return StartupCheckResult.Success;
 
-            return StartupCheckResult.Failed($"Manage rights on namespace(s) is required if {WellKnownConfigurationKeys.Core.CreateTopology} setting is true." +
-                                             $"Configure namespace(s) {namespacesWithWrongRights.Select(x => x.Name).Aggregate((curr, next) => string.Concat(curr, ", ", next))} with manage rights");
+            return StartupCheckResult.Failed($"Configured to create topology, but have no manage rights for the following namespace(s): {string.Join(", ", namespacesWithoutManageRights.Select(name => $"`{name}`"))}.");
         }
     }
 }
