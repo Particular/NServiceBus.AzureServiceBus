@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Settings;
@@ -42,6 +43,7 @@
         {
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 5);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, false);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.ConnectivityMode, ConnectivityMode.Tcp);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, 5);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.PeekLock);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout, TimeSpan.FromMinutes(5.0));
