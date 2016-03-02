@@ -1,5 +1,6 @@
 ﻿namespace NServiceBus
 {
+    using Microsoft.ServiceBus;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -17,10 +18,17 @@
 
             RegisterConnectionStringAsNamespace(connectionString, settings);
 
+            SetConnectivityMode(settings);
+
             return new AzureServiceBusTransportInfrastructure(topology, settings);
         }
 
-        private void RegisterConnectionStringAsNamespace(string connectionString, ReadOnlySettings settings)
+        private static void SetConnectivityMode(SettingsHolder settings)
+        {
+            ServiceBusEnvironment.SystemConnectivity.Mode = settings.Get<ConnectivityMode>(WellKnownConfigurationKeys.Connectivity.ConnectivityMode);
+        }
+
+        private static void RegisterConnectionStringAsNamespace(string connectionString, ReadOnlySettings settings)
         {
             var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             namespaces.AddDefault(connectionString);

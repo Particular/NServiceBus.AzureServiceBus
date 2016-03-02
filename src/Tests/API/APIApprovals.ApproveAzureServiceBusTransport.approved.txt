@@ -662,6 +662,7 @@ namespace NServiceBus
     public class AzureServiceBusConnectivitySettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusConnectivitySettings(NServiceBus.Settings.SettingsHolder settings) { }
+        public NServiceBus.AzureServiceBusConnectivitySettings ConnectivityMode(Microsoft.ServiceBus.ConnectivityMode connectivityMode) { }
         public NServiceBus.AzureServiceBusConnectivitySettings NumberOfClientsPerEntity(int number) { }
         public NServiceBus.AzureServiceBusConnectivitySettings SendViaReceiveQueue(bool sendViaReceiveQueue) { }
     }
