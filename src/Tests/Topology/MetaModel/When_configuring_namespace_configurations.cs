@@ -7,7 +7,7 @@
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_configuring_namespaces_definition
+    public class When_configuring_namespace_configurations
     {
         private NamespaceConfigurations _namespaces;
 
