@@ -49,7 +49,7 @@
         public void Should_does_not_add_definition_if_exists()
         {
             _namespaces.Add("name", "connectionString");
-            _namespaces.Add("name", "connectionString");
+            _namespaces.Add("Name", "connectionString");
 
             Assert.AreEqual(1, _namespaces.Count);
         }
@@ -83,11 +83,11 @@
         }
 
         [Test]
-        public void Should_get_connection_string_by_namespace_name()
+        public void Should_get_connection_string_by_namespace_name_with_a_case_insensitive_match()
         {
             _namespaces.Add("name", "connectionString");
 
-            var connectionString = _namespaces.GetConnectionString("name");
+            var connectionString = _namespaces.GetConnectionString("NaMe");
 
             StringAssert.AreEqualIgnoringCase("connectionString", connectionString);
         }

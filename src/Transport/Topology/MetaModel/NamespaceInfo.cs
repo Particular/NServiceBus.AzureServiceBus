@@ -21,8 +21,8 @@
         public bool Equals(NamespaceInfo other)
         {
             return other != null
-                   && Name.Equals(other.Name)
-                   && ConnectionString.Equals(other.ConnectionString);
+                   && Name.Equals(other.Name, StringComparison.InvariantCultureIgnoreCase)
+                   && ConnectionString.Equals(other.ConnectionString, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -33,7 +33,9 @@
 
         public override int GetHashCode()
         {
-            return String.Concat(Name, "-", ConnectionString).GetHashCode();
+            var name = Name.ToLower();
+            var connectionString = ConnectionString.ToLower();
+            return string.Concat(name, "#", connectionString).GetHashCode();
         }
     }
 }
