@@ -41,7 +41,7 @@
         {
             try
             {
-                var selected = _inner.Single(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                var selected = _inner.Single(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                 return selected.ConnectionString;
             }
             catch (InvalidOperationException ex)

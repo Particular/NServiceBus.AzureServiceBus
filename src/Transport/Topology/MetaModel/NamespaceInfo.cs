@@ -21,7 +21,7 @@
         public bool Equals(NamespaceInfo other)
         {
             return other != null
-                   && Name.Equals(other.Name, StringComparison.InvariantCultureIgnoreCase)
+                   && Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase)
                    && ConnectionString.Equals(other.ConnectionString);
         }
 
