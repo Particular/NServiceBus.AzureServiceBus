@@ -25,7 +25,8 @@ namespace NServiceBus.AzureServiceBus
         public Task Init(Func<PushContext, Task> pump, CriticalError criticalError, PushSettings settings)
         {
             messagePump = pump;
-            circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker("MessagePump", TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
+            var name = $"MessagePump on the queue `{settings.InputQueue}`";
+            circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker(name, TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
 
             if (settings.PurgeOnStartup)
             {
@@ -34,9 +35,8 @@ namespace NServiceBus.AzureServiceBus
 
             //TODO: integrate these
             //settings.ErrorQueue
-            _inputQueue = settings.InputQueue;
-            //settings.PurgeOnStartup
             //settings.RequiredConsistency
+            _inputQueue = settings.InputQueue;
 
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
             {
