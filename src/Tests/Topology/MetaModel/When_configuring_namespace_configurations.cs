@@ -46,7 +46,7 @@
         }
 
         [Test]
-        public void Should_does_not_add_definition_if_exists()
+        public void Should_not_add_definition_if_exists()
         {
             _namespaces.Add("name", "connectionString");
             _namespaces.Add("Name", "connectionString");
@@ -63,7 +63,7 @@
         }
 
         [Test]
-        public void Should_does_not_add_if_connection_string_exists()
+        public void Should_not_add_if_connection_string_exists()
         {
             _namespaces.Add("name", "connectionString");
 
