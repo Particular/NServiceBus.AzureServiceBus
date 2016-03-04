@@ -12,10 +12,12 @@
     public class AzureServiceBusTransportInfrastructure : TransportInfrastructure
     {
         private readonly ITopology topology;
+        private readonly SettingsHolder settings;
 
         public AzureServiceBusTransportInfrastructure(ITopology topology, SettingsHolder settings)
         {
             this.topology = topology;
+            this.settings = settings;
         }
 
         public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
@@ -48,29 +50,21 @@
             return new TransportSubscriptionInfrastructure(topology.GetSubscriptionManagerFactory());
         }
 
-        public override IEnumerable<Type> DeliveryConstraints
-        {
-            get
-            {
-                return new List<Type> { typeof(DelayDeliveryWith), typeof(DoNotDeliverBefore), typeof(DiscardIfNotReceivedBefore) };
-            }
-        }
+        public override IEnumerable<Type> DeliveryConstraints => new List<Type> { typeof(DelayDeliveryWith), typeof(DoNotDeliverBefore), typeof(DiscardIfNotReceivedBefore) };
 
         public override TransportTransactionMode TransactionMode
         {
             get
             {
-                return TransportTransactionMode.SendsAtomicWithReceive; // todo make dependant on #namespaces
+                var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+
+                if (namespaces.Count == 1)
+                    return TransportTransactionMode.SendsAtomicWithReceive;
+
+                return TransportTransactionMode.ReceiveOnly;
             }
         }
 
-        public override OutboundRoutingPolicy OutboundRoutingPolicy
-        {
-            get
-            {
-                return topology.GetOutboundRoutingPolicy();
-            }
-        }
-        
+        public override OutboundRoutingPolicy OutboundRoutingPolicy => topology.GetOutboundRoutingPolicy();
     }
 }
