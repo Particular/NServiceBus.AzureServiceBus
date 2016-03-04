@@ -108,13 +108,13 @@
 
         async Task<bool> ExistsAsync(INamespaceManager namespaceClient, string queuePath, bool removeCacheEntry = false)
         {
-            var key = queuePath;
+            var key = queuePath + namespaceClient.Address;
             logger.InfoFormat("Checking existence cache for '{0}'", queuePath);
 
             var exists = await rememberExistence.GetOrAdd(key, async s =>
             {
                 logger.InfoFormat("Checking namespace for existence of the queue '{0}'", queuePath);
-                return await namespaceClient.QueueExists(key).ConfigureAwait(false);
+                return await namespaceClient.QueueExists(queuePath).ConfigureAwait(false);
             }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the queue '{0}' {1}", queuePath, exists ? "exists" : "does not exist");
