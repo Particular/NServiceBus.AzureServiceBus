@@ -1,10 +1,9 @@
 ﻿namespace NServiceBus.AzureServiceBus.Topology.MetaModel
 {
     using System;
-    using System.Linq;
     using System.Text.RegularExpressions;
 
-    class ConnectionString
+    class ConnectionString : IEquatable<ConnectionString>
     {
         public static readonly string Sample = "Endpoint=sb://[namespace name].servicebus.windows.net;SharedAccessKeyName=[shared access key name];SharedAccessKey=[shared access key]";
         private static readonly string Pattern = "^Endpoint=sb://(?<namespaceName>[A-Za-z][A-Za-z0-9-]{4,48}[A-Za-z0-9]).servicebus.windows.net;SharedAccessKeyName=(?<sharedAccessPolicyName>[\\w\\W]+);SharedAccessKey=(?<sharedAccessPolicyValue>[\\w\\W]+)$";
@@ -27,6 +26,28 @@
             NamespaceName = Regex.Match(value, Pattern).Groups["namespaceName"].Value;
             SharedAccessPolicyName = Regex.Match(value, Pattern).Groups["sharedAccessPolicyName"].Value;
             SharedAccessPolicyValue = Regex.Match(value, Pattern).Groups["sharedAccessPolicyValue"].Value;
+        }
+
+        public bool Equals(ConnectionString other)
+        {
+            return other != null
+                && string.Equals(NamespaceName, other.NamespaceName, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(SharedAccessPolicyName, other.SharedAccessPolicyName, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(SharedAccessPolicyValue, other.SharedAccessPolicyValue);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var target = obj as ConnectionString;
+            return Equals(target);
+        }
+
+        public override int GetHashCode()
+        {
+            var namespaceName = NamespaceName.ToLower();
+            var sharedAccessPolicyName = SharedAccessPolicyName.ToLower();
+
+            return string.Concat(namespaceName, sharedAccessPolicyName, SharedAccessPolicyValue).GetHashCode();
         }
 
         public static bool TryParse(string value, out ConnectionString connectionString)
