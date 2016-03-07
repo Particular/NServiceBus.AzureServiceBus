@@ -1,14 +1,19 @@
 ﻿namespace NServiceBus.AzureServiceBus.Topology.MetaModel
 {
     using System;
+    using System.Linq;
     using System.Text.RegularExpressions;
 
     class ConnectionString
     {
         public static readonly string Sample = "Endpoint=sb://[namespace name].servicebus.windows.net;SharedAccessKeyName=[shared access key name];SharedAccessKey=[shared access key]";
-        private static readonly string Pattern = "^Endpoint=sb://([A-Za-z][A-Za-z0-9-]{4,48}[A-Za-z0-9]).servicebus.windows.net;SharedAccessKeyName=([\\w\\W]+);SharedAccessKey=([\\w\\W]+)$";
+        private static readonly string Pattern = "^Endpoint=sb://(?<namespaceName>[A-Za-z][A-Za-z0-9-]{4,48}[A-Za-z0-9]).servicebus.windows.net;SharedAccessKeyName=(?<sharedAccessPolicyName>[\\w\\W]+);SharedAccessKey=(?<sharedAccessPolicyValue>[\\w\\W]+)$";
 
         private readonly string _value;
+
+        public string NamespaceName { get; }
+        public string SharedAccessPolicyName { get; }
+        public string SharedAccessPolicyValue { get; }
 
         public ConnectionString(string value)
         {
@@ -18,6 +23,10 @@
                                             $"f.e.: {ConnectionString.Sample}", nameof(value));
 
             _value = value;
+
+            NamespaceName = Regex.Match(value, Pattern).Groups["namespaceName"].Value;
+            SharedAccessPolicyName = Regex.Match(value, Pattern).Groups["sharedAccessPolicyName"].Value;
+            SharedAccessPolicyValue = Regex.Match(value, Pattern).Groups["sharedAccessPolicyValue"].Value;
         }
 
         public static bool TryParse(string value, out ConnectionString connectionString)

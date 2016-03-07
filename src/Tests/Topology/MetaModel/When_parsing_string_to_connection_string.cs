@@ -7,7 +7,7 @@
     [Category("AzureServiceBus")]
     public class When_parsing_string_to_connection_string
     {
-        private static readonly string Template = "Endpoint=sb://{0}.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=yoursecret";
+        private static readonly string Template = "Endpoint=sb://{0}.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=YourSecret";
 
         [Test]
         [TestCase("a")]
@@ -97,6 +97,18 @@
 
             Assert.True(isValid);
             Assert.NotNull(connectionString);
+        }
+
+        [Test]
+        public void Should_extract_namespace_name_and_shared_access_policy_name_and_shared_access_policy_value()
+        {
+            var @namespace = string.Format(Template, "namespace");
+
+            var connectionString = new ConnectionString(@namespace);
+
+            Assert.AreEqual("namespace", connectionString.NamespaceName);
+            Assert.AreEqual("RootManageSharedAccessKey", connectionString.SharedAccessPolicyName);
+            Assert.AreEqual("YourSecret", connectionString.SharedAccessPolicyValue);
         }
     }
 }
