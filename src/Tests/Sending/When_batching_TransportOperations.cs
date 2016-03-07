@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NServiceBus.DeliveryConstraints;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
@@ -132,7 +133,7 @@
         {
             return new TopologySection
             {
-                Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", "connectionString") },
+                Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
                 Entities = new List<EntityInfo> { new EntityInfo() }
             };
         }
@@ -141,7 +142,7 @@
         {
             return new TopologySection
             {
-                Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", "connectionString") },
+                Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
                 Entities = new List<EntityInfo> { new EntityInfo() }
             };
 

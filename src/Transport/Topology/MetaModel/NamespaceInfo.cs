@@ -1,10 +1,12 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
+
     public class NamespaceInfo : IEquatable<NamespaceInfo>
     {
         public string Name { get; }
-        public string ConnectionString { get; }
+        public ConnectionString ConnectionString { get; }
 
         public NamespaceInfo(string name, string connectionString)
         {
@@ -15,13 +17,13 @@
                 throw new ArgumentException("Namespace connection string can't be null or empty", nameof(connectionString));
 
             Name = name;
-            ConnectionString = connectionString;
+            ConnectionString = new ConnectionString(connectionString);
         }
 
         public bool Equals(NamespaceInfo other)
         {
             return other != null
-                   && Name.Equals(other.Name)
+                   && Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase)
                    && ConnectionString.Equals(other.ConnectionString);
         }
 
@@ -33,7 +35,8 @@
 
         public override int GetHashCode()
         {
-            return String.Concat(Name, "-", ConnectionString).GetHashCode();
+            var name = Name.ToLower();
+            return string.Concat(name, "#", ConnectionString).GetHashCode();
         }
     }
 }

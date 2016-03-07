@@ -30,8 +30,8 @@
 
             var namespaces = new NamespaceConfigurations
             {
-                {"name1", "connectionString1"},
-                {"name2", "connectionString2"}
+                {"name1", ConnectionStringValue.Build("namespace1")},
+                {"name2", ConnectionStringValue.Build("namespace2")}
             };
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
 
@@ -54,8 +54,8 @@
 
             var namespaces = new NamespaceConfigurations
             {
-                {"name1", "connectionString1"},
-                {"name2", "connectionString2"}
+                {"name1", ConnectionStringValue.Build("namespace1")},
+                {"name2", ConnectionStringValue.Build("namespace2")}
             };
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
 
@@ -64,8 +64,8 @@
             var falseNamespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => falseNamespaceManager.CanManageEntities()).Returns(Task.FromResult(false));
             var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycle>();
-            A.CallTo(() => manageNamespaceLifeCycle.Get("connectionString1")).Returns(trueNamespaceManager);
-            A.CallTo(() => manageNamespaceLifeCycle.Get("connectionString2")).Returns(falseNamespaceManager);
+            A.CallTo(() => manageNamespaceLifeCycle.Get("name1")).Returns(trueNamespaceManager);
+            A.CallTo(() => manageNamespaceLifeCycle.Get("name2")).Returns(falseNamespaceManager);
 
             var check = new ManageRightsCheck(manageNamespaceLifeCycle, settings);
             var result = await check.Run();
@@ -81,9 +81,9 @@
 
             var namespaces = new NamespaceConfigurations
             {
-                {"name1", "connectionString1"},
-                {"name2", "connectionString2"},
-                {"name3", "connectionString3"}
+                {"name1", ConnectionStringValue.Build("namespace1")},
+                {"name2", ConnectionStringValue.Build("namespace2")},
+                {"name3", ConnectionStringValue.Build("namespace3")},
             };
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
 
