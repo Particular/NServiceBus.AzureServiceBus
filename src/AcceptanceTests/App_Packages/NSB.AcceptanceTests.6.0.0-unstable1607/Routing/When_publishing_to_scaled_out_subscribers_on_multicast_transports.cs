@@ -9,7 +9,8 @@
 
     public class When_publishing_to_scaled_out_subscribers_on_multicast_transports : NServiceBusAcceptanceTest
     {
-        [Test]
+        // TODO: address when core is update
+        [Test, Explicit("Requires a fix in core before can be executed")]
         public async Task Each_event_should_be_delivered_to_single_instance_of_each_subscriber()
         {
             await Scenario.Define<Context>()
