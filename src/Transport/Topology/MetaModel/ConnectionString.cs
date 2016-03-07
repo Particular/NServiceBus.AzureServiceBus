@@ -73,5 +73,17 @@
         {
             return connectionString.ToString();
         }
+
+        public static bool operator ==(ConnectionString connectionString1, ConnectionString connectionString2)
+        {
+            if (ReferenceEquals(connectionString1, null) || ReferenceEquals(connectionString2, null)) return false;
+
+            return connectionString1.Equals(connectionString2);
+        }
+
+        public static bool operator !=(ConnectionString connectionString1, ConnectionString connectionString2)
+        {
+            return !(connectionString1 == connectionString2);
+        }
     }
 }

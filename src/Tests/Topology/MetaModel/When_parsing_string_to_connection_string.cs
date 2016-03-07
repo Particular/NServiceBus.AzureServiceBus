@@ -193,7 +193,7 @@
         }
 
         [Test]
-        public void Two_connection_strings_are_differente_if_one_of_them_is_null()
+        public void Two_connection_strings_are_different_if_one_of_them_is_null()
         {
             var @namespace = string.Format(Template, "namespace", "RootManageSharedAccessKey", "YourSecret");
 

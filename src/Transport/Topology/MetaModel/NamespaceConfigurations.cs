@@ -4,10 +4,13 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using NServiceBus.Logging;
 
     public class NamespaceConfigurations : IEnumerable<NamespaceInfo>
     {
-        private static readonly string DefaultName = "default";
+        static readonly ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
+
+        internal static readonly string DefaultName = "default";
 
         private readonly List<NamespaceInfo> _inner;
 
@@ -21,20 +24,27 @@
         public void Add(string name, string connectionString)
         {
             var definition = new NamespaceInfo(name, connectionString);
-            if (_inner.Contains(definition)) return;
 
-            var defaultDefinition = _inner.SingleOrDefault(x => x.Name == DefaultName && x.ConnectionString == connectionString);
-            if (defaultDefinition != null)
-                _inner.Remove(defaultDefinition);
+            var namespaceInfo = _inner.SingleOrDefault(x => x.ConnectionString == definition.ConnectionString);
+            if (namespaceInfo != null)
+            {
+                Log.Info($"Duplicated connection string for `{namespaceInfo.Name}` and `{name}` namespaces." + Environment.NewLine +
+                         $"`{name}` namespace not registered");
+                return;
+            }
+
+            if (_inner.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)))
+            {
+                Log.Info($"Duplicated namespace name `{name}` configuration detected. Registered only once");
+                return;
+            }
+
             _inner.Add(definition);
         }
 
         public void AddDefault(string connectionString)
         {
-            var definition = new NamespaceInfo(DefaultName, connectionString);
-            if (_inner.Any(x => x.ConnectionString == connectionString)) return;
-
-            _inner.Add(definition);
+            Add(DefaultName, connectionString);
         }
 
         public string GetConnectionString(string name)
