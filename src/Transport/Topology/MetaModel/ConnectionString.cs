@@ -3,10 +3,10 @@
     using System;
     using System.Text.RegularExpressions;
 
-    class ConnectionString : IEquatable<ConnectionString>
+    public class ConnectionString : IEquatable<ConnectionString>
     {
         public static readonly string Sample = "Endpoint=sb://[namespace name].servicebus.windows.net;SharedAccessKeyName=[shared access key name];SharedAccessKey=[shared access key]";
-        private static readonly string Pattern = "^Endpoint=sb://(?<namespaceName>[A-Za-z][A-Za-z0-9-]{4,48}[A-Za-z0-9]).servicebus.windows.net;SharedAccessKeyName=(?<sharedAccessPolicyName>[\\w\\W]+);SharedAccessKey=(?<sharedAccessPolicyValue>[\\w\\W]+)$";
+        private static readonly string Pattern = "^Endpoint=sb://(?<namespaceName>[A-Za-z][A-Za-z0-9-]{4,48}[A-Za-z0-9]).servicebus.windows.net/?;SharedAccessKeyName=(?<sharedAccessPolicyName>[\\w\\W]+);SharedAccessKey=(?<sharedAccessPolicyValue>[\\w\\W]+)$";
 
         private readonly string _value;
 
@@ -50,6 +50,11 @@
             return string.Concat(namespaceName, sharedAccessPolicyName, SharedAccessPolicyValue).GetHashCode();
         }
 
+        public override string ToString()
+        {
+            return _value;
+        }
+
         public static bool TryParse(string value, out ConnectionString connectionString)
         {
             try
@@ -66,7 +71,7 @@
 
         public static implicit operator string(ConnectionString connectionString)
         {
-            return connectionString._value;
+            return connectionString.ToString();
         }
     }
 }
