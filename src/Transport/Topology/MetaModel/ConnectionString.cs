@@ -30,10 +30,10 @@
 
         public bool Equals(ConnectionString other)
         {
-            return other != null
-                && string.Equals(NamespaceName, other.NamespaceName, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(SharedAccessPolicyName, other.SharedAccessPolicyName, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(SharedAccessPolicyValue, other.SharedAccessPolicyValue);
+            return other != null && (
+                string.Equals(NamespaceName, other.NamespaceName, StringComparison.OrdinalIgnoreCase) && 
+                string.Equals(SharedAccessPolicyName, other.SharedAccessPolicyName, StringComparison.OrdinalIgnoreCase) && 
+                string.Equals(SharedAccessPolicyValue, other.SharedAccessPolicyValue));
         }
 
         public override bool Equals(object obj)
@@ -76,6 +76,7 @@
 
         public static bool operator ==(ConnectionString connectionString1, ConnectionString connectionString2)
         {
+            if (ReferenceEquals(connectionString1, null) && ReferenceEquals(connectionString2, null)) return true;
             if (ReferenceEquals(connectionString1, null) || ReferenceEquals(connectionString2, null)) return false;
 
             return connectionString1.Equals(connectionString2);
