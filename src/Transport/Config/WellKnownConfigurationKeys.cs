@@ -5,6 +5,8 @@ namespace NServiceBus.AzureServiceBus
     {
         public static class Topology
         {
+            public const string Publishers = "AzureServiceBus.Settings.Topology.Publishers";
+
             public static class Resources
             {
                 public static class Queues
@@ -107,6 +109,7 @@ namespace NServiceBus.AzureServiceBus
                 public const string NumberOfEntitiesInBundle = "AzureServiceBus.Settings.Topology.Bundling.NumberOfEntitiesInBundle";
                 public const string BundlePrefix = "AzureServiceBus.Settings.Topology.Bundling.BundlePrefix";
             }
+
         }
 
         public static class Connectivity

@@ -110,6 +110,7 @@
     <Compile Include="Configuration\When_configuring_message_senders.cs" />
     <Compile Include="Configuration\When_configuring_messaging_factories.cs" />
     <Compile Include="Configuration\When_configuring_namespace_partitioning.cs" />
+    <Compile Include="Configuration\When_configuring_publishers.cs" />
     <Compile Include="Configuration\When_configuring_queues.cs" />
     <Compile Include="Configuration\When_configuring_resource_creation.cs" />
     <Compile Include="Configuration\When_configuring_sanitization.cs" />
