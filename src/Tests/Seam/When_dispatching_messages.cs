@@ -3,11 +3,13 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using AzureServiceBus;
-    using DeliveryConstraints;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
+    using NServiceBus.DeliveryConstraints;
     using NServiceBus.Extensibility;
-    using Settings;
+    using NServiceBus.Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 

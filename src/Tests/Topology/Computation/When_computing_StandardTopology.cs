@@ -1,8 +1,9 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 {
     using System.Linq;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Routing;
-    using Settings;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]

@@ -1,10 +1,11 @@
-﻿namespace NServiceBus.AzureServiceBus.Tests
+﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 {
     using System;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -37,7 +38,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(SomeEvent).Name), 
-                new SqlSubscriptionFilter(typeof(AnotherNamespaceThatContainsSimilarEvent.SomeEvent)).Serialize());
+                new SqlSubscriptionFilter(typeof(Creation.SomeEvent)).Serialize());
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -57,9 +58,6 @@
 
         class SomeEvent {}
     }
-}
 
-namespace AnotherNamespaceThatContainsSimilarEvent
-{
     class SomeEvent { }
 }

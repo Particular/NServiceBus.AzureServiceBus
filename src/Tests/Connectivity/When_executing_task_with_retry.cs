@@ -1,9 +1,10 @@
-﻿namespace NServiceBus.AzureServiceBus.Tests
+﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 {
     using System;
     using System.Threading.Tasks;
     using FakeItEasy;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]

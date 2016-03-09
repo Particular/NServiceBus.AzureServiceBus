@@ -1,9 +1,10 @@
-﻿namespace NServiceBus.AzureServiceBus.Tests
+﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.DeliveryConstraints;
     using NServiceBus.Routing;
     using NServiceBus.Settings;

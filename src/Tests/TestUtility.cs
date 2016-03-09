@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
 
     internal  static class TestUtility
     {

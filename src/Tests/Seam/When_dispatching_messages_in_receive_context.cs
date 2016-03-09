@@ -6,8 +6,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
     using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Tests;
     using NServiceBus.DeliveryConstraints;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
