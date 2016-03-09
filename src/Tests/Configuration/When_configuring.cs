@@ -1,5 +1,6 @@
 ﻿namespace NServiceBus.AzureServiceBus.Tests
 {
+    using FakeItEasy;
     using NServiceBus.Settings;
     using NUnit.Framework;
 
@@ -11,9 +12,9 @@
         public void Should_be_able_to_extend_topology_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topologySettings = extensions.UseDefaultTopology();
+            var topologySettings = extensions.UseTopology(A.Fake<ITopology>);
 
             Assert.IsInstanceOf<AzureServiceBusTopologySettings>(topologySettings);
         }
@@ -22,9 +23,9 @@
         public void Should_be_able_to_extend_addressing_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var addressingSettings = extensions.UseDefaultTopology().Addressing();
+            var addressingSettings = extensions.Addressing();
 
             Assert.IsInstanceOf<AzureServiceBusAddressingSettings>(addressingSettings);
         }
@@ -33,9 +34,9 @@
         public void Should_be_able_to_extend_namespace_partitioning_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var partitioningSettings = extensions.UseDefaultTopology().Addressing().NamespacePartitioning();
+            var partitioningSettings = extensions.Addressing().NamespacePartitioning();
 
             Assert.IsInstanceOf<AzureServiceBusNamespacePartitioningSettings>(partitioningSettings);
         }
@@ -44,9 +45,9 @@
         public void Should_be_able_to_extend_composition_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var compositionSettings = extensions.UseDefaultTopology().Addressing().Composition();
+            var compositionSettings = extensions.Addressing().Composition();
 
             Assert.IsInstanceOf<AzureServiceBusCompositionSettings>(compositionSettings);
         }
@@ -55,9 +56,9 @@
         public void Should_be_able_to_extend_validation_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var validationSettings = extensions.UseDefaultTopology().Addressing().Validation();
+            var validationSettings = extensions.Addressing().Validation();
 
             Assert.IsInstanceOf<AzureServiceBusValidationSettings>(validationSettings);
         }
@@ -66,9 +67,9 @@
         public void Should_be_able_to_extend_individualization_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var individualizationSettings = extensions.UseDefaultTopology().Addressing().Individualization();
+            var individualizationSettings = extensions.Addressing().Individualization();
 
             Assert.IsInstanceOf<AzureServiceBusIndividualizationSettings>(individualizationSettings);
         }
@@ -77,9 +78,9 @@
         public void Should_be_able_to_extend_resource_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var resourceSettings = extensions.UseDefaultTopology().Resources();
+            var resourceSettings = extensions.Resources();
 
             Assert.IsInstanceOf<AzureServiceBusResourceSettings>(resourceSettings);
         }
@@ -88,9 +89,9 @@
         public void Should_be_able_to_extend_queue_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var queueSettings = extensions.UseDefaultTopology().Resources().Queues();
+            var queueSettings = extensions.Resources().Queues();
 
             Assert.IsInstanceOf<AzureServiceBusQueueSettings>(queueSettings);
         }
@@ -99,9 +100,9 @@
         public void Should_be_able_to_extend_topic_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicsSettings = extensions.UseDefaultTopology().Resources().Topics();
+            var topicsSettings = extensions.Resources().Topics();
 
             Assert.IsInstanceOf<AzureServiceBusTopicSettings>(topicsSettings);
         }
@@ -110,9 +111,9 @@
         public void Should_be_able_to_extend_subscription_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var subscriptionSettings = extensions.UseDefaultTopology().Resources().Subscriptions();
+            var subscriptionSettings = extensions.Resources().Subscriptions();
 
             Assert.IsInstanceOf<AzureServiceBusSubscriptionSettings>(subscriptionSettings);
         }
@@ -121,7 +122,7 @@
         public void Should_be_able_to_extend_transaction_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             var transactionSettings = extensions.Transactions();
 
@@ -132,7 +133,7 @@
         public void Should_be_able_to_extend_connectivity_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             var connectivitySettings = extensions.Connectivity();
 
@@ -143,7 +144,7 @@
         public void Should_be_able_to_extend_serialization_settings()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             var connectivitySettings = extensions.Serialization();
 

@@ -24,10 +24,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void SetUp()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(TertiaryName, TertiaryConnectionString);
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(TertiaryName, TertiaryConnectionString);
 
             _strategy = new RoundRobinNamespacePartitioningStrategy(settings);
         }
@@ -80,8 +80,8 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Roundrobin_partitioning_strategy_will_throw_if_too_little_namespaces_are_provided()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
             
             Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioningStrategy(settings));
         }

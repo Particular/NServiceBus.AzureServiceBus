@@ -510,9 +510,9 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace", AzureServiceBusConnectionString.Value);
+            extensions.Addressing().NamespacePartitioning().AddNamespace("namespace", AzureServiceBusConnectionString.Value);
 
             var topology = new StandardTopology(container);
             topology.Initialize(settings);

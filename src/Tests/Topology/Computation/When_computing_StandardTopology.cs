@@ -19,10 +19,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
@@ -37,10 +37,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
@@ -54,10 +54,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 

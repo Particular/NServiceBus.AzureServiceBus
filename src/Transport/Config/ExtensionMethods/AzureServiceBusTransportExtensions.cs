@@ -24,11 +24,6 @@ namespace NServiceBus
             return new AzureServiceBusTopologySettings(settings);
         }
 
-        public static AzureServiceBusTopologySettings UseDefaultTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusTopologySettings(transportExtensions.GetSettings());
-        }
-
         public static AzureServiceBusTransactionSettings Transactions(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             return new AzureServiceBusTransactionSettings(transportExtensions.GetSettings());

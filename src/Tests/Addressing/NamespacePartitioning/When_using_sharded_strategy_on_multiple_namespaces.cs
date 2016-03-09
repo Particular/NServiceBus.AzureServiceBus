@@ -24,10 +24,10 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void SetUp()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name1, ConnectionString1);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name2, ConnectionString2);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name3, ConnectionString3);
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(Name1, ConnectionString1);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(Name2, ConnectionString2);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(Name3, ConnectionString3);
 
             _strategy = new ShardedNamespacePartitioningStrategy(settings);
         }
@@ -82,8 +82,8 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Sharded_partitioning_strategy_will_throw_if_too_little_namespaces_defined()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name1, ConnectionString1);
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.Addressing().NamespacePartitioning().AddNamespace(Name1, ConnectionString1);
 
             Assert.Throws<ConfigurationErrorsException>(() => new ShardedNamespacePartitioningStrategy(settings));
 
