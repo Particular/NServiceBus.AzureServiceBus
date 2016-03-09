@@ -44,7 +44,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
-            extensions.Addressing().NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
+            extensions.NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
 
             var topology = new StandardTopology(container);
 

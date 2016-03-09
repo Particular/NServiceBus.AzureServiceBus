@@ -72,7 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
                 AutoDeleteOnIdle = TimeSpan.MaxValue
             };
 
-            extensions.Resources().Topics().DescriptionFactory((path, s) => topicDescriptionToUse);
+            extensions.Topics().DescriptionFactory((path, s) => topicDescriptionToUse);
 
             var creator = new AzureServiceBusTopicCreator(settings);
 
@@ -91,7 +91,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             var autoDeleteTime = TimeSpan.FromDays(1);
-            extensions.Resources().Topics().AutoDeleteOnIdle(autoDeleteTime);
+            extensions.Topics().AutoDeleteOnIdle(autoDeleteTime);
 
             var creator = new AzureServiceBusTopicCreator(settings);
 
@@ -113,7 +113,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             var timeToLive = TimeSpan.FromDays(1);
-            extensions.Resources().Topics().DefaultMessageTimeToLive(timeToLive);
+            extensions.Topics().DefaultMessageTimeToLive(timeToLive);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic5";
@@ -135,7 +135,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             var duplicateDetectionTime = TimeSpan.FromDays(1);
-            extensions.Resources().Topics().DuplicateDetectionHistoryTimeWindow(duplicateDetectionTime);
+            extensions.Topics().DuplicateDetectionHistoryTimeWindow(duplicateDetectionTime);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic6";
@@ -156,7 +156,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.Resources().Topics().EnableBatchedOperations(false);
+            extensions.Topics().EnableBatchedOperations(false);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic7";
@@ -177,7 +177,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.Resources().Topics().EnableFilteringMessagesBeforePublishing(true);
+            extensions.Topics().EnableFilteringMessagesBeforePublishing(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic8";
@@ -202,7 +202,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.Resources().Topics().EnablePartitioning(true);
+            extensions.Topics().EnablePartitioning(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
            
@@ -221,7 +221,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.Resources().Topics().MaxSizeInMegabytes(4096);
+            extensions.Topics().MaxSizeInMegabytes(4096);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic10";
@@ -242,7 +242,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.Resources().Topics().RequiresDuplicateDetection(true);
+            extensions.Topics().RequiresDuplicateDetection(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic11";
@@ -263,7 +263,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.Resources().Topics().SupportOrdering(true);
+            extensions.Topics().SupportOrdering(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic12";
@@ -370,7 +370,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new AzureServiceBusTopologySettings(settings);
-            extensions.Resources().Topics().DescriptionFactory((topicPath, readOnlySettings) => new TopicDescription(topicPath)
+            extensions.Topics().DescriptionFactory((topicPath, readOnlySettings) => new TopicDescription(topicPath)
             {
                 AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
                 EnableExpress = true
@@ -398,7 +398,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new AzureServiceBusTopologySettings(settings);
-            extensions.Resources().Topics().DescriptionFactory((queuePath, readOnlySettings) => new TopicDescription(queuePath)
+            extensions.Topics().DescriptionFactory((queuePath, readOnlySettings) => new TopicDescription(queuePath)
             {
                 MaxSizeInMegabytes = 1024,
                 RequiresDuplicateDetection = false,

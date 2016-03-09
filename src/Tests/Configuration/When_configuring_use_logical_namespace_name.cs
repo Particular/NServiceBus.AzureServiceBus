@@ -32,7 +32,7 @@
         [Test]
         public void Should_use_pass_through_mapper()
         {
-            extensions.Addressing().UseNamespaceNamesInsteadOfConnectionStrings();
+            extensions.UseNamespaceNamesInsteadOfConnectionStrings();
 
             var mapper = settingsHolder.Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings);
 

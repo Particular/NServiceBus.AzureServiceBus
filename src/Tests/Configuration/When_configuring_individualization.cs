@@ -17,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.Addressing().Individualization().UseStrategy<MyIndividualizationStrategy>();
+            var topicSettings = extensions.Individualization().UseStrategy<MyIndividualizationStrategy>();
 
             Assert.AreEqual(typeof(MyIndividualizationStrategy), topicSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy));
         }

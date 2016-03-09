@@ -11,14 +11,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
     [Category("AzureServiceBus")]
     public class When_using_failover_namespace_strategy
     {
-        private static readonly string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private static readonly string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private static readonly string OtherConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        private const string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        private const string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        private const string OtherConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
 
-        private static readonly string PrimaryName = "namespace1";
-        private static readonly string SecondaryName = "namespace2";
-        private static readonly string OtherName = "namespace3";
-        
+        private const string PrimaryName = "namespace1";
+        private const string SecondaryName = "namespace2";
+        private const string OtherName = "namespace3";
+
         private FailOverNamespacePartitioningStrategy _strategy;
 
         [SetUp]
@@ -26,8 +26,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
 
             _strategy = new FailOverNamespacePartitioningStrategy(settings);
         }
@@ -87,7 +87,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
             
             Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioningStrategy(settings));
         }
@@ -97,9 +97,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
 
             Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioningStrategy(settings));
         }

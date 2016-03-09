@@ -17,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.Addressing().Sanitization().UseStrategy<MySanitizationStrategy>();
+            var topicSettings = extensions.Sanitization().UseStrategy<MySanitizationStrategy>();
 
             Assert.AreEqual(typeof(MySanitizationStrategy), topicSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy));
         }

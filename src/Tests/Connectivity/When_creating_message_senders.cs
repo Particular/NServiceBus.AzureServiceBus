@@ -35,7 +35,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Connectivity().MessageSenders()
+            extensions.MessageSenders()
                       .RetryPolicy(RetryPolicy.NoRetry);
 
             var factory = new InterceptedMessagingFactory();

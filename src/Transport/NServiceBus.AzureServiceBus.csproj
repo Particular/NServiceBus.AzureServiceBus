@@ -150,7 +150,6 @@
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />
     <Compile Include="Addressing\Partitioning\INamespacePartitioningStrategy.cs" />
     <Compile Include="Config\DefaultConfigurationValues.cs" />
-    <Compile Include="Config\ExtensionMethods\AzureServiceBusConnectivitySettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusConnectivitySettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessageReceiverSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessageSenderSettings.cs" />
@@ -188,17 +187,12 @@
     <Compile Include="Creation\AzureServiceBusQueueCreator.cs" />
     <Compile Include="Creation\AzureServiceBusTopicCreator.cs" />
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationRules.cs" />
-    <Compile Include="Config\ExtensionMethods\AzureServiceBusResourceExtensions.cs" />
-    <Compile Include="Config\ExtensionMethods\AzureServiceBusAddressingExtensions.cs" />
-    <Compile Include="Config\ExtensionMethods\AzureServiceBusTopologyExtensions.cs" />
     <Compile Include="Config\AzureServiceBusTransport.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTransportExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusCompositionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusIndividualizationSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusNamespacePartitioningSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusQueueSettings.cs" />
-    <Compile Include="Config\ExtensionPoints\AzureServiceBusResourceSettings.cs" />
-    <Compile Include="Config\ExtensionPoints\AzureServiceBusAddressingSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSanitizationSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSubscriptionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopicSettings.cs" />

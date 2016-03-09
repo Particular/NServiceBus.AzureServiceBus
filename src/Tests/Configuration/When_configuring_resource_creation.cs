@@ -19,7 +19,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
             Func<string, ReadOnlySettings, QueueDescription> registeredFactory = (name, s) => new QueueDescription(name);
 
-            var connectivitySettings = extensions.Resources().Queues().DescriptionFactory(registeredFactory);
+            var connectivitySettings = extensions.Queues().DescriptionFactory(registeredFactory);
 
             Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, ReadOnlySettings, QueueDescription>>(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory));
         }
@@ -32,7 +32,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
             Func<string, ReadOnlySettings, TopicDescription> registeredFactory = (name, s) => new TopicDescription(name);
 
-            var connectivitySettings = extensions.Resources().Topics().DescriptionFactory(registeredFactory);
+            var connectivitySettings = extensions.Topics().DescriptionFactory(registeredFactory);
 
             Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, ReadOnlySettings, TopicDescription>>(WellKnownConfigurationKeys.Topology.Resources.Topics.DescriptionFactory));
         }
@@ -45,7 +45,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
             Func<string, string, ReadOnlySettings, SubscriptionDescription> registeredFactory = (topicname, subscriptionname, s) => new SubscriptionDescription(topicname, subscriptionname);
 
-            var connectivitySettings = extensions.Resources().Subscriptions().DescriptionFactory(registeredFactory);
+            var connectivitySettings = extensions.Subscriptions().DescriptionFactory(registeredFactory);
 
             Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, string, ReadOnlySettings, SubscriptionDescription>>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DescriptionFactory));
         }

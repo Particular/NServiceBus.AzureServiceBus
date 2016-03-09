@@ -25,9 +25,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.Connectivity()
-                .NumberOfClientsPerEntity(5)
-                .MessagingFactories()
+            extensions.NumberOfClientsPerEntity(5);
+            extensions.MessagingFactories()
                 .NumberOfMessagingFactoriesPerNamespace(5)
                 .BatchFlushInterval(TimeSpan.FromMilliseconds(100));
 
@@ -85,9 +84,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.Connectivity()
-                .NumberOfClientsPerEntity(5)
-                .MessagingFactories()
+            extensions.NumberOfClientsPerEntity(5);
+            extensions.MessagingFactories()
                 .NumberOfMessagingFactoriesPerNamespace(5)
                 .BatchFlushInterval(TimeSpan.FromMilliseconds(0)); // turns of native batching
 

@@ -26,9 +26,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(Name1, ConnectionString1);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(Name2, ConnectionString2);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(Name3, ConnectionString3);
+            extensions.NamespacePartitioning().AddNamespace(Name1, ConnectionString1);
+            extensions.NamespacePartitioning().AddNamespace(Name2, ConnectionString2);
+            extensions.NamespacePartitioning().AddNamespace(Name3, ConnectionString3);
 
             _strategy = new ShardedNamespacePartitioningStrategy(settings);
         }
@@ -84,7 +84,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(Name1, ConnectionString1);
+            extensions.NamespacePartitioning().AddNamespace(Name1, ConnectionString1);
 
             Assert.Throws<ConfigurationErrorsException>(() => new ShardedNamespacePartitioningStrategy(settings));
 

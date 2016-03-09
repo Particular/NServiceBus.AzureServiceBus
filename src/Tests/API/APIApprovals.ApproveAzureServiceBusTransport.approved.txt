@@ -526,37 +526,11 @@ namespace NServiceBus.AzureServiceBus.Topology.MetaModel
 namespace NServiceBus
 {
     
-    public class static AzureServiceBusAddressingExtensions
-    {
-        public static NServiceBus.AzureServiceBusCompositionSettings Composition(this NServiceBus.AzureServiceBusAddressingSettings addressingSettings) { }
-        public static NServiceBus.AzureServiceBusIndividualizationSettings Individualization(this NServiceBus.AzureServiceBusAddressingSettings addressingSettings) { }
-        public static NServiceBus.AzureServiceBusNamespacePartitioningSettings NamespacePartitioning(this NServiceBus.AzureServiceBusAddressingSettings addressingSettings) { }
-        public static NServiceBus.AzureServiceBusSanitizationSettings Sanitization(this NServiceBus.AzureServiceBusAddressingSettings addressingSettings) { }
-        public static NServiceBus.AzureServiceBusValidationSettings Validation(this NServiceBus.AzureServiceBusAddressingSettings addressingSettings) { }
-    }
-    public class AzureServiceBusAddressingSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-    {
-        public AzureServiceBusAddressingSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusAddressingSettings UseNamespaceNamesInsteadOfConnectionStrings() { }
-    }
     public class AzureServiceBusCompositionSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusCompositionSettings(NServiceBus.Settings.SettingsHolder settings) { }
         public NServiceBus.AzureServiceBusCompositionSettings UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy { }
-    }
-    public class AzureServiceBusConnectivitySettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-    {
-        public AzureServiceBusConnectivitySettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusConnectivitySettings ConnectivityMode(Microsoft.ServiceBus.ConnectivityMode connectivityMode) { }
-        public NServiceBus.AzureServiceBusConnectivitySettings NumberOfClientsPerEntity(int number) { }
-        public NServiceBus.AzureServiceBusConnectivitySettings SendViaReceiveQueue(bool sendViaReceiveQueue) { }
-    }
-    public class static AzureServiceBusConnectivitySettingsExtensions
-    {
-        public static NServiceBus.AzureServiceBusMessageReceiverSettings MessageReceivers(this NServiceBus.AzureServiceBusConnectivitySettings azureServiceBusConnectivitySettings) { }
-        public static NServiceBus.AzureServiceBusMessageSenderSettings MessageSenders(this NServiceBus.AzureServiceBusConnectivitySettings azureServiceBusConnectivitySettings) { }
-        public static NServiceBus.AzureServiceBusMessagingFactoriesSettings MessagingFactories(this NServiceBus.AzureServiceBusConnectivitySettings azureServiceBusConnectivitySettings) { }
     }
     public class AzureServiceBusIndividualizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
@@ -620,16 +594,6 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings RequiresSession(bool requiresSession) { }
         public NServiceBus.AzureServiceBusQueueSettings SupportOrdering(bool supported) { }
     }
-    public class static AzureServiceBusResourceExtensions
-    {
-        public static NServiceBus.AzureServiceBusQueueSettings Queues(this NServiceBus.AzureServiceBusResourceSettings resourceSettings) { }
-        public static NServiceBus.AzureServiceBusSubscriptionSettings Subscriptions(this NServiceBus.AzureServiceBusResourceSettings resourceSettings) { }
-        public static NServiceBus.AzureServiceBusTopicSettings Topics(this NServiceBus.AzureServiceBusResourceSettings resourceSettings) { }
-    }
-    public class AzureServiceBusResourceSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-    {
-        public AzureServiceBusResourceSettings(NServiceBus.Settings.SettingsHolder settings) { }
-    }
     public class AzureServiceBusSanitizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusSanitizationSettings(NServiceBus.Settings.SettingsHolder settings) { }
@@ -672,11 +636,6 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusTopicSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusTopicSettings SupportOrdering(bool supported) { }
     }
-    public class static AzureServiceBusTopologyExtensions
-    {
-        public static NServiceBus.AzureServiceBusAddressingSettings Addressing(this NServiceBus.AzureServiceBusTopologySettings topologySettings) { }
-        public static NServiceBus.AzureServiceBusResourceSettings Resources(this NServiceBus.AzureServiceBusTopologySettings topologySettings) { }
-    }
     public class AzureServiceBusTopologySettings : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport>
     {
         public AzureServiceBusTopologySettings(NServiceBus.Settings.SettingsHolder settings) { }
@@ -694,15 +653,28 @@ namespace NServiceBus
     }
     public class static AzureServiceBusTransportExtensions
     {
-        public static NServiceBus.AzureServiceBusConnectivitySettings Connectivity(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusCompositionSettings Composition(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static void ConnectivityMode(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, Microsoft.ServiceBus.ConnectivityMode connectivityMode) { }
+        public static NServiceBus.AzureServiceBusIndividualizationSettings Individualization(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusMessageReceiverSettings MessageReceivers(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusMessageSenderSettings MessageSenders(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusMessagingFactoriesSettings MessagingFactories(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusNamespacePartitioningSettings NamespacePartitioning(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static void NumberOfClientsPerEntity(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, int number) { }
+        public static NServiceBus.AzureServiceBusQueueSettings Queues(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusSanitizationSettings Sanitization(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static void SendViaReceiveQueue(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, bool sendViaReceiveQueue) { }
         public static NServiceBus.AzureServiceBusSerializationSettings Serialization(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
-        public static NServiceBus.AzureServiceBusTransactionSettings Transactions(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusSubscriptionSettings Subscriptions(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusTopicSettings Topics(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static void UseNamespaceNamesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusTopologySettings UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
             where T : NServiceBus.AzureServiceBus.ITopology, new () { }
         public static NServiceBus.AzureServiceBusTopologySettings UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, System.Func<T> factory)
             where T : NServiceBus.AzureServiceBus.ITopology { }
         public static NServiceBus.AzureServiceBusTopologySettings UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, T topology)
             where T : NServiceBus.AzureServiceBus.ITopology { }
+        public static NServiceBus.AzureServiceBusValidationSettings Validation(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
     }
     public class AzureServiceBusValidationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {

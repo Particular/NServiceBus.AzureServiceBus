@@ -19,7 +19,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessageSenders().RetryPolicy(RetryPolicy.NoRetry);
+            var connectivitySettings = extensions.MessageSenders().RetryPolicy(RetryPolicy.NoRetry);
 
             Assert.IsInstanceOf<NoRetry>(connectivitySettings.GetSettings().Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy));
         }
@@ -30,7 +30,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessageSenders().BackOffTimeOnThrottle(TimeSpan.FromSeconds(20));
+            var connectivitySettings = extensions.MessageSenders().BackOffTimeOnThrottle(TimeSpan.FromSeconds(20));
 
             Assert.AreEqual(TimeSpan.FromSeconds(20), connectivitySettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle));
         }
@@ -41,7 +41,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.Connectivity().MessageSenders().BackOffTimeOnThrottle(TimeSpan.FromSeconds(-1)));
+            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.MessageSenders().BackOffTimeOnThrottle(TimeSpan.FromSeconds(-1)));
         }
 
         [Test]
@@ -50,7 +50,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessageSenders().RetryAttemptsOnThrottle(10);
+            var connectivitySettings = extensions.MessageSenders().RetryAttemptsOnThrottle(10);
 
             Assert.AreEqual(10, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle));
         }
@@ -61,7 +61,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.Connectivity().MessageSenders().RetryAttemptsOnThrottle(-1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.MessageSenders().RetryAttemptsOnThrottle(-1));
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessageSenders().MaximuMessageSizeInKilobytes(200);
+            var connectivitySettings = extensions.MessageSenders().MaximuMessageSizeInKilobytes(200);
 
             Assert.AreEqual(200, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes));
         }
@@ -81,7 +81,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.Connectivity().MessageSenders().MaximuMessageSizeInKilobytes(0));
+            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.MessageSenders().MaximuMessageSizeInKilobytes(0));
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessageSenders().MessageSizePaddingPercentage(10);
+            var connectivitySettings = extensions.MessageSenders().MessageSizePaddingPercentage(10);
 
             Assert.AreEqual(10, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage));
         }
@@ -101,7 +101,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.Connectivity().MessageSenders().MessageSizePaddingPercentage(-1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => extensions.MessageSenders().MessageSizePaddingPercentage(-1));
         }
 
         [Test]
@@ -111,7 +111,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var myOversizedBrokeredMessageHandler = new MyOversizedBrokeredMessageHandler();
-            var connectivitySettings = extensions.Connectivity().MessageSenders().OversizedBrokeredMessageHandler(myOversizedBrokeredMessageHandler);
+            var connectivitySettings = extensions.MessageSenders().OversizedBrokeredMessageHandler(myOversizedBrokeredMessageHandler);
 
             Assert.AreEqual(myOversizedBrokeredMessageHandler, connectivitySettings.GetSettings().Get<IHandleOversizedBrokeredMessages>(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance));
         }

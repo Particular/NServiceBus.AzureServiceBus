@@ -34,7 +34,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Connectivity().MessageReceivers()
+            extensions.MessageReceivers()
                       .PrefetchCount(1000)
                       .RetryPolicy(RetryPolicy.NoRetry)
                       .ReceiveMode(ReceiveMode.ReceiveAndDelete);

@@ -17,7 +17,7 @@
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             var idlePeriod = TimeSpan.FromDays(10);
-            var topicSettings = extensions.Resources().Subscriptions().AutoDeleteOnIdle(idlePeriod);
+            var topicSettings = extensions.Subscriptions().AutoDeleteOnIdle(idlePeriod);
 
             Assert.AreEqual(idlePeriod, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.AutoDeleteOnIdle));
         }
@@ -29,7 +29,7 @@
             var extensions = new AzureServiceBusTopologySettings(setting);
 
             var expiryTimespan = TimeSpan.FromDays(1);
-            var subscriptionSettings = extensions.Resources().Subscriptions().DefaultMessageTimeToLive(expiryTimespan);
+            var subscriptionSettings = extensions.Subscriptions().DefaultMessageTimeToLive(expiryTimespan);
 
             Assert.AreEqual(expiryTimespan, subscriptionSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DefaultMessageTimeToLive));
         }
@@ -40,7 +40,7 @@
             var setting = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(setting);
 
-            var subscriptionSettings = extensions.Resources().Subscriptions().EnableBatchedOperations(true);
+            var subscriptionSettings = extensions.Subscriptions().EnableBatchedOperations(true);
 
             Assert.IsTrue(subscriptionSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableBatchedOperations));
         }
@@ -51,7 +51,7 @@
             var setting = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(setting);
 
-            var subscriptionSettings = extensions.Resources().Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
+            var subscriptionSettings = extensions.Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
 
             Assert.IsTrue(subscriptionSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnFilterEvaluationExceptions));
         }
@@ -62,7 +62,7 @@
             var setting = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(setting);
 
-            var subscriptionSettings = extensions.Resources().Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
+            var subscriptionSettings = extensions.Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
 
             Assert.IsTrue(subscriptionSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnMessageExpiration));
         }
@@ -73,7 +73,7 @@
             var setting = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(setting);
 
-            var subscriptionSettings = extensions.Resources().Subscriptions().ForwardDeadLetteredMessagesTo("deadletteredmessages");
+            var subscriptionSettings = extensions.Subscriptions().ForwardDeadLetteredMessagesTo("deadletteredmessages");
 
             Assert.AreEqual("deadletteredmessages", subscriptionSettings.GetSettings().Get<string>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo));
         }
@@ -85,7 +85,7 @@
             var extensions = new AzureServiceBusTopologySettings(setting);
 
             Func<string, bool> condition = n => n != "deadletteredmessages";
-            var subscriptionSettings = extensions.Resources().Subscriptions().ForwardDeadLetteredMessagesTo(condition, "deadletteredmessages");
+            var subscriptionSettings = extensions.Subscriptions().ForwardDeadLetteredMessagesTo(condition, "deadletteredmessages");
 
             Assert.AreEqual("deadletteredmessages", subscriptionSettings.GetSettings().Get<string>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo));
             Assert.AreEqual(condition, subscriptionSettings.GetSettings().Get<Func<string, bool>>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition));
@@ -98,7 +98,7 @@
             var extensions = new AzureServiceBusTopologySettings(setting);
 
             var lockDuration = TimeSpan.FromDays(1);
-            var subscriptionSettings = extensions.Resources().Subscriptions().LockDuration(lockDuration);
+            var subscriptionSettings = extensions.Subscriptions().LockDuration(lockDuration);
 
             Assert.AreEqual(lockDuration, subscriptionSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.LockDuration));
         }
@@ -110,7 +110,7 @@
             var extensions = new AzureServiceBusTopologySettings(setting);
 
             const int selectedMaxDeliveryCount = 6;
-            var subscriptionSettings = extensions.Resources().Subscriptions().MaxDeliveryCount(selectedMaxDeliveryCount);
+            var subscriptionSettings = extensions.Subscriptions().MaxDeliveryCount(selectedMaxDeliveryCount);
 
             Assert.AreEqual(selectedMaxDeliveryCount, subscriptionSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.MaxDeliveryCount));
         }
@@ -121,7 +121,7 @@
             var setting = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(setting);
 
-            var subscriptionSettings = extensions.Resources().Subscriptions().RequiresSession(true);
+            var subscriptionSettings = extensions.Subscriptions().RequiresSession(true);
 
             Assert.AreEqual(true, subscriptionSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.RequiresSession));
         }

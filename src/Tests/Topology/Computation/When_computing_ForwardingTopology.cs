@@ -23,7 +23,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -46,7 +46,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -68,7 +68,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -94,7 +94,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.UseTopology<ForwardingTopology>().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -119,7 +119,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.UseTopology<ForwardingTopology>().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -143,7 +143,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.UseTopology<ForwardingTopology>().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
             topology.Initialize(settings);

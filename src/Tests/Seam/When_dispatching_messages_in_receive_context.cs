@@ -199,7 +199,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Connectivity().SendViaReceiveQueue(true);
+            extensions.SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
             var topology = await SetupStandardTopology(container, "sales", settings);
@@ -282,7 +282,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Connectivity().SendViaReceiveQueue(true);
+            extensions.SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
             var topology = await SetupStandardTopology(container, "sales", settings);
@@ -376,6 +376,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setting up the environment
             var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
+            extensions.SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
             var topology = await SetupStandardTopology(container, "sales", settings);
@@ -462,7 +463,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
-            extensions.Addressing().NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
+            extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
             var topology = new StandardTopology(container);
             topology.Initialize(settings);

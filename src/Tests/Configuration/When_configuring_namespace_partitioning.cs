@@ -18,7 +18,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var partitioningSettings = extensions.Addressing().NamespacePartitioning().UseStrategy<MyNamespacePartitioningStrategy>();
+            var partitioningSettings = extensions.NamespacePartitioning().UseStrategy<MyNamespacePartitioningStrategy>();
 
             Assert.AreEqual(typeof(MyNamespacePartitioningStrategy), partitioningSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy));
         }
@@ -31,7 +31,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
-            extensions.Addressing().NamespacePartitioning().AddNamespace(name, connectionString);
+            extensions.NamespacePartitioning().AddNamespace(name, connectionString);
 
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
 

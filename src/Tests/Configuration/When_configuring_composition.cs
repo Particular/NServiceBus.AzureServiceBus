@@ -17,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.Addressing().Composition().UseStrategy<MyCompositionStrategy>();
+            var topicSettings = extensions.Composition().UseStrategy<MyCompositionStrategy>();
 
             Assert.AreEqual(typeof(MyCompositionStrategy), topicSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy));
         }

@@ -24,7 +24,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         [Test]
         public void Should_be_able_to_set_the_validation_strategy()
         {
-            var validationSettings = extensions.Addressing().Validation().UseStrategy<MyValidationStrategy>();
+            var validationSettings = extensions.Validation().UseStrategy<MyValidationStrategy>();
 
             Assert.AreEqual(typeof(MyValidationStrategy), validationSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy));
         }
@@ -41,7 +41,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         [Test]
         public void Should_be_able_to_set_queue_path_maximum_length()
         {
-            var validationSettings = extensions.Addressing().Validation().UseQueuePathMaximumLength(10);
+            var validationSettings = extensions.Validation().UseQueuePathMaximumLength(10);
 
             Assert.AreEqual(10, validationSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength));
         }
@@ -49,7 +49,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         [Test]
         public void Should_be_able_to_set_topic_path_maximum_length()
         {
-            var validationSettings = extensions.Addressing().Validation().UseTopicPathMaximumLength(20);
+            var validationSettings = extensions.Validation().UseTopicPathMaximumLength(20);
 
             Assert.AreEqual(20, validationSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength));
         }
@@ -57,7 +57,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         [Test]
         public void Should_be_able_to_set_subscription_path_maximum_length()
         {
-            var validationSettings = extensions.Addressing().Validation().UseSubscriptionPathMaximumLength(30);
+            var validationSettings = extensions.Validation().UseSubscriptionPathMaximumLength(30);
 
             Assert.AreEqual(30, validationSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength));
         }

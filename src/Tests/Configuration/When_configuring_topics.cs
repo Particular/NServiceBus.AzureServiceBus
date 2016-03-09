@@ -16,7 +16,7 @@
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.Resources().Topics().AutoDeleteOnIdle(TimeSpan.MinValue);
+            var topicSettings = extensions.Topics().AutoDeleteOnIdle(TimeSpan.MinValue);
 
             Assert.AreEqual(TimeSpan.MinValue, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle));
         }
@@ -28,7 +28,7 @@
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             var timeToLive = TimeSpan.FromHours(5);
-            var topicSettings = extensions.Resources().Topics().DefaultMessageTimeToLive(timeToLive);
+            var topicSettings = extensions.Topics().DefaultMessageTimeToLive(timeToLive);
 
             Assert.AreEqual(timeToLive, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.DefaultMessageTimeToLive));
         }
@@ -40,7 +40,7 @@
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             var dedupTimeWindow = TimeSpan.FromMilliseconds(30000);
-            var topicSettings = extensions.Resources().Topics().DuplicateDetectionHistoryTimeWindow(dedupTimeWindow);
+            var topicSettings = extensions.Topics().DuplicateDetectionHistoryTimeWindow(dedupTimeWindow);
 
             Assert.AreEqual(dedupTimeWindow, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow));
         }
@@ -51,7 +51,7 @@
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.Resources().Topics().EnableBatchedOperations(true);
+            var topicSettings = extensions.Topics().EnableBatchedOperations(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableBatchedOperations));
         }
@@ -62,7 +62,7 @@
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.Resources().Topics().EnableExpress(true);
+            var topicSettings = extensions.Topics().EnableExpress(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress));
         }
@@ -74,7 +74,7 @@
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             Func<string, bool> condition = name => name != "expresstopic";
-            var topicSettings = extensions.Resources().Topics().EnableExpress(condition, true);
+            var topicSettings = extensions.Topics().EnableExpress(condition, true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress));
             Assert.AreEqual(condition, topicSettings.GetSettings().Get<Func<string, bool>>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpressCondition));
@@ -86,7 +86,7 @@
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.Resources().Topics().EnableFilteringMessagesBeforePublishing(true);
+            var topicSettings = extensions.Topics().EnableFilteringMessagesBeforePublishing(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableFilteringMessagesBeforePublishing));
         }
@@ -97,7 +97,7 @@
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.Resources().Topics().EnablePartitioning(true);
+            var topicSettings = extensions.Topics().EnablePartitioning(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnablePartitioning));
         }
@@ -109,7 +109,7 @@
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             const long maxTopicSizeInMB = 2048;
-            var topicSettings = extensions.Resources().Topics().MaxSizeInMegabytes(maxTopicSizeInMB);
+            var topicSettings = extensions.Topics().MaxSizeInMegabytes(maxTopicSizeInMB);
 
             Assert.AreEqual(maxTopicSizeInMB, topicSettings.GetSettings().Get<long>(WellKnownConfigurationKeys.Topology.Resources.Topics.MaxSizeInMegabytes));
         }
@@ -120,7 +120,7 @@
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.Resources().Topics().RequiresDuplicateDetection(true);
+            var topicSettings = extensions.Topics().RequiresDuplicateDetection(true);
 
             Assert.True(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.RequiresDuplicateDetection));
         }
@@ -131,7 +131,7 @@
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.Resources().Topics().SupportOrdering(true);
+            var topicSettings = extensions.Topics().SupportOrdering(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.SupportOrdering));
         }

@@ -17,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessagingFactories().PrefetchCount(1000);
+            var connectivitySettings = extensions.MessagingFactories().PrefetchCount(1000);
 
             Assert.AreEqual(1000, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.PrefetchCount));
         }
@@ -28,7 +28,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessagingFactories().RetryPolicy(RetryPolicy.NoRetry);
+            var connectivitySettings = extensions.MessagingFactories().RetryPolicy(RetryPolicy.NoRetry);
 
             Assert.IsInstanceOf<NoRetry>(connectivitySettings.GetSettings().Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy));
         }
@@ -39,7 +39,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessagingFactories().BatchFlushInterval(TimeSpan.FromSeconds(0));
+            var connectivitySettings = extensions.MessagingFactories().BatchFlushInterval(TimeSpan.FromSeconds(0));
 
             Assert.AreEqual(TimeSpan.FromSeconds(0), connectivitySettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval));
         }

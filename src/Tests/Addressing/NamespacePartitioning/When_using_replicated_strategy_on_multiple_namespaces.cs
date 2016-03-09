@@ -21,9 +21,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
-            extensions.Addressing().NamespacePartitioning().AddNamespace("namespace1", Primary);
-            extensions.Addressing().NamespacePartitioning().AddNamespace("namespace2", Secondary);
-            extensions.Addressing().NamespacePartitioning().AddNamespace("namespace3", Tertiary);
+            extensions.NamespacePartitioning().AddNamespace("namespace1", Primary);
+            extensions.NamespacePartitioning().AddNamespace("namespace2", Secondary);
+            extensions.NamespacePartitioning().AddNamespace("namespace3", Tertiary);
 
             _strategy = new ReplicatedNamespacePartitioningStrategy(settings);
         }
@@ -65,7 +65,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
-            extensions.Addressing().NamespacePartitioning().AddNamespace("namespace1", Primary);
+            extensions.NamespacePartitioning().AddNamespace("namespace1", Primary);
 
             Assert.Throws<ConfigurationErrorsException>(() => new ReplicatedNamespacePartitioningStrategy(settings));
         }

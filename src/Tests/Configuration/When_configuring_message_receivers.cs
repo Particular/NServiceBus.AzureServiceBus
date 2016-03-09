@@ -18,7 +18,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessageReceivers().ReceiveMode(ReceiveMode.ReceiveAndDelete);
+            var connectivitySettings = extensions.MessageReceivers().ReceiveMode(ReceiveMode.ReceiveAndDelete);
 
             Assert.AreEqual(ReceiveMode.ReceiveAndDelete, connectivitySettings.GetSettings().Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode));
         }
@@ -29,7 +29,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessageReceivers().PrefetchCount(1000);
+            var connectivitySettings = extensions.MessageReceivers().PrefetchCount(1000);
 
             Assert.AreEqual(1000, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount));
         }
@@ -40,7 +40,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessageReceivers().RetryPolicy(RetryPolicy.NoRetry);
+            var connectivitySettings = extensions.MessageReceivers().RetryPolicy(RetryPolicy.NoRetry);
 
             Assert.IsInstanceOf<NoRetry>(connectivitySettings.GetSettings().Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy));
         }
@@ -51,7 +51,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessageReceivers().AutoRenewTimeout(TimeSpan.FromSeconds(60));
+            var connectivitySettings = extensions.MessageReceivers().AutoRenewTimeout(TimeSpan.FromSeconds(60));
 
             Assert.AreEqual(TimeSpan.FromSeconds(60), connectivitySettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout));
         }
