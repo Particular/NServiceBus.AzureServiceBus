@@ -1,24 +1,24 @@
 ﻿namespace NServiceBus.AzureServiceBus.Addressing
 {
     
-    public class AdjustmentSanitizationStrategy : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    public class AdjustmentSanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
-        public AdjustmentSanitizationStrategy(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
+        public AdjustmentSanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
         public string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
     }
-    public class AdjustmentSanitizationV6Strategy : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    public class AdjustmentSanitizationV6 : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
-        public AdjustmentSanitizationV6Strategy(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
+        public AdjustmentSanitizationV6(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
         public string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
     }
-    public class CoreIndividualizationStrategy : NServiceBus.AzureServiceBus.Addressing.IIndividualizationStrategy
+    public class CoreIndividualization : NServiceBus.AzureServiceBus.Addressing.IIndividualizationStrategy
     {
-        public CoreIndividualizationStrategy() { }
+        public CoreIndividualization() { }
         public string Individualize(string endpointname) { }
     }
-    public class DiscriminatorBasedIndividualizationStrategy : NServiceBus.AzureServiceBus.Addressing.IIndividualizationStrategy
+    public class DiscriminatorBasedIndividualization : NServiceBus.AzureServiceBus.Addressing.IIndividualizationStrategy
     {
-        public DiscriminatorBasedIndividualizationStrategy() { }
+        public DiscriminatorBasedIndividualization() { }
         public string Individualize(string endpointname) { }
         public void SetDiscriminatorGenerator(System.Func<string> discriminatorGenerator) { }
     }
@@ -44,21 +44,21 @@
         Primary = 0,
         Secondary = 1,
     }
-    public class FailOverNamespacePartitioningStrategy : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
+    public class FailOverNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
-        public FailOverNamespacePartitioningStrategy(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public FailOverNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
         public NServiceBus.AzureServiceBus.Addressing.FailOverMode Mode { get; set; }
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.FailOverNamespacePartitioningStrategy.<GetNamespaces>d__6))]
+        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.FailOverNamespacePartitioning.<GetNamespaces>d__6))]
         public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
-    public class FlatCompositionStrategy : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
+    public class FlatComposition : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
     {
-        public FlatCompositionStrategy() { }
+        public FlatComposition() { }
         public string GetEntityPath(string entityname, NServiceBus.AzureServiceBus.EntityType entityType) { }
     }
-    public class HierarchyCompositionStrategy : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
+    public class HierarchyComposition : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
     {
-        public HierarchyCompositionStrategy() { }
+        public HierarchyComposition() { }
         public string GetEntityPath(string entityname, NServiceBus.AzureServiceBus.EntityType entityType) { }
         public void SetPathGenerator(System.Func<string, string> pathGenerator) { }
     }
@@ -88,33 +88,33 @@
         Sending = 1,
         Creating = 2,
     }
-    public class ReplicatedNamespacePartitioningStrategy : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
+    public class ReplicatedNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
-        public ReplicatedNamespacePartitioningStrategy(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public ReplicatedNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
         public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
-    public class RoundRobinNamespacePartitioningStrategy : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
+    public class RoundRobinNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
-        public RoundRobinNamespacePartitioningStrategy(NServiceBus.Settings.ReadOnlySettings settings) { }
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.RoundRobinNamespacePartitioningStrategy.<GetNamespaces>d__2))]
+        public RoundRobinNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
+        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.RoundRobinNamespacePartitioning.<GetNamespaces>d__2))]
         public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
-    public class ShardedNamespacePartitioningStrategy : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
+    public class ShardedNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
-        public ShardedNamespacePartitioningStrategy(NServiceBus.Settings.ReadOnlySettings settings) { }
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.ShardedNamespacePartitioningStrategy.<GetNamespaces>d__4))]
+        public ShardedNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
+        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.ShardedNamespacePartitioning.<GetNamespaces>d__4))]
         public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointname, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
         public void SetShardingRule(System.Func<int> rule) { }
     }
-    public class SingleNamespacePartitioningStrategy : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
+    public class SingleNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
-        public SingleNamespacePartitioningStrategy(NServiceBus.Settings.ReadOnlySettings settings) { }
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.SingleNamespacePartitioningStrategy.<GetNamespaces>d__2))]
+        public SingleNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
+        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.SingleNamespacePartitioning.<GetNamespaces>d__2))]
         public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
-    public class ThrowOnFailingSanitizationStrategy : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    public class ThrowOnFailingSanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
-        public ThrowOnFailingSanitizationStrategy(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
+        public ThrowOnFailingSanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
         public string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
     }
 }

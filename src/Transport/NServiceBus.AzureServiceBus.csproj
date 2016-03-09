@@ -82,13 +82,16 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Addressing\Composition\Strategies\FlatCompositionStrategy.cs" />
-    <Compile Include="Addressing\Composition\Strategies\HierarchyCompositionStrategy.cs" />
+    <Compile Include="Addressing\Composition\Strategies\FlatComposition.cs" />
+    <Compile Include="Addressing\Composition\Strategies\HierarchyComposition.cs" />
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualizationStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverMode.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitizationV6Strategy.cs" />
+    <Compile Include="Addressing\Individualization\Strategies\CoreIndividualization.cs" />
+    <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualization.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitizationV6.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\SHA1DeterministicNameBuilder.cs" />
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationV6Rules.cs" />
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
@@ -137,14 +140,14 @@
     <Compile Include="Receiving\ReceiveContext.cs" />
     <Compile Include="Sending\RoutingOptions.cs" />
     <Compile Include="Addressing\Partitioning\PartitioningIntent.cs" />
-    <Compile Include="Addressing\Partitioning\Strategies\ShardedNamespacePartitioningStrategy.cs" />
-    <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioningStrategy.cs" />
-    <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioningStrategy.cs" />
-    <Compile Include="Addressing\Partitioning\Strategies\ReplicatedNamespacePartitioningStrategy.cs" />
-    <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioningStrategy.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitizationStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\ShardedNamespacePartitioning.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioning.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioning.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\ReplicatedNamespacePartitioning.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioning.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitization.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\EndpointValidationException.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitizationStrategy.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitization.cs" />
     <Compile Include="Addressing\Validation\IValidationStrategy.cs" />
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />

@@ -2,13 +2,13 @@ namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System.Text.RegularExpressions;
 
-    public class AdjustmentSanitizationStrategy : ISanitizationStrategy
+    public class AdjustmentSanitization : ISanitizationStrategy
     {
-        IValidationStrategy _validationStrategy;
+        IValidationStrategy validationStrategy;
 
-        public AdjustmentSanitizationStrategy(IValidationStrategy validationStrategy)
+        public AdjustmentSanitization(IValidationStrategy validationStrategy)
         {
-            _validationStrategy = validationStrategy;
+            this.validationStrategy = validationStrategy;
         }
 
         public string Sanitize(string entityPath, EntityType entityType)
@@ -30,7 +30,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 entityPath = rgx.Replace(entityPath, "");
             }
 
-            if (!_validationStrategy.IsValid(entityPath, entityType))
+            if (!validationStrategy.IsValid(entityPath, entityType))
             {
                 // turn long name into a guid
                 entityPath = SHA1DeterministicNameBuilder.Build(entityPath);

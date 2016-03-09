@@ -14,7 +14,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         private static readonly string Secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
         private static readonly string Tertiary = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
 
-        private ReplicatedNamespacePartitioningStrategy _strategy;
+        private ReplicatedNamespacePartitioning _strategy;
 
         [SetUp]
         public void SetUp()
@@ -25,7 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             extensions.NamespacePartitioning().AddNamespace("namespace2", Secondary);
             extensions.NamespacePartitioning().AddNamespace("namespace3", Tertiary);
 
-            _strategy = new ReplicatedNamespacePartitioningStrategy(settings);
+            _strategy = new ReplicatedNamespacePartitioning(settings);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
 
-            Assert.Throws<ConfigurationErrorsException>(() => new ReplicatedNamespacePartitioningStrategy(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new ReplicatedNamespacePartitioning(settings));
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             var extensions = new AzureServiceBusTopologySettings(settings);
             extensions.NamespacePartitioning().AddNamespace("namespace1", Primary);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new ReplicatedNamespacePartitioningStrategy(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new ReplicatedNamespacePartitioning(settings));
         }
 
     }

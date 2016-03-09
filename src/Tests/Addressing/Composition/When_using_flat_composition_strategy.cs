@@ -11,7 +11,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
         [Test]
         public void Flat_composition_will_just_return_entityname_for_queues()
         {
-            var strategy = new FlatCompositionStrategy();
+            var strategy = new FlatComposition();
             var entityname = "myqueue";
 
             Assert.AreEqual(entityname, strategy.GetEntityPath(entityname, EntityType.Queue));
@@ -20,7 +20,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
         [Test]
         public void Flat_composition_will_just_return_entityname_for_topics()
         {
-            var strategy = new FlatCompositionStrategy();
+            var strategy = new FlatComposition();
             var entityname = "mytopic";
 
             Assert.AreEqual(entityname, strategy.GetEntityPath(entityname, EntityType.Topic));
@@ -29,7 +29,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
         [Test]
         public void Flat_composition_will_just_return_entityname_for_subscriptions()
         {
-            var strategy = new FlatCompositionStrategy();
+            var strategy = new FlatComposition();
             var entityname = "mysub";
 
             Assert.AreEqual(entityname, strategy.GetEntityPath(entityname, EntityType.Subscription));

@@ -5,13 +5,13 @@
     using System.Linq;
     using NServiceBus.Settings;
 
-    public class FailOverNamespacePartitioningStrategy : INamespacePartitioningStrategy
+    public class FailOverNamespacePartitioning : INamespacePartitioningStrategy
     {
-        private readonly NamespaceConfigurations _namespaces;
+        private readonly NamespaceConfigurations namespaces;
 
-        public FailOverNamespacePartitioningStrategy(ReadOnlySettings settings)
+        public FailOverNamespacePartitioning(ReadOnlySettings settings)
         {
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out _namespaces) || _namespaces.Count != 2)
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces) || namespaces.Count != 2)
             {
                 throw new ConfigurationErrorsException("The 'FailOver' namespace partitioning strategy requires exactly two namespaces to be configured");
             }
@@ -21,8 +21,8 @@
 
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
-            var primary = _namespaces.First();
-            var secondary = _namespaces.Last();
+            var primary = namespaces.First();
+            var secondary = namespaces.Last();
 
             if (partitioningIntent == PartitioningIntent.Sending)
             {

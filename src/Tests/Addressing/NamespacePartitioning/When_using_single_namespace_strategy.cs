@@ -17,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         private static readonly string Name = "namespace1";
         private static readonly string OtherName = "namespace2";
 
-        private SingleNamespacePartitioningStrategy _strategy;
+        private SingleNamespacePartitioning _strategy;
 
         [SetUp]
         public void SetUp()
@@ -26,7 +26,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             var extensions = new AzureServiceBusTopologySettings(settings);
             extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
 
-            _strategy = new SingleNamespacePartitioningStrategy(settings);
+            _strategy = new SingleNamespacePartitioning(settings);
         }
 
         [Test]
@@ -66,7 +66,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             
-            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioningStrategy(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioning(settings));
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
             extensions.NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioningStrategy(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioning(settings));
         }
     }
 

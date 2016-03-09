@@ -10,7 +10,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualiz
         [Test]
         public void Core_individualization_will_just_return_endpointname_as_provided_by_core()
         {
-            var strategy = new CoreIndividualizationStrategy();
+            var strategy = new CoreIndividualization();
             var endpointname = "myendpoint";
 
             Assert.AreEqual(endpointname, strategy.Individualize(endpointname));

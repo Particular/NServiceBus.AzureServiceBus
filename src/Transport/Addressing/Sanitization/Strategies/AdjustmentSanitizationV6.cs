@@ -2,11 +2,11 @@
 {
     using System.Text.RegularExpressions;
 
-    public class AdjustmentSanitizationV6Strategy : ISanitizationStrategy
+    public class AdjustmentSanitizationV6 : ISanitizationStrategy
     {
         IValidationStrategy validationStrategy;
 
-        public AdjustmentSanitizationV6Strategy(IValidationStrategy validationStrategy)
+        public AdjustmentSanitizationV6(IValidationStrategy validationStrategy)
         {
             this.validationStrategy = validationStrategy;
         }

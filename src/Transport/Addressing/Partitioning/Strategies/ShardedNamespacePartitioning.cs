@@ -6,14 +6,14 @@ namespace NServiceBus.AzureServiceBus.Addressing
     using System.Linq;
     using NServiceBus.Settings;
 
-    public class ShardedNamespacePartitioningStrategy : INamespacePartitioningStrategy
+    public class ShardedNamespacePartitioning : INamespacePartitioningStrategy
     {
-        private readonly NamespaceConfigurations _namespaces;
-        private Func<int> _shardingRule;
+        private readonly NamespaceConfigurations namespaces;
+        private Func<int> shardingRule;
 
-        public ShardedNamespacePartitioningStrategy(ReadOnlySettings settings)
+        public ShardedNamespacePartitioning(ReadOnlySettings settings)
         {
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out _namespaces) || _namespaces.Count <= 1)
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces) || namespaces.Count <= 1)
             {
                 throw new ConfigurationErrorsException("The 'Sharded' namespace partitioning strategy requires more than one namespace, please configure multiple azure servicebus namespaces");
             }
@@ -21,29 +21,29 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
         public void SetShardingRule(Func<int> rule)
         {
-            _shardingRule = rule;
+            shardingRule = rule;
         }
 
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointname, PartitioningIntent partitioningIntent)
         {
-            if (_shardingRule == null)
+            if (shardingRule == null)
             {
                 throw new ConfigurationErrorsException("The 'Sharded' namespace partitioning strategy requires a configured sharding rule to determine a namespace, please configure a sharding rule");
             }
 
-            var index = _shardingRule();
+            var index = shardingRule();
 
             if (partitioningIntent == PartitioningIntent.Sending)
             {
-                var @namespace = _namespaces.ElementAt(index);
+                var @namespace = namespaces.ElementAt(index);
                 yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Creating || partitioningIntent == PartitioningIntent.Receiving)
             {
-                for (var i = 0; i < _namespaces.Count; i++)
+                for (var i = 0; i < namespaces.Count; i++)
                 {
-                    var @namespace = _namespaces.ElementAt(i);
+                    var @namespace = namespaces.ElementAt(i);
                     yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, i == index ? NamespaceMode.Active : NamespaceMode.Passive);
                 }
             }
