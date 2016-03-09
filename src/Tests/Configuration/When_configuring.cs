@@ -118,17 +118,6 @@
         }
 
         [Test]
-        public void Should_be_able_to_extend_batching_settings()
-        {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            var batchingSettings = extensions.Batching();
-
-            Assert.IsInstanceOf<AzureServiceBusBatchingSettings>(batchingSettings);
-        }
-
-        [Test]
         public void Should_be_able_to_extend_transaction_settings()
         {
             var settings = new SettingsHolder();

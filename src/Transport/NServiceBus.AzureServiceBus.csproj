@@ -193,7 +193,6 @@
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTopologyExtensions.cs" />
     <Compile Include="Config\AzureServiceBusTransport.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTransportExtensions.cs" />
-    <Compile Include="Config\ExtensionPoints\AzureServiceBusBatchingSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusCompositionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusIndividualizationSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusNamespacePartitioningSettings.cs" />

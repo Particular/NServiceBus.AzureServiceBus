@@ -539,10 +539,6 @@ namespace NServiceBus
         public AzureServiceBusAddressingSettings(NServiceBus.Settings.SettingsHolder settings) { }
         public NServiceBus.AzureServiceBusAddressingSettings UseNamespaceNamesInsteadOfConnectionStrings() { }
     }
-    public class AzureServiceBusBatchingSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-    {
-        public AzureServiceBusBatchingSettings(NServiceBus.Settings.SettingsHolder settings) { }
-    }
     public class AzureServiceBusCompositionSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusCompositionSettings(NServiceBus.Settings.SettingsHolder settings) { }
@@ -698,7 +694,6 @@ namespace NServiceBus
     }
     public class static AzureServiceBusTransportExtensions
     {
-        public static NServiceBus.AzureServiceBusBatchingSettings Batching(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusConnectivitySettings Connectivity(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusSerializationSettings Serialization(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusTransactionSettings Transactions(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
