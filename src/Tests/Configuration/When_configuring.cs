@@ -96,16 +96,5 @@
 
             Assert.IsInstanceOf<AzureServiceBusSubscriptionSettings>(subscriptionSettings);
         }
-
-        [Test]
-        public void Should_be_able_to_extend_serialization_settings()
-        {
-            var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
-
-            var connectivitySettings = extensions.Serialization();
-
-            Assert.IsInstanceOf<AzureServiceBusSerializationSettings>(connectivitySettings);
-        }
     }
 }

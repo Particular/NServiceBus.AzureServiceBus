@@ -26,9 +26,11 @@ namespace NServiceBus
             return new AzureServiceBusTopologySettings(settings);
         }
 
-        public static AzureServiceBusSerializationSettings Serialization(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+
+        public static void BrokeredMessageBodyType(this TransportExtensions<AzureServiceBusTransport> transportExtensions, SupportedBrokeredMessageBodyTypes type)
         {
-            return new AzureServiceBusSerializationSettings(transportExtensions.GetSettings());
+            var settings = transportExtensions.GetSettings();
+            settings.Set(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType, type);
         }
 
 

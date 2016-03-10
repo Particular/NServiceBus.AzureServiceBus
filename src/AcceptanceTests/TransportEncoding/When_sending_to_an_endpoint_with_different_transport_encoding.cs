@@ -43,7 +43,7 @@
                 EndpointSetup<DefaultServer>(busConfiguration =>
                 {
                     // TODO: this is wrong. We should be able to configure serialization w/o going through topology
-                    busConfiguration.UseTransport<AzureServiceBusTransport>().Serialization().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
+                    busConfiguration.UseTransport<AzureServiceBusTransport>().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
                 }).AddMapping<MyMessage>(typeof(Receiver));
             }
         }
@@ -55,7 +55,7 @@
                 EndpointSetup<DefaultServer>(busConfiguration =>
                 {
                     // TODO: this is wrong. We should be able to configure serialization w/o going through topology
-                    busConfiguration.UseTransport<AzureServiceBusTransport>().Serialization().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.ByteArray);
+                    busConfiguration.UseTransport<AzureServiceBusTransport>().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.ByteArray);
                 });
             }
 

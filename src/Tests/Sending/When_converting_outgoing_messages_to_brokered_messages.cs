@@ -46,7 +46,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.Serialization().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
+            extensions.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 
@@ -263,7 +263,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.Serialization().BrokeredMessageBodyType(bodyType);
+            extensions.BrokeredMessageBodyType(bodyType);
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new FakeMapper());
 

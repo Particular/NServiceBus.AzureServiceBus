@@ -152,7 +152,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Serialization().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
+            extensions.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
