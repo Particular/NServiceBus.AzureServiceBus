@@ -118,6 +118,7 @@
     <Compile Include="Configuration\When_configuring_serialization.cs" />
     <Compile Include="Configuration\When_configuring_use_logical_namespace_name.cs" />
     <Compile Include="Configuration\When_configuring_validation.cs" />
+    <Compile Include="Configuration\When_creating_sizeinmegabytes.cs" />
     <Compile Include="ConnectionStringValue.cs" />
     <Compile Include="Connectivity\When_executing_task_with_retry.cs" />
     <Compile Include="Creation\When_creating_forwarding_subscription.cs" />

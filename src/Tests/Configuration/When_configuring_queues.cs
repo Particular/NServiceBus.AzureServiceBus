@@ -156,7 +156,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             const long maxTopicSizeInMB = 2048;
-            var queueSettings = extensions.Queues().MaxSizeInMegabytes(maxTopicSizeInMB);
+            var queueSettings = extensions.Queues().MaxSizeInMegabytes(SizeInMegabytes.Size2048);
 
             Assert.AreEqual(maxTopicSizeInMB, queueSettings.GetSettings().Get<long>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxSizeInMegabytes));
         }

@@ -221,7 +221,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.Topics().MaxSizeInMegabytes(4096);
+            extensions.Topics().MaxSizeInMegabytes(SizeInMegabytes.Size4096);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic10";

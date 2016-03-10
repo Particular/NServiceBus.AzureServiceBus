@@ -367,7 +367,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.Queues().MaxSizeInMegabytes(3072);
+            extensions.Queues().MaxSizeInMegabytes(SizeInMegabytes.Size3072);
 
             var creator = new AzureServiceBusQueueCreator(settings);
 

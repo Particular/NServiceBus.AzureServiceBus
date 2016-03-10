@@ -589,7 +589,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(System.Func<string, bool> condition, string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusQueueSettings LockDuration(System.TimeSpan duration) { }
         public NServiceBus.AzureServiceBusQueueSettings MaxDeliveryCount(int maxDeliveryCount) { }
-        public NServiceBus.AzureServiceBusQueueSettings MaxSizeInMegabytes(long maxSizeInMegabytes) { }
+        public NServiceBus.AzureServiceBusQueueSettings MaxSizeInMegabytes(NServiceBus.SizeInMegabytes maxSizeInMegabytes) { }
         public NServiceBus.AzureServiceBusQueueSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusQueueSettings RequiresSession(bool requiresSession) { }
         public NServiceBus.AzureServiceBusQueueSettings SupportOrdering(bool supported) { }
@@ -632,7 +632,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusTopicSettings EnableExpress(System.Func<string, bool> condition, bool enableExpress) { }
         public NServiceBus.AzureServiceBusTopicSettings EnableFilteringMessagesBeforePublishing(bool enableFilteringMessagesBeforePublishing) { }
         public NServiceBus.AzureServiceBusTopicSettings EnablePartitioning(bool enablePartitioning) { }
-        public NServiceBus.AzureServiceBusTopicSettings MaxSizeInMegabytes(long maxSizeInMegabytes) { }
+        public NServiceBus.AzureServiceBusTopicSettings MaxSizeInMegabytes(NServiceBus.SizeInMegabytes maxSizeInMegabytes) { }
         public NServiceBus.AzureServiceBusTopicSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusTopicSettings SupportOrdering(bool supported) { }
     }
@@ -684,5 +684,14 @@ namespace NServiceBus
             where T : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy { }
         public NServiceBus.AzureServiceBusValidationSettings UseSubscriptionPathMaximumLength(int subscriptionPathMaximumLength) { }
         public NServiceBus.AzureServiceBusValidationSettings UseTopicPathMaximumLength(int topicPathMaximumLength) { }
+    }
+    public class SizeInMegabytes
+    {
+        public static NServiceBus.SizeInMegabytes Size1024;
+        public static NServiceBus.SizeInMegabytes Size2048;
+        public static NServiceBus.SizeInMegabytes Size3072;
+        public static NServiceBus.SizeInMegabytes Size4096;
+        public static NServiceBus.SizeInMegabytes Size5120;
+        public static NServiceBus.SizeInMegabytes Create(long sizeInMegabytes) { }
     }
 }

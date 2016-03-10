@@ -97,6 +97,7 @@
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
     <Compile Include="Config\AzureServiceBusTransportInfrastructure.cs" />
     <Compile Include="Config\TransactionModeSettingsExtensions.cs" />
+    <Compile Include="Config\ExtensionPoints\SizeInMegabytes.cs" />
     <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />

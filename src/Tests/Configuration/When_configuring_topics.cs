@@ -109,7 +109,7 @@
             var extensions = new AzureServiceBusTopologySettings(settings);
 
             const long maxTopicSizeInMB = 2048;
-            var topicSettings = extensions.Topics().MaxSizeInMegabytes(maxTopicSizeInMB);
+            var topicSettings = extensions.Topics().MaxSizeInMegabytes(SizeInMegabytes.Size2048);
 
             Assert.AreEqual(maxTopicSizeInMB, topicSettings.GetSettings().Get<long>(WellKnownConfigurationKeys.Topology.Resources.Topics.MaxSizeInMegabytes));
         }

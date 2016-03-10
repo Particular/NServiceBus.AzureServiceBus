@@ -78,9 +78,9 @@
             return this;
         }
 
-        public AzureServiceBusTopicSettings MaxSizeInMegabytes(long maxSizeInMegabytes)
+        public AzureServiceBusTopicSettings MaxSizeInMegabytes(SizeInMegabytes maxSizeInMegabytes)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.MaxSizeInMegabytes, maxSizeInMegabytes);
+            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.MaxSizeInMegabytes, (long)maxSizeInMegabytes);
             return this;
         }
 

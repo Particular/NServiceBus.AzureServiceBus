@@ -114,9 +114,9 @@
         }
 
 
-        public AzureServiceBusQueueSettings MaxSizeInMegabytes(long maxSizeInMegabytes)
+        public AzureServiceBusQueueSettings MaxSizeInMegabytes(SizeInMegabytes maxSizeInMegabytes)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxSizeInMegabytes, maxSizeInMegabytes);
+            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxSizeInMegabytes, (long)maxSizeInMegabytes);
 
             return this;
         }
