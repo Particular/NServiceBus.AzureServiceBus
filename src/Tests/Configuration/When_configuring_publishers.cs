@@ -1,7 +1,6 @@
 ﻿namespace NServiceBus.AzureServiceBus.Tests
 {
     using System.Collections.Generic;
-    using System.Linq;
     using NServiceBus.AzureServiceBus.EventsScanner;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -17,14 +16,12 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.UseTopology<EndpointOrientedTopology>()
-                .RegisterPublisherForType("publisherName", typeof(MyEvent));
+                .RegisterPublisherForType("publisherName", typeof(MyType));
 
             var publishers = settings.Get<IDictionary<string, List<IEventsScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
 
             Assert.True(publishers.ContainsKey("publisherName"));
-
-            var eventsScanner = publishers["publisherName"].Cast<TypeEventsScanner>().First();
-            Assert.AreEqual(typeof(MyEvent), eventsScanner.Target);
+            CollectionAssert.Contains(publishers["publisherName"], new TypeEventsScanner(typeof(MyType)));
         }
         
         [Test]
@@ -39,12 +36,10 @@
             var publishers = settings.Get<IDictionary<string, List<IEventsScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
 
             Assert.True(publishers.ContainsKey("publisherName"));
-
-            var eventsScanner = publishers["publisherName"].Cast<AssemblyEventsScanner>().First();
-            Assert.AreEqual("assemblyName", eventsScanner.AssemblyName);
+            CollectionAssert.Contains(publishers["publisherName"], new AssemblyEventsScanner("assemblyName"));
         }
 
-        public class MyEvent : IEvent
+        class MyType 
         {
         }
     }

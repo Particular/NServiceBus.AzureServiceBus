@@ -159,6 +159,8 @@
     <Compile Include="Sending\When_converting_outgoing_messages_to_brokered_messages.cs" />
     <Compile Include="Sending\When_routing_outgoingmessages_to_endpoints.cs" />
     <Compile Include="Sending\When_sending_brokeredmessages_to_queues.cs" />
+    <Compile Include="Topology\EventsScanner\When_configuring_an_assembly_scanner.cs" />
+    <Compile Include="Topology\EventsScanner\When_configuring_a_type_scanner.cs" />
     <Compile Include="Topology\MetaModel\When_configuring_entity_address.cs" />
     <Compile Include="Topology\MetaModel\When_configuring_namespace_configurations.cs" />
     <Compile Include="Topology\MetaModel\When_configuring_namespace_info.cs" />
