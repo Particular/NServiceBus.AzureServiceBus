@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using NServiceBus.AzureServiceBus;
+    using NServiceBus.AzureServiceBus.EventsScanner;
     using NServiceBus.Settings;
 
     public class AzureServiceBusTopologySettings : TransportExtensions<AzureServiceBusTransport>
@@ -15,23 +16,32 @@
             _settings = settings;
         }
 
-        public AzureServiceBusTopologySettings RegisterPublisherFor<T>(string publisher)
+        public AzureServiceBusTopologySettings RegisterPublisherForType(string publisherName, Type type)
         {
-            Dictionary<Type, List<string>> map;
+            AddScannerForPublisher(publisherName, new TypeEventsScanner(type));
+            return this;
+        }
+
+        public AzureServiceBusTopologySettings RegisterPublisherForAssembly(string publisherName, string assemblyName)
+        {
+            AddScannerForPublisher(publisherName, new AssemblyEventsScanner(assemblyName));
+            return this;
+        }
+
+        private void AddScannerForPublisher(string publisherName, IEventsScanner scanner)
+        {
+            Dictionary<string, List<IEventsScanner>> map;
 
             if (!_settings.TryGet(WellKnownConfigurationKeys.Topology.Publishers, out map))
             {
-                map = new Dictionary<Type, List<string>>();
+                map = new Dictionary<string, List<IEventsScanner>>();
                 _settings.Set(WellKnownConfigurationKeys.Topology.Publishers, map);
             }
 
-            if (!map.ContainsKey(typeof(T)))
-                map[typeof(T)] = new List<string>();
+            if (!map.ContainsKey(publisherName))
+                map[publisherName] = new List<IEventsScanner>();
 
-            var publishers = map[typeof(T)];
-            publishers.Add(publisher);
-
-            return this;
+            map[publisherName].Add(scanner);
         }
     }
 }
