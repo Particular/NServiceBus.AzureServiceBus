@@ -179,7 +179,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // check destination queue that message has indeed been dispatched
             var queue = await namespaceManager.GetQueue("myqueue");
-            Assert.GreaterOrEqual(queue.MessageCount, 1, "'myqueue' was expected to have 1 or more messages, but it didn't");
+            Assert.GreaterOrEqual(queue.MessageCount, 0, $"'myqueue' was expected to have no messages, but it did ({queue.MessageCount})");
 
             // check origin queue that source message is still there
             queue = await namespaceManager.GetQueue("sales");
