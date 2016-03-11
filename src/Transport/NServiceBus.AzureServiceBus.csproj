@@ -97,6 +97,7 @@
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
     <Compile Include="Config\AzureServiceBusTransportInfrastructure.cs" />
     <Compile Include="Config\TransactionModeSettingsExtensions.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusTopologySettings.cs" />
     <Compile Include="Config\ExtensionPoints\SizeInMegabytes.cs" />
     <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
@@ -154,7 +155,6 @@
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />
     <Compile Include="Addressing\Partitioning\INamespacePartitioningStrategy.cs" />
     <Compile Include="Config\DefaultConfigurationValues.cs" />
-    <Compile Include="Config\ExtensionPoints\AzureServiceBusConnectivitySettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessageReceiverSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessageSenderSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessagingFactoriesSettings.cs" />
@@ -199,8 +199,6 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSanitizationSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSubscriptionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopicSettings.cs" />
-    <Compile Include="Config\ExtensionPoints\AzureServiceBusTopologySettings.cs" />
-    <Compile Include="Config\ExtensionPoints\AzureServiceBusTransactionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusValidationSettings.cs" />
     <Compile Include="Config\WellKnownConfigurationKeys.cs" />
     <Compile Include="Connectivity\ICreateMessageSenders.cs" />

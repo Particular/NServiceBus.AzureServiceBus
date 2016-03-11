@@ -15,6 +15,11 @@
             _settings = settings;
         }
 
+        /// <summary>
+        /// Provide individualization strategy to use.
+        /// <remarks>Default is <see cref="DiscriminatorBasedIndividualization"/></remarks>
+        /// <seealso cref="CoreIndividualization"/>
+        /// </summary>
         public AzureServiceBusIndividualizationSettings UseStrategy<T>() where T : IIndividualizationStrategy
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(T));

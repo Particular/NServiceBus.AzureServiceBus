@@ -15,7 +15,11 @@ namespace NServiceBus
         {
             _settings = settings;
         }
-        
+
+        /// <summary>
+        /// Retry policy.
+        /// <remarks>Default is RetryPolicy.Default</remarks>
+        /// </summary>
         public AzureServiceBusMessageSenderSettings RetryPolicy(RetryPolicy retryPolicy)
         {
             _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy, retryPolicy);
@@ -23,6 +27,10 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Time period to wait until next attempt is made after operation is throttled.
+        /// <remarks>Default is 10 seconds.</remarks>
+        /// </summary>
         public AzureServiceBusMessageSenderSettings BackOffTimeOnThrottle(TimeSpan backoffTime)
         {
             Guard.AgainstNegative(nameof(backoffTime), backoffTime);
@@ -31,6 +39,10 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Number of retries when operation is throttled.
+        /// <remarks>Default is 5 attempts.</remarks>
+        /// </summary>
         public AzureServiceBusMessageSenderSettings RetryAttemptsOnThrottle(int count)
         {
             Guard.AgainstNegative(nameof(count), count);
@@ -39,6 +51,10 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Maximum message size allowed for sending.
+        /// <remarks>Default is 256KB.</remarks>
+        /// </summary>
         public AzureServiceBusMessageSenderSettings MaximuMessageSizeInKilobytes(int sizeInKilobytes)
         {
             Guard.AgainstNegativeAndZero(nameof(sizeInKilobytes), sizeInKilobytes);
@@ -47,6 +63,10 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Message size padding percentage used for sending batched messages.
+        /// <remarks>Default is 5%.</remarks>
+        /// </summary>
         public AzureServiceBusMessageSenderSettings MessageSizePaddingPercentage(int percentage)
         {
             Guard.AgainstNegative(nameof(percentage), percentage);
@@ -54,6 +74,10 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Behavior for oversized messages.
+        /// <remarks>Default is throw an exception using <see cref="ThrowOnOversizedBrokeredMessages"/>.</remarks>
+        /// </summary>
         public AzureServiceBusMessageSenderSettings OversizedBrokeredMessageHandler<T>(T instance) where T : IHandleOversizedBrokeredMessages
         {
             _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance, instance);

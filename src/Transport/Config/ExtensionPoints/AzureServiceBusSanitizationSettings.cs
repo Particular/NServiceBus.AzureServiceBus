@@ -7,17 +7,21 @@ namespace NServiceBus
 
     public class AzureServiceBusSanitizationSettings : ExposeSettings
     {
-         SettingsHolder _settings;
+         SettingsHolder settings;
 
          public AzureServiceBusSanitizationSettings(SettingsHolder settings)
             : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
-         public AzureServiceBusSanitizationSettings UseStrategy<T>() where T : ISanitizationStrategy
+        /// <summary>
+        /// Rules to apply for entity path/name sanitization.
+        /// <remarks> Default is <see cref="AdjustmentSanitization"/>. For backwards compatibility, use <see cref="AdjustmentSanitizationV6"/>.</remarks>
+        /// </summary>
+        public AzureServiceBusSanitizationSettings UseStrategy<T>() where T : ISanitizationStrategy
          {
-             _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(T));
+             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(T));
 
              return this;
          }
