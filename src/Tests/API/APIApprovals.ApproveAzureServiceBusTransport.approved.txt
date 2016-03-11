@@ -635,10 +635,6 @@ namespace NServiceBus
     {
         public AzureServiceBusTopologySettings(NServiceBus.Settings.SettingsHolder settings) { }
     }
-    public class AzureServiceBusTransactionSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-    {
-        public AzureServiceBusTransactionSettings(NServiceBus.Settings.SettingsHolder settings) { }
-    }
     public class AzureServiceBusTransport : NServiceBus.Transports.TransportDefinition
     {
         public AzureServiceBusTransport() { }
