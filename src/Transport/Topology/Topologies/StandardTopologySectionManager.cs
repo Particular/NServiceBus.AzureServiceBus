@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus
     using NServiceBus.Transports;
     using Settings;
 
-    public class StandardTopologySectionManager : ITopologySectionManager
+    class StandardTopologySectionManager : ITopologySectionManager
     {
         SettingsHolder settings;
         ITransportPartsContainer container;

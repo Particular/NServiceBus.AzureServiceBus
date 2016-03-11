@@ -2,7 +2,6 @@ namespace NServiceBus.AzureServiceBus
 {
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
 
     public class ThrowOnOversizedBrokeredMessages : IHandleOversizedBrokeredMessages
     {

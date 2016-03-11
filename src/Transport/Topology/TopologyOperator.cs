@@ -7,7 +7,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using NServiceBus.Logging;
 
-    public class TopologyOperator : IOperateTopology
+    class TopologyOperator : IOperateTopology
     {
         readonly ITransportPartsContainer container;
 

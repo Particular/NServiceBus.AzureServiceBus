@@ -9,7 +9,7 @@ namespace NServiceBus.AzureServiceBus
     using NServiceBus.Logging;
     using NServiceBus.Settings;
 
-    public class DefaultOutgoingBatchRouter : IRouteOutgoingBatches
+    class DefaultOutgoingBatchRouter : IRouteOutgoingBatches
     {
         ILog logger = LogManager.GetLogger<DefaultOutgoingBatchRouter>();
         readonly IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter;

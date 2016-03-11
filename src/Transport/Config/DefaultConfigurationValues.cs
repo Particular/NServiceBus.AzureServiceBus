@@ -6,7 +6,7 @@
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Settings;
 
-    public class DefaultConfigurationValues
+    class DefaultConfigurationValues
     {
         public SettingsHolder Apply(SettingsHolder settings)
         {

@@ -150,9 +150,4 @@ namespace NServiceBus.AzureServiceBus
             return brokeredMessage;
         }
     }
-
-    internal static class Time
-    {
-        public static Func<DateTime> UtcNow = () => DateTime.UtcNow;
-    }
 }

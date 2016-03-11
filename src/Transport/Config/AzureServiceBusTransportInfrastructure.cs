@@ -9,7 +9,7 @@
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
-    public class AzureServiceBusTransportInfrastructure : TransportInfrastructure
+    class AzureServiceBusTransportInfrastructure : TransportInfrastructure
     {
         private readonly ITopology topology;
         private readonly SettingsHolder settings;

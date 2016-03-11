@@ -5,7 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
 
-    public class MessageReceiverAdapter : IMessageReceiver
+    class MessageReceiverAdapter : IMessageReceiver
     {
         readonly MessageReceiver _receiver;
 

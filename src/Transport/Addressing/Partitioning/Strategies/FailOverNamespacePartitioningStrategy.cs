@@ -38,10 +38,4 @@
             }
         }
     }
-
-    public enum FailOverMode
-    {
-        Primary,
-        Secondary
-    }
 }

@@ -8,16 +8,4 @@
 
         public SubscriptionMetadata Metadata { get; set; }
     }
-
-    public class SubscriptionMetadata
-    {
-        public string Description { get; set; }
-        public string SubscriptionNameBasedOnEventWithNamespace { get; set; }
-    }
-
-    class ForwardingTopologySubscriptionMetadata : SubscriptionMetadata
-    {
-        public RuntimeNamespaceInfo NamespaceInfo { get; set; }
-        public string SubscribedEventFullName { get; set; }
-    }
 }

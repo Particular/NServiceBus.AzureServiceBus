@@ -5,7 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Reflection;
 
-    public class TransportPartsContainer : ITransportPartsContainer
+    class TransportPartsContainer : ITransportPartsContainer
     {
         IList<Tuple<Type, Func<object>>> funcs = new List<Tuple<Type, Func<object>>>();
 
