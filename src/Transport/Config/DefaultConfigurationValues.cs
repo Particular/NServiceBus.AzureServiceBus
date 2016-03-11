@@ -42,7 +42,7 @@
         void ApplyDefaultsForConnectivity(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 5);
-            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, false);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.ConnectivityMode, ConnectivityMode.Tcp);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, 5);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.PeekLock);
