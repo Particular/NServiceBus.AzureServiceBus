@@ -39,16 +39,6 @@
         }
 
         /// <summary>
-        /// Number of messages to pre-fetch configured on MessagingFactory level.
-        /// </summary>
-        public AzureServiceBusMessagingFactoriesSettings PrefetchCount(int prefetchCount)
-        {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.PrefetchCount, prefetchCount);
-
-            return this;
-        }
-
-        /// <summary>
         /// Retry policy configured on MessagingFactory level.
         /// <remarks>Default is RetryPolicy.Default</remarks>
         /// </summary>

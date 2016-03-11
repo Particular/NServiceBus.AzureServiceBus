@@ -563,7 +563,6 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusMessagingFactoriesSettings BatchFlushInterval(System.TimeSpan batchFlushInterval) { }
         public NServiceBus.AzureServiceBusMessagingFactoriesSettings MessagingFactorySettingsFactory(System.Func<string, Microsoft.ServiceBus.Messaging.MessagingFactorySettings> factory) { }
         public NServiceBus.AzureServiceBusMessagingFactoriesSettings NumberOfMessagingFactoriesPerNamespace(int number) { }
-        public NServiceBus.AzureServiceBusMessagingFactoriesSettings PrefetchCount(int prefetchCount) { }
         public NServiceBus.AzureServiceBusMessagingFactoriesSettings RetryPolicy(Microsoft.ServiceBus.RetryPolicy retryPolicy) { }
     }
     public class AzureServiceBusNamespacePartitioningSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings

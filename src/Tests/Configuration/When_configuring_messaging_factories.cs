@@ -12,17 +12,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
     public class When_configuring_messaging_factories
     {
         [Test]
-        public void Should_be_able_to_set_prefetchcount()
-        {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            var connectivitySettings = extensions.MessagingFactories().PrefetchCount(1000);
-
-            Assert.AreEqual(1000, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.PrefetchCount));
-        }
-
-        [Test]
         public void Should_be_able_to_set_retrypolicy()
         {
             var settings = new SettingsHolder();

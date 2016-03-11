@@ -45,10 +45,6 @@ namespace NServiceBus.AzureServiceBus
             var namespaceManager = _namespaceManagers.Get(namespaceName);
             var factorySettings = _settingsFactory(namespaceName);
             var inner = MessagingFactory.Create(namespaceManager.Address, factorySettings);
-            if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.PrefetchCount))
-            {
-                inner.PrefetchCount = _settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.PrefetchCount);
-            }
             if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy))
             {
                 inner.RetryPolicy = _settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy);
