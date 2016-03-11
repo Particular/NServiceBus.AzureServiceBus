@@ -1,19 +1,19 @@
-namespace NServiceBus.AzureServiceBus.EventsScanner
+namespace NServiceBus.AzureServiceBus.TypesScanner
 {
     using System;
 
-    class TypeEventsScanner : IEventsScanner, IEquatable<TypeEventsScanner>
+    class SingleTypeScanner : ITypesScanner, IEquatable<SingleTypeScanner>
     {
         private readonly Type _target;
 
-        public TypeEventsScanner(Type target)
+        public SingleTypeScanner(Type target)
         {
             _target = target;
         }
 
         public override bool Equals(object obj)
         {
-            var target = obj as TypeEventsScanner;
+            var target = obj as SingleTypeScanner;
             return Equals(target);
         }
 
@@ -22,7 +22,7 @@ namespace NServiceBus.AzureServiceBus.EventsScanner
             return _target.GetHashCode();
         }
 
-        public bool Equals(TypeEventsScanner other)
+        public bool Equals(SingleTypeScanner other)
         {
             return other != null
                    && _target == other._target;

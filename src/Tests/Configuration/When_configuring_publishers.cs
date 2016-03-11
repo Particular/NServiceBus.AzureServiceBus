@@ -1,7 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus.Tests
 {
     using System.Collections.Generic;
-    using NServiceBus.AzureServiceBus.EventsScanner;
+    using NServiceBus.AzureServiceBus.TypesScanner;
     using NServiceBus.Settings;
     using NUnit.Framework;
 
@@ -18,10 +18,10 @@
             extensions.UseTopology<EndpointOrientedTopology>()
                 .RegisterPublisherForType("publisherName", typeof(MyType));
 
-            var publishers = settings.Get<IDictionary<string, List<IEventsScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
+            var publishers = settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
 
             Assert.True(publishers.ContainsKey("publisherName"));
-            CollectionAssert.Contains(publishers["publisherName"], new TypeEventsScanner(typeof(MyType)));
+            CollectionAssert.Contains(publishers["publisherName"], new SingleTypeScanner(typeof(MyType)));
         }
         
         [Test]
@@ -33,10 +33,10 @@
             extensions.UseTopology<EndpointOrientedTopology>()
                 .RegisterPublisherForAssembly("publisherName", "assemblyName");
 
-            var publishers = settings.Get<IDictionary<string, List<IEventsScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
+            var publishers = settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
 
             Assert.True(publishers.ContainsKey("publisherName"));
-            CollectionAssert.Contains(publishers["publisherName"], new AssemblyEventsScanner("assemblyName"));
+            CollectionAssert.Contains(publishers["publisherName"], new AssemblyTypesScanner("assemblyName"));
         }
 
         class MyType 

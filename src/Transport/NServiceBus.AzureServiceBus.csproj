@@ -113,6 +113,9 @@
     <Compile Include="Topology\EventsScanner\AssemblyEventsScanner.cs" />
     <Compile Include="Topology\EventsScanner\IEventsScanner.cs" />
     <Compile Include="Topology\EventsScanner\TypeEventsScanner.cs" />
+    <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />
+    <Compile Include="Topology\TypesScanner\ITypesScanner.cs" />
+    <Compile Include="Topology\TypesScanner\SingleTypeScanner.cs" />
     <Compile Include="Topology\MetaModel\ConnectionString.cs" />
     <Compile Include="Topology\MetaModel\DefaultConnectionStringToNamespaceNameMapper.cs" />
     <Compile Include="Topology\MetaModel\DefaultNamespaceNameToConnectionStringMapper.cs" />
@@ -126,6 +129,7 @@
     <Compile Include="Topology\MetaModel\SubscriptionMetadata.cs" />
     <Compile Include="Topology\PreStartupChecks\ManageRightsCheck.cs" />
     <Compile Include="Topology\PreStartupChecks\TopicPartitioningCheckForForwardingTopology.cs" />
+    <Compile Include="Topology\PublishersConfiguration.cs" />
     <Compile Include="Utils\BrokeredMessageHeaders.cs" />
     <Compile Include="Sending\IHandleOversizedBrokeredMessages.cs" />
     <Compile Include="Sending\ThrowOnOversizedBrokeredMessages.cs" />

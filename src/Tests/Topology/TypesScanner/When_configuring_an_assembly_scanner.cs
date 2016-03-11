@@ -1,6 +1,6 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.EventsScanner
 {
-    using NServiceBus.AzureServiceBus.EventsScanner;
+    using NServiceBus.AzureServiceBus.TypesScanner;
     using NUnit.Framework;
 
     [TestFixture]
@@ -13,8 +13,8 @@
         [TestCase("ASSEMBLYNAME", "assemblyname")]
         public void Two_scanners_should_be_equal_if_they_reference_the_same_assembly(string assemblyName1, string assemblyName2)
         {
-            var scanner1 = new AssemblyEventsScanner(assemblyName1);
-            var scanner2 = new AssemblyEventsScanner(assemblyName2);
+            var scanner1 = new AssemblyTypesScanner(assemblyName1);
+            var scanner2 = new AssemblyTypesScanner(assemblyName2);
 
             Assert.AreEqual(scanner1, scanner2);
 
@@ -27,8 +27,8 @@
         [Test]
         public void Two_scanners_should_be_not_equal_if_they_reference_two_differents_assemblies()
         {
-            var scanner1 = new AssemblyEventsScanner("assemblyName1");
-            var scanner2 = new AssemblyEventsScanner("assemblyName2");
+            var scanner1 = new AssemblyTypesScanner("assemblyName1");
+            var scanner2 = new AssemblyTypesScanner("assemblyName2");
 
             Assert.AreNotEqual(scanner1, scanner2);
 
