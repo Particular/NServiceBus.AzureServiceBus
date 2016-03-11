@@ -27,7 +27,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupStandardTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -71,7 +71,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await pump.Stop();
         }
 
-        async Task<ITopologySectionManager> SetupStandardTopology(TransportPartsContainer container, string enpointname)
+        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -79,7 +79,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
-            var topology = new StandardTopology(container);
+            var topology = new EndpointOrientedTopology(container);
 
             topology.Initialize(settings);
 

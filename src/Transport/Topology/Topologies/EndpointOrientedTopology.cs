@@ -7,14 +7,14 @@ namespace NServiceBus.AzureServiceBus
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
-    public class StandardTopology :ITopology
+    public class EndpointOrientedTopology :ITopology
     {
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
 
-        public StandardTopology() : this(new TransportPartsContainer()){ }
+        public EndpointOrientedTopology() : this(new TransportPartsContainer()){ }
 
-        internal StandardTopology(ITransportPartsContainer container)
+        internal EndpointOrientedTopology(ITransportPartsContainer container)
         {
             this.container = container;
         }
@@ -37,7 +37,7 @@ namespace NServiceBus.AzureServiceBus
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioning));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(AdjustmentSanitization));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(EntityNameValidationRules));
-            topologySectionManager = new StandardTopologySectionManager(settings, container);
+            topologySectionManager = new EndpointOrientedTopologySectionManager(settings, container);
         }
 
         private void InitializeContainer(SettingsHolder settings)

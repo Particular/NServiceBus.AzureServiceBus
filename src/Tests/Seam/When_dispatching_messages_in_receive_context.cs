@@ -33,7 +33,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var settings = new SettingsHolder();
             
             // setup a basic topologySectionManager for testing
-            var topology = await SetupStandardTopology(container, "sales", settings);
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
             settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
 
             // setup the receive side of things
@@ -111,7 +111,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var settings = new SettingsHolder();
 
             // setup a basic topologySectionManager for testing
-            var topology = await SetupStandardTopology(container, "sales", settings);
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
@@ -202,7 +202,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             extensions.SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
-            var topology = await SetupStandardTopology(container, "sales", settings);
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
@@ -285,7 +285,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             extensions.SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
-            var topology = await SetupStandardTopology(container, "sales", settings);
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
@@ -379,7 +379,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             extensions.SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
-            var topology = await SetupStandardTopology(container, "sales", settings);
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
             settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
 
             // setup the receive side of things
@@ -458,14 +458,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(elapsed < TimeSpan.FromSeconds(29)); // 29 instead of 30 to accommodate for a little clock drift
         }
 
-        async Task<ITopologySectionManager> SetupStandardTopology(TransportPartsContainer container, string enpointname, SettingsHolder settings)
+        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname, SettingsHolder settings)
         {
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
-            var topology = new StandardTopology(container);
+            var topology = new EndpointOrientedTopology(container);
             topology.Initialize(settings);
 
             // create the topologySectionManager

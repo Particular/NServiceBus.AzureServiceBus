@@ -13,7 +13,7 @@
         {
             settings.SetDefault("Transactions.DoNotWrapHandlersExecutionInATransactionScope", true);
             settings.SetDefault("Transactions.SuppressDistributedTransactions", true);
-            settings.SetDefault<ITopology>(new StandardTopology());
+            settings.SetDefault<ITopology>(new EndpointOrientedTopology());
 
             var topology = settings.Get<ITopology>();
             topology.Initialize(settings);

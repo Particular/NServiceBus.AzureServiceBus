@@ -128,7 +128,7 @@
     <Compile Include="Sending\ThrowOnOversizedBrokeredMessages.cs" />
     <Compile Include="Topology\ITopology.cs" />
     <Compile Include="Topology\Topologies\ForwardingTopology.cs" />
-    <Compile Include="Topology\Topologies\StandardTopology.cs" />
+    <Compile Include="Topology\Topologies\EndpointOrientedTopology.cs" />
     <Compile Include="Utils\Guard.cs" />
     <Compile Include="Utils\IRegisterTransportParts.cs" />
     <Compile Include="Receiving\IncomingMessageDetails.cs" />
@@ -205,7 +205,7 @@
     <Compile Include="Creation\ICreateNamespaceManagers.cs" />
     <Compile Include="Connectivity\MessagingFactoryCreator.cs" />
     <Compile Include="Topology\Topologies\ForwardingTopologySectionManager.cs" />
-    <Compile Include="Topology\Topologies\StandardTopologySectionManager.cs" />
+    <Compile Include="Topology\Topologies\EndpointOrientedTopologySectionManager.cs" />
     <Compile Include="Topology\MetaModel\EntityInfo.cs" />
     <Compile Include="Topology\MetaModel\EntityRelationShipInfo.cs" />
     <Compile Include="Topology\MetaModel\EntityRelationShipType.cs" />

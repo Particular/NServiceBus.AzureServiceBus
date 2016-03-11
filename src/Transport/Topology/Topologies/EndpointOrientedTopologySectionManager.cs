@@ -12,14 +12,14 @@ namespace NServiceBus.AzureServiceBus
     using NServiceBus.Transports;
     using Settings;
 
-    class StandardTopologySectionManager : ITopologySectionManager
+    class EndpointOrientedTopologySectionManager : ITopologySectionManager
     {
         SettingsHolder settings;
         ITransportPartsContainer container;
 
         readonly ConcurrentDictionary<Type, TopologySection> subscriptions = new ConcurrentDictionary<Type, TopologySection>();
 
-        public StandardTopologySectionManager(SettingsHolder settings, ITransportPartsContainer container)
+        public EndpointOrientedTopologySectionManager(SettingsHolder settings, ITransportPartsContainer container)
         {
             this.settings = settings;
             this.container = container;

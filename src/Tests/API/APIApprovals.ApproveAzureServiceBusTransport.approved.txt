@@ -142,6 +142,19 @@ namespace NServiceBus.AzureServiceBus
         public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; set; }
         public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; set; }
     }
+    public class EndpointOrientedTopology : NServiceBus.AzureServiceBus.ITopology
+    {
+        public EndpointOrientedTopology() { }
+        public bool HasNativePubSubSupport { get; }
+        public bool HasSupportForCentralizedPubSub { get; }
+        public System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory() { }
+        public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
+        public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
+        public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
+        public System.Func<NServiceBus.Transports.IManageSubscriptions> GetSubscriptionManagerFactory() { }
+        public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
+        public System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
+    }
     public class EntityInfo
     {
         public EntityInfo() { }
@@ -454,19 +467,6 @@ namespace NServiceBus.AzureServiceBus
         public bool Equals(NServiceBus.AzureServiceBus.RuntimeNamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
-    }
-    public class StandardTopology : NServiceBus.AzureServiceBus.ITopology
-    {
-        public StandardTopology() { }
-        public bool HasNativePubSubSupport { get; }
-        public bool HasSupportForCentralizedPubSub { get; }
-        public System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory() { }
-        public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
-        public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
-        public System.Func<NServiceBus.Transports.ICreateQueues> GetQueueCreatorFactory() { }
-        public System.Func<NServiceBus.Transports.IManageSubscriptions> GetSubscriptionManagerFactory() { }
-        public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
-        public System.Threading.Tasks.Task<NServiceBus.Transports.StartupCheckResult> RunPreStartupChecks() { }
     }
     public class SubscriptionInfo : NServiceBus.AzureServiceBus.EntityInfo
     {

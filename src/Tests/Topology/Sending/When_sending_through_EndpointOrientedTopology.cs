@@ -9,7 +9,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_sending_through_StandardTopology
+    public class When_sending_through_EndpointOrientedTopology
     {
         [Test]
         public void Determines_that_sends_go_to_a_single_queue()
@@ -17,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = SetupStandardTopology(container, "sales");
+            var topology = SetupEndpointOrientedTopology(container, "sales");
 
             var destination = topology.DetermineSendDestination("operations");
 
@@ -30,7 +30,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         {
             var container = new TransportPartsContainer();
 
-            var topology = SetupStandardTopology(container, "sales");
+            var topology = SetupEndpointOrientedTopology(container, "sales");
 
             var destination = topology.DeterminePublishDestination(typeof(SomeMessageType));
 
@@ -38,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             Assert.IsTrue(destination.Entities.Single().Path == "sales.events");
         }
 
-        ITopologySectionManager SetupStandardTopology(TransportPartsContainer container, string enpointname)
+        ITopologySectionManager SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -46,7 +46,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
 
-            var topology = new StandardTopology(container);
+            var topology = new EndpointOrientedTopology(container);
 
             topology.Initialize(settings);
 

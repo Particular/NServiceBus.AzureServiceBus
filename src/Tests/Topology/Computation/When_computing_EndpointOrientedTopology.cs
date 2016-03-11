@@ -8,7 +8,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_computing_StandardTopology
+    public class When_computing_EndpointOrientedTopology
     {
         private static readonly string Connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
         private static readonly string Name = "name";
@@ -67,7 +67,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
         private static TopologySection DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)
         {
-            var topology = new StandardTopology(container);
+            var topology = new EndpointOrientedTopology(container);
 
             topology.Initialize(settings);
 
