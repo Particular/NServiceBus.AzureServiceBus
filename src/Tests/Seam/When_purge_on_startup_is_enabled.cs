@@ -14,7 +14,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         public void Should_throw()
         {
             var pump = new MessagePump(null, null);
-            var criticalError = new CriticalError(ctx => Task.FromResult(0));
+            var criticalError = new CriticalError(ctx => TaskEx.Completed);
 
             const bool purgeOnStartup = true;
             

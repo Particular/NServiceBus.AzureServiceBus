@@ -28,7 +28,7 @@
                 stopwatch.Stop();
                 criticalErrorWasRaised = true;
                 exceptionReceivedByCircuitBreaker = ctx.Exception;
-                return Task.FromResult(0);
+                return TaskEx.Completed;
             });
             criticalError.GetType().GetMethod("SetEndpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Invoke(criticalError, new[] { new FakeEndpoint() });
 
@@ -40,8 +40,7 @@
                 return TaskEx.Completed;
             });
 
-            // TODO: TransportTransactionMode may need to change with topology
-            await pump.Init(context => Task.FromResult(0), criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+            await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
             pump.Start(new PushRuntimeSettings(1));
 
             await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new MemoryStream()), new BrokeredMessageReceiveContext());
@@ -101,7 +100,7 @@
 
             public Task Stop()
             {
-                return Task.FromResult(0);
+                return TaskEx.Completed;
             }
 
             public void Start(IEnumerable<EntityInfo> subscriptions)
@@ -111,7 +110,7 @@
 
             public Task Stop(IEnumerable<EntityInfo> subscriptions)
             {
-                return Task.FromResult(0);
+                return TaskEx.Completed;
             }
 
             public void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func)
@@ -129,7 +128,7 @@
         {
             public Task Stop()
             {
-                return Task.FromResult(0);
+                return TaskEx.Completed;
             }
 
             public Task Send(object message, SendOptions options)

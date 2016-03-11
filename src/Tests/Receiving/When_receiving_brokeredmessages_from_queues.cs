@@ -58,7 +58,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 completed.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             }, options);
 
             await Task.WhenAny(completed.WaitOne(), error.WaitOne());

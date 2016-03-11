@@ -38,7 +38,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 completed.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
             topologyOperator.OnError(exception =>
             {
@@ -46,7 +46,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 error.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
 
             // execute
@@ -99,10 +99,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                     completed.Set();
 
-                    return Task.FromResult(true);
+                    return TaskEx.Completed;
                 });
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
             topologyOperator.OnError(exception =>
             {
@@ -110,7 +110,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 error.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
 
             // execute
@@ -163,7 +163,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                     completed.Set();
 
-                    return Task.FromResult(true);
+                    return TaskEx.Completed;
                 });
 
                 await Task.Delay(1).ConfigureAwait(false);
@@ -173,7 +173,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 error.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
 
             // execute
@@ -223,7 +223,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 {
                     completed.Set();
 
-                    return Task.FromResult(true);
+                    return TaskEx.Completed;
                 });
 
                 await Task.Delay(1).ConfigureAwait(false);
@@ -235,7 +235,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 error.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
 
             // execute
@@ -288,7 +288,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     throw new Exception("Something went wrong");
                 });
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
             topologyOperator.OnError(exception =>
             {
@@ -298,7 +298,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 error.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
 
             // execute
@@ -345,7 +345,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 completed.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
             topologyOperator.OnError(exception =>
             {
@@ -353,7 +353,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 error.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
 
             // execute
@@ -412,7 +412,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 error.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
 
             // execute
@@ -471,7 +471,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                     throw new Exception("Something went wrong");
                 });
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
             topologyOperator.OnError(exception =>
             {
@@ -479,7 +479,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 error.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             });
 
             // execute

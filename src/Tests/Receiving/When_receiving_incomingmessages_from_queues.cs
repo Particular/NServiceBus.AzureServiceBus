@@ -38,7 +38,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
-            notifier.Initialize(new EntityInfo { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => Task.FromResult(true), null, 10);
+            notifier.Initialize(new EntityInfo { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -73,7 +73,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
-            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => Task.FromResult(true), null, 10);
+            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -128,7 +128,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 completed.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             },
             exception =>
             {
@@ -136,7 +136,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
                 error.Set();
 
-                return Task.FromResult(true);
+                return TaskEx.Completed;
             }, 1);
 
             notifier.Start();
