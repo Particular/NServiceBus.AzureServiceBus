@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus.TypesScanner
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
 
     class AssemblyTypesScanner : ITypesScanner, IEquatable<AssemblyTypesScanner>
@@ -24,6 +25,11 @@
         public override int GetHashCode()
         {
             return _assembly.GetHashCode();
+        }
+
+        public IEnumerable<Type> Scan()
+        {
+            return _assembly.GetTypes();
         }
 
         public bool Equals(AssemblyTypesScanner other)
