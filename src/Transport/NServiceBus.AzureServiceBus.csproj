@@ -110,9 +110,6 @@
     <Compile Include="Sending\IBatcher.cs" />
     <Compile Include="Sending\MessageTooLargeException.cs" />
     <Compile Include="Sending\Time.cs" />
-    <Compile Include="Topology\EventsScanner\AssemblyEventsScanner.cs" />
-    <Compile Include="Topology\EventsScanner\IEventsScanner.cs" />
-    <Compile Include="Topology\EventsScanner\TypeEventsScanner.cs" />
     <Compile Include="Topology\IConventions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />
     <Compile Include="Topology\TypesScanner\ITypesScanner.cs" />

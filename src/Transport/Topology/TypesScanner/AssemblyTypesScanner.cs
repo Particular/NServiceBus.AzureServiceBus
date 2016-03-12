@@ -1,14 +1,18 @@
 ﻿namespace NServiceBus.AzureServiceBus.TypesScanner
 {
     using System;
+    using System.Reflection;
 
     class AssemblyTypesScanner : ITypesScanner, IEquatable<AssemblyTypesScanner>
     {
-        private readonly string _assemblyName;
+        private readonly Assembly _assembly;
 
-        public AssemblyTypesScanner(string assemblyName)
+        public AssemblyTypesScanner(Assembly assembly)
         {
-            _assemblyName = assemblyName;
+             if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly), "It's not possible to initialize an AssemblyTypesScanner without specifing an assembly");
+
+            _assembly = assembly;
         }
 
         public override bool Equals(object obj)
@@ -19,13 +23,13 @@
 
         public override int GetHashCode()
         {
-            return _assemblyName.ToLower().GetHashCode();
+            return _assembly.GetHashCode();
         }
 
         public bool Equals(AssemblyTypesScanner other)
         {
             return other != null
-                   && string.Equals(_assemblyName, other._assemblyName, StringComparison.OrdinalIgnoreCase);
+                   && _assembly.Equals(other._assembly);
         }
     }
 }

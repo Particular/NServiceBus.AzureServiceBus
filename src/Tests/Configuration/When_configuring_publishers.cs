@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus.Tests
 {
     using System.Collections.Generic;
+    using System.Reflection;
     using NServiceBus.AzureServiceBus.TypesScanner;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -31,12 +32,12 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.UseTopology<EndpointOrientedTopology>()
-                .RegisterPublisherForAssembly("publisherName", "assemblyName");
+                .RegisterPublisherForAssembly("publisherName", Assembly.GetExecutingAssembly());
 
             var publishers = settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
 
             Assert.True(publishers.ContainsKey("publisherName"));
-            CollectionAssert.Contains(publishers["publisherName"], new AssemblyTypesScanner("assemblyName"));
+            CollectionAssert.Contains(publishers["publisherName"], new AssemblyTypesScanner(Assembly.GetExecutingAssembly()));
         }
 
         class MyType 

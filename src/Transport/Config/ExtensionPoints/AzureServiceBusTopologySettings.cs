@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.TypesScanner;
     using NServiceBus.Settings;
@@ -22,9 +23,9 @@
             return this;
         }
 
-        public AzureServiceBusTopologySettings RegisterPublisherForAssembly(string publisherName, string assemblyName)
+        public AzureServiceBusTopologySettings RegisterPublisherForAssembly(string publisherName, Assembly assembly)
         {
-            AddScannerForPublisher(publisherName, new AssemblyTypesScanner(assemblyName));
+            AddScannerForPublisher(publisherName, new AssemblyTypesScanner(assembly));
             return this;
         }
 
