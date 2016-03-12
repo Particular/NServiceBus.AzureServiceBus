@@ -633,6 +633,8 @@ namespace NServiceBus
     public class AzureServiceBusTopologySettings : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport>
     {
         public AzureServiceBusTopologySettings(NServiceBus.Settings.SettingsHolder settings) { }
+        public NServiceBus.AzureServiceBusTopologySettings RegisterPublisherForAssembly(string publisherName, System.Reflection.Assembly assembly) { }
+        public NServiceBus.AzureServiceBusTopologySettings RegisterPublisherForType(string publisherName, System.Type type) { }
     }
     public class AzureServiceBusTransport : NServiceBus.Transports.TransportDefinition
     {
