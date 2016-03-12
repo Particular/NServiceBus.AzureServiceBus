@@ -111,6 +111,7 @@
     <Compile Include="Sending\MessageTooLargeException.cs" />
     <Compile Include="Sending\Time.cs" />
     <Compile Include="Topology\IConventions.cs" />
+    <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />
     <Compile Include="Topology\TypesScanner\ITypesScanner.cs" />
     <Compile Include="Topology\TypesScanner\SingleTypeScanner.cs" />
