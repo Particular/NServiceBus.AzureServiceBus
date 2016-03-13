@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using NServiceBus.AzureServiceBus;
     using NUnit.Framework;
@@ -19,13 +20,17 @@
         }
 
         [Test]
+        public void Should_throw_if_mapping_does_not_exist()
+        {
+            Assert.Throws<KeyNotFoundException>(() => _configuration.GetPublishersFor(typeof(MyType)));
+        }
+
+        [Test]
         public void Should_not_map_publisher_and_type_if_it_is_not_a_message()
         {
             _configuration.Map("publisher", typeof(MyType));
 
-            var publishers = _configuration.GetPublishersFor(typeof(MyType));
-
-            CollectionAssert.DoesNotContain(publishers, "publisher");
+            Assert.Throws<KeyNotFoundException>(() => _configuration.GetPublishersFor(typeof(MyType)));
         }
 
         [Test]

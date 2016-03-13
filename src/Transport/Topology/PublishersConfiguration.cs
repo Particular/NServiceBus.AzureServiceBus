@@ -37,9 +37,7 @@
 
         public IEnumerable<string> GetPublishersFor(Type type)
         {
-            return _publishers.ContainsKey(type)
-                ? new ReadOnlyCollection<string>(_publishers[type])
-                : new ReadOnlyCollection<string>(new string[0]);
+            return new ReadOnlyCollection<string>(_publishers[type]);
         }
 
         public bool HasPublishersFor(Type type)
