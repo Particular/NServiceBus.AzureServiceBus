@@ -19,6 +19,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var container = new TransportPartsContainer();
 
             var settings = new SettingsHolder();
+            settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
@@ -37,6 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var container = new TransportPartsContainer();
 
             var settings = new SettingsHolder();
+            settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new AzureServiceBusTopologySettings(settings);
 
@@ -54,6 +56,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var container = new TransportPartsContainer();
 
             var settings = new SettingsHolder();
+            settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new AzureServiceBusTopologySettings(settings);
 

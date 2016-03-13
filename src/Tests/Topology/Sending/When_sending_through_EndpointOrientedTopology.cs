@@ -41,6 +41,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         ITopologySectionManager SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
+            settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
