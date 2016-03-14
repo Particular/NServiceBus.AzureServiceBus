@@ -4,11 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
-    using System.Threading.Tasks;
     using Addressing;
-    using NServiceBus.Routing;
-    using NServiceBus.Routing.MessageDrivenSubscriptions;
     using NServiceBus.Transports;
     using Settings;
 
@@ -196,33 +192,11 @@ namespace NServiceBus.AzureServiceBus
 
         List<string> DetermineTopicsFor(Type eventType)
         {
-            var result = new List<string>();
-
-            // TODO: Hacked a way into this functionality, hope it becomes available from the core
-            var publishers = settings.Get<Publishers>();
-            var endpointInstances = settings.Get<EndpointInstances>();
-            var transportAddresses = settings.Get<TransportAddresses>();
-
-            var subscriptionRouterType = Type.GetType("NServiceBus.SubscriptionRouter, NServiceBus.Core");
-            var subscriptionRouter = Activator.CreateInstance(subscriptionRouterType, new object[]
-            {
-                publishers,
-                endpointInstances,
-                transportAddresses
-            });
-            var getAddressesMethod = subscriptionRouterType.GetMethod("GetAddressesForEventType",BindingFlags.Instance | BindingFlags.Public);
-            var addresses = ((Task<IEnumerable<string>>) getAddressesMethod.Invoke(subscriptionRouter, new object[]
-            {
-                eventType
-            })).GetAwaiter().GetResult();
-
-
-            foreach (var address in addresses)
-            {
-                var path = address + ".events";
-                if (!result.Contains(path)) result.Add(path);
-            }
-            return result;
+            var configuration = container.Resolve<PublishersConfiguration>();
+            return configuration
+                .GetPublishersFor(eventType)
+                .Select(x => string.Concat(x, ".events"))
+                .ToList();
         }
 
         public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
