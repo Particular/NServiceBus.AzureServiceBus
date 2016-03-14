@@ -17,6 +17,7 @@ namespace NServiceBus.AzureServiceBus
         readonly IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
         readonly ReadOnlySettings settings;
         IMessageReceiver internalReceiver;
+        ReceiveMode receiveMode;
         OnMessageOptions options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
@@ -39,6 +40,8 @@ namespace NServiceBus.AzureServiceBus
 
         public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
         {
+            receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
+
             this.incomingCallback = callback;
             this.errorCallback = errorCallback;
             this.entity = entity;
@@ -101,9 +104,9 @@ namespace NServiceBus.AzureServiceBus
                 return processTask;
             };
 
-            internalReceiver.OnMessage(callback, options);
-
             IsRunning = true;
+
+            internalReceiver.OnMessage(callback, options);
         }
 
         async Task ProcessMessageAsync(BrokeredMessage message)
@@ -193,6 +196,8 @@ namespace NServiceBus.AzureServiceBus
 
         async Task AbandonInternal(BrokeredMessage message)
         {
+            if (receiveMode == ReceiveMode.ReceiveAndDelete) return;
+
             using (var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
                 logger.InfoFormat("Abandoning brokered message {0}", message.MessageId);
@@ -205,6 +210,8 @@ namespace NServiceBus.AzureServiceBus
 
         Task Complete(BrokeredMessage message)
         {
+            if (receiveMode == ReceiveMode.ReceiveAndDelete) return TaskEx.Completed;
+
             logger.InfoFormat("Completing brokered message {0}", message.MessageId);
 
             return message.SafeCompleteAsync();
