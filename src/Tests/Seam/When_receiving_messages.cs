@@ -19,6 +19,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         {
             await TestUtility.Delete("sales");
 
+            var settings = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settings);
+
             // setting up the environment
             var container = new TransportPartsContainer();
 

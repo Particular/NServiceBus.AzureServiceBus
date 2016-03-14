@@ -7,6 +7,7 @@
     using System.Reflection;
     using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus;
+    using NServiceBus.Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 
@@ -21,6 +22,9 @@
             Exception exceptionReceivedByCircuitBreaker = null;
             var criticalErrorWasRaised = false;
             var stopwatch = new Stopwatch();
+
+            var settings = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settings);
 
             // setup critical error action to capture exception thrown by message pump
             var criticalError = new CriticalError(ctx =>
@@ -40,7 +44,7 @@
                 return TaskEx.Completed;
             });
 
-            await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+            await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.Start(new PushRuntimeSettings(1));
 
             await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new MemoryStream()), new BrokeredMessageReceiveContext());

@@ -29,9 +29,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setting up the environment
             var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
-
+            
             // setup a basic topologySectionManager for testing
             var topology = await SetupStandardTopology(container, "sales", settings);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -70,8 +71,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
 
-                // TODO: TransportTransactionMode will need to change with topology
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -97,7 +97,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         }
 
         [Test]
-        public async Task Will_not_rollback_dispatch_message_in_receive_context_when_exception_occurs_on_completion()
+        public async Task Will_not_rollback_dispatch_message_in_receive_context_when_exception_occurs_on_completion_receive_only_mode()
         {
             // cleanup
             await TestUtility.Delete("sales", "myqueue");
@@ -155,8 +155,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue") , DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
                 await dispatcher.Dispatch(transportOperations, context.Context);
 
-                // TODO: TransportTransactionMode will need to change with topology
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -375,11 +374,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setting up the environment
             var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Connectivity().SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
             var topology = await SetupStandardTopology(container, "sales", settings);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));

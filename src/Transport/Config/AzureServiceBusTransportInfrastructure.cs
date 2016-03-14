@@ -52,18 +52,7 @@
 
         public override IEnumerable<Type> DeliveryConstraints => new List<Type> { typeof(DelayDeliveryWith), typeof(DoNotDeliverBefore), typeof(DiscardIfNotReceivedBefore) };
 
-        public override TransportTransactionMode TransactionMode
-        {
-            get
-            {
-                var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-
-                if (namespaces.Count == 1)
-                    return TransportTransactionMode.SendsAtomicWithReceive;
-
-                return TransportTransactionMode.ReceiveOnly;
-            }
-        }
+        public override TransportTransactionMode TransactionMode => settings.SupportedTransactionMode();
 
         public override OutboundRoutingPolicy OutboundRoutingPolicy => topology.GetOutboundRoutingPolicy();
     }

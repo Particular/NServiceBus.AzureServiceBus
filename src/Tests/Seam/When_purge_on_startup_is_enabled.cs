@@ -1,7 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 {
     using System;
-    using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Transports;
     using NUnit.Framework;

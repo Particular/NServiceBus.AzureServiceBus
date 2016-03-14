@@ -1,6 +1,8 @@
 ﻿namespace NServiceBus
 {
+    using System;
     using Microsoft.ServiceBus;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -18,9 +20,42 @@
 
             RegisterConnectionStringAsNamespace(connectionString, settings);
 
+            MatchSettingsToConsistencyRequirements(settings);
+
             SetConnectivityMode(settings);
 
             return new AzureServiceBusTransportInfrastructure(topology, settings);
+        }
+
+        private void MatchSettingsToConsistencyRequirements(SettingsHolder settings)
+        {
+            if (settings.HasExplicitValue<TransportTransactionMode>())
+            {
+                var required = settings.Get<TransportTransactionMode>();
+                if (required > TransportTransactionMode.SendsAtomicWithReceive)
+                {
+                    throw new InvalidOperationException($"Azure Service Bus transport doesn't support the required transaction mode {required}.");
+                }
+                if (required > settings.SupportedTransactionMode())
+                {
+                    throw new InvalidOperationException($"Azure Service Bus transport doesn't support the required transaction mode {required}, for the given configuration settings.");
+                }
+                if (required < settings.SupportedTransactionMode())
+                {
+                    if (required < TransportTransactionMode.SendsAtomicWithReceive)
+                    {
+                        // turn send via off so that sends are not atomic
+                        settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, false);
+                    }
+
+                    if (required == TransportTransactionMode.None)
+                    {
+                        // immediately delete after receive
+                        settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.ReceiveAndDelete);
+                    }
+
+                }
+            }
         }
 
         private static void SetConnectivityMode(SettingsHolder settings)

@@ -22,22 +22,19 @@ namespace NServiceBus.AzureServiceBus
             this.topologyOperator = topologyOperator;
         }
 
-        public Task Init(Func<PushContext, Task> pump, CriticalError criticalError, PushSettings settings)
+        public Task Init(Func<PushContext, Task> pump, CriticalError criticalError, PushSettings pushSettings)
         {
             messagePump = pump;
-            var name = $"MessagePump on the queue `{settings.InputQueue}`";
+            var name = $"MessagePump on the queue `{pushSettings.InputQueue}`";
             circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker(name, TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
 
-            if (settings.PurgeOnStartup)
+            if (pushSettings.PurgeOnStartup)
             {
                 throw new InvalidOperationException("Azure Service Bus transport doesn't support PurgeOnStartup behaviour");
             }
 
-            //TODO: integrate these
-            //settings.ErrorQueue
-            //settings.RequiredConsistency
-            _inputQueue = settings.InputQueue;
-
+            _inputQueue = pushSettings.InputQueue;
+            
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
             {
                 var tokenSource = new CancellationTokenSource();
