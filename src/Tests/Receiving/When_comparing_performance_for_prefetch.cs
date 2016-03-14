@@ -1,13 +1,13 @@
-namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving;
     using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
@@ -18,7 +18,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     [Category("AzureServiceBus")]
     public class When_comparing_performance_for_prefetch
     {
-        [Test, Explicit("Too slow for now to run automatically")]
+        [Test]
         public async Task Can_receive_messages_with_prefetch_fast()
         {
             // default settings
@@ -26,7 +26,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
 
-            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount, 500);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount, 500);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.PeekLock);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -70,7 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 (message, context) =>
                 {
-                    receivedMessages++;
+                    Interlocked.Increment(ref receivedMessages);
                     if (receivedMessages == expected)
                     {
                         completed.Set();

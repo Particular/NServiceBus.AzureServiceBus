@@ -55,7 +55,7 @@ namespace NServiceBus.AzureServiceBus
 
             options = new OnMessageOptions
             {
-                AutoComplete = false,
+                AutoComplete = true,
                 AutoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
                 MaxConcurrentCalls = maximumConcurrency
             };
@@ -146,7 +146,7 @@ namespace NServiceBus.AzureServiceBus
                 }
                 else
                 {
-                    await InvokeCompletionCallbacksAsync(message, context).ConfigureAwait(false);
+                   await InvokeCompletionCallbacksAsync(message, context).ConfigureAwait(false);
                 }
             }
             catch (Exception exception)
@@ -162,8 +162,6 @@ namespace NServiceBus.AzureServiceBus
             using (var scope = useTx ? new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled) : null)
             {
                 await Task.WhenAll(context.OnComplete.Select(toComplete => toComplete()).ToList()).ConfigureAwait(false);
-                await Complete(message).ConfigureAwait(false);
-                logger.InfoFormat("Completed, completing scope if present");
                 scope?.Complete();
             }
         }
@@ -206,15 +204,6 @@ namespace NServiceBus.AzureServiceBus
 
                 suppressScope.Complete();
             }
-        }
-
-        Task Complete(BrokeredMessage message)
-        {
-            if (receiveMode == ReceiveMode.ReceiveAndDelete) return TaskEx.Completed;
-
-            logger.InfoFormat("Completing brokered message {0}", message.MessageId);
-
-            return message.SafeCompleteAsync();
         }
 
         public async Task Stop()
