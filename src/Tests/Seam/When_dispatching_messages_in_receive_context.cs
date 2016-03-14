@@ -376,11 +376,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setting up the environment
             var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
             var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
-            settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
