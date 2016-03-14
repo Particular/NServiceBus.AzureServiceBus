@@ -1,6 +1,6 @@
 namespace NServiceBus.AzureServiceBus.Addressing
 {
-    public class CoreIndividualizationStrategy : IIndividualizationStrategy
+    public class CoreIndividualization : IIndividualizationStrategy
     {
         public string Individualize(string endpointname)
         {

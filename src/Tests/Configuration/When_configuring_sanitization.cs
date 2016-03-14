@@ -1,6 +1,7 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
@@ -14,9 +15,9 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Should_be_able_to_set_the_sanitization_strategy()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.UseDefaultTopology().Addressing().Sanitization().UseStrategy<MySanitizationStrategy>();
+            var topicSettings = extensions.Sanitization().UseStrategy<MySanitizationStrategy>();
 
             Assert.AreEqual(typeof(MySanitizationStrategy), topicSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy));
         }

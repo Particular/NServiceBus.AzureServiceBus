@@ -1,7 +1,8 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePartitioning
 {
     using System.Configuration;
     using System.Linq;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -16,16 +17,16 @@ namespace NServiceBus.AzureServiceBus.Tests
         private static readonly string Name = "namespace1";
         private static readonly string OtherName = "namespace2";
 
-        private SingleNamespacePartitioningStrategy _strategy;
+        private SingleNamespacePartitioning _strategy;
 
         [SetUp]
         public void SetUp()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, ConnectionString);
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
 
-            _strategy = new SingleNamespacePartitioningStrategy(settings);
+            _strategy = new SingleNamespacePartitioning(settings);
         }
 
         [Test]
@@ -65,18 +66,18 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new SettingsHolder();
             
-            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioningStrategy(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioning(settings));
         }
 
         [Test]
         public void Single_partitioning_strategy_will_throw_if_more_namespaces_defined()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, ConnectionString);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioningStrategy(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioning(settings));
         }
     }
 

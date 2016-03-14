@@ -1,7 +1,8 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
     using System.Collections.Generic;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Addressing;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
@@ -15,9 +16,9 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Should_be_able_to_set_the_partitioning_strategy()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var partitioningSettings = extensions.UseDefaultTopology().Addressing().NamespacePartitioning().UseStrategy<MyNamespacePartitioningStrategy>();
+            var partitioningSettings = extensions.NamespacePartitioning().UseStrategy<MyNamespacePartitioningStrategy>();
 
             Assert.AreEqual(typeof(MyNamespacePartitioningStrategy), partitioningSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy));
         }
@@ -25,12 +26,12 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Should_be_able_to_add_a_namespace()
         {
-            var connectionString = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-            var name = "namespace1";
+            const string connectionString = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+            const string name = "namespace1";
 
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(name, connectionString);
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.NamespacePartitioning().AddNamespace(name, connectionString);
 
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
 

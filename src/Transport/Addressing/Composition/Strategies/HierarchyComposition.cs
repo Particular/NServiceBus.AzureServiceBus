@@ -2,7 +2,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System;
 
-    public class HierarchyCompositionStrategy : ICompositionStrategy
+    public class HierarchyComposition : ICompositionStrategy
     {
         Func<string, string> _pathGenerator;
 

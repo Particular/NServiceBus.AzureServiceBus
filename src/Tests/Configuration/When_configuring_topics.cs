@@ -1,6 +1,7 @@
-﻿namespace NServiceBus.AzureServiceBus.Tests
+﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -13,9 +14,9 @@
         public void Should_be_able_to_set_AutoDeleteOnIdle()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().AutoDeleteOnIdle(TimeSpan.MinValue);
+            var topicSettings = extensions.Topics().AutoDeleteOnIdle(TimeSpan.MinValue);
 
             Assert.AreEqual(TimeSpan.MinValue, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle));
         }
@@ -24,10 +25,10 @@
         public void Should_be_able_to_set_DefaultMessageTimeToLive()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             var timeToLive = TimeSpan.FromHours(5);
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().DefaultMessageTimeToLive(timeToLive);
+            var topicSettings = extensions.Topics().DefaultMessageTimeToLive(timeToLive);
 
             Assert.AreEqual(timeToLive, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.DefaultMessageTimeToLive));
         }
@@ -36,10 +37,10 @@
         public void Should_be_able_to_set_DuplicateDetectionHistoryTimeWindow()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             var dedupTimeWindow = TimeSpan.FromMilliseconds(30000);
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().DuplicateDetectionHistoryTimeWindow(dedupTimeWindow);
+            var topicSettings = extensions.Topics().DuplicateDetectionHistoryTimeWindow(dedupTimeWindow);
 
             Assert.AreEqual(dedupTimeWindow, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow));
         }
@@ -48,9 +49,9 @@
         public void Should_be_able_to_set_EnableBatchedOperations()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().EnableBatchedOperations(true);
+            var topicSettings = extensions.Topics().EnableBatchedOperations(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableBatchedOperations));
         }
@@ -59,9 +60,9 @@
         public void Should_be_able_to_set_EnableExpress()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().EnableExpress(true);
+            var topicSettings = extensions.Topics().EnableExpress(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress));
         }
@@ -70,10 +71,10 @@
         public void Should_be_able_to_set_EnableExpress_conditionally()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             Func<string, bool> condition = name => name != "expresstopic";
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().EnableExpress(condition, true);
+            var topicSettings = extensions.Topics().EnableExpress(condition, true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress));
             Assert.AreEqual(condition, topicSettings.GetSettings().Get<Func<string, bool>>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpressCondition));
@@ -83,9 +84,9 @@
         public void Should_be_able_to_set_EnableFilteringMessagesBeforePublishing()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().EnableFilteringMessagesBeforePublishing(true);
+            var topicSettings = extensions.Topics().EnableFilteringMessagesBeforePublishing(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableFilteringMessagesBeforePublishing));
         }
@@ -94,9 +95,9 @@
         public void Should_be_able_to_set_EnablePartitioning()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().EnablePartitioning(true);
+            var topicSettings = extensions.Topics().EnablePartitioning(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnablePartitioning));
         }
@@ -105,10 +106,10 @@
         public void Should_be_able_to_set_MaxSizeInMegabytes()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             const long maxTopicSizeInMB = 2048;
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().MaxSizeInMegabytes(maxTopicSizeInMB);
+            var topicSettings = extensions.Topics().MaxSizeInMegabytes(SizeInMegabytes.Size2048);
 
             Assert.AreEqual(maxTopicSizeInMB, topicSettings.GetSettings().Get<long>(WellKnownConfigurationKeys.Topology.Resources.Topics.MaxSizeInMegabytes));
         }
@@ -117,9 +118,9 @@
         public void Should_be_able_to_set_RequiresDuplicateDetection()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().RequiresDuplicateDetection(true);
+            var topicSettings = extensions.Topics().RequiresDuplicateDetection(true);
 
             Assert.True(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.RequiresDuplicateDetection));
         }
@@ -128,9 +129,9 @@
         public void Should_be_able_to_set_SupportOrdering()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            var topicSettings = extensions.UseDefaultTopology().Resources().Topics().SupportOrdering(true);
+            var topicSettings = extensions.Topics().SupportOrdering(true);
 
             Assert.IsTrue(topicSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.SupportOrdering));
         }

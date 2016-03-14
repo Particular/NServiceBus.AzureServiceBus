@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

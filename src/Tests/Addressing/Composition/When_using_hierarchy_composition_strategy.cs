@@ -1,5 +1,6 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
 {
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Addressing;
     using NUnit.Framework;
 
@@ -13,7 +14,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var prefix = "/my/path/";
             var entityname = "myqueue";
 
-            var strategy = new HierarchyCompositionStrategy();
+            var strategy = new HierarchyComposition();
             strategy.SetPathGenerator(s => prefix);
 
             Assert.AreEqual(prefix + entityname, strategy.GetEntityPath(entityname, EntityType.Queue));
@@ -25,7 +26,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var prefix = "/my/path/";
             var entityname = "mytopic";
 
-            var strategy = new HierarchyCompositionStrategy();
+            var strategy = new HierarchyComposition();
             strategy.SetPathGenerator(s => prefix);
 
             Assert.AreEqual(prefix + entityname, strategy.GetEntityPath(entityname, EntityType.Topic));
@@ -37,7 +38,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var prefix = "/my/path/";
             var entityname = "myqueue";
 
-            var strategy = new HierarchyCompositionStrategy();
+            var strategy = new HierarchyComposition();
             strategy.SetPathGenerator(s => prefix);
 
             Assert.AreEqual(entityname, strategy.GetEntityPath(entityname, EntityType.Subscription));

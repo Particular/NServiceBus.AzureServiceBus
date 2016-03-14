@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 {
     using System;
     using System.Collections.Generic;
@@ -6,8 +6,9 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using Azure.WindowsAzureServiceBus.Tests;
-    using Settings;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
+    using NServiceBus.AzureServiceBus;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -24,9 +25,8 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.Connectivity()
-                .NumberOfClientsPerEntity(5)
-                .MessagingFactories()
+            extensions.NumberOfClientsPerEntity(5);
+            extensions.MessagingFactories()
                 .NumberOfMessagingFactoriesPerNamespace(5)
                 .BatchFlushInterval(TimeSpan.FromMilliseconds(100));
 
@@ -84,9 +84,8 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.Connectivity()
-                .NumberOfClientsPerEntity(5)
-                .MessagingFactories()
+            extensions.NumberOfClientsPerEntity(5);
+            extensions.MessagingFactories()
                 .NumberOfMessagingFactoriesPerNamespace(5)
                 .BatchFlushInterval(TimeSpan.FromMilliseconds(0)); // turns of native batching
 

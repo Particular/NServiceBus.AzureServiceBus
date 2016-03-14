@@ -5,13 +5,13 @@ namespace NServiceBus.AzureServiceBus.Addressing
     using System.Linq;
     using NServiceBus.Settings;
 
-    public class SingleNamespacePartitioningStrategy : INamespacePartitioningStrategy
+    public class SingleNamespacePartitioning : INamespacePartitioningStrategy
     {
-        private readonly NamespaceConfigurations _namespaces;
+        private readonly NamespaceConfigurations namespaces;
 
-        public SingleNamespacePartitioningStrategy(ReadOnlySettings settings)
+        public SingleNamespacePartitioning(ReadOnlySettings settings)
         {
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out _namespaces) || _namespaces.Count != 1)
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces) || namespaces.Count != 1)
             {
                 throw new ConfigurationErrorsException("The 'Single' namespace partitioning strategy requires exactly one namespace, please configure the connection string to your azure servicebus namespace");
             }
@@ -19,7 +19,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
-            var @namespace = _namespaces.First();
+            var @namespace = namespaces.First();
             yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, NamespaceMode.Active);
         }
     }

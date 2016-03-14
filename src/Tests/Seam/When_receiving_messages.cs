@@ -3,8 +3,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using System;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
     using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Tests;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
@@ -25,7 +27,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupStandardTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -69,15 +71,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await pump.Stop();
         }
 
-        async Task<ITopologySectionManager> SetupStandardTopology(TransportPartsContainer container, string enpointname)
+        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
+            extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
-            var topology = new StandardTopology(container);
+            var topology = new EndpointOrientedTopology(container);
 
             topology.Initialize(settings);
 

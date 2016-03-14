@@ -24,7 +24,7 @@ namespace NServiceBus.AzureServiceBus
 
             var receiver = await factory.CreateMessageReceiver(entitypath, receiveMode).ConfigureAwait(false);
 
-            if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount))
+            if (_settings.HasSetting(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount))
             {
                 receiver.PrefetchCount = _settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount);
             }

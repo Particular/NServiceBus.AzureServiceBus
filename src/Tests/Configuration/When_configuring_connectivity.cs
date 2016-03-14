@@ -1,7 +1,8 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -18,7 +19,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             Func<string, MessagingFactorySettings> registeredFactory = s => new MessagingFactorySettings();
 
-            var connectivitySettings = extensions.Connectivity().MessagingFactories().MessagingFactorySettingsFactory(registeredFactory);
+            var connectivitySettings = extensions.MessagingFactories().MessagingFactorySettingsFactory(registeredFactory);
 
             Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, MessagingFactorySettings>>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.MessagingFactorySettingsFactory));
         }
@@ -29,7 +30,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().MessagingFactories().NumberOfMessagingFactoriesPerNamespace(4);
+            var connectivitySettings = extensions.MessagingFactories().NumberOfMessagingFactoriesPerNamespace(4);
 
             Assert.AreEqual(4, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace));
         }
@@ -40,9 +41,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().NumberOfClientsPerEntity(4);
+            extensions.NumberOfClientsPerEntity(4);
 
-            Assert.AreEqual(4, connectivitySettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
+            Assert.AreEqual(4, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
         }
 
         public void Should_be_able_to_set_whether_send_via_receive_queue_should_be_used()
@@ -50,9 +51,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var connectivitySettings = extensions.Connectivity().SendViaReceiveQueue(false);
+            extensions.SendViaReceiveQueue(false);
 
-            Assert.AreEqual(false, connectivitySettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue));
+            Assert.AreEqual(false, settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue));
         }
     }
 }

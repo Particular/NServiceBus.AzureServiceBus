@@ -1,11 +1,12 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Settings;
     using NUnit.Framework;
 
@@ -34,7 +35,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Connectivity().MessageSenders()
+            extensions.MessageSenders()
                       .RetryPolicy(RetryPolicy.NoRetry);
 
             var factory = new InterceptedMessagingFactory();

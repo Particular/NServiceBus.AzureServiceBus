@@ -1,7 +1,7 @@
-﻿namespace NServiceBus.AzureServiceBus.Tests.MetaModel
+﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel
 {
+    using NServiceBus.AzureServiceBus;
     using NUnit.Framework;
-    using Test;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -12,18 +12,15 @@
         {
             var filter = new SqlSubscriptionFilter(typeof(SomeEvent));
             var result = filter.Serialize();
-            const string expected = @"[NServiceBus.EnclosedMessageTypes] LIKE 'Test.SomeEvent%'"
-                                   + " OR [NServiceBus.EnclosedMessageTypes] LIKE '%Test.SomeEvent%'" 
-                                   + " OR [NServiceBus.EnclosedMessageTypes] LIKE '%Test.SomeEvent'" 
-                                   + " OR [NServiceBus.EnclosedMessageTypes] = 'Test.SomeEvent'";
+            const string expected = @"[NServiceBus.EnclosedMessageTypes] LIKE 'NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel.SomeEvent%'"
+                                    + " OR [NServiceBus.EnclosedMessageTypes] LIKE '%NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel.SomeEvent%'"
+                                    + " OR [NServiceBus.EnclosedMessageTypes] LIKE '%NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel.SomeEvent'"
+                                    + " OR [NServiceBus.EnclosedMessageTypes] = 'NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel.SomeEvent'";
 
             Assert.That(result, Is.EqualTo(expected));
         }
     }
-}
 
-namespace Test
-{
     class SomeEvent
     {
     }

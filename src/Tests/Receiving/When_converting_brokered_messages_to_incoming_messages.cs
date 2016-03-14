@@ -1,10 +1,11 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 {
     using System;
     using System.IO;
     using System.Linq;
     using System.Text;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -151,7 +152,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Serialization().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
+            extensions.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 

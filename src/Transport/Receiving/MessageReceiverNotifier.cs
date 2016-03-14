@@ -17,6 +17,7 @@ namespace NServiceBus.AzureServiceBus
         readonly IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
         readonly ReadOnlySettings settings;
         IMessageReceiver internalReceiver;
+        ReceiveMode receiveMode;
         OnMessageOptions options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
@@ -39,6 +40,8 @@ namespace NServiceBus.AzureServiceBus
 
         public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
         {
+            receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
+
             this.incomingCallback = callback;
             this.errorCallback = errorCallback;
             this.entity = entity;
@@ -52,7 +55,7 @@ namespace NServiceBus.AzureServiceBus
 
             options = new OnMessageOptions
             {
-                AutoComplete = false,
+                AutoComplete = true,
                 AutoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
                 MaxConcurrentCalls = maximumConcurrency
             };
@@ -101,9 +104,9 @@ namespace NServiceBus.AzureServiceBus
                 return processTask;
             };
 
-            internalReceiver.OnMessage(callback, options);
-
             IsRunning = true;
+
+            internalReceiver.OnMessage(callback, options);
         }
 
         async Task ProcessMessageAsync(BrokeredMessage message)
@@ -143,7 +146,7 @@ namespace NServiceBus.AzureServiceBus
                 }
                 else
                 {
-                    await InvokeCompletionCallbacksAsync(message, context).ConfigureAwait(false);
+                   await InvokeCompletionCallbacksAsync(message, context).ConfigureAwait(false);
                 }
             }
             catch (Exception exception)
@@ -159,8 +162,6 @@ namespace NServiceBus.AzureServiceBus
             using (var scope = useTx ? new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled) : null)
             {
                 await Task.WhenAll(context.OnComplete.Select(toComplete => toComplete()).ToList()).ConfigureAwait(false);
-                await Complete(message).ConfigureAwait(false);
-                logger.InfoFormat("Completed, completing scope if present");
                 scope?.Complete();
             }
         }
@@ -193,6 +194,8 @@ namespace NServiceBus.AzureServiceBus
 
         async Task AbandonInternal(BrokeredMessage message)
         {
+            if (receiveMode == ReceiveMode.ReceiveAndDelete) return;
+
             using (var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
                 logger.InfoFormat("Abandoning brokered message {0}", message.MessageId);
@@ -201,13 +204,6 @@ namespace NServiceBus.AzureServiceBus
 
                 suppressScope.Complete();
             }
-        }
-
-        Task Complete(BrokeredMessage message)
-        {
-            logger.InfoFormat("Completing brokered message {0}", message.MessageId);
-
-            return message.SafeCompleteAsync();
         }
 
         public async Task Stop()

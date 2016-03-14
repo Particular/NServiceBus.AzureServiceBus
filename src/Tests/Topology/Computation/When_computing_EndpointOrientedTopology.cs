@@ -1,13 +1,14 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 {
     using System.Linq;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Routing;
-    using Settings;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_computing_StandardTopology
+    public class When_computing_EndpointOrientedTopology
     {
         private static readonly string Connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
         private static readonly string Name = "name";
@@ -19,10 +20,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
@@ -37,10 +38,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
@@ -54,10 +55,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
@@ -66,7 +67,7 @@ namespace NServiceBus.AzureServiceBus.Tests
 
         private static TopologySection DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)
         {
-            var topology = new StandardTopology(container);
+            var topology = new EndpointOrientedTopology(container);
 
             topology.Initialize(settings);
 

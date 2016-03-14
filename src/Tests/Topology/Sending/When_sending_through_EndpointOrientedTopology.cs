@@ -1,14 +1,15 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 {
     using System.Linq;
-    using Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Routing;
-    using Settings;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_sending_through_StandardTopology
+    public class When_sending_through_EndpointOrientedTopology
     {
         [Test]
         public void Determines_that_sends_go_to_a_single_queue()
@@ -16,7 +17,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = SetupStandardTopology(container, "sales");
+            var topology = SetupEndpointOrientedTopology(container, "sales");
 
             var destination = topology.DetermineSendDestination("operations");
 
@@ -29,7 +30,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var container = new TransportPartsContainer();
 
-            var topology = SetupStandardTopology(container, "sales");
+            var topology = SetupEndpointOrientedTopology(container, "sales");
 
             var destination = topology.DeterminePublishDestination(typeof(SomeMessageType));
 
@@ -37,15 +38,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             Assert.IsTrue(destination.Entities.Single().Path == "sales.events");
         }
 
-        ITopologySectionManager SetupStandardTopology(TransportPartsContainer container, string enpointname)
+        ITopologySectionManager SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
+            extensions.NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
 
-            var topology = new StandardTopology(container);
+            var topology = new EndpointOrientedTopology(container);
 
             topology.Initialize(settings);
 

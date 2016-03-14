@@ -15,6 +15,11 @@
             _settings = settings;
         }
 
+        /// <summary>
+        /// Provide composition strategy to use.
+        /// <remarks>Default is <see cref="FlatComposition"/></remarks>
+        /// <seealso cref="HierarchyComposition"/>
+        /// </summary>
         public AzureServiceBusCompositionSettings UseStrategy<T>() where T : ICompositionStrategy
         {
             _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(T));

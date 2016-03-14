@@ -1,17 +1,17 @@
 namespace NServiceBus.AzureServiceBus.Addressing
 {
-    public class ThrowOnFailingSanitizationStrategy : ISanitizationStrategy
+    public class ThrowOnFailingSanitization : ISanitizationStrategy
     {
-        IValidationStrategy _validationStrategy;
+        IValidationStrategy validationStrategy;
 
-        public ThrowOnFailingSanitizationStrategy(IValidationStrategy validationStrategy)
+        public ThrowOnFailingSanitization(IValidationStrategy validationStrategy)
         {
-            _validationStrategy = validationStrategy;
+            this.validationStrategy = validationStrategy;
         }
 
         public string Sanitize(string entityPath, EntityType entityType)
         {
-            if (!_validationStrategy.IsValid(entityPath, entityType))
+            if (!validationStrategy.IsValid(entityPath, entityType))
             {
                 throw new EndpointValidationException("The entity path {0} cannot be used as a path for azure servicebus entities");
             }

@@ -1,6 +1,7 @@
-﻿namespace NServiceBus.AzureServiceBus.Tests
+﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using NServiceBus.Settings;
     using NUnit.Framework;
@@ -10,14 +11,14 @@
     public class When_configuring_use_logical_namespace_name
     {
         private SettingsHolder settingsHolder;
-        private TransportExtensions<AzureServiceBusTransport> extensions;
+        private AzureServiceBusTopologySettings extensions;
 
         [SetUp]
         public void SetUp()
         {
             settingsHolder = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settingsHolder);
-            extensions = new TransportExtensions<AzureServiceBusTransport>(settingsHolder);
+            extensions = new AzureServiceBusTopologySettings(settingsHolder);
         }
 
         [Test]
@@ -29,9 +30,9 @@
         }
 
         [Test]
-        public void Should_use_pass_throught_mapper()
+        public void Should_use_pass_through_mapper()
         {
-            extensions.UseDefaultTopology().Addressing().UseNamespaceNamesInsteadOfConnectionStrings();
+            extensions.UseNamespaceNamesInsteadOfConnectionStrings();
 
             var mapper = settingsHolder.Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings);
 

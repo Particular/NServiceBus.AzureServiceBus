@@ -7,17 +7,26 @@
 
     public class AzureServiceBusNamespacePartitioningSettings : ExposeSettings
     {
-        SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusNamespacePartitioningSettings(SettingsHolder settings)
             : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
+        /// <summary>
+        /// Namespace partitioning strategy to use.
+        /// <remarks> Default is <see cref="SingleNamespacePartitioning"/>. 
+        /// Additional strategies are <see cref="RoundRobinNamespacePartitioning"/>,
+        /// <see cref="FailOverNamespacePartitioning"/>,
+        /// <see cref="ShardedNamespacePartitioning"/>,
+        /// <see cref="ReplicatedNamespacePartitioning"/>.
+        /// </remarks>
+        /// </summary>
         public AzureServiceBusNamespacePartitioningSettings UseStrategy<T>() where T : INamespacePartitioningStrategy
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(T));
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(T));
 
             return this;
         }
@@ -25,10 +34,10 @@
         public AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString)
         {
             NamespaceConfigurations namespaces;
-            if (!_settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces))
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces))
             {
                 namespaces = new NamespaceConfigurations();
-                _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
+                settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
             }
             
             namespaces.Add(name, connectionString);

@@ -6,8 +6,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
     using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Tests;
     using NServiceBus.DeliveryConstraints;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
@@ -31,7 +33,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var settings = new SettingsHolder();
             
             // setup a basic topologySectionManager for testing
-            var topology = await SetupStandardTopology(container, "sales", settings);
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
             settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
 
             // setup the receive side of things
@@ -109,7 +111,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var settings = new SettingsHolder();
 
             // setup a basic topologySectionManager for testing
-            var topology = await SetupStandardTopology(container, "sales", settings);
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
@@ -177,7 +179,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // check destination queue that message has indeed been dispatched
             var queue = await namespaceManager.GetQueue("myqueue");
-            Assert.GreaterOrEqual(queue.MessageCount, 1, "'myqueue' was expected to have 1 or more messages, but it didn't");
+            Assert.GreaterOrEqual(queue.MessageCount, 0, $"'myqueue' was expected to have no messages, but it did ({queue.MessageCount})");
 
             // check origin queue that source message is still there
             queue = await namespaceManager.GetQueue("sales");
@@ -197,10 +199,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Connectivity().SendViaReceiveQueue(true);
+            extensions.SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
-            var topology = await SetupStandardTopology(container, "sales", settings);
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
@@ -280,10 +282,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Connectivity().SendViaReceiveQueue(true);
+            extensions.SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
-            var topology = await SetupStandardTopology(container, "sales", settings);
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
@@ -374,10 +376,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setting up the environment
             var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.SendViaReceiveQueue(true);
 
             // setup a basic topologySectionManager for testing
-            var topology = await SetupStandardTopology(container, "sales", settings);
-            settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
@@ -455,14 +458,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(elapsed < TimeSpan.FromSeconds(29)); // 29 instead of 30 to accommodate for a little clock drift
         }
 
-        async Task<ITopologySectionManager> SetupStandardTopology(TransportPartsContainer container, string enpointname, SettingsHolder settings)
+        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname, SettingsHolder settings)
         {
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
+            extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
-            var topology = new StandardTopology(container);
+            var topology = new EndpointOrientedTopology(container);
             topology.Initialize(settings);
 
             // create the topologySectionManager

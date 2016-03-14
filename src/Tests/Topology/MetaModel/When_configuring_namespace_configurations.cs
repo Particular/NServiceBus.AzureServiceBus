@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
     using NServiceBus.AzureServiceBus;
     using NUnit.Framework;
 

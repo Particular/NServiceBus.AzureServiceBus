@@ -118,12 +118,15 @@
     <Compile Include="Configuration\When_configuring_serialization.cs" />
     <Compile Include="Configuration\When_configuring_use_logical_namespace_name.cs" />
     <Compile Include="Configuration\When_configuring_validation.cs" />
+    <Compile Include="Configuration\When_creating_sizeinmegabytes.cs" />
     <Compile Include="ConnectionStringValue.cs" />
     <Compile Include="Connectivity\When_executing_task_with_retry.cs" />
     <Compile Include="Creation\When_creating_forwarding_subscription.cs" />
     <Compile Include="Creation\When_creating_subscription_backward_compatible_with_v6.cs" />
     <Compile Include="PreStartupChecks\When_executing_topic_partitioning_check_for_forwarding_topology.cs" />
     <Compile Include="PreStartupChecks\When_all_pre_startup_checks_for_forwarding_topology_fail.cs" />
+    <Compile Include="Receiving\When_comparing_performance_for_prefetch.cs" />
+    <Compile Include="Sending\When_using_defaults_for_sending.cs" />
     <Compile Include="TestUtility.cs" />
     <Compile Include="PreStartupChecks\When_execute_manage_rights_startup_check.cs" />
     <Compile Include="Seam\When_dispatching_messages.cs" />
@@ -162,10 +165,10 @@
     <Compile Include="Topology\MetaModel\When_parsing_string_to_connection_string.cs" />
     <Compile Include="Topology\MetaModel\When_SqlSubscriptionFilter_is_serializing_an_event.cs" />
     <Compile Include="Topology\Computation\When_computing_ForwardingTopology.cs" />
-    <Compile Include="Topology\Computation\When_computing_StandardTopology.cs" />
-    <Compile Include="Topology\Operation\When_operating_StandardTopology.cs" />
+    <Compile Include="Topology\Computation\When_computing_EndpointOrientedTopology.cs" />
+    <Compile Include="Topology\Operation\When_operating_EndpointOrientedTopology.cs" />
     <Compile Include="Topology\Sending\When_sending_through_ForwardingTopology.cs" />
-    <Compile Include="Topology\Sending\When_sending_through_StandardTopology.cs" />
+    <Compile Include="Topology\Sending\When_sending_through_EndpointOrientedTopology.cs" />
     <Compile Include="Utils\When_getting_items_from_circular_buffer.cs" />
     <Compile Include="Utils\When_putting_items_into_circular_buffer.cs" />
   </ItemGroup>

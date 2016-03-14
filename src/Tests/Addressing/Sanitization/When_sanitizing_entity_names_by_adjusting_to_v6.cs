@@ -1,5 +1,6 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 {
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Addressing;
     using NUnit.Framework;
 
@@ -11,7 +12,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Valid_entity_names_are_returned_as_is()
         {
             var validation = new ValidationMock();
-            var sanitization = new AdjustmentSanitizationV6Strategy(validation);
+            var sanitization = new AdjustmentSanitizationV6(validation);
             var endpointname = "validendpoint";
 
             Assert.AreEqual(endpointname, sanitization.Sanitize(endpointname, EntityType.Queue));
@@ -22,7 +23,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Invalid_entity_names_will_be_stripped_from_illegal_characters_for_version_6_of_transport(string endpointName, string sanitizedName)
         {
             var validation = new ValidationMock();
-            var sanitization = new AdjustmentSanitizationV6Strategy(validation);
+            var sanitization = new AdjustmentSanitizationV6(validation);
             var sanitizedResult = sanitization.Sanitize(endpointName, EntityType.Queue);
             Assert.AreEqual(sanitizedName, sanitizedResult);
         }
@@ -31,7 +32,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Too_long_entity_names_will_be_turned_into_a_deterministic_guid()
         {
             var validation = new ValidationMock();
-            var sanitization = new AdjustmentSanitizationV6Strategy(validation);
+            var sanitization = new AdjustmentSanitizationV6(validation);
             var endpointname = "endpointrw3pSH5zk5aQahkzt-E_U0aPf6KbXpWMZ7vnRFb_8_AAptt5Gp6YVt3rSnWwREBx3-BgnqNw9ol-Rn.wFRTFR1UzoCuHZM443EqKvSt-fzpMHPusH8rm4OQeiBCwBRVDA29rLC6RlOBZ4Xs_h415HW2lAdOPR6j4L-CaaVkfnDO2-9bjUTAGCDKs6jWYmgoCYMBx6x5PS_e0nRT05S_J78qd3SOKWTM-YjVj9fwQZ9xG2x02uCW-XIh0siprJp9c3jLE";
             var sanitized = MD5DeterministicNameBuilder.Build(endpointname);
 

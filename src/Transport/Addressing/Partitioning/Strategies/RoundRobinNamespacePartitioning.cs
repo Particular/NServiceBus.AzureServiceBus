@@ -6,11 +6,11 @@ namespace NServiceBus.AzureServiceBus.Addressing
     using System.Linq;
     using NServiceBus.Settings;
 
-    public class RoundRobinNamespacePartitioningStrategy : INamespacePartitioningStrategy
+    public class RoundRobinNamespacePartitioning : INamespacePartitioningStrategy
     {
-        private readonly CircularBuffer<NamespaceInfo> _namespaces;
+        private readonly CircularBuffer<NamespaceInfo> namespaces;
 
-        public RoundRobinNamespacePartitioningStrategy(ReadOnlySettings settings)
+        public RoundRobinNamespacePartitioning(ReadOnlySettings settings)
         {
             NamespaceConfigurations namespaces;
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces) || namespaces.Count <= 1)
@@ -18,24 +18,24 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 throw new ConfigurationErrorsException("The 'RoundRobin' namespace partitioning strategy requires more than one namespace, please configure multiple azure servicebus namespaces");
             }
 
-            _namespaces = new CircularBuffer<NamespaceInfo>(namespaces.Count);
-            Array.ForEach(namespaces.ToArray(), x => _namespaces.Put(x));
+            this.namespaces = new CircularBuffer<NamespaceInfo>(namespaces.Count);
+            Array.ForEach(namespaces.ToArray(), x => this.namespaces.Put(x));
         }
 
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
         {
             if (partitioningIntent == PartitioningIntent.Sending)
             {
-                var @namespace = _namespaces.Get();
+                var @namespace = namespaces.Get();
                 yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Receiving || partitioningIntent == PartitioningIntent.Creating)
             {
                 var mode = NamespaceMode.Active;
-                for (var i = 0; i < _namespaces.Size; i++)
+                for (var i = 0; i < namespaces.Size; i++)
                 {
-                    var @namespace = _namespaces.Get();
+                    var @namespace = namespaces.Get();
                     yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, mode);
                     mode = NamespaceMode.Passive;
                 }

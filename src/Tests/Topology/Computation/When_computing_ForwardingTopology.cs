@@ -1,16 +1,17 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 {
     using System.Linq;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Routing;
-    using Settings;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_computing_ForwardingTopology
     {
-        private static readonly string Connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private static readonly string Name = "name";
+        private const string Connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        private const string Name = "name";
 
         [Test]
         public void Determines_the_namespace_from_partitioning_strategy()
@@ -19,10 +20,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -42,10 +43,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -64,10 +65,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -90,10 +91,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.UseTopology<ForwardingTopology>().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -115,10 +116,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.UseTopology<ForwardingTopology>().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -139,10 +140,10 @@ namespace NServiceBus.AzureServiceBus.Tests
 
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.UseTopology<ForwardingTopology>().Addressing().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.UseTopology<ForwardingTopology>().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
             topology.Initialize(settings);

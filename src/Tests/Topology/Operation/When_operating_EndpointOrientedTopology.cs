@@ -1,16 +1,19 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 {
     using System;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Routing;
-    using Settings;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_operating_StandardTopology
+    public class When_operating_EndpointOrientedTopology
     {
         [Test]
         public async Task Receives_incoming_messages_from_endpoint_queue()
@@ -21,7 +24,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupStandardTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -75,7 +78,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupStandardTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -140,7 +143,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupStandardTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -202,7 +205,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupStandardTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -264,7 +267,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupStandardTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -328,7 +331,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupStandardTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -389,7 +392,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupStandardTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -448,7 +451,7 @@ namespace NServiceBus.AzureServiceBus.Tests
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupStandardTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -506,15 +509,15 @@ namespace NServiceBus.AzureServiceBus.Tests
             await topologyOperator.Stop();
         }
 
-        async Task<ITopologySectionManager> SetupStandardTopology(TransportPartsContainer container, string enpointname)
+        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace", AzureServiceBusConnectionString.Value);
+            extensions.NamespacePartitioning().AddNamespace("namespace", AzureServiceBusConnectionString.Value);
 
-            var topology = new StandardTopology(container);
+            var topology = new EndpointOrientedTopology(container);
             topology.Initialize(settings);
 
             // create the topologySectionManager

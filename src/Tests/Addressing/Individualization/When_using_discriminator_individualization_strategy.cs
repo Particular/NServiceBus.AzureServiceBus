@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualization
 {
     using NServiceBus.AzureServiceBus.Addressing;
     using NUnit.Framework;
@@ -10,7 +10,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         [Test]
         public void Discriminator_individualization_will_append_discriminator_to_endpointname()
         {
-            var strategy = new DiscriminatorBasedIndividualizationStrategy();
+            var strategy = new DiscriminatorBasedIndividualization();
             var endpointname = "myendpoint";
             var discriminator = "-mydiscriminator";
 

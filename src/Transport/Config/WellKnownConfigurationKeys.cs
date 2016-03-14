@@ -135,7 +135,6 @@ namespace NServiceBus.AzureServiceBus
 
             public static class MessagingFactories
             {
-                public const string PrefetchCount = "AzureServiceBus.Connectivity.MessagingFactories.PrefetchCount";
                 public const string RetryPolicy = "AzureServiceBus.Connectivity.MessagingFactories.RetryPolicy";
                 public const string NumberOfMessagingFactoriesPerNamespace = "AzureServiceBus.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace";
                 public const string MessagingFactorySettingsFactory = "AzureServiceBus.Connectivity.MessagingFactories.MessagingFactorySettingsFactory";

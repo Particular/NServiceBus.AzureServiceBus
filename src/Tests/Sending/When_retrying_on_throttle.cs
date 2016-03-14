@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 {
     using System;
     using System.Collections.Generic;
@@ -6,6 +6,7 @@ namespace NServiceBus.AzureServiceBus.Tests
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]

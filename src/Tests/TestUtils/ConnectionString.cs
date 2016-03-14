@@ -1,4 +1,4 @@
-﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests
+﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils
 {
     using System;
 

@@ -1,6 +1,6 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
-    using NServiceBus.Configuration.AdvanceExtensibility;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Settings;
     using NUnit.Framework;
 
@@ -14,9 +14,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var serialiaztionSettings = extensions.Serialization().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
+            extensions.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
 
-            Assert.AreEqual(SupportedBrokeredMessageBodyTypes.Stream, serialiaztionSettings.GetSettings().Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType));
+            Assert.AreEqual(SupportedBrokeredMessageBodyTypes.Stream, settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType));
         }
     }
 }

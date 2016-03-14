@@ -1,5 +1,6 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 {
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Addressing;
     using NUnit.Framework;
 
@@ -11,7 +12,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Valid_entity_names_are_returned_as_is()
         {
             var validation = new ValidationMock(shouldValidationPass:true);
-            var sanitization = new ThrowOnFailingSanitizationStrategy(validation);
+            var sanitization = new ThrowOnFailingSanitization(validation);
             var endpointname = "validendpoint";
 
             Assert.AreEqual(endpointname, sanitization.Sanitize(endpointname, EntityType.Queue));
@@ -21,7 +22,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public void Invalid_entity_names_result_in_exception()
         {
             var validation = new ValidationMock(shouldValidationPass:false);
-            var sanitization = new ThrowOnFailingSanitizationStrategy(validation);
+            var sanitization = new ThrowOnFailingSanitization(validation);
             var endpointname = "invalidendpoint";
 
             Assert.Throws<EndpointValidationException>(() => sanitization.Sanitize(endpointname, EntityType.Queue));

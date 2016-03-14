@@ -2,7 +2,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System;
 
-    public class DiscriminatorBasedIndividualizationStrategy : IIndividualizationStrategy
+    public class DiscriminatorBasedIndividualization : IIndividualizationStrategy
     {
         Func<string> _discriminatorGenerator;
 

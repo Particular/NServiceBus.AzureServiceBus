@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePartitioning
 {
     using System.Configuration;
     using System.Linq;
@@ -14,18 +14,18 @@ namespace NServiceBus.AzureServiceBus.Tests
         private static readonly string Secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
         private static readonly string Tertiary = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
 
-        private ReplicatedNamespacePartitioningStrategy _strategy;
+        private ReplicatedNamespacePartitioning _strategy;
 
         [SetUp]
         public void SetUp()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace1", Primary);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace2", Secondary);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace3", Tertiary);
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.NamespacePartitioning().AddNamespace("namespace1", Primary);
+            extensions.NamespacePartitioning().AddNamespace("namespace2", Secondary);
+            extensions.NamespacePartitioning().AddNamespace("namespace3", Tertiary);
 
-            _strategy = new ReplicatedNamespacePartitioningStrategy(settings);
+            _strategy = new ReplicatedNamespacePartitioning(settings);
         }
 
         [Test]
@@ -57,17 +57,17 @@ namespace NServiceBus.AzureServiceBus.Tests
         {
             var settings = new SettingsHolder();
 
-            Assert.Throws<ConfigurationErrorsException>(() => new ReplicatedNamespacePartitioningStrategy(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new ReplicatedNamespacePartitioning(settings));
         }
 
         [Test]
         public void Replicated_partitioning_strategy_will_throw_if_too_little_namespaces_are_provided()
         {
             var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Addressing().NamespacePartitioning().AddNamespace("namespace1", Primary);
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.NamespacePartitioning().AddNamespace("namespace1", Primary);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new ReplicatedNamespacePartitioningStrategy(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new ReplicatedNamespacePartitioning(settings));
         }
 
     }

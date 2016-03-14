@@ -1,11 +1,12 @@
-namespace NServiceBus.AzureServiceBus.Tests
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 {
     using System;
     using System.Threading.Tasks;
     using FakeItEasy;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
+    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.Settings;
     using NUnit.Framework;
 
@@ -60,7 +61,7 @@ namespace NServiceBus.AzureServiceBus.Tests
         public async Task Should_use_topic_description_provided_by_user()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             const string topicPath = "mytopic3";
@@ -71,7 +72,7 @@ namespace NServiceBus.AzureServiceBus.Tests
                 AutoDeleteOnIdle = TimeSpan.MaxValue
             };
 
-            extensions.UseDefaultTopology().Resources().Topics().DescriptionFactory((path, s) => topicDescriptionToUse);
+            extensions.Topics().DescriptionFactory((path, s) => topicDescriptionToUse);
 
             var creator = new AzureServiceBusTopicCreator(settings);
 
@@ -87,10 +88,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             var autoDeleteTime = TimeSpan.FromDays(1);
-            extensions.UseDefaultTopology().Resources().Topics().AutoDeleteOnIdle(autoDeleteTime);
+            extensions.Topics().AutoDeleteOnIdle(autoDeleteTime);
 
             var creator = new AzureServiceBusTopicCreator(settings);
 
@@ -109,10 +110,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             var timeToLive = TimeSpan.FromDays(1);
-            extensions.UseDefaultTopology().Resources().Topics().DefaultMessageTimeToLive(timeToLive);
+            extensions.Topics().DefaultMessageTimeToLive(timeToLive);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic5";
@@ -131,10 +132,10 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
             var duplicateDetectionTime = TimeSpan.FromDays(1);
-            extensions.UseDefaultTopology().Resources().Topics().DuplicateDetectionHistoryTimeWindow(duplicateDetectionTime);
+            extensions.Topics().DuplicateDetectionHistoryTimeWindow(duplicateDetectionTime);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic6";
@@ -153,9 +154,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.UseDefaultTopology().Resources().Topics().EnableBatchedOperations(false);
+            extensions.Topics().EnableBatchedOperations(false);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic7";
@@ -174,9 +175,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.UseDefaultTopology().Resources().Topics().EnableFilteringMessagesBeforePublishing(true);
+            extensions.Topics().EnableFilteringMessagesBeforePublishing(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic8";
@@ -199,9 +200,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.DeleteTopic(topicPath);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.UseDefaultTopology().Resources().Topics().EnablePartitioning(true);
+            extensions.Topics().EnablePartitioning(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
            
@@ -218,9 +219,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.UseDefaultTopology().Resources().Topics().MaxSizeInMegabytes(4096);
+            extensions.Topics().MaxSizeInMegabytes(SizeInMegabytes.Size4096);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic10";
@@ -239,9 +240,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.UseDefaultTopology().Resources().Topics().RequiresDuplicateDetection(true);
+            extensions.Topics().RequiresDuplicateDetection(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic11";
@@ -260,9 +261,9 @@ namespace NServiceBus.AzureServiceBus.Tests
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            var extensions = new AzureServiceBusTopologySettings(settings);
 
-            extensions.UseDefaultTopology().Resources().Topics().SupportOrdering(true);
+            extensions.Topics().SupportOrdering(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
             const string topicPath = "mytopic12";
@@ -368,11 +369,11 @@ namespace NServiceBus.AzureServiceBus.Tests
             await namespaceManager.CreateTopic(new TopicDescription("existingtopic1"));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Resources().Topics().DescriptionFactory((topicPath, readOnlySettings) => new TopicDescription(topicPath)
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.Topics().DescriptionFactory((topicPath, readOnlySettings) => new TopicDescription(topicPath)
             {
                 AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
-                EnableExpress = true,
+                EnableExpress = true
             });
 
             var creator = new AzureServiceBusTopicCreator(settings);
@@ -392,16 +393,16 @@ namespace NServiceBus.AzureServiceBus.Tests
             {
                 MaxSizeInMegabytes = 2048,
                 RequiresDuplicateDetection = true,
-                EnablePartitioning = true,
+                EnablePartitioning = true
             });
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseDefaultTopology().Resources().Topics().DescriptionFactory((queuePath, readOnlySettings) => new TopicDescription(queuePath)
+            var extensions = new AzureServiceBusTopologySettings(settings);
+            extensions.Topics().DescriptionFactory((queuePath, readOnlySettings) => new TopicDescription(queuePath)
             {
                 MaxSizeInMegabytes = 1024,
                 RequiresDuplicateDetection = false,
-                EnablePartitioning = false,
+                EnablePartitioning = false
             });
 
             var creator = new AzureServiceBusTopicCreator(settings);
