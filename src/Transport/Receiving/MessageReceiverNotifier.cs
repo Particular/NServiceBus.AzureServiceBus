@@ -212,13 +212,8 @@ namespace NServiceBus.AzureServiceBus
 
             logger.Info("Stopping notifier for " + fullPath);
 
-            var closeReceiverTask = internalReceiver.CloseAsync();
-
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
-            var allTasks = pipelineInvocationTasks.Values.Concat(new[]
-            {
-                closeReceiverTask
-            });
+            var allTasks = pipelineInvocationTasks.Values;
             var finishedTask = await Task.WhenAny(Task.WhenAll(allTasks), timeoutTask).ConfigureAwait(false);
 
             if (finishedTask.Equals(timeoutTask))
@@ -227,6 +222,8 @@ namespace NServiceBus.AzureServiceBus
             }
 
             pipelineInvocationTasks.Clear();
+
+            await internalReceiver.CloseAsync().ConfigureAwait(false);
 
             logger.Info("Notifier for " + fullPath + " stopped");
 
