@@ -1,7 +1,6 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using NServiceBus.AzureServiceBus;
     using NUnit.Framework;
