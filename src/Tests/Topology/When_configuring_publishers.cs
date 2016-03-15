@@ -22,7 +22,8 @@
         [Test]
         public void Should_throw_if_mapping_does_not_exist()
         {
-            Assert.Throws<KeyNotFoundException>(() => _configuration.GetPublishersFor(typeof(MyType)));
+            var exception = Assert.Throws<InvalidOperationException>(() => _configuration.GetPublishersFor(typeof(MyType)));
+            Assert.AreEqual($"No publishers configured for `{typeof(MyType).FullName}`", exception.Message);
         }
 
         [Test]
@@ -30,7 +31,8 @@
         {
             _configuration.Map("publisher", typeof(MyType));
 
-            Assert.Throws<KeyNotFoundException>(() => _configuration.GetPublishersFor(typeof(MyType)));
+            var exception = Assert.Throws<InvalidOperationException>(() => _configuration.GetPublishersFor(typeof(MyType)));
+            Assert.AreEqual($"No publishers configured for `{typeof(MyType).FullName}`", exception.Message);
         }
 
         [Test]

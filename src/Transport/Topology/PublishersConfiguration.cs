@@ -31,6 +31,9 @@
 
         public IEnumerable<string> GetPublishersFor(Type type)
         {
+            if (!HasPublishersFor(type))
+                throw new InvalidOperationException($"No publishers configured for `{type.FullName}`");
+
             return new ReadOnlyCollection<string>(_publishers[type]);
         }
 
