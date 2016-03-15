@@ -125,6 +125,7 @@
     <Compile Include="Creation\When_creating_subscription_backward_compatible_with_v6.cs" />
     <Compile Include="PreStartupChecks\When_executing_topic_partitioning_check_for_forwarding_topology.cs" />
     <Compile Include="PreStartupChecks\When_all_pre_startup_checks_for_forwarding_topology_fail.cs" />
+    <Compile Include="Receiving\When_incoming_message_processing_takes_longer_than_LockDuration.cs" />
     <Compile Include="Receiving\When_comparing_performance_for_prefetch.cs" />
     <Compile Include="Sending\When_using_defaults_for_sending.cs" />
     <Compile Include="TestUtility.cs" />
