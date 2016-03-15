@@ -45,7 +45,7 @@
             return _publishers.ContainsKey(type);
         }
 
-        public static PublishersConfiguration ConfigureUsingThese(ReadOnlySettings settings)
+        public static PublishersConfiguration ConfigureWith(ReadOnlySettings settings)
         {
             var conventions = settings.Get<Conventions>();
             var configuration = new PublishersConfiguration(new ConventionsAdapter(conventions));

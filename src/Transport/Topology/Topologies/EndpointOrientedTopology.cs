@@ -91,7 +91,7 @@ namespace NServiceBus.AzureServiceBus
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
             container.Register(validationStrategyType);
 
-            var publishersConfiguration = PublishersConfiguration.ConfigureUsingThese(settings);
+            var publishersConfiguration = PublishersConfiguration.ConfigureWith(settings);
             container.Register<PublishersConfiguration>(() => publishersConfiguration);
         }
 
