@@ -1,9 +1,7 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -16,19 +14,18 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_comparing_performance_for_prefetch
+    public class When_incoming_message_processing_takes_longer_than_LockDuration
     {
         [Test]
-        public async Task Can_receive_messages_with_prefetch_fast()
+        public async Task AutoRenewTimout_will_extend_lock_for_processing_to_finish()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
 
-            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount, 500);
-            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.PeekLock);
-            settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
+            // set lock duration on a queue to 20 seconds and emulate message processing that takes longer than that, but less than AutoRenewTimeout
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration, TimeSpan.FromSeconds(20));
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -43,41 +40,32 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
-            var queue = await creator.Create("myqueue", namespaceManager);
+            var queue = await creator.Create("autorenewtimeout", namespaceManager);
 
             var receivedMessages = 0;
             var completed = new AsyncAutoResetEvent(false);
 
             // sending messages to the queue
             var senderFactory = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var sender = await senderFactory.Create("myqueue", null, "namespace");
-            var counter = 0;
-            var tasks = new List<Task>();
-            for (var j = 0; j < 10; j++)
+            var sender = await senderFactory.Create("autorenewtimeout", null, "namespace");
+            var messageToSend = new BrokeredMessage(Encoding.UTF8.GetBytes("Whatever"))
             {
-                var batch = new List<BrokeredMessage>();
-                for (var i = 0; i < 100; i++)
-                {
-                    batch.Add(new BrokeredMessage(Encoding.UTF8.GetBytes("Whatever" + counter)));
-                    counter++;
-                }
-                tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatch(batch), s => s.SendBatch(batch.Select(x => x.Clone())), TimeSpan.FromSeconds(10), 5));
-            }
-            await Task.WhenAll(tasks);
-            var faulted = tasks.Count(task => task.IsFaulted);
-            var expected = 1000 - faulted;
+                MessageId = Guid.NewGuid().ToString()
+            };
+            await sender.Send(messageToSend);
             // sending messages to the queue is done
 
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
-            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
-                (message, context) =>
+            notifier.Initialize(new EntityInfo { Path = "autorenewtimeout", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
+                async (message, context) =>
                 {
                     Interlocked.Increment(ref receivedMessages);
-                    if (receivedMessages == expected)
+                    if (receivedMessages > 1)
                     {
-                        completed.Set();
+                        Assert.Fail("Callback should only receive one message once, but it did more than that.");                        
                     }
-                    return TaskEx.Completed;
+                    await Task.Delay(TimeSpan.FromSeconds(30));
+                    completed.Set();
                 }, null, 10);
 
 
@@ -89,15 +77,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             await notifier.Stop();
 
-            Assert.IsTrue(receivedMessages == expected);
-            Console.WriteLine($"Receiving {receivedMessages} messages took {sw.ElapsedMilliseconds} milliseconds");
-            Console.WriteLine("Total of {0} msgs / second", (double)receivedMessages / sw.ElapsedMilliseconds * 1000);
+            Assert.IsTrue(receivedMessages == 1);
+            Console.WriteLine($"Callback processing took {sw.ElapsedMilliseconds} milliseconds");
 
-            // make sure messages are autocompleted
+            // make sure message is autocompleted
             Assert.That(queue.MessageCount, Is.EqualTo(0), "Messages where not completed!");
 
             //cleanup 
-            await namespaceManager.DeleteQueue("myqueue");
+            await namespaceManager.DeleteQueue("autorenewtimeout");
         }
 
         private class PassThroughMapper : ICanMapConnectionStringToNamespaceName

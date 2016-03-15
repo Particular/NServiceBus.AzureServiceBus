@@ -50,8 +50,8 @@
         }
 
         /// <summary>
-        /// Maximum duration within which the message lock will be renewed automatically.
-        /// <remarks>Default is 5 minutes.</remarks>
+        /// Maximum duration within which the message lock will be renewed automatically. 
+        /// <remarks>This value should be greater than the message lock duration. Default is 5 minutes.</remarks>
         /// </summary>
         public AzureServiceBusMessageReceiverSettings AutoRenewTimeout(TimeSpan autoRenewTimeout)
         {
