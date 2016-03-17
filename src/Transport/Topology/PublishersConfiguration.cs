@@ -29,6 +29,12 @@
             Array.ForEach(types, t => AddPublisherForType(publisherName, t));
         }
 
+        public void Map(string publisherName, IEnumerable<Type> types)
+        {
+            foreach (var type in types)
+                Map(publisherName, type);
+        }
+
         public IEnumerable<string> GetPublishersFor(Type type)
         {
             if (!HasPublishersFor(type))
@@ -68,15 +74,6 @@
 
             if (!publisherNames.Contains(publisherName))
                 publisherNames.Add(publisherName);
-        }
-    }
-
-    internal static class PublishersConfigurationExtensionMethods
-    {
-        public static void Map(this PublishersConfiguration configuration, string publisherName, IEnumerable<Type> types)
-        {
-            foreach (var type in types)
-                configuration.Map(publisherName, type);
         }
     }
 }
