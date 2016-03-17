@@ -12,10 +12,17 @@
         private readonly IConventions _conventions;
         private readonly Dictionary<Type, List<string>> _publishers;
 
-        public PublishersConfiguration(IConventions conventions)
+        public PublishersConfiguration(IConventions conventions, ReadOnlySettings settings)
         {
             _conventions = conventions;
             _publishers = new Dictionary<Type, List<string>>();
+
+            if (settings.HasSetting(WellKnownConfigurationKeys.Topology.Publishers))
+                settings
+                    .Get<Dictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers)
+                    .ToDictionary(x => x.Key, x => x.Value.SelectMany(scanner => scanner.Scan()))
+                    .ToList()
+                    .ForEach(x => Map(x.Key, x.Value));
         }
 
         public void Map(string publisherName, Type type)
@@ -46,21 +53,6 @@
         public bool HasPublishersFor(Type type)
         {
             return _publishers.ContainsKey(type);
-        }
-
-        public static PublishersConfiguration ConfigureWith(ReadOnlySettings settings)
-        {
-            var conventions = settings.Get<Conventions>();
-            var configuration = new PublishersConfiguration(new ConventionsAdapter(conventions));
-
-            if (settings.HasSetting(WellKnownConfigurationKeys.Topology.Publishers))
-                settings
-                    .Get<Dictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers)
-                    .ToDictionary(x => x.Key, x => x.Value.SelectMany(scanner => scanner.Scan()))
-                    .ToList()
-                    .ForEach(x => configuration.Map(x.Key, x.Value));
-
-            return configuration;
         }
 
         private void AddPublisherForType(string publisherName, Type type)

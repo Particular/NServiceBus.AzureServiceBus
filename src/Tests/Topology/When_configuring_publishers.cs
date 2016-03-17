@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using NServiceBus.AzureServiceBus;
+    using NServiceBus.Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -15,7 +16,7 @@
         public void SetUp()
         {
             var conventions = new FakeConventions();
-            _configuration = new PublishersConfiguration(conventions);
+            _configuration = new PublishersConfiguration(conventions, new SettingsHolder());
         }
 
         [Test]
