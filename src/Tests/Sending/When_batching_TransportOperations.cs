@@ -105,8 +105,8 @@
             var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(2));
-            Assert.That(batches[0].Operations.First().GetEstimatedSize(), Is.EqualTo(2164), "For default message size padding of 5% size should be 2,164 bytes");
-            Assert.That(batches[1].Operations.First().GetEstimatedSize(), Is.EqualTo(2164), "For default message size padding of 5% size should be 2,164 bytes");
+            Assert.That(batches[0].Operations.First().GetEstimatedSize(), Is.EqualTo(2088), "For default message size padding of 5% size should be 2,088 bytes");
+            Assert.That(batches[1].Operations.First().GetEstimatedSize(), Is.EqualTo(2088), "For default message size padding of 5% size should be 2,088 bytes");
         }
 
     }
