@@ -51,8 +51,7 @@
         {
             var connectionString = TestEnvironment.AzureServiceBus;
 
-            var endpointConfiguration = new EndpointConfiguration();
-            endpointConfiguration.EndpointName(endpointName);
+            var endpointConfiguration = new EndpointConfiguration(endpointName);
             endpointConfiguration.UseTransport<AzureServiceBusTransport>()
                 .ConnectionString(connectionString);
             endpointConfiguration.UseSerialization<JsonSerializer>();
