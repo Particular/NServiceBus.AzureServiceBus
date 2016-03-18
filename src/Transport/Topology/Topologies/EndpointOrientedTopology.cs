@@ -90,6 +90,10 @@ namespace NServiceBus.AzureServiceBus
 
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
             container.Register(validationStrategyType);
+
+            var conventions = settings.Get<Conventions>();
+            var publishersConfiguration = new PublishersConfiguration(new ConventionsAdapter(conventions), settings);
+            container.Register<PublishersConfiguration>(() => publishersConfiguration);
         }
 
         public Func<ICreateQueues> GetQueueCreatorFactory()

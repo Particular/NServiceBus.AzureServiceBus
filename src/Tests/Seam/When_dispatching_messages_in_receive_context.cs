@@ -461,8 +461,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname, SettingsHolder settings)
         {
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new AzureServiceBusTopologySettings(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
+            settings.Set<Conventions>(new Conventions());
+
+            var extensions = new AzureServiceBusTopologySettings(settings);
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
             var topology = new EndpointOrientedTopology(container);
