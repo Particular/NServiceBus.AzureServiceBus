@@ -49,8 +49,6 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisherForType("StartedByEventFromAnotherSaga.SagaThatPublishesAnEvent", typeof(When_started_by_event_from_another_saga.SomethingHappenedEvent))
                 .RegisterPublisherForType("BaseEventFrom2Publishers.Publisher1", typeof(When_base_event_from_2_publishers.DerivedEvent1))
                 .RegisterPublisherForType("BaseEventFrom2Publishers.Publisher2", typeof(When_base_event_from_2_publishers.DerivedEvent2))
-                .RegisterPublisherForType("MultiSubscribingToAPolymorphicEvent.Publisher1", typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent1))
-                .RegisterPublisherForType("MultiSubscribingToAPolymorphicEvent.Publisher2", typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent2))
                 .RegisterPublisherForType("Publishing.Publisher3", typeof(When_publishing.IFoo))
                 .RegisterPublisherForType("Publishing.Publisher", typeof(When_publishing.MyEvent))
                 .RegisterPublisherForType("PublishingAnEventImplementingTwoUnrelatedInterfaces.Publisher", typeof(When_publishing_an_event_implementing_two_unrelated_interfaces.CompositeEvent))
