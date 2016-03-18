@@ -68,7 +68,9 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisherForType("SubscribingToCommandBestpracticesDisabledOnEndpoint.Endpoint", typeof(When_subscribing_to_command_bestpractices_disabled_on_endpoint.MyEvent))
                 .RegisterPublisherForType("UnsubscribingToCommandBestpracticesDisabledOnEndpoint.Endpoint", typeof(When_unsubscribing_to_command_bestpractices_disabled_on_endpoint.MyCommand))
                 .RegisterPublisherForType("UnsubscribingToCommandBestpracticesDisabledOnEndpoint.Endpoint", typeof(When_unsubscribing_to_command_bestpractices_disabled_on_endpoint.MyEvent))
-                .RegisterPublisherForType("ExtendingThePublishApi.Publisher", typeof(When_extending_the_publish_api.MyEvent));
+                .RegisterPublisherForType("ExtendingThePublishApi.Publisher", typeof(When_extending_the_publish_api.MyEvent))
+                .RegisterPublisherForType("SubscribingToBaseAndDerivedPolymorphicEventsWithForwardingTopology.Publisher", typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.BaseEvent))
+                .RegisterPublisherForType("SubscribingToBaseAndDerivedPolymorphicEventsWithForwardingTopology.Publisher", typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.DerivedEvent)); 
         }
 
         config.RegisterComponents(c => { c.ConfigureComponent<TestIndependenceMutator>(DependencyLifecycle.SingleInstance); });
