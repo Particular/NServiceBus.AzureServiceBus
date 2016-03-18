@@ -70,7 +70,10 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisherForType("UnsubscribingToCommandBestpracticesDisabledOnEndpoint.Endpoint", typeof(When_unsubscribing_to_command_bestpractices_disabled_on_endpoint.MyEvent))
                 .RegisterPublisherForType("ExtendingThePublishApi.Publisher", typeof(When_extending_the_publish_api.MyEvent))
                 .RegisterPublisherForType("SubscribingToBaseAndDerivedPolymorphicEventsWithForwardingTopology.Publisher", typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.BaseEvent))
-                .RegisterPublisherForType("SubscribingToBaseAndDerivedPolymorphicEventsWithForwardingTopology.Publisher", typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.DerivedEvent)); 
+                .RegisterPublisherForType("SubscribingToBaseAndDerivedPolymorphicEventsWithForwardingTopology.Publisher", typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.DerivedEvent))
+                .RegisterPublisherForType("PublishingToScaledOutSubscribersOnMulticastTransports.Publisher", typeof(When_publishing_to_scaled_out_subscribers_on_multicast_transports.MyEvent))
+                .RegisterPublisherForType("MultiSubscribingToAPolymorphicEventOnMulticastTransports.Publisher1", typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent1))
+                .RegisterPublisherForType("MultiSubscribingToAPolymorphicEventOnMulticastTransports.Publisher2", typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent2));
         }
 
         config.RegisterComponents(c => { c.ConfigureComponent<TestIndependenceMutator>(DependencyLifecycle.SingleInstance); });
