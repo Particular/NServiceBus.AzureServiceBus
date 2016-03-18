@@ -87,7 +87,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1607\Routing\When_publishing_to_scaled_out_subscribers_on_multicast_transports.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1703\ApiExtension\When_extending_sendoptions.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1703\ApiExtension\When_extending_the_publish_api.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1703\Audit\When_auditing.cs" />
