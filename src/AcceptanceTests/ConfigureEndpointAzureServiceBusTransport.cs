@@ -10,6 +10,7 @@ using NServiceBus.AcceptanceTests.Routing.AutomaticSubscriptions;
 using NServiceBus.AcceptanceTests.Sagas;
 using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 using NServiceBus.AcceptanceTests.Versioning;
+using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AzureServiceBus;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
 

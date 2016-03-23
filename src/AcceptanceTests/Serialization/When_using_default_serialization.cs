@@ -1,4 +1,4 @@
-﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.TransportEncoding
+﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Serialization
 {
     using System.Threading.Tasks;
     using NServiceBus.AcceptanceTesting;
@@ -33,7 +33,6 @@
                 EndpointSetup<DefaultServer>(busConfiguration =>
                 {
                     busConfiguration.RegisterComponents(components => components.ConfigureComponent<DetectDefaultSerializationMutator>(DependencyLifecycle.InstancePerCall));
-//                    busConfiguration.UseSerialization<JsonSerializer>();
                 });
             }
 

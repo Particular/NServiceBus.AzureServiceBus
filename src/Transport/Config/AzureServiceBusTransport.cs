@@ -4,6 +4,7 @@
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
+    using NServiceBus.Serialization;
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
@@ -14,6 +15,8 @@
             settings.SetDefault("Transactions.DoNotWrapHandlersExecutionInATransactionScope", true);
             settings.SetDefault("Transactions.SuppressDistributedTransactions", true);
             settings.SetDefault<ITopology>(new EndpointOrientedTopology());
+            // override core default serialization
+            settings.SetDefault<SerializationDefinition>(new JsonSerializer());
 
             var topology = settings.Get<ITopology>();
             topology.Initialize(settings);

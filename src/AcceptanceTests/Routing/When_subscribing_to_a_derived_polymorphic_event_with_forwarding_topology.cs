@@ -1,8 +1,9 @@
-﻿namespace NServiceBus.AcceptanceTests.Routing
+﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing
 {
     using System;
     using System.Threading.Tasks;
     using NServiceBus.AcceptanceTesting;
+    using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.Features;
