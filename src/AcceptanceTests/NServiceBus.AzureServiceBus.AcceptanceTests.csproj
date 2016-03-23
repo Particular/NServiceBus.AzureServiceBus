@@ -294,6 +294,7 @@
     <Compile Include="OldTests\When_sending_an_oversized_message_without_a_transaction_scope.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_from_a_transaction_scope.cs" />
     <Compile Include="Routing\When_subscribing_to_a_derived_polymorphic_event_with_forwarding_topology.cs" />
+    <Compile Include="Serialization\When_using_default_serialization.cs" />
     <Compile Include="SetupAcceptanceTests.cs" />
     <Compile Include="TransportEncoding\When_receiving_a_message_with_unknown_transport_encoding.cs" />
     <Compile Include="TransportEncoding\When_sending_to_an_endpoint_with_different_transport_encoding.cs" />
