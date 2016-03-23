@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System.Text.RegularExpressions;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
 
     public class AdjustmentSanitization : ISanitizationStrategy
     {
@@ -13,8 +14,13 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
         public string Sanitize(string entityPath, EntityType entityType)
         {
-            // remove invalid characters
+            if (entityType == EntityType.Queue)
+            {
+                var address = new EntityAddress(entityPath);
+                entityPath = address.Name;
+            }
 
+            // remove invalid characters
             if (entityType == EntityType.Queue || entityType == EntityType.Topic)
             {
                 var regexQueueAndTopicValidCharacters = new Regex(@"[^a-zA-Z0-9\-\._\/]");
