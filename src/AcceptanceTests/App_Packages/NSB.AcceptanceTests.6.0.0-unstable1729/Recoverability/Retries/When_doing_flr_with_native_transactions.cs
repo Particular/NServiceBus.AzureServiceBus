@@ -6,33 +6,29 @@
     using NServiceBus.AcceptanceTesting;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
-    using NServiceBus.Config;
     using NServiceBus.Features;
     using NUnit.Framework;
 
-    public class When_doing_flr_with_dtc_on : NServiceBusAcceptanceTest
+    public class When_doing_flr_with_native_transactions : NServiceBusAcceptanceTest
     {
-        const int maxretries = 4;
-
         [Test]
-        public async Task Should_do_X_retries_by_default_with_dtc_on()
+        public async Task Should_do_5_retries_by_default_with_native_transactions()
         {
             await Scenario.Define<Context>(c => { c.Id = Guid.NewGuid(); })
-                   .WithEndpoint<RetryEndpoint>(b => b
+                    .WithEndpoint<RetryEndpoint>(b => b
                         .When((session, context) => session.SendLocal(new MessageToBeRetried { Id = context.Id }))
                         .DoNotFailOnErrorMessages())
-                   .Done(c => c.GaveUpOnRetries)
-                   .Repeat(r => r.For<AllDtcTransports>())
-                   .Should(c =>
-                   {
-                       //we add 1 since first call + X retries totals to X+1
-                       Assert.AreEqual(maxretries + 1, c.NumberOfTimesInvoked, $"The FLR should by default retry {maxretries} times");
-                       Assert.AreEqual(maxretries, c.Logs.Count(l => l.Message
-                           .StartsWith($"First Level Retry is going to retry message '{c.PhysicalMessageId}' because of an exception:")));
-                       Assert.AreEqual(1, c.Logs.Count(l => l.Message
-                           .StartsWith($"Giving up First Level Retries for message '{c.PhysicalMessageId}'.")));
-                   })
-                   .Run();
+                    .Done(c => c.ForwardedToErrorQueue)
+                    .Repeat(r => r.For(Transports.Default))
+                    .Should(c =>
+                    {
+                        Assert.AreEqual(5 + 1, c.NumberOfTimesInvoked, "The FLR should by default retry 5 times");
+                        Assert.AreEqual(5, c.Logs.Count(l => l.Message
+                            .StartsWith($"First Level Retry is going to retry message '{c.PhysicalMessageId}' because of an exception:")));
+                        Assert.AreEqual(1, c.Logs.Count(l => l.Message
+                            .StartsWith($"Giving up First Level Retries for message '{c.PhysicalMessageId}'.")));
+                    })
+                    .Run();
         }
 
         public class Context : ScenarioContext
@@ -41,7 +37,7 @@
 
             public int NumberOfTimesInvoked { get; set; }
 
-            public bool GaveUpOnRetries { get; set; }
+            public bool ForwardedToErrorQueue { get; set; }
 
             public string PhysicalMessageId { get; set; }
         }
@@ -50,20 +46,23 @@
         {
             public RetryEndpoint()
             {
-                EndpointSetup<DefaultServer>(b => b
-                    .EnableFeature<FirstLevelRetries>())
-                    .WithConfig<TransportConfig>(c => c.MaxRetries = maxretries);
+                EndpointSetup<DefaultServer>((config, context) =>
+                {
+                    config.EnableFeature<FirstLevelRetries>();
+                    config.UseTransport(context.GetTransportType())
+                            .Transactions(TransportTransactionMode.ReceiveOnly);
+                });
             }
 
             class ErrorNotificationSpy : IWantToRunWhenBusStartsAndStops
             {
                 public Context Context { get; set; }
 
-                public BusNotifications BusNotifications { get; set; }
+                public Notifications Notifications { get; set; }
 
                 public Task Start(IMessageSession session)
                 {
-                    BusNotifications.Errors.MessageSentToErrorQueue += (sender, message) => Context.GaveUpOnRetries = true;
+                    Notifications.Errors.MessageSentToErrorQueue += (sender, message) => Context.ForwardedToErrorQueue = true;
                     return Task.FromResult(0);
                 }
 
@@ -72,6 +71,7 @@
                     return Task.FromResult(0);
                 }
             }
+
 
             class MessageToBeRetriedHandler : IHandleMessages<MessageToBeRetried>
             {
@@ -90,7 +90,6 @@
             }
         }
 
-        [Serializable]
         public class MessageToBeRetried : IMessage
         {
             public Guid Id { get; set; }

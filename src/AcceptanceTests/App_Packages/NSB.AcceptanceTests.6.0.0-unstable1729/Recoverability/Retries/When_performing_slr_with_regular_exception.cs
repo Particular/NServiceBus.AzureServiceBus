@@ -1,4 +1,4 @@
-﻿namespace NServiceBus.AcceptanceTests.Recoverability.Retries
+namespace NServiceBus.AcceptanceTests.Recoverability.Retries
 {
     using System;
     using System.Linq;
@@ -10,27 +10,28 @@
     using NServiceBus.MessageMutator;
     using NUnit.Framework;
 
-    public class When_performing_slr_with_serialization_exception : NServiceBusAcceptanceTest
+    public class When_performing_slr_with_regular_exception : NServiceBusAcceptanceTest
     {
         public class Context : ScenarioContext
         {
             public byte OriginalBodyChecksum { get; set; }
             public byte SlrChecksum { get; set; }
-            public bool ForwardedToErrorQueue { get; set; }
         }
 
         [Test]
-        public async Task Should_preserve_the_original_body_for_serialization_exceptions()
+        public async Task Should_preserve_the_original_body_for_regular_exceptions()
         {
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<RetryEndpoint>(b => b
                     .When(session => session.SendLocal(new MessageToBeRetried()))
                     .DoNotFailOnErrorMessages())
                 .Done(c => c.SlrChecksum != default(byte))
-                .Run();
+                .Run(TimeSpan.FromSeconds(120));
 
             Assert.AreEqual(context.OriginalBodyChecksum, context.SlrChecksum, "The body of the message sent to slr should be the same as the original message coming off the queue");
         }
+
+
         public class RetryEndpoint : EndpointConfigurationBuilder
         {
             public RetryEndpoint()
@@ -45,7 +46,7 @@
                 .WithConfig<SecondLevelRetriesConfig>(c => c.TimeIncrease = TimeSpan.FromMilliseconds(1));
             }
 
-            static byte Checksum(byte[] data)
+            public static byte Checksum(byte[] data)
             {
                 var longSum = data.Sum(x => (long)x);
                 return unchecked((byte)longSum);
@@ -63,38 +64,43 @@
                 public Task MutateIncoming(MutateIncomingTransportMessageContext transportMessage)
                 {
                     var originalBody = transportMessage.Body;
+
                     testContext.OriginalBodyChecksum = Checksum(originalBody);
-                    var newBody = new byte[originalBody.Length];
-                    Buffer.BlockCopy(originalBody, 0, newBody, 0, originalBody.Length);
-                    //corrupt
-                    newBody[1]++;
-                    transportMessage.Body = newBody;
+
+                    var decryptedBody = new byte[originalBody.Length];
+
+                    Buffer.BlockCopy(originalBody, 0, decryptedBody, 0, originalBody.Length);
+
+                    //decrypt
+                    decryptedBody[0]++;
+
+                    transportMessage.Body = decryptedBody;
                     return Task.FromResult(0);
                 }
 
                 public Task MutateOutgoing(MutateOutgoingTransportMessageContext context)
                 {
+                    context.OutgoingBody[0]--;
                     return Task.FromResult(0);
                 }
             }
 
             class ErrorNotificationSpy : IWantToRunWhenBusStartsAndStops
             {
-                Context testContext;
-                BusNotifications notifications;
+                Notifications notifications;
+                Context context;
 
-                public ErrorNotificationSpy(Context testContext, BusNotifications notifications)
+                public ErrorNotificationSpy(Context context, Notifications notifications)
                 {
-                    this.testContext = testContext;
                     this.notifications = notifications;
+                    this.context = context;
                 }
 
                 public Task Start(IMessageSession session)
                 {
                     notifications.Errors.MessageSentToErrorQueue += (sender, message) =>
                     {
-                        testContext.ForwardedToErrorQueue = true;
-                        testContext.SlrChecksum = Checksum(message.Body);
+                        context.SlrChecksum = Checksum(message.Body);
                     };
                     return Task.FromResult(0);
                 }
@@ -109,7 +115,7 @@
             {
                 public Task Handle(MessageToBeRetried message, IMessageHandlerContext context)
                 {
-                    return Task.FromResult(0);
+                    throw new SimulatedException();
                 }
             }
         }
@@ -118,6 +124,5 @@
         public class MessageToBeRetried : IMessage
         {
         }
-
     }
 }
