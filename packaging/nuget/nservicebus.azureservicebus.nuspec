@@ -14,7 +14,7 @@
     <copyright>Copyright 2010-2014 NServiceBus. All rights reserved</copyright>
     <tags>nservicebus servicebus msmq cqrs publish subscribe</tags>
     <dependencies>
-      <dependency id="WindowsAzure.ServiceBus" version="[3.0.0.0, 4.0.0.0)" />
+      <dependency id="WindowsAzure.ServiceBus" version="[3.1.5.0, 4.0.0.0)" />
       <dependency id="NServiceBus" version="[6.0.0.0-unstable, 7.0.0.0)" />
     </dependencies>
   </metadata>
