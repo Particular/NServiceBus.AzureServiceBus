@@ -1,35 +1,38 @@
 namespace NServiceBus.AcceptanceTests.Recoverability.Retries
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using NServiceBus.AcceptanceTesting;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.Config;
     using NServiceBus.Features;
-    using NServiceBus.Transports;
     using NUnit.Framework;
 
-    public class When_performing_slr_with_min_policy : NServiceBusAcceptanceTest
+    public class When_performing_slr_and_counting : NServiceBusAcceptanceTest
     {
         public class Context : ScenarioContext
         {
-            public bool MessageSentToErrorQueue { get; set; }
-            public int Count { get; set; }
+            public bool ForwardedToErrorQueue { get; set; }
+            public string PhysicalMessageId { get; set; }
         }
 
         [Test]
-        public async Task Should_execute_once()
+        public async Task Should_reschedule_message_three_times_by_default()
         {
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<RetryEndpoint>(b => b
-                    .When(bus => bus.SendLocal(new MessageToBeRetried()))
+                    .When(session => session.SendLocal(new MessageToBeRetried()))
                     .DoNotFailOnErrorMessages())
-                .Done(c => c.MessageSentToErrorQueue)
-                .Run();
+                .Done(c => c.ForwardedToErrorQueue)
+                .Run(TimeSpan.FromSeconds(120));
 
-            Assert.AreEqual(context.Count, 1);
+            Assert.IsTrue(context.ForwardedToErrorQueue);
+            Assert.AreEqual(3, context.Logs.Count(l => l.Message
+                .StartsWith($"Second Level Retry will reschedule message '{context.PhysicalMessageId}'")));
+            Assert.AreEqual(1, context.Logs.Count(l => l.Message
+                .StartsWith($"Giving up Second Level Retries for message '{context.PhysicalMessageId}'.")));
         }
-
 
         public class RetryEndpoint : EndpointConfigurationBuilder
         {
@@ -40,32 +43,26 @@ namespace NServiceBus.AcceptanceTests.Recoverability.Retries
                     configure.DisableFeature<FirstLevelRetries>();
                     configure.EnableFeature<SecondLevelRetries>();
                     configure.EnableFeature<TimeoutManager>();
-                    configure.SecondLevelRetries().CustomRetryPolicy(RetryPolicy);
                 })
                 .WithConfig<SecondLevelRetriesConfig>(c => c.TimeIncrease = TimeSpan.FromMilliseconds(1));
             }
 
-            static TimeSpan RetryPolicy(IncomingMessage transportMessage)
-            {
-                return TimeSpan.MinValue;
-            }
-
             class ErrorNotificationSpy : IWantToRunWhenBusStartsAndStops
             {
-                BusNotifications notifications;
-                Context context;
+                Context testContext;
+                Notifications notifications;
 
-                public ErrorNotificationSpy(Context context, BusNotifications notifications)
+                public ErrorNotificationSpy(Context testContext, Notifications notifications)
                 {
+                    this.testContext = testContext;
                     this.notifications = notifications;
-                    this.context = context;
                 }
 
                 public Task Start(IMessageSession session)
                 {
                     notifications.Errors.MessageSentToErrorQueue += (sender, message) =>
                     {
-                        context.MessageSentToErrorQueue = true;
+                        testContext.ForwardedToErrorQueue = true;
                     };
                     return Task.FromResult(0);
                 }
@@ -87,7 +84,7 @@ namespace NServiceBus.AcceptanceTests.Recoverability.Retries
 
                 public Task Handle(MessageToBeRetried message, IMessageHandlerContext context)
                 {
-                    testContext.Count ++;
+                    testContext.PhysicalMessageId = context.MessageId;
                     throw new SimulatedException();
                 }
             }
