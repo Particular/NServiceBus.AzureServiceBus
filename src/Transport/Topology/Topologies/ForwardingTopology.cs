@@ -23,6 +23,7 @@ namespace NServiceBus.AzureServiceBus
 
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
+        public bool NeedsMappingConfigurationBetweenPublishersAndEventTypes => false;
 
         public void Initialize(SettingsHolder settings)
         {
