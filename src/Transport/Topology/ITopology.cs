@@ -5,8 +5,8 @@ namespace NServiceBus.AzureServiceBus
     using NServiceBus.Settings;
     using NServiceBus.Transports;
 
-    public interface ITopology {
-
+    public interface ITopology
+    {
         void Initialize(SettingsHolder settings);
 
         Func<ICreateQueues> GetQueueCreatorFactory();
@@ -15,7 +15,9 @@ namespace NServiceBus.AzureServiceBus
         Task<StartupCheckResult> RunPreStartupChecks();
         Func<IManageSubscriptions> GetSubscriptionManagerFactory();
         OutboundRoutingPolicy GetOutboundRoutingPolicy();
+
         bool HasNativePubSubSupport { get; }
         bool HasSupportForCentralizedPubSub { get;}
+        bool NeedsMappingConfigurationBetweenPublishersAndEventTypes { get; }
     }
 }

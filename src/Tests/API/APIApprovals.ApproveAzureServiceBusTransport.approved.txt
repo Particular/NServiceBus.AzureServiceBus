@@ -147,6 +147,7 @@ namespace NServiceBus.AzureServiceBus
         public EndpointOrientedTopology() { }
         public bool HasNativePubSubSupport { get; }
         public bool HasSupportForCentralizedPubSub { get; }
+        public bool NeedsMappingConfigurationBetweenPublishersAndEventTypes { get; }
         public System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory() { }
         public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
         public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
@@ -191,6 +192,7 @@ namespace NServiceBus.AzureServiceBus
         public ForwardingTopology() { }
         public bool HasNativePubSubSupport { get; }
         public bool HasSupportForCentralizedPubSub { get; }
+        public bool NeedsMappingConfigurationBetweenPublishersAndEventTypes { get; }
         public System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory() { }
         public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
         public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
@@ -368,6 +370,7 @@ namespace NServiceBus.AzureServiceBus
     {
         bool HasNativePubSubSupport { get; }
         bool HasSupportForCentralizedPubSub { get; }
+        bool NeedsMappingConfigurationBetweenPublishersAndEventTypes { get; }
         System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory();
         System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory();
         NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy();

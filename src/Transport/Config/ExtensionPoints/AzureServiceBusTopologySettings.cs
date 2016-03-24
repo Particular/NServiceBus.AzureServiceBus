@@ -19,7 +19,7 @@
 
         public AzureServiceBusTopologySettings RegisterPublisherForType(string publisherName, Type type)
         {
-            SelectedTopologyHasToBeOfTypeEndpointOrientedTopology();
+            EnsureThatConfiguredTopologyNeedsMappingConfigurationBetweenPublishersAndEventTypes();
 
             AddScannerForPublisher(publisherName, new SingleTypeScanner(type));
             return this;
@@ -27,7 +27,7 @@
 
         public AzureServiceBusTopologySettings RegisterPublisherForAssembly(string publisherName, Assembly assembly)
         {
-            SelectedTopologyHasToBeOfTypeEndpointOrientedTopology();
+            EnsureThatConfiguredTopologyNeedsMappingConfigurationBetweenPublishersAndEventTypes();
 
             AddScannerForPublisher(publisherName, new AssemblyTypesScanner(assembly));
             return this;
@@ -49,12 +49,12 @@
             map[publisherName].Add(scanner);
         }
 
-        private void SelectedTopologyHasToBeOfTypeEndpointOrientedTopology()
+        private void EnsureThatConfiguredTopologyNeedsMappingConfigurationBetweenPublishersAndEventTypes()
         {
             var topology = _settings.Get<ITopology>();
 
-            if (topology.GetType() != typeof(EndpointOrientedTopology))
-                throw new InvalidOperationException("Only `EndpointOrientedTopology` needs mapping configuration between publisher names and event types");
+            if (!topology.NeedsMappingConfigurationBetweenPublishersAndEventTypes)
+                throw new InvalidOperationException($"Configured topology (`{topology.GetType().FullName}`) doesn't need mapping configuration between publisher names and event types");
         }
     }
 }
