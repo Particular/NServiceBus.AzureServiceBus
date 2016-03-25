@@ -39,6 +39,21 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
             Assert.AreEqual(sanitized, sanitization.Sanitize(endpointname, EntityType.Queue));
         }
 
+        [Test]
+        [TestCase("validendpoint@namespaceName", "validendpoint")]
+        [TestCase("validendpoint@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "validendpoint")]
+        [TestCase("endpoint$name@namespaceName", "endpointname")]
+        [TestCase("endpoint$name@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "endpointname")]
+        public void Only_queue_name_without_suffix_should_be_sanitized(string endpointName, string expectedEndpointName)
+        {
+            var validation = new ValidationMock();
+            var sanitization = new AdjustmentSanitizationV6(validation);
+
+            var sanitizedResult = sanitization.Sanitize(endpointName, EntityType.Queue);
+
+            Assert.AreEqual(expectedEndpointName, sanitizedResult);
+        }
+
         class ValidationMock : IValidationStrategy
         {
             public bool IsValid(string entityPath, EntityType entityType)
