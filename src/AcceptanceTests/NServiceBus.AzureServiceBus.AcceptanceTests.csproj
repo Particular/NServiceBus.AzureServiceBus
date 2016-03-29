@@ -87,6 +87,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Transport\Utils\TaskEx.cs">
+      <Link>TaskEx.cs</Link>
+    </Compile>
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1729\ApiExtension\When_extending_sendoptions.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1729\ApiExtension\When_extending_the_publish_api.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1729\Audit\When_auditing.cs" />
