@@ -298,6 +298,7 @@
     <Compile Include="OldTests\When_overriding_endpoint_name.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_without_a_transaction_scope.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_from_a_transaction_scope.cs" />
+    <Compile Include="Routing\When_scaling_out_senders_that_uses_callbacks.cs" />
     <Compile Include="Routing\When_subscribing_to_a_derived_polymorphic_event_with_forwarding_topology.cs" />
     <Compile Include="Serialization\When_using_default_serialization.cs" />
     <Compile Include="SetupAcceptanceTests.cs" />
