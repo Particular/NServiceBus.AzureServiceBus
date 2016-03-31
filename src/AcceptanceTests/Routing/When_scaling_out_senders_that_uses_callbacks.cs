@@ -74,13 +74,13 @@
                     .AddMapping<MyRequest>(typeof(ServerThatRespondsToCallbacks));
             }
 
-            class MyResponseHandler : IHandleMessages<MyReposnse>
+            class MyResponseHandler : IHandleMessages<MyResponse>
             {
                 public ReadOnlySettings Settings { get; set; }
 
                 public Context Context { get; set; }
 
-                public Task Handle(MyReposnse message, IMessageHandlerContext context)
+                public Task Handle(MyResponse message, IMessageHandlerContext context)
                 {
                     if (Settings.Get<string>("Client") != message.Client)
                     {
@@ -103,7 +103,7 @@
             {
                 public async Task Handle(MyRequest message, IMessageHandlerContext context)
                 {
-                    await context.Reply(new MyReposnse()
+                    await context.Reply(new MyResponse()
                     {
                         Client = message.Client
                     });
@@ -116,7 +116,7 @@
             public string Client { get; set; }
         }
 
-        class MyReposnse : IMessage
+        class MyResponse : IMessage
         {
             public string Client { get; set; }
         }
@@ -125,10 +125,7 @@
         {
             int repliesReceived;
 
-            public int RepliesReceived
-            {
-                get { return repliesReceived; }
-            }
+            public int RepliesReceived => repliesReceived;
 
             public void ReplyReceived()
             {
