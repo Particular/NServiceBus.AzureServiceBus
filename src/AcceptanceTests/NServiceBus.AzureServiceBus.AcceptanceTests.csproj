@@ -87,6 +87,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Transport\Utils\TaskEx.cs">
+      <Link>TaskEx.cs</Link>
+    </Compile>
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1729\ApiExtension\When_extending_sendoptions.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1729\ApiExtension\When_extending_the_publish_api.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-unstable1729\Audit\When_auditing.cs" />
@@ -295,6 +298,7 @@
     <Compile Include="OldTests\When_overriding_endpoint_name.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_without_a_transaction_scope.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_from_a_transaction_scope.cs" />
+    <Compile Include="Routing\When_scaling_out_senders_that_uses_callbacks.cs" />
     <Compile Include="Routing\When_subscribing_to_a_derived_polymorphic_event_with_forwarding_topology.cs" />
     <Compile Include="Serialization\When_using_default_serialization.cs" />
     <Compile Include="SetupAcceptanceTests.cs" />
