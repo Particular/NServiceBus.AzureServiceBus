@@ -6,17 +6,14 @@ namespace NServiceBus.AzureServiceBus
 
     class MessagingFactoryAdapter : IMessagingFactory
     {
-        readonly MessagingFactory factory;
+        MessagingFactory factory;
 
         public MessagingFactoryAdapter(MessagingFactory factory)
         {
             this.factory = factory;
         }
 
-        public bool IsClosed
-        {
-            get { return factory.IsClosed; }
-        }
+        public bool IsClosed => factory.IsClosed;
 
         public RetryPolicy RetryPolicy
         {

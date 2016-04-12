@@ -1,18 +1,18 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
     using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Settings;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_configuring_validation
     {
-        private SettingsHolder settingsHolder;
-        private AzureServiceBusTopologySettings extensions;
+        SettingsHolder settingsHolder;
+        AzureServiceBusTopologySettings extensions;
 
         [SetUp]
         public void SetUp()
@@ -20,7 +20,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             settingsHolder = new SettingsHolder();
             extensions = new AzureServiceBusTopologySettings(settingsHolder);
         }
-        
+
         [Test]
         public void Should_be_able_to_set_the_validation_strategy()
         {

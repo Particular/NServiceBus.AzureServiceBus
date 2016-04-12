@@ -1,19 +1,18 @@
 namespace NServiceBus.AzureServiceBus
 {
-    using System;
     using System.Collections.Concurrent;
-    using NServiceBus.Settings;
+    using Settings;
 
     class MessageSenderLifeCycleManager : IManageMessageSenderLifeCycle
     {
-        readonly ICreateMessageSenders senderFactory;
+        ICreateMessageSenders senderFactory;
         int numberOfSendersPerEntity;
         ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>> MessageSenders = new ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>>();
 
         public MessageSenderLifeCycleManager(ICreateMessageSenders senderFactory, ReadOnlySettings settings)
         {
             this.senderFactory = senderFactory;
-            this.numberOfSendersPerEntity = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
+            numberOfSendersPerEntity = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
         }
 
         public IMessageSender Get(string entitypath, string viaEntityPath, string namespaceName)
@@ -52,7 +51,7 @@ namespace NServiceBus.AzureServiceBus
 
         class EntityClientEntry
         {
-            internal Object Mutex = new object();
+            internal object Mutex = new object();
             internal IMessageSender ClientEntity;
         }
     }

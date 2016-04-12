@@ -3,12 +3,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using System;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Routing;
-    using NServiceBus.Settings;
+    using Tests;
+    using Receiving;
+    using TestUtils;
+    using AzureServiceBus;
+    using Routing;
+    using Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 
@@ -67,7 +67,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.IsTrue(received);
             Assert.IsNull(ex);
 
-            // cleanup 
+            // cleanup
             await pump.Stop();
         }
 

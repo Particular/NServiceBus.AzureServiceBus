@@ -7,7 +7,7 @@ namespace NServiceBus.AzureServiceBus
 
     class TransportPartsContainer : ITransportPartsContainer
     {
-        IList<Tuple<Type, Func<object>>> funcs = new List<Tuple<Type, Func<object>>>();
+        List<Tuple<Type, Func<object>>> funcs = new List<Tuple<Type, Func<object>>>();
 
         public TransportPartsContainer()
         {
@@ -51,7 +51,7 @@ namespace NServiceBus.AzureServiceBus
             try
             {
                 var fn = funcs.FirstOrDefault(f => typeToBuild.IsAssignableFrom(f.Item1));
-          
+
                 if (fn == null)
                 {
                     var @interface = typeToBuild.GetInterfaces().FirstOrDefault();
@@ -65,7 +65,7 @@ namespace NServiceBus.AzureServiceBus
 
                 if (fn != null)
                 {
-                    result = fn.Item2();                    
+                    result = fn.Item2();
                 }
                 else
                 {
@@ -73,7 +73,10 @@ namespace NServiceBus.AzureServiceBus
                 }
 
                 //enable property injection
-                var propertyInfos = result.GetType().GetProperties().Where(pi => pi.CanWrite).Where(pi => pi.PropertyType != result.GetType());
+                var propertyInfos = result.GetType().GetProperties()
+                    .Where(pi => pi.CanWrite)
+                    .Where(pi => pi.PropertyType != result.GetType())
+                    .ToList();
                 var propsWithoutFuncs = propertyInfos
                     .Select(p => p.PropertyType)
                     .Intersect(funcs.Select(f => f.Item1)).ToList();
@@ -116,7 +119,7 @@ namespace NServiceBus.AzureServiceBus
                 .ToList();
         }
 
-        private Func<object> DetermineFunc(Type type)
+        Func<object> DetermineFunc(Type type)
         {
             var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
                 .OrderByDescending(c => c.GetParameters().Count())

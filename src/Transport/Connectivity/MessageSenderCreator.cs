@@ -2,12 +2,12 @@ namespace NServiceBus.AzureServiceBus
 {
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
-    using NServiceBus.Settings;
+    using Settings;
 
     class MessageSenderCreator : ICreateMessageSenders
     {
-        readonly IManageMessagingFactoryLifeCycle factories;
-        readonly ReadOnlySettings settings;
+        IManageMessagingFactoryLifeCycle factories;
+        ReadOnlySettings settings;
 
         public MessageSenderCreator(IManageMessagingFactoryLifeCycle factories, ReadOnlySettings settings)
         {

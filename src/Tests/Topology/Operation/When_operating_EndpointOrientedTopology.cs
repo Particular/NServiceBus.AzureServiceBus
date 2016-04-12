@@ -3,12 +3,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
     using System;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Routing;
-    using NServiceBus.Settings;
+    using Tests;
+    using Receiving;
+    using TestUtils;
+    using AzureServiceBus;
+    using Routing;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -65,7 +65,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             // validate
             Assert.IsTrue(received);
             Assert.IsNull(ex);
-            
+
             await topologyOperator.Stop();
         }
 
@@ -130,7 +130,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             Assert.IsTrue(completeCalled);
             Assert.IsTrue(received);
             Assert.IsNull(ex);
-            
+
             await topologyOperator.Stop();
         }
 
@@ -192,7 +192,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             // validate
             Assert.IsTrue(received);
             Assert.IsFalse(completeCalled);
-            
+
             await topologyOperator.Stop();
         }
 
@@ -379,7 +379,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var namespaceManager = namespaceLifeCycle.Get("namespace");
             var queueDescription = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(0, queueDescription.MessageCount);
-            
+
             await topologyOperator.Stop();
         }
 

@@ -5,12 +5,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
     class AsyncAutoResetEvent
     {
-        private readonly Queue<TaskCompletionSource<object>> completionSources = new Queue<TaskCompletionSource<object>>();
-        private bool m_signaled;
+        Queue<TaskCompletionSource<object>> completionSources = new Queue<TaskCompletionSource<object>>();
+        bool signaled;
 
         public AsyncAutoResetEvent(bool signaled)
         {
-            m_signaled = signaled;
+            this.signaled = signaled;
         }
 
         public Task WaitOne()
@@ -18,14 +18,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             lock (completionSources)
             {
                 var tcs = new TaskCompletionSource<object>();
-                if (completionSources.Count > 0 || !m_signaled)
+                if (completionSources.Count > 0 || !signaled)
                 {
                     completionSources.Enqueue(tcs);
                 }
                 else
                 {
                     tcs.SetResult(null);
-                    m_signaled = false;
+                    signaled = false;
                 }
                 return tcs.Task;
             }
@@ -36,10 +36,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             TaskCompletionSource<object> toSet = null;
             lock (completionSources)
             {
-                if (completionSources.Count > 0) toSet = completionSources.Dequeue();
-                else m_signaled = true;
+                if (completionSources.Count > 0)
+                {
+                    toSet = completionSources.Dequeue();
+                }
+                else
+                {
+                    signaled = true;
+                }
             }
-            if (toSet != null) toSet.SetResult(null);
+            if (toSet != null)
+            {
+                toSet.SetResult(null);
+            }
         }
     }
 }

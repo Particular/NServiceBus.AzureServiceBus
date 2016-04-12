@@ -2,24 +2,24 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
 {
     using System.Configuration;
     using System.Linq;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_using_roundrobin_strategy_on_multiple_namespaces
     {
-        private static readonly string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private static readonly string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private static readonly string TertiaryConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string TertiaryConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
 
-        private static readonly string PrimaryName = "namespace1";
-        private static readonly string SecondaryName = "namespace2";
-        private static readonly string TertiaryName = "namespace3";
+        static string PrimaryName = "namespace1";
+        static string SecondaryName = "namespace2";
+        static string TertiaryName = "namespace3";
 
-        private RoundRobinNamespacePartitioning strategy;
+        RoundRobinNamespacePartitioning strategy;
 
         [SetUp]
         public void SetUp()
@@ -68,7 +68,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
             Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
         }
-        
+
         [Test]
         public void Roundrobin_partitioning_strategy_will_throw_if_no_namespace_are_provided()
         {
@@ -83,7 +83,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
             extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
-            
+
             Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioning(settings));
         }
 

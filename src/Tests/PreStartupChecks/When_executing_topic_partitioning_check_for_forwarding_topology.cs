@@ -1,8 +1,8 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.PreStartupChecks
 {
     using System.Threading.Tasks;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]

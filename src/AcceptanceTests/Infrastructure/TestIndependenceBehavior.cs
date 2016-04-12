@@ -2,9 +2,9 @@
 {
     using System;
     using System.Threading.Tasks;
-    using NServiceBus.AcceptanceTesting;
-    using NServiceBus.Pipeline;
-    using NServiceBus.MessageMutator;
+    using AcceptanceTesting;
+    using Pipeline;
+    using MessageMutator;
 
     class TestIndependenceMutator : IMutateOutgoingTransportMessages
     {
@@ -12,7 +12,7 @@
 
         public TestIndependenceMutator(ScenarioContext scenarioContext)
         {
-            this.testRunId = scenarioContext.TestRunId.ToString();
+            testRunId = scenarioContext.TestRunId.ToString();
         }
 
         public Task MutateOutgoing(MutateOutgoingTransportMessageContext context)
@@ -28,7 +28,7 @@
 
         public TestIndependenceSkipBehavior(ScenarioContext scenarioContext)
         {
-            this.testRunId = scenarioContext.TestRunId.ToString();
+            testRunId = scenarioContext.TestRunId.ToString();
         }
 
         public override Task Invoke(IIncomingPhysicalMessageContext context, Func<Task> next)

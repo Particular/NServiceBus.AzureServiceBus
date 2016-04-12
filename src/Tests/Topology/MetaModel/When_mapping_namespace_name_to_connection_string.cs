@@ -1,16 +1,16 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel
 {
     using System.Collections.Generic;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Topology.MetaModel;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_mapping_namespace_name_to_connection_string
     {
-        private DefaultNamespaceNameToConnectionStringMapper mapper;
+        DefaultNamespaceNameToConnectionStringMapper mapper;
 
         [SetUp]
         public void SetUp()

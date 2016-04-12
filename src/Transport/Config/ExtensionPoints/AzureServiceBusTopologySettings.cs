@@ -3,9 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.TypesScanner;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.TypesScanner;
+    using Settings;
 
     public class AzureServiceBusTopologySettings : TransportExtensions<AzureServiceBusTransport>
     {
@@ -33,7 +33,7 @@
             return this;
         }
 
-        private void AddScannerForPublisher(string publisherName, ITypesScanner scanner)
+        void AddScannerForPublisher(string publisherName, ITypesScanner scanner)
         {
             Dictionary<string, List<ITypesScanner>> map;
 
@@ -49,12 +49,14 @@
             map[publisherName].Add(scanner);
         }
 
-        private void EnsureThatConfiguredTopologyNeedsMappingConfigurationBetweenPublishersAndEventTypes()
+        void EnsureThatConfiguredTopologyNeedsMappingConfigurationBetweenPublishersAndEventTypes()
         {
             var topology = settings.Get<ITopology>();
 
             if (!topology.NeedsMappingConfigurationBetweenPublishersAndEventTypes)
+            {
                 throw new InvalidOperationException($"Configured topology (`{topology.GetType().FullName}`) doesn't need mapping configuration between publisher names and event types");
+            }
         }
     }
 }

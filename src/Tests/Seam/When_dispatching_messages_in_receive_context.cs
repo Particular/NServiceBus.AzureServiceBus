@@ -6,13 +6,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.DeliveryConstraints;
-    using NServiceBus.Routing;
-    using NServiceBus.Settings;
+    using Tests;
+    using Receiving;
+    using TestUtils;
+    using AzureServiceBus;
+    using DeliveryConstraints;
+    using Routing;
+    using Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 
@@ -31,7 +31,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setting up the environment
             var container = new TransportPartsContainer();
             var settings = new SettingsHolder();
-            
+
             // setup a basic topologySectionManager for testing
             var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
             settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
@@ -39,7 +39,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setup the receive side of things
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
             var pump = new MessagePump(topology, topologyOperator);
-            
+
             // setup the dispatching side of things
             var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
 
@@ -94,7 +94,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
 
-            // cleanup 
+            // cleanup
             await pump.Stop();
         }
 
@@ -319,7 +319,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-                
+
                 var ctx = context.Context.Get<ReceiveContext>();
                 ctx.OnComplete.Add(async () =>
                 {

@@ -3,12 +3,12 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using NServiceBus.DeliveryConstraints;
-    using NServiceBus.Transports;
+    using DeliveryConstraints;
+    using Transports;
 
     public class BatchedOperation
     {
-        private int messageSizePaddingPercentage;
+        int messageSizePaddingPercentage;
 
         public BatchedOperation(int messageSizePaddingPercentage = 0)
         {
@@ -32,8 +32,8 @@ namespace NServiceBus.AzureServiceBus
                                          1 + // ForcePersistence
                                          1 + // IsBodyConsumed
                                          assumeSize + // Label
-                                         8 + // LockedUntilUtc 
-                                         16 + // LockToken 
+                                         8 + // LockedUntilUtc
+                                         16 + // LockToken
                                          assumeSize + // PartitionKey
                                          8 + // ScheduledEnqueueTimeUtc
                                          8 + // SequenceNumber
@@ -52,6 +52,6 @@ namespace NServiceBus.AzureServiceBus
             return estimatedSize;
         }
 
-        private static int GetStringSizeInBytes(string value) => value != null ? Encoding.UTF8.GetByteCount(value) : 0;
+        static int GetStringSizeInBytes(string value) => value != null ? Encoding.UTF8.GetByteCount(value) : 0;
     }
 }

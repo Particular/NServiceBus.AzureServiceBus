@@ -6,9 +6,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -70,7 +70,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             Assert.IsTrue(sw.ElapsedMilliseconds < TimeSpan.FromMinutes(1).TotalMilliseconds);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -132,7 +132,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             Console.WriteLine("Total of {0} msgs / second", (((double)(10000 - faulted)) / sw.ElapsedMilliseconds) * 1000);
             Assert.IsTrue(sw.ElapsedMilliseconds < TimeSpan.FromMinutes(1).TotalMilliseconds);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
     }

@@ -5,7 +5,7 @@ namespace NServiceBus.AzureServiceBus.TypesScanner
 
     class SingleTypeScanner : ITypesScanner, IEquatable<SingleTypeScanner>
     {
-        private readonly Type target;
+        Type target;
 
         public SingleTypeScanner(Type target)
         {

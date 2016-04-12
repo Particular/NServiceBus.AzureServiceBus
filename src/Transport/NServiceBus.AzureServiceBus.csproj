@@ -101,6 +101,7 @@
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
     <Compile Include="Creation\AzureServiceBusForwardingSubscriptionCreator.cs" />
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
+    <Compile Include="Receiving\BrokeredMessageReceiveContext.cs" />
     <Compile Include="Resharper.Annotations.g.cs" />
     <Compile Include="Receiving\UnsupportedBrokeredMessageBodyTypeException.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Sending\IBatcher.cs" />
     <Compile Include="Sending\MessageTooLargeException.cs" />
     <Compile Include="Sending\Time.cs" />
+    <Compile Include="Topology\ConventionsAdapter.cs" />
     <Compile Include="Topology\IConventions.cs" />
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />

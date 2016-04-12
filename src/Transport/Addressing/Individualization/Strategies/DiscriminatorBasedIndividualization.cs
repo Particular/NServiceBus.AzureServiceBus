@@ -16,7 +16,9 @@ namespace NServiceBus.AzureServiceBus.Addressing
             var discriminator = discriminatorGenerator();
 
             if (endpointname.EndsWith(discriminator))
+            {
                 return endpointname;
+            }
 
             return endpointname + discriminator;
         }

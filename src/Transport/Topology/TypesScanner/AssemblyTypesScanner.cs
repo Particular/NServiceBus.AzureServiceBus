@@ -6,12 +6,14 @@
 
     class AssemblyTypesScanner : ITypesScanner, IEquatable<AssemblyTypesScanner>
     {
-        private readonly Assembly assembly;
+        Assembly assembly;
 
         public AssemblyTypesScanner(Assembly assembly)
         {
-             if (assembly == null)
+            if (assembly == null)
+            {
                 throw new ArgumentNullException(nameof(assembly), "It's not possible to initialize an AssemblyTypesScanner without specifing an assembly");
+            }
 
             this.assembly = assembly;
         }

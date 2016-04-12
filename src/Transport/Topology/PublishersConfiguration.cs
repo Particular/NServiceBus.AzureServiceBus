@@ -4,13 +4,13 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using NServiceBus.AzureServiceBus.TypesScanner;
-    using NServiceBus.Settings;
+    using TypesScanner;
+    using Settings;
 
     class PublishersConfiguration
     {
-        private readonly IConventions conventions;
-        private readonly Dictionary<Type, List<string>> publishers;
+        IConventions conventions;
+        Dictionary<Type, List<string>> publishers;
 
         public PublishersConfiguration(IConventions conventions, ReadOnlySettings settings)
         {
@@ -39,13 +39,17 @@
         public void Map(string publisherName, IEnumerable<Type> types)
         {
             foreach (var type in types)
+            {
                 Map(publisherName, type);
+            }
         }
 
         public IEnumerable<string> GetPublishersFor(Type type)
         {
             if (!HasPublishersFor(type))
+            {
                 throw new InvalidOperationException($"No publishers configured for `{type.FullName}`");
+            }
 
             return new ReadOnlyCollection<string>(publishers[type]);
         }
@@ -55,7 +59,7 @@
             return publishers.ContainsKey(type);
         }
 
-        private void AddPublisherForType(string publisherName, Type type)
+        void AddPublisherForType(string publisherName, Type type)
         {
             List<string> publisherNames;
             if (!publishers.TryGetValue(type, out publisherNames))
@@ -65,7 +69,9 @@
             }
 
             if (!publisherNames.Contains(publisherName))
+            {
                 publisherNames.Add(publisherName);
+            }
         }
     }
 }

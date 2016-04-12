@@ -1,10 +1,10 @@
 ﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.TransportEncoding
 {
     using System.Threading.Tasks;
-    using NServiceBus.AcceptanceTesting;
+    using AcceptanceTesting;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AzureServiceBus;
+    using AzureServiceBus;
     using NUnit.Framework;
 
     public class When_sending_to_an_endpoint_with_different_transport_encoding : NServiceBusAcceptanceTest

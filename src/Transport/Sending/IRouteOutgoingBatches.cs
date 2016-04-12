@@ -7,6 +7,5 @@ namespace NServiceBus.AzureServiceBus
     {
         Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContext receiveContext);
         Task RouteBatch(Batch batch, ReceiveContext receiveContext);
-        
     }
 }

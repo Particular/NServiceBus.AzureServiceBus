@@ -3,10 +3,10 @@
     using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Serialization;
-    using NServiceBus.Settings;
-    using NServiceBus.Transports;
+    using AzureServiceBus;
+    using Serialization;
+    using Settings;
+    using Transports;
 
     public class AzureServiceBusTransport : TransportDefinition
     {
@@ -30,7 +30,7 @@
             return new AzureServiceBusTransportInfrastructure(topology, settings);
         }
 
-        private void MatchSettingsToConsistencyRequirements(SettingsHolder settings)
+        void MatchSettingsToConsistencyRequirements(SettingsHolder settings)
         {
             if (settings.HasExplicitValue<TransportTransactionMode>())
             {
@@ -61,12 +61,12 @@
             }
         }
 
-        private static void SetConnectivityMode(SettingsHolder settings)
+        static void SetConnectivityMode(SettingsHolder settings)
         {
             ServiceBusEnvironment.SystemConnectivity.Mode = settings.Get<ConnectivityMode>(WellKnownConfigurationKeys.Connectivity.ConnectivityMode);
         }
 
-        private static void RegisterConnectionStringAsNamespace(string connectionString, ReadOnlySettings settings)
+        static void RegisterConnectionStringAsNamespace(string connectionString, ReadOnlySettings settings)
         {
             var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             namespaces.AddDefault(connectionString);

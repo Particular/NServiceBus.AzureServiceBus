@@ -5,9 +5,9 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -16,7 +16,7 @@
     {
         const string topicPath = "topic";
         static SubscriptionMetadata metadata = new SubscriptionMetadata { Description = "eventname" };
-        private const string sqlFilter = "1=1";
+        const string sqlFilter = "1=1";
 
         [TestFixtureSetUp]
         public void TopicSetup()
@@ -423,7 +423,7 @@
             var subscriptionDescription = await namespaceManager.GetSubscription("sometopic1", "existingsubscription1");
             Assert.AreEqual(TimeSpan.FromMinutes(100), subscriptionDescription.AutoDeleteOnIdle);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteTopic("sometopic1");
         }
 
@@ -449,7 +449,7 @@
             var creator = new AzureServiceBusSubscriptionCreator(settings);
             Assert.Throws<ArgumentException>(async () => await creator.Create("sometopic2", "existingsubscription2", metadata, sqlFilter, namespaceManager));
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteTopic("sometopic2");
         }
     }

@@ -2,15 +2,15 @@
 {
     using System;
     using System.Linq;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_configuring_publishers
     {
-        private PublishersConfiguration configuration;
+        PublishersConfiguration configuration;
 
         [SetUp]
         public void SetUp()
@@ -106,7 +106,7 @@
         class MyBaseMessage : MyType { }
         class MyDerivedMessage1 : MyBaseMessage { }
         class MyDerivedMessage2 : MyBaseMessage { }
-        
+
         class FakeConventions : IConventions
         {
             public bool IsMessageType(Type type)
@@ -116,5 +116,5 @@
         }
     }
 
-    
+
 }

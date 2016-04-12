@@ -5,17 +5,17 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
-    using NServiceBus.Logging;
-    using NServiceBus.Settings;
+    using Azure.Transports.WindowsAzureServiceBus;
+    using Logging;
+    using Settings;
 
     class DefaultOutgoingBatchRouter : IRouteOutgoingBatches
     {
         ILog logger = LogManager.GetLogger<DefaultOutgoingBatchRouter>();
-        readonly IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter;
-        readonly IManageMessageSenderLifeCycle senders;
-        private readonly ReadOnlySettings settings;
-        private readonly IHandleOversizedBrokeredMessages oversizedMessageHandler;
+        IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter;
+        IManageMessageSenderLifeCycle senders;
+        ReadOnlySettings settings;
+        IHandleOversizedBrokeredMessages oversizedMessageHandler;
 
         int maxRetryAttemptsOnThrottle;
         TimeSpan backOffTimeOnThrottle;
@@ -80,7 +80,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        private RoutingOptions GetRoutingOptions(ReceiveContext receiveContext)
+        RoutingOptions GetRoutingOptions(ReceiveContext receiveContext)
         {
             var sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
             var context = receiveContext as BrokeredMessageReceiveContext;
@@ -93,7 +93,7 @@ namespace NServiceBus.AzureServiceBus
             };
         }
 
-        private string GetViaEntityPathFor(EntityInfo entity)
+        string GetViaEntityPathFor(EntityInfo entity)
         {
             if (entity?.Type == EntityType.Queue)
             {
@@ -108,7 +108,7 @@ namespace NServiceBus.AzureServiceBus
             return null;
         }
 
-        private async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend)
+        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend)
         {
 
             try

@@ -3,8 +3,8 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Logging;
-    using NServiceBus.Settings;
+    using Logging;
+    using Settings;
 
     class AzureServiceBusSubscriptionCreatorV6 : ICreateAzureServiceBusSubscriptions
     {

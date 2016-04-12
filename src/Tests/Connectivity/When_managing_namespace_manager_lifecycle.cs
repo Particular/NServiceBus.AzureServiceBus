@@ -5,8 +5,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
+    using TestUtils;
+    using AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]
@@ -38,11 +38,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             Assert.AreEqual(1, creator.InvocationCount);
             Assert.AreEqual(first, second);
         }
-        
+
         class InterceptingCreator : ICreateNamespaceManagers
         {
             public bool HasBeenInvoked;
-            public int InvocationCount = 0;
+            public int InvocationCount;
 
             public INamespaceManager Create(string namespaceName)
             {
@@ -67,7 +67,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
             public Task<bool> CanManageEntities()
             {
-                throw new NotImplementedException(); 
+                throw new NotImplementedException();
             }
 
             public Task CreateQueue(QueueDescription description)

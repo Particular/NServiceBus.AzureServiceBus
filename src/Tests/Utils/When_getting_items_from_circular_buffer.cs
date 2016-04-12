@@ -1,7 +1,7 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Utils
 {
     using System.Threading.Tasks;
-    using NServiceBus.AzureServiceBus;
+    using AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]
@@ -16,12 +16,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Utils
 
             var buffer = new CircularBuffer<BufferEntry>(numberOfEntries);
 
-            Parallel.For(0, numberOfEntries, new ParallelOptions() { MaxDegreeOfParallelism = maxDegreeOfParallelism }, item =>
+            Parallel.For(0, numberOfEntries, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism }, item =>
             {
                 buffer.Put(new BufferEntry());
             });
 
-            Parallel.For(0, 100000, new ParallelOptions() { MaxDegreeOfParallelism = maxDegreeOfParallelism }, item =>
+            Parallel.For(0, 100000, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism }, item =>
             {
                 buffer.Get();
             });

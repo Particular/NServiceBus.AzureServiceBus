@@ -2,18 +2,18 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
-    using NServiceBus.Settings;
+    using Settings;
 
     class MessageReceiverLifeCycleManager : IManageMessageReceiverLifeCycle
     {
-        readonly ICreateMessageReceivers receiveFactory;
+        ICreateMessageReceivers receiveFactory;
         int numberOfReceiversPerEntity;
         ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>> MessageReceivers = new ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>>();
 
         public MessageReceiverLifeCycleManager(ICreateMessageReceivers receiveFactory, ReadOnlySettings settings)
         {
             this.receiveFactory = receiveFactory;
-            this.numberOfReceiversPerEntity = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
+            numberOfReceiversPerEntity = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
         }
 
         public IMessageReceiver Get(string entitypath, string namespaceName)

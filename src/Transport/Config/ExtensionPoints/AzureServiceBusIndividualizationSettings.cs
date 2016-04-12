@@ -1,9 +1,9 @@
 ﻿namespace NServiceBus
 {
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
+    using Configuration.AdvanceExtensibility;
+    using Settings;
 
     public class AzureServiceBusIndividualizationSettings : ExposeSettings
     {

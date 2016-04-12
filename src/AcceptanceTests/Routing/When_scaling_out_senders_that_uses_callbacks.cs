@@ -3,12 +3,12 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using NServiceBus.AcceptanceTesting;
+    using AcceptanceTesting;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using Configuration.AdvanceExtensibility;
+    using Settings;
     using NUnit.Framework;
 
     public class When_scaling_out_senders_that_uses_callbacks : NServiceBusAcceptanceTest

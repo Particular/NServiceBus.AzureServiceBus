@@ -3,10 +3,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using System;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using AzureServiceBus.Topology.MetaModel;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -44,7 +44,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             notifier.Start();
             await notifier.Stop();
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -82,7 +82,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             notifier.Start();
             await notifier.Stop();
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -119,7 +119,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
-            
+
             Exception ex = null;
             var received = false;
 
@@ -148,12 +148,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             Assert.IsTrue(received);
             Assert.IsNull(ex);
 
-            //cleanup 
+            //cleanup
             await notifier.Stop();
             await namespaceManager.DeleteQueue("myqueue");
         }
 
-        private class PassThroughMapper : ICanMapConnectionStringToNamespaceName
+        class PassThroughMapper : ICanMapConnectionStringToNamespaceName
         {
             public EntityAddress Map(EntityAddress value)
             {

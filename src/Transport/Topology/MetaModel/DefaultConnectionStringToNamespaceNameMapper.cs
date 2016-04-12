@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using NServiceBus.Settings;
+    using Settings;
 
     class DefaultConnectionStringToNamespaceNameMapper : ICanMapConnectionStringToNamespaceName
     {

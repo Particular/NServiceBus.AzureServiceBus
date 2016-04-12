@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
@@ -8,23 +7,10 @@ using NServiceBus.AcceptanceTests.BestPractices;
 using NServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AcceptanceTests.Routing.AutomaticSubscriptions;
 using NServiceBus.AcceptanceTests.Sagas;
-using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 using NServiceBus.AcceptanceTests.Versioning;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AzureServiceBus;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
-
-public class ConfigureScenariosForAzureServiceBusTransport : IConfigureSupportedScenariosForTestExecution
-{
-    public IEnumerable<Type> UnsupportedScenarioDescriptorTypes { get; } = new[]
-    {
-        typeof(AllDtcTransports),
-        typeof(AllTransportsWithMessageDrivenPubSub),
-        typeof(AllTransportsWithoutNativeDeferral),
-        typeof(AllNativeMultiQueueTransactionTransports),
-        typeof(AllTransportsWithoutNativeDeferralAndWithAtomicSendAndReceive)
-    };
-}
 
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
 {

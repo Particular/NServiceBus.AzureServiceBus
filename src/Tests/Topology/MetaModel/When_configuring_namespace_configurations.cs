@@ -2,15 +2,15 @@
 {
     using System;
     using System.Collections.Generic;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
-    using NServiceBus.AzureServiceBus;
+    using Tests;
+    using AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_configuring_namespace_configurations
     {
-        private NamespaceConfigurations namespaces;
+        NamespaceConfigurations namespaces;
 
         [SetUp]
         public void SetUp()

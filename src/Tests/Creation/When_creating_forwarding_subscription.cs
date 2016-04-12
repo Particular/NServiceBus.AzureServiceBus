@@ -5,9 +5,9 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -16,7 +16,7 @@
     {
         const string topicPath = "bundle-x";
         const string forwardToQueue = "forwardToQueue";
-        private const string sqlFilter = "1=1";
+        const string sqlFilter = "1=1";
         static SubscriptionMetadata metadata = new ForwardingTopologySubscriptionMetadata
         {
             Description = "endpoint blah",

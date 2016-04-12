@@ -4,7 +4,7 @@
 
     class SqlSubscriptionFilter : IBrokerSideSubscriptionFilter
     {
-        private Type eventType;
+        Type eventType;
 
         public SqlSubscriptionFilter(Type eventType)
         {
@@ -15,6 +15,6 @@
         {
             return string.Format("[{0}] LIKE '{1}%' OR [{0}] LIKE '%{1}%' OR [{0}] LIKE '%{1}' OR [{0}] = '{1}'", Headers.EnclosedMessageTypes, eventType.FullName);
         }
-        
+
     }
 }

@@ -1,11 +1,11 @@
 namespace NServiceBus.AzureServiceBus
 {
     using Microsoft.ServiceBus;
-    using NServiceBus.Settings;
+    using Settings;
 
     class NamespaceManagerCreator : ICreateNamespaceManagers
     {
-        private readonly ReadOnlySettings settings;
+        ReadOnlySettings settings;
 
         public NamespaceManagerCreator(ReadOnlySettings settings)
         {

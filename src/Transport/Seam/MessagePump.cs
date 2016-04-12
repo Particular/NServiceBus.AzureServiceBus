@@ -4,7 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading;
     using System.Threading.Tasks;
     using Extensibility;
-    using NServiceBus.Logging;
+    using Logging;
     using Transports;
 
     class MessagePump : IPushMessages, IDisposable
@@ -12,7 +12,7 @@ namespace NServiceBus.AzureServiceBus
         ITopologySectionManager topologySectionManager;
         IOperateTopology topologyOperator;
         Func<PushContext, Task> messagePump;
-        private RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
+        RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
         string inputQueue;
 
@@ -34,7 +34,7 @@ namespace NServiceBus.AzureServiceBus
             }
 
             inputQueue = pushSettings.InputQueue;
-            
+
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
             {
                 var tokenSource = new CancellationTokenSource();
@@ -53,7 +53,7 @@ namespace NServiceBus.AzureServiceBus
             return TaskEx.Completed;
         }
 
-        /// <summary>For internal testing purposes.</summary>
+        // For internal testing purposes.
         internal void OnError(Func<Exception, Task> func)
         {
             topologyOperator.OnError(exception =>

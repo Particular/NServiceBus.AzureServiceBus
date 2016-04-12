@@ -8,7 +8,7 @@ namespace NServiceBus.AzureServiceBus
 
     public class NamespaceManagerAdapter : INamespaceManager
     {
-        readonly NamespaceManager manager;
+        NamespaceManager manager;
 
         public NamespaceManagerAdapter(NamespaceManager manager)
         {

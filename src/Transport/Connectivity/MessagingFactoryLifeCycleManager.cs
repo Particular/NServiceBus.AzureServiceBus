@@ -1,9 +1,8 @@
 namespace NServiceBus.AzureServiceBus
 {
-    using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
-    using NServiceBus.Settings;
+    using Settings;
 
     class MessagingFactoryLifeCycleManager : IManageMessagingFactoryLifeCycle
     {
@@ -14,7 +13,7 @@ namespace NServiceBus.AzureServiceBus
         public MessagingFactoryLifeCycleManager(ICreateMessagingFactories createMessagingFactories, ReadOnlySettings settings)
         {
             this.createMessagingFactories = createMessagingFactories;
-            this.numberOfFactoriesPerNamespace = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);
+            numberOfFactoriesPerNamespace = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);
         }
 
         public IMessagingFactory Get(string namespaceName)
@@ -65,7 +64,7 @@ namespace NServiceBus.AzureServiceBus
 
         class FactoryEntry
         {
-            internal Object Mutex = new object();
+            internal object Mutex = new object();
             internal IMessagingFactory Factory;
         }
     }

@@ -1,17 +1,17 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Topology.MetaModel;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_configuring_use_logical_namespace_name
     {
-        private SettingsHolder settingsHolder;
-        private AzureServiceBusTopologySettings extensions;
+        SettingsHolder settingsHolder;
+        AzureServiceBusTopologySettings extensions;
 
         [SetUp]
         public void SetUp()

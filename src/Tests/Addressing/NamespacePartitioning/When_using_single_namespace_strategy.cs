@@ -2,22 +2,22 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
 {
     using System.Configuration;
     using System.Linq;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_using_single_namespace_strategy
     {
-        private static readonly string ConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private static readonly string OtherConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string ConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string OtherConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
 
-        private static readonly string Name = "namespace1";
-        private static readonly string OtherName = "namespace2";
+        static string Name = "namespace1";
+        static string OtherName = "namespace2";
 
-        private SingleNamespacePartitioning strategy;
+        SingleNamespacePartitioning strategy;
 
         [SetUp]
         public void SetUp()
@@ -65,7 +65,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         public void Single_partitioning_strategy_will_throw_if_no_namespace_defined()
         {
             var settings = new SettingsHolder();
-            
+
             Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioning(settings));
         }
 

@@ -4,7 +4,7 @@
 
     public class RuntimeNamespaceInfo : IEquatable<RuntimeNamespaceInfo>
     {
-        private readonly NamespaceInfo info;
+        NamespaceInfo info;
 
         public RuntimeNamespaceInfo(string name, string connectionString, NamespaceMode mode = NamespaceMode.Active)
         {
@@ -29,7 +29,7 @@
 
         public override int GetHashCode()
         {
-            return info.GetHashCode(); 
+            return info.GetHashCode();
         }
 
         public static bool operator ==(RuntimeNamespaceInfo left, RuntimeNamespaceInfo right)

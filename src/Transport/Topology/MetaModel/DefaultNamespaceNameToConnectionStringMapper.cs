@@ -2,11 +2,11 @@ namespace NServiceBus.AzureServiceBus.Topology.MetaModel
 {
     using System.Collections.Generic;
     using System.Linq;
-    using NServiceBus.Settings;
+    using Settings;
 
     class DefaultNamespaceNameToConnectionStringMapper : ICanMapNamespaceNameToConnectionString
     {
-        private readonly ReadOnlySettings settings;
+        ReadOnlySettings settings;
 
         public DefaultNamespaceNameToConnectionStringMapper(ReadOnlySettings settings)
         {
@@ -21,7 +21,9 @@ namespace NServiceBus.AzureServiceBus.Topology.MetaModel
 
             var namespaceInfo = namespaces.SingleOrDefault(x => x.Name == value.Suffix);
             if (namespaceInfo != null)
+            {
                 return new EntityAddress($"{value.Name}@{namespaceInfo.ConnectionString}");
+            }
 
             throw new KeyNotFoundException();
         }

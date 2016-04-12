@@ -4,15 +4,13 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Extensibility;
-    using NServiceBus.Logging;
-    using NServiceBus.Transports;
+    using Extensibility;
+    using Transports;
 
     class Dispatcher : IDispatchMessages
     {
-        private readonly IRouteOutgoingBatches routeOutgoingBatches;
-        ILog logger = LogManager.GetLogger<Dispatcher>();
-        readonly IBatcher batcher;
+        IRouteOutgoingBatches routeOutgoingBatches;
+        IBatcher batcher;
 
         public Dispatcher(IRouteOutgoingBatches routeOutgoingBatches, IBatcher batcher)
         {

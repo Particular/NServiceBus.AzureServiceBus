@@ -184,9 +184,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Topology\Creation\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj">
       <Project>{607c3f29-58d4-4eec-bffb-668976cbb5b8}</Project>

@@ -2,11 +2,11 @@ namespace NServiceBus.AzureServiceBus
 {
     using System.Linq;
     using System.Threading.Tasks;
-    
+
     class TopologyCreator : ICreateTopology
     {
-        readonly ITransportPartsContainer container;
-        readonly IManageNamespaceManagerLifeCycle namespaces;
+        ITransportPartsContainer container;
+        IManageNamespaceManagerLifeCycle namespaces;
 
         public TopologyCreator(ITransportPartsContainer container, IManageNamespaceManagerLifeCycle namespaces)
         {

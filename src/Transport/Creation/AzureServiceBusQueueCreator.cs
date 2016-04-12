@@ -4,15 +4,14 @@
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Logging;
-    using NServiceBus.Settings;
+    using Logging;
+    using Settings;
 
     class AzureServiceBusQueueCreator : ICreateAzureServiceBusQueues
     {
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
         ReadOnlySettings settings;
         Func<string, ReadOnlySettings, QueueDescription> descriptionFactory;
-
         ILog logger = LogManager.GetLogger(typeof(AzureServiceBusQueueCreator));
 
         public AzureServiceBusQueueCreator(ReadOnlySettings settings)
@@ -122,7 +121,7 @@
             return exists;
         }
 
-        private bool MembersAreNotEqual(QueueDescription existingDescription, QueueDescription newDescription)
+        bool MembersAreNotEqual(QueueDescription existingDescription, QueueDescription newDescription)
         {
             if (existingDescription.RequiresDuplicateDetection != newDescription.RequiresDuplicateDetection)
             {

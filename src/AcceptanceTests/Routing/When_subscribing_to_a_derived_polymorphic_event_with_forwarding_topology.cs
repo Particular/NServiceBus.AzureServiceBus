@@ -2,12 +2,12 @@
 {
     using System;
     using System.Threading.Tasks;
-    using NServiceBus.AcceptanceTesting;
+    using AcceptanceTesting;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Features;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using Features;
+    using Settings;
     using NUnit.Framework;
 
     public class When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology : NServiceBusAcceptanceTest
@@ -118,7 +118,7 @@
                 {
                     busConfiguration.DisableFeature<AutoSubscribe>();
                     // Limit message processing to a single thread to ensure that if duplicate events are sent, they are getting
-                    // to the subscriber before stop command 
+                    // to the subscriber before stop command
                     busConfiguration.LimitMessageProcessingConcurrencyTo(1);
                 })
                     .AddMapping<BaseEvent>(typeof(Publisher))
@@ -134,7 +134,6 @@
                     Context.SubscriberGotTheDerivedEvent++;
                     return Task.FromResult(0);
                 }
-
 
                 public Task Handle(BaseEvent message, IMessageHandlerContext context)
                 {

@@ -5,7 +5,7 @@
 
     class EntityAddress
     {
-        private readonly string value;
+        string value;
 
         public string Name => value.Split('@').First();
         public string Suffix => value.Contains('@') ? value.Split('@').Last() : string.Empty;

@@ -3,13 +3,13 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Settings;
+    using Settings;
 
     class MessagingFactoryCreator : ICreateMessagingFactories
     {
-        readonly IManageNamespaceManagerLifeCycle namespaceManagers;
+        IManageNamespaceManagerLifeCycle namespaceManagers;
         Func<string, MessagingFactorySettings> settingsFactory;
-        readonly ReadOnlySettings settings;
+        ReadOnlySettings settings;
 
         public MessagingFactoryCreator(IManageNamespaceManagerLifeCycle namespaceManagers, ReadOnlySettings settings)
         {
@@ -51,6 +51,6 @@ namespace NServiceBus.AzureServiceBus
             }
             return new MessagingFactoryAdapter(inner);
         }
-        
+
     }
 }

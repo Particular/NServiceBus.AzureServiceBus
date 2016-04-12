@@ -1,10 +1,10 @@
 ﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Serialization
 {
     using System.Threading.Tasks;
-    using NServiceBus.AcceptanceTesting;
+    using AcceptanceTesting;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.MessageMutator;
+    using MessageMutator;
     using NUnit.Framework;
 
     public class When_using_default_serialization : NServiceBusAcceptanceTest
@@ -52,7 +52,7 @@
             {
                 public Task Handle(MyMessage message, IMessageHandlerContext context)
                 {
-                    return Task.FromResult(0); 
+                    return Task.FromResult(0);
                 }
             }
         }

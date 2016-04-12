@@ -2,24 +2,24 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
 {
     using System.Configuration;
     using System.Linq;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_using_failover_namespace_strategy
     {
-        private const string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private const string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private const string OtherConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        const string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        const string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        const string OtherConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
 
-        private const string PrimaryName = "namespace1";
-        private const string SecondaryName = "namespace2";
-        private const string OtherName = "namespace3";
+        const string PrimaryName = "namespace1";
+        const string SecondaryName = "namespace2";
+        const string OtherName = "namespace3";
 
-        private FailOverNamespacePartitioning strategy;
+        FailOverNamespacePartitioning strategy;
 
         [SetUp]
         public void SetUp()
@@ -88,7 +88,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             var settings = new SettingsHolder();
             var extensions = new AzureServiceBusTopologySettings(settings);
             extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
-            
+
             Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning(settings));
         }
 

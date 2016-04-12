@@ -5,11 +5,11 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using NServiceBus.Logging;
+    using Logging;
 
     class TopologyOperator : IOperateTopology, IDisposable
     {
-        readonly ITransportPartsContainer container;
+        ITransportPartsContainer container;
 
         TopologySection topology;
 
@@ -20,7 +20,7 @@ namespace NServiceBus.AzureServiceBus
 
         CancellationTokenSource cancellationTokenSource;
 
-        bool running = false;
+        bool running;
         List<Action> pendingStartOperations = new List<Action>();
         ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
 
@@ -112,7 +112,6 @@ namespace NServiceBus.AzureServiceBus
                 {
                     notifier.RefCount++;
                 }
-                
             }
         }
 
@@ -133,7 +132,10 @@ namespace NServiceBus.AzureServiceBus
                 INotifyIncomingMessages notifier;
                 notifiers.TryGetValue(entity, out notifier);
 
-                if (notifier == null || !notifier.IsRunning) continue;
+                if (notifier == null || !notifier.IsRunning)
+                {
+                    continue;
+                }
 
                 if (notifier.RefCount > 0)
                 {

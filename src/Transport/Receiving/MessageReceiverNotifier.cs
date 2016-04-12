@@ -8,23 +8,23 @@ namespace NServiceBus.AzureServiceBus
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
-    using NServiceBus.Azure.Transports.WindowsAzureServiceBus;
+    using Azure.Transports.WindowsAzureServiceBus;
     using Settings;
 
     class MessageReceiverNotifier : INotifyIncomingMessages
     {
-        readonly IManageMessageReceiverLifeCycle clientEntities;
-        readonly IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
-        readonly ReadOnlySettings settings;
+        IManageMessageReceiverLifeCycle clientEntities;
+        IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
+        ReadOnlySettings settings;
         IMessageReceiver internalReceiver;
         ReceiveMode receiveMode;
         OnMessageOptions options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
-        private ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
-        private string fullPath;
+        ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
+        string fullPath;
         EntityInfo entity;
-        bool stopping = false;
+        bool stopping;
 
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
 
@@ -42,7 +42,7 @@ namespace NServiceBus.AzureServiceBus
         {
             receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
-            this.incomingCallback = callback;
+            incomingCallback = callback;
             this.errorCallback = errorCallback;
             this.entity = entity;
 

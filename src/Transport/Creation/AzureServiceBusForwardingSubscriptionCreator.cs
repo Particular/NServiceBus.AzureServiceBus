@@ -4,8 +4,8 @@
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Logging;
-    using NServiceBus.Settings;
+    using Logging;
+    using Settings;
 
     class AzureServiceBusForwardingSubscriptionCreator : ICreateAzureServiceBusSubscriptions
     {
@@ -30,7 +30,7 @@
                     LockDuration = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.LockDuration),
                     MaxDeliveryCount = setting.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.MaxDeliveryCount),
                     RequiresSession = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.RequiresSession),
-                    
+
                     ForwardDeadLetteredMessagesTo = setting.GetConditional<string>(subscriptionName, WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo)
                 };
             }
@@ -43,7 +43,7 @@
             {
                 throw new InvalidOperationException($"Cannot create subscription `{subscriptionName}` for topic `{topicPath}` without namespace inforation required.");
             }
-            
+
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
 
             subscriptionDescription.ForwardTo = forwardTo;
@@ -159,7 +159,7 @@
             return exists;
         }
 
-        private bool MembersAreNotEqual(SubscriptionDescription existingDescription, SubscriptionDescription newDescription)
+        bool MembersAreNotEqual(SubscriptionDescription existingDescription, SubscriptionDescription newDescription)
         {
             if (existingDescription.RequiresSession != newDescription.RequiresSession)
             {

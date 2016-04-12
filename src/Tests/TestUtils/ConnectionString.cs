@@ -2,7 +2,7 @@
 {
     using System;
 
-    internal static class AzureServiceBusConnectionString
+    static class AzureServiceBusConnectionString
     {
         public static string Value
         {

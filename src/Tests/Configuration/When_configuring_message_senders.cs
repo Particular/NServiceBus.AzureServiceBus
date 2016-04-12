@@ -4,9 +4,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
+    using AzureServiceBus;
     using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Settings;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -116,7 +116,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             Assert.AreEqual(myOversizedBrokeredMessageHandler, connectivitySettings.GetSettings().Get<IHandleOversizedBrokeredMessages>(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance));
         }
 
-        private class MyOversizedBrokeredMessageHandler : IHandleOversizedBrokeredMessages
+        class MyOversizedBrokeredMessageHandler : IHandleOversizedBrokeredMessages
         {
             public Task Handle(BrokeredMessage brokeredMessage)
             {
@@ -124,5 +124,5 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             }
         }
     }
-    
+
 }

@@ -7,17 +7,14 @@ namespace NServiceBus.AzureServiceBus
 
     class MessageReceiverAdapter : IMessageReceiver
     {
-        readonly MessageReceiver receiver;
+        MessageReceiver receiver;
 
         public MessageReceiverAdapter(MessageReceiver receiver)
         {
             this.receiver = receiver;
         }
 
-        public bool IsClosed
-        {
-            get { return receiver.IsClosed; }
-        }
+        public bool IsClosed => receiver.IsClosed;
 
         public RetryPolicy RetryPolicy
         {
@@ -31,10 +28,7 @@ namespace NServiceBus.AzureServiceBus
             set { receiver.PrefetchCount = value; }
         }
 
-        public ReceiveMode Mode
-        {
-            get { return receiver.Mode; }
-        }
+        public ReceiveMode Mode => receiver.Mode;
 
         public void OnMessage(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
         {

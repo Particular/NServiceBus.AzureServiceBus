@@ -2,9 +2,9 @@
 {
     using System;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using Configuration.AdvanceExtensibility;
+    using Settings;
 
     public class AzureServiceBusQueueSettings : ExposeSettings
     {

@@ -4,11 +4,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.DelayedDelivery;
-    using NServiceBus.DeliveryConstraints;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Topology.MetaModel;
+    using DelayedDelivery;
+    using DeliveryConstraints;
+    using Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 
@@ -301,15 +301,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             Assert.That(brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize], Is.GreaterThan(0)); 
         }
 
-        private class FakeMapper : ICanMapNamespaceNameToConnectionString
+        class FakeMapper : ICanMapNamespaceNameToConnectionString
         {
-            private readonly string input;
-            private readonly string output;
+            string input;
+            string output;
 
             public FakeMapper()
                 : this ("input", "output")
             {
-                
             }
 
             public FakeMapper(string input, string output)
@@ -321,7 +320,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             public EntityAddress Map(EntityAddress value)
             {
                 if (input != value)
+                {
                     throw new InvalidOperationException();
+                }
 
                 return output;
             }

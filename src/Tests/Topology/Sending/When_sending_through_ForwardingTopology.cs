@@ -1,10 +1,10 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 {
     using System.Linq;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Routing;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using Routing;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]

@@ -3,17 +3,17 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.TypesScanner;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.TypesScanner;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_configuring_publishers
     {
-        private SettingsHolder settings;
-        private TransportExtensions<AzureServiceBusTransport> extensions;
+        SettingsHolder settings;
+        TransportExtensions<AzureServiceBusTransport> extensions;
 
         [SetUp]
         public void SetUp()

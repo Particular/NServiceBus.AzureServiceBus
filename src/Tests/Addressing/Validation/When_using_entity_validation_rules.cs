@@ -1,8 +1,8 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Validation
 {
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]

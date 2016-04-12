@@ -7,7 +7,7 @@ namespace NServiceBus.AzureServiceBus
 
     class MessageSenderAdapter : IMessageSender
     {
-        readonly MessageSender sender;
+        MessageSender sender;
 
         public MessageSenderAdapter(MessageSender sender)
         {

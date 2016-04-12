@@ -4,15 +4,15 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using NServiceBus.Logging;
+    using Logging;
 
     public class NamespaceConfigurations : IEnumerable<NamespaceInfo>
     {
-        static readonly ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
+        static ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
 
-        internal static readonly string DefaultName = "default";
+        internal static string DefaultName = "default";
 
-        private readonly List<NamespaceInfo> inner;
+        List<NamespaceInfo> inner;
 
         public NamespaceConfigurations()
         {

@@ -1,7 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System.Text.RegularExpressions;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
+    using Topology.MetaModel;
 
     public class AdjustmentSanitizationV6 : ISanitizationStrategy
     {

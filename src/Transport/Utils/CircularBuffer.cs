@@ -7,19 +7,20 @@ namespace NServiceBus.AzureServiceBus
 
     class CircularBuffer<T> : ICollection<T>, ICollection where T: class
     {
-        private int capacity;
-        private int size;
-        private int head;
-        private int tail;
-        private T[] buffer;
-
-        private object syncRoot;
-        private object bufferLock = new object();
+        int capacity;
+        int size;
+        int head;
+        int tail;
+        T[] buffer;
+        object syncRoot;
+        object bufferLock = new object();
 
         public CircularBuffer(int capacity, bool allowOverflow = false)
         {
             if (capacity < 0)
+            {
                 throw new ArgumentException("Capacity can not be less than zero", "capacity");
+            }
 
             this.capacity = capacity;
             size = 0;
@@ -125,7 +126,9 @@ namespace NServiceBus.AzureServiceBus
         {
             head += count;
             if (head >= capacity)
+            {
                 head -= capacity;
+            }
         }
 
         public T[] Get(int count)
@@ -159,7 +162,9 @@ namespace NServiceBus.AzureServiceBus
         public T Get()
         {
             if (size == 0)
+            {
                 throw new InvalidOperationException("Buffer is empty");
+            }
 
             lock (bufferLock)
             {
@@ -219,15 +224,9 @@ namespace NServiceBus.AzureServiceBus
             return dst;
         }
 
-        int ICollection<T>.Count
-        {
-            get { return Size; }
-        }
+        int ICollection<T>.Count => Size;
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
         void ICollection<T>.Add(T item)
         {
@@ -237,7 +236,9 @@ namespace NServiceBus.AzureServiceBus
         bool ICollection<T>.Remove(T item)
         {
             if (size == 0)
+            {
                 return false;
+            }
 
             Get();
             return true;
@@ -248,22 +249,18 @@ namespace NServiceBus.AzureServiceBus
             return GetEnumerator();
         }
 
-        int ICollection.Count
-        {
-            get { return Size; }
-        }
+        int ICollection.Count => Size;
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot
         {
             get
             {
                 if (syncRoot == null)
+                {
                     Interlocked.CompareExchange(ref syncRoot, new object(), null);
+                }
                 return syncRoot;
             }
         }

@@ -2,11 +2,11 @@
 {
     using System;
     using System.Text.RegularExpressions;
-    using NServiceBus.Settings;
+    using Settings;
 
     public class EntityNameValidationV6Rules : IValidationStrategy
     {
-           ReadOnlySettings settings;
+        ReadOnlySettings settings;
 
         public EntityNameValidationV6Rules(ReadOnlySettings settings)
         {

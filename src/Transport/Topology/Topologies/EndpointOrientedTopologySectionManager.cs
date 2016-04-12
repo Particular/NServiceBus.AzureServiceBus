@@ -5,15 +5,14 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using Addressing;
-    using NServiceBus.Transports;
+    using Transports;
     using Settings;
 
     class EndpointOrientedTopologySectionManager : ITopologySectionManager
     {
         SettingsHolder settings;
         ITransportPartsContainer container;
-
-        readonly ConcurrentDictionary<Type, TopologySection> subscriptions = new ConcurrentDictionary<Type, TopologySection>();
+        ConcurrentDictionary<Type, TopologySection> subscriptions = new ConcurrentDictionary<Type, TopologySection>();
 
         public EndpointOrientedTopologySectionManager(SettingsHolder settings, ITransportPartsContainer container)
         {
@@ -46,12 +45,12 @@ namespace NServiceBus.AzureServiceBus
 
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
-            
+
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).ToArray();
 
             var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
-            
+
             var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", EntityType.Topic);
             var topics =
                 namespaces.Select(n => new EntityInfo {Path = topicPath, Type = EntityType.Topic, Namespace = n})
@@ -69,7 +68,7 @@ namespace NServiceBus.AzureServiceBus
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
-                    
+
                     // assumed errorq and auditq are in here
                     entities.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
                     {
@@ -98,7 +97,7 @@ namespace NServiceBus.AzureServiceBus
 
             var topicPath = sanitizationStrategy.Sanitize(endpointName + ".events", EntityType.Topic);
             var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
-            
+
             return new TopologySection
             {
                 Namespaces = namespaces,
@@ -211,7 +210,7 @@ namespace NServiceBus.AzureServiceBus
                     Namespaces = new List<RuntimeNamespaceInfo>()
                 };
             }
-           
+
             return result;
         }
     }

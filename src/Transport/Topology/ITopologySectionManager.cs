@@ -1,7 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
-  
+
     public interface ITopologySectionManager
     {
 
@@ -13,6 +13,5 @@
 
         TopologySection DetermineResourcesToSubscribeTo(Type eventType);
         TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype);
-        
     }
 }

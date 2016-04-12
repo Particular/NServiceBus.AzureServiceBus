@@ -2,11 +2,11 @@ namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System;
     using System.Text.RegularExpressions;
-    using NServiceBus.Settings;
+    using Settings;
 
     public class EntityNameValidationRules : IValidationStrategy
     {
-        readonly ReadOnlySettings settings;
+        ReadOnlySettings settings;
 
         public EntityNameValidationRules(ReadOnlySettings settings)
         {
@@ -38,7 +38,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 default:
                     throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
             }
-            
+
             return valid;
         }
     }

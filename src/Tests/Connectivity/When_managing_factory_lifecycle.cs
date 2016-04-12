@@ -3,9 +3,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -60,7 +60,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, 1); // pool size of 1 simplifies the test
-            
+
             var creator = new InterceptedFactoryCreator();
 
             var lifecycleManager = new MessagingFactoryLifeCycleManager(creator, settings);
@@ -89,12 +89,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedFactory : IMessagingFactory
         {
-            bool isClosed = false;
+            bool isClosed;
 
-            public bool IsClosed
-            {
-                get { return isClosed; }
-            }
+            public bool IsClosed => isClosed;
+
             public void Close()
             {
                 isClosed = true;

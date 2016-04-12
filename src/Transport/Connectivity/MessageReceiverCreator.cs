@@ -3,12 +3,12 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Settings;
+    using Settings;
 
     class MessageReceiverCreator : ICreateMessageReceivers
     {
-        readonly IManageMessagingFactoryLifeCycle factories;
-        readonly ReadOnlySettings settings;
+        IManageMessagingFactoryLifeCycle factories;
+        ReadOnlySettings settings;
 
         public MessageReceiverCreator(IManageMessagingFactoryLifeCycle factories, ReadOnlySettings settings)
         {
@@ -33,7 +33,6 @@ namespace NServiceBus.AzureServiceBus
                 receiver.RetryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy);
             }
             return receiver;
-
         }
     }
 }

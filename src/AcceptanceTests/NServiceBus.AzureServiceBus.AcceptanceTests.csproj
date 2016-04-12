@@ -276,6 +276,7 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-beta0001\Versioning\When_multiple_versions_of_a_message_is_published.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0-beta0001\Volatile\When_sending_to_non_durable_endpoint.cs" />
     <Compile Include="ConfigureEndpointAzureServiceBusTransport.cs" />
+    <Compile Include="ConfigureScenariosForAzureServiceBusTransport.cs" />
     <Compile Include="Infrastructure\TestIndependenceBehavior.cs" />
     <Compile Include="OldTests\When_sending_a_message_with_no_correlation_id.cs" />
     <Compile Include="OldTests\When_overriding_endpoint_name.cs" />

@@ -6,8 +6,8 @@
     using System.IO;
     using System.Reflection;
     using System.Threading.Tasks;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 
@@ -59,7 +59,7 @@
             Assert.That(stopwatch.ElapsedMilliseconds, Is.GreaterThanOrEqualTo(TimeSpan.FromSeconds(30).TotalMilliseconds));
         }
 
-        private class FakeTopology : ITopologySectionManager
+        class FakeTopology : ITopologySectionManager
         {
             public TopologySection DetermineReceiveResources(string inputQueue)
             {
@@ -92,7 +92,7 @@
             }
         }
 
-        private class FakeTopologyOperator : IOperateTopology
+        class FakeTopologyOperator : IOperateTopology
         {
             public Func<Exception, Task> onError;
             public Func<IncomingMessageDetails, ReceiveContext, Task> onIncomingMessage;
@@ -128,7 +128,7 @@
             }
         }
 
-        private class FakeEndpoint : IEndpointInstance
+        class FakeEndpoint : IEndpointInstance
         {
             public Task Stop()
             {
