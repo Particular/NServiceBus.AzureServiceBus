@@ -9,16 +9,16 @@
 
     class ConventionsAdapter : IConventions
     {
-        private readonly Conventions _inner;
+        private readonly Conventions inner;
 
         public ConventionsAdapter(Conventions conventions)
         {
-            _inner = conventions;
+            inner = conventions;
         }
 
         public bool IsMessageType(Type type)
         {
-            return _inner.IsMessageType(type);
+            return inner.IsMessageType(type);
         }
     }
 }

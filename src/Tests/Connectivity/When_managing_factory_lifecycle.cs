@@ -89,15 +89,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedFactory : IMessagingFactory
         {
-            bool _isClosed = false;
+            bool isClosed = false;
 
             public bool IsClosed
             {
-                get { return _isClosed; }
+                get { return isClosed; }
             }
             public void Close()
             {
-                _isClosed = true;
+                isClosed = true;
             }
 
             public RetryPolicy RetryPolicy

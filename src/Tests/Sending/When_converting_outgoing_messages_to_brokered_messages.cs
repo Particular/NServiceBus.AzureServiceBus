@@ -303,8 +303,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
         private class FakeMapper : ICanMapNamespaceNameToConnectionString
         {
-            private readonly string _input;
-            private readonly string _output;
+            private readonly string input;
+            private readonly string output;
 
             public FakeMapper()
                 : this ("input", "output")
@@ -314,16 +314,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             public FakeMapper(string input, string output)
             {
-                _input = input;
-                _output = output;
+                this.input = input;
+                this.output = output;
             }
 
             public EntityAddress Map(EntityAddress value)
             {
-                if (_input != value)
+                if (input != value)
                     throw new InvalidOperationException();
 
-                return _output;
+                return output;
             }
         }
     }

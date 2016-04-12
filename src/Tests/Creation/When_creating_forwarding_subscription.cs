@@ -104,7 +104,7 @@
                 LockDuration = TimeSpan.FromMinutes(3)
             };
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((_topicPath, subName, _settings) => subscriptionDescription);
+            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((x, y, z) => subscriptionDescription);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 

@@ -7,12 +7,12 @@
 
     public class AzureServiceBusIndividualizationSettings : ExposeSettings
     {
-        SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusIndividualizationSettings(SettingsHolder settings)
             : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         /// <summary>
@@ -22,7 +22,7 @@
         /// </summary>
         public AzureServiceBusIndividualizationSettings UseStrategy<T>() where T : IIndividualizationStrategy
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(T));
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(T));
 
             return this;
         }

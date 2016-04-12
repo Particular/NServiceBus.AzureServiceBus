@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBus
         Func<PushContext, Task> messagePump;
         private RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
-        string _inputQueue;
+        string inputQueue;
 
         public MessagePump(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
         {
@@ -33,7 +33,7 @@ namespace NServiceBus.AzureServiceBus
                 throw new InvalidOperationException("Azure Service Bus transport doesn't support PurgeOnStartup behaviour");
             }
 
-            _inputQueue = pushSettings.InputQueue;
+            inputQueue = pushSettings.InputQueue;
             
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
             {
@@ -65,7 +65,7 @@ namespace NServiceBus.AzureServiceBus
 
         public void Start(PushRuntimeSettings limitations)
         {
-            var definition = topologySectionManager.DetermineReceiveResources(_inputQueue);
+            var definition = topologySectionManager.DetermineReceiveResources(inputQueue);
             topologyOperator.Start(definition, limitations.MaxConcurrency);
         }
 

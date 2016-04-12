@@ -8,12 +8,12 @@ namespace NServiceBus
 
     public class AzureServiceBusMessageSenderSettings : ExposeSettings
     {
-        SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusMessageSenderSettings(SettingsHolder settings)
             : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusMessageSenderSettings RetryPolicy(RetryPolicy retryPolicy)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy, retryPolicy);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy, retryPolicy);
 
             return this;
         }
@@ -34,7 +34,7 @@ namespace NServiceBus
         public AzureServiceBusMessageSenderSettings BackOffTimeOnThrottle(TimeSpan backoffTime)
         {
             Guard.AgainstNegative(nameof(backoffTime), backoffTime);
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle, backoffTime);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle, backoffTime);
 
             return this;
         }
@@ -46,7 +46,7 @@ namespace NServiceBus
         public AzureServiceBusMessageSenderSettings RetryAttemptsOnThrottle(int count)
         {
             Guard.AgainstNegative(nameof(count), count);
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle, count);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle, count);
 
             return this;
         }
@@ -58,7 +58,7 @@ namespace NServiceBus
         public AzureServiceBusMessageSenderSettings MaximuMessageSizeInKilobytes(int sizeInKilobytes)
         {
             Guard.AgainstNegativeAndZero(nameof(sizeInKilobytes), sizeInKilobytes);
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes, sizeInKilobytes);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes, sizeInKilobytes);
 
             return this;
         }
@@ -70,7 +70,7 @@ namespace NServiceBus
         public AzureServiceBusMessageSenderSettings MessageSizePaddingPercentage(int percentage)
         {
             Guard.AgainstNegative(nameof(percentage), percentage);
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage, percentage);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage, percentage);
             return this;
         }
 
@@ -80,7 +80,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusMessageSenderSettings OversizedBrokeredMessageHandler<T>(T instance) where T : IHandleOversizedBrokeredMessages
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance, instance);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance, instance);
 
             return this;
         }

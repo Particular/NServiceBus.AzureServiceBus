@@ -8,12 +8,12 @@
 
     public class AzureServiceBusTopicSettings : ExposeSettings
     {
-        SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusTopicSettings(SettingsHolder settings)
             : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         /// <summary>
@@ -21,7 +21,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings DescriptionFactory(Func<string, ReadOnlySettings, TopicDescription> factory)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.DescriptionFactory, factory);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.DescriptionFactory, factory);
 
             return this;
         }
@@ -31,7 +31,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings SupportOrdering(bool supported)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.SupportOrdering, supported);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.SupportOrdering, supported);
 
             return this;
         }
@@ -41,7 +41,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings AutoDeleteOnIdle(TimeSpan autoDeleteOnIdle)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle, autoDeleteOnIdle);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle, autoDeleteOnIdle);
             return this;
         }
 
@@ -50,7 +50,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings DefaultMessageTimeToLive(TimeSpan timeToLive)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.DefaultMessageTimeToLive, timeToLive);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.DefaultMessageTimeToLive, timeToLive);
             return this;
         }
 
@@ -59,7 +59,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings DuplicateDetectionHistoryTimeWindow(TimeSpan duplicateDetectionHistoryTimeWindow)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow, duplicateDetectionHistoryTimeWindow);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow, duplicateDetectionHistoryTimeWindow);
             return this;
         }
 
@@ -68,7 +68,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings EnableBatchedOperations(bool enableBatchedOperations)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableBatchedOperations, enableBatchedOperations);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableBatchedOperations, enableBatchedOperations);
             return this;
         }
 
@@ -77,7 +77,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings EnableExpress(bool enableExpress)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress, enableExpress);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress, enableExpress);
             return this;
         }
 
@@ -86,8 +86,8 @@
         /// </summary>
         public AzureServiceBusTopicSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress, enableExpress);
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpressCondition, condition);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress, enableExpress);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpressCondition, condition);
             return this;
         }
 
@@ -96,7 +96,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings EnableFilteringMessagesBeforePublishing(bool enableFilteringMessagesBeforePublishing)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableFilteringMessagesBeforePublishing, enableFilteringMessagesBeforePublishing);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableFilteringMessagesBeforePublishing, enableFilteringMessagesBeforePublishing);
             return this;
         }
 
@@ -106,7 +106,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings EnablePartitioning(bool enablePartitioning)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnablePartitioning, enablePartitioning);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnablePartitioning, enablePartitioning);
             return this;
         }
 
@@ -115,7 +115,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings MaxSizeInMegabytes(SizeInMegabytes maxSizeInMegabytes)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.MaxSizeInMegabytes, (long)maxSizeInMegabytes);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.MaxSizeInMegabytes, (long)maxSizeInMegabytes);
             return this;
         }
 
@@ -124,7 +124,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings RequiresDuplicateDetection(bool requiresDuplicateDetection)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.RequiresDuplicateDetection, requiresDuplicateDetection);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.RequiresDuplicateDetection, requiresDuplicateDetection);
             return this;
         }
     }

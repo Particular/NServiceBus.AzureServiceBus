@@ -5,11 +5,11 @@ namespace NServiceBus.AzureServiceBus.TypesScanner
 
     class SingleTypeScanner : ITypesScanner, IEquatable<SingleTypeScanner>
     {
-        private readonly Type _target;
+        private readonly Type target;
 
         public SingleTypeScanner(Type target)
         {
-            _target = target;
+            this.target = target;
         }
 
         public override bool Equals(object obj)
@@ -20,18 +20,18 @@ namespace NServiceBus.AzureServiceBus.TypesScanner
 
         public override int GetHashCode()
         {
-            return _target.GetHashCode();
+            return target.GetHashCode();
         }
 
         public IEnumerable<Type> Scan()
         {
-            yield return _target;
+            yield return target;
         }
 
         public bool Equals(SingleTypeScanner other)
         {
             return other != null
-                   && _target == other._target;
+                   && target == other.target;
         }
     }
 }

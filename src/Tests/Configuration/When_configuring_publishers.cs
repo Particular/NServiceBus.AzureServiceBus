@@ -12,23 +12,23 @@
     [Category("AzureServiceBus")]
     public class When_configuring_publishers
     {
-        private SettingsHolder _settings;
-        private TransportExtensions<AzureServiceBusTransport> _extensions;
+        private SettingsHolder settings;
+        private TransportExtensions<AzureServiceBusTransport> extensions;
 
         [SetUp]
         public void SetUp()
         {
-            _settings = new SettingsHolder();
-            _extensions = new TransportExtensions<AzureServiceBusTransport>(_settings);
+            settings = new SettingsHolder();
+            extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
         }
 
         [Test]
         public void Should_be_able_to_add_a_publisher_for_a_specific_event()
         {
-            _extensions.UseTopology<EndpointOrientedTopology>()
+            extensions.UseTopology<EndpointOrientedTopology>()
                 .RegisterPublisherForType("publisherName", typeof(MyType));
 
-            var publishers = _settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
+            var publishers = settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
 
             Assert.True(publishers.ContainsKey("publisherName"));
             CollectionAssert.Contains(publishers["publisherName"], new SingleTypeScanner(typeof(MyType)));
@@ -37,10 +37,10 @@
         [Test]
         public void Should_be_able_to_add_a_publisher_for_the_events_contained_in_an_assembly()
         {
-            _extensions.UseTopology<EndpointOrientedTopology>()
+            extensions.UseTopology<EndpointOrientedTopology>()
                 .RegisterPublisherForAssembly("publisherName", Assembly.GetExecutingAssembly());
 
-            var publishers = _settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
+            var publishers = settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
 
             Assert.True(publishers.ContainsKey("publisherName"));
             CollectionAssert.Contains(publishers["publisherName"], new AssemblyTypesScanner(Assembly.GetExecutingAssembly()));
@@ -49,7 +49,7 @@
         [Test]
         public void Should_not_be_possible_configure_publishers_using_forwarding_topology()
         {
-            var topologySettings = _extensions.UseTopology<ForwardingTopology>();
+            var topologySettings = extensions.UseTopology<ForwardingTopology>();
 
             Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisherForType("publisherName", typeof(MyType)));
             Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisherForAssembly("publisherName", Assembly.GetExecutingAssembly()));

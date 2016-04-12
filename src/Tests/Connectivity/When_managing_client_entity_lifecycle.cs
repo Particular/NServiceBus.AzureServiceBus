@@ -91,11 +91,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedMessageReceiver : IMessageReceiver
         {
-            bool _isClosed = false;
+            bool isClosed = false;
 
             public bool IsClosed
             {
-                get { return _isClosed; }
+                get { return isClosed; }
             }
 
             public RetryPolicy RetryPolicy { get; set; }
@@ -115,7 +115,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
             public void Close()
             {
-                _isClosed = true;
+                isClosed = true;
             }
         }
     }

@@ -101,7 +101,7 @@
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
     <Compile Include="Creation\AzureServiceBusForwardingSubscriptionCreator.cs" />
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
-    <Compile Include="Properties\Resharper.Annotations.g.cs" />
+    <Compile Include="Resharper.Annotations.g.cs" />
     <Compile Include="Receiving\UnsupportedBrokeredMessageBodyTypeException.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
     <Compile Include="Sending\Batch.cs" />
@@ -230,7 +230,7 @@
     <Compile Include="Utils\CircularBuffer.cs" />
     <Compile Include="Creation\CreationExceptionHandling.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\MD5DeterministicNameBuilder.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Seam\SubscriptionManager.cs" />
     <Compile Include="Utils\BrokeredMessageExtensions.cs" />
     <Compile Include="Utils\TaskEx.cs" />

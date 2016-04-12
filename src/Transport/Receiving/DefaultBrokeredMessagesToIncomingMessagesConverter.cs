@@ -13,13 +13,13 @@ namespace NServiceBus.AzureServiceBus
     {
         ILog logger = LogManager.GetLogger<DefaultBrokeredMessagesToIncomingMessagesConverter>();
 
-        private readonly ReadOnlySettings _settings;
-        private readonly ICanMapConnectionStringToNamespaceName _mapper;
+        private readonly ReadOnlySettings settings;
+        private readonly ICanMapConnectionStringToNamespaceName mapper;
 
         public DefaultBrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings, ICanMapConnectionStringToNamespaceName mapper)
         {
-            this._settings = settings;
-            this._mapper = mapper;
+            this.settings = settings;
+            this.mapper = mapper;
         }
 
         public IncomingMessageDetails Convert(BrokeredMessage brokeredMessage)
@@ -67,7 +67,7 @@ namespace NServiceBus.AzureServiceBus
                 
             if (!string.IsNullOrWhiteSpace(replyToHeaderValue))
             {
-                headers[Headers.ReplyToAddress] = _mapper.Map(replyToHeaderValue);
+                headers[Headers.ReplyToAddress] = mapper.Map(replyToHeaderValue);
             }
 
             if (!string.IsNullOrWhiteSpace(brokeredMessage.CorrelationId) && !headers.ContainsKey(Headers.CorrelationId))
@@ -85,7 +85,7 @@ namespace NServiceBus.AzureServiceBus
 
         private string GetDefaultTransportEncoding()
         {
-            var configuredDefault = _settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
+            var configuredDefault = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
             return configuredDefault == SupportedBrokeredMessageBodyTypes.ByteArray ? "wcf/byte-array" : "application/octect-stream";
         }
     }

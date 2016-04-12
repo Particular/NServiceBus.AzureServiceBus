@@ -9,12 +9,12 @@
 
     public class AzureServiceBusMessageReceiverSettings : ExposeSettings
     {
-        SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusMessageReceiverSettings(SettingsHolder settings)
             : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         /// <summary>
@@ -23,7 +23,7 @@
         /// </summary>
         public AzureServiceBusMessageReceiverSettings ReceiveMode(ReceiveMode receiveMode)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, receiveMode);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, receiveMode);
 
             return this;
         }
@@ -33,7 +33,7 @@
         /// </summary>
         public AzureServiceBusMessageReceiverSettings PrefetchCount(int prefetchCount)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount, prefetchCount);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount, prefetchCount);
 
             return this;
         }
@@ -44,7 +44,7 @@
         /// </summary>
         public AzureServiceBusMessageReceiverSettings RetryPolicy(RetryPolicy retryPolicy)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy, retryPolicy);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy, retryPolicy);
 
             return this;
         }
@@ -55,7 +55,7 @@
         /// </summary>
         public AzureServiceBusMessageReceiverSettings AutoRenewTimeout(TimeSpan autoRenewTimeout)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout, autoRenewTimeout);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout, autoRenewTimeout);
 
             return this;
         }

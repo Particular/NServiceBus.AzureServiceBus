@@ -17,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         private static readonly string Name = "namespace1";
         private static readonly string OtherName = "namespace2";
 
-        private SingleNamespacePartitioning _strategy;
+        private SingleNamespacePartitioning strategy;
 
         [SetUp]
         public void SetUp()
@@ -26,13 +26,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             var extensions = new AzureServiceBusTopologySettings(settings);
             extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
 
-            _strategy = new SingleNamespacePartitioning(settings);
+            strategy = new SingleNamespacePartitioning(settings);
         }
 
         [Test]
         public void Single_partitioning_strategy_will_return_a_single_connectionstring_for_the_purpose_of_creating()
         {
-            var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
+            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
 
             Assert.AreEqual(1, namespaces.Count());
         }
@@ -40,7 +40,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Single_partitioning_strategy_will_return_a_single_connectionstring_for_the_purpose_of_receiving()
         {
-            var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Receiving);
+            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Receiving);
 
             Assert.AreEqual(1, namespaces.Count());
         }
@@ -48,7 +48,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Single_partitioning_strategy_will_return_a_single_connectionstring_for_the_purpose_of_sending()
         {
-            var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending);
+            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending);
 
             Assert.AreEqual(1, namespaces.Count());
         }
@@ -56,7 +56,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Single_partitioning_strategy_will_return_configured_namespace_for_any_endpoint_name()
         {
-            var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
+            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
 
             Assert.AreEqual(new RuntimeNamespaceInfo(Name, ConnectionString, NamespaceMode.Active), namespaces.First());
         }

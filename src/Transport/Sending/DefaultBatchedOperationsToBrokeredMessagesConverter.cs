@@ -12,13 +12,13 @@ namespace NServiceBus.AzureServiceBus
 
     class DefaultBatchedOperationsToBrokeredMessagesConverter : IConvertOutgoingMessagesToBrokeredMessages
     {
-        private readonly ReadOnlySettings _settings;
-        private readonly ICanMapNamespaceNameToConnectionString _mapper;
+        private readonly ReadOnlySettings settings;
+        private readonly ICanMapNamespaceNameToConnectionString mapper;
 
         public DefaultBatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings, ICanMapNamespaceNameToConnectionString mapper)
         {
-            _settings = settings;
-            _mapper = mapper;
+            this.settings = settings;
+            this.mapper = mapper;
         }
 
         public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperation> outgoingMessages, RoutingOptions routingOptions)
@@ -66,7 +66,7 @@ namespace NServiceBus.AzureServiceBus
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
-                brokeredMessage.ReplyTo = _mapper.Map(outgoingMessage.Headers[Headers.ReplyToAddress]);
+                brokeredMessage.ReplyTo = mapper.Map(outgoingMessage.Headers[Headers.ReplyToAddress]);
             }
         }
 
@@ -132,7 +132,7 @@ namespace NServiceBus.AzureServiceBus
         private BrokeredMessage CreateBrokeredMessage(OutgoingMessage outgoingMessage)
         {
             BrokeredMessage brokeredMessage;
-            var bodyType = _settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
+            var bodyType = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
             switch (bodyType)
             {
                 case SupportedBrokeredMessageBodyTypes.ByteArray:

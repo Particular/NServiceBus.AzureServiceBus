@@ -5,16 +5,16 @@ namespace NServiceBus.AzureServiceBus
 
     class NamespaceManagerCreator : ICreateNamespaceManagers
     {
-        private readonly ReadOnlySettings _settings;
+        private readonly ReadOnlySettings settings;
 
         public NamespaceManagerCreator(ReadOnlySettings settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         public INamespaceManager Create(string namespaceName)
         {
-            var namespacesDefinition = _settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             var connectionString = namespacesDefinition.GetConnectionString(namespaceName);
 
             return new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(connectionString));

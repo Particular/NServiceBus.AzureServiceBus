@@ -8,22 +8,22 @@ namespace NServiceBus.AzureServiceBus
 
     public class NamespaceManagerAdapter : INamespaceManager
     {
-        readonly NamespaceManager _manager;
+        readonly NamespaceManager manager;
 
         public NamespaceManagerAdapter(NamespaceManager manager)
         {
-            _manager = manager;
+            this.manager = manager;
         }
 
-        public NamespaceManagerSettings Settings => _manager.Settings;
+        public NamespaceManagerSettings Settings => manager.Settings;
 
-        public Uri Address => _manager.Address;
+        public Uri Address => manager.Address;
 
         public async Task<bool> CanManageEntities()
         {
             try
             {
-                await _manager.GetQueuesAsync().ConfigureAwait(false);
+                await manager.GetQueuesAsync().ConfigureAwait(false);
 
                 return true;
             }
@@ -35,87 +35,87 @@ namespace NServiceBus.AzureServiceBus
 
         public Task CreateQueue(QueueDescription description)
         {
-            return _manager.CreateQueueAsync(description);
+            return manager.CreateQueueAsync(description);
         }
 
         public Task UpdateQueue(QueueDescription description)
         {
-            return _manager.UpdateQueueAsync(description);
+            return manager.UpdateQueueAsync(description);
         }
 
         public Task<QueueDescription> GetQueue(string path)
         {
-            return _manager.GetQueueAsync(path);
+            return manager.GetQueueAsync(path);
         }
 
         public Task<bool> QueueExists(string path)
         {
-            return _manager.QueueExistsAsync(path);
+            return manager.QueueExistsAsync(path);
         }
 
         public async Task<TopicDescription> CreateTopic(TopicDescription topicDescription)
         {
-            return await _manager.CreateTopicAsync(topicDescription).ConfigureAwait(false);
+            return await manager.CreateTopicAsync(topicDescription).ConfigureAwait(false);
         }
 
         public async Task DeleteQueue(string path)
         {
-            await _manager.DeleteQueueAsync(path).ConfigureAwait(false);
+            await manager.DeleteQueueAsync(path).ConfigureAwait(false);
         }
 
         public Task DeleteTopic(string path)
         {
-            return _manager.DeleteTopicAsync(path);
+            return manager.DeleteTopicAsync(path);
         }
 
         public Task<bool> SubscriptionExists(string topicPath, string subscriptionName)
         {
-            return _manager.SubscriptionExistsAsync(topicPath, subscriptionName);
+            return manager.SubscriptionExistsAsync(topicPath, subscriptionName);
         }
 
         public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, string sqlFilter)
         {
-            return _manager.CreateSubscriptionAsync(subscriptionDescription, new SqlFilter(sqlFilter));
+            return manager.CreateSubscriptionAsync(subscriptionDescription, new SqlFilter(sqlFilter));
         }
 
         public Task<SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName)
         {
-            return _manager.GetSubscriptionAsync(topicPath, subscriptionName);
+            return manager.GetSubscriptionAsync(topicPath, subscriptionName);
         }
 
         public Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription)
         {
-            return _manager.UpdateSubscriptionAsync(subscriptionDescription);
+            return manager.UpdateSubscriptionAsync(subscriptionDescription);
         }
 
         public Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription)
         {
-            return _manager.GetRulesAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
+            return manager.GetRulesAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
         }
 
         public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription)
         {
-            return _manager.CreateSubscriptionAsync(subscriptionDescription, ruleDescription);
+            return manager.CreateSubscriptionAsync(subscriptionDescription, ruleDescription);
         }
 
         public Task<TopicDescription> UpdateTopic(TopicDescription topicDescription)
         {
-            return _manager.UpdateTopicAsync(topicDescription);
+            return manager.UpdateTopicAsync(topicDescription);
         }
 
         public Task<bool> TopicExists(string path)
         {
-            return _manager.TopicExistsAsync(path);
+            return manager.TopicExistsAsync(path);
         }
 
         public Task<TopicDescription> GetTopic(string path)
         {
-            return _manager.GetTopicAsync(path);
+            return manager.GetTopicAsync(path);
         }
 
         public Task DeleteSubscriptionAsync(string topicPath, string subscriptionName)
         {
-            return _manager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            return manager.DeleteSubscriptionAsync(topicPath, subscriptionName);
         }
     }
 }

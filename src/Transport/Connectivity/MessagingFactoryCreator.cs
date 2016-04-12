@@ -7,24 +7,24 @@ namespace NServiceBus.AzureServiceBus
 
     class MessagingFactoryCreator : ICreateMessagingFactories
     {
-        readonly IManageNamespaceManagerLifeCycle _namespaceManagers;
-        Func<string, MessagingFactorySettings> _settingsFactory;
-        readonly ReadOnlySettings _settings;
+        readonly IManageNamespaceManagerLifeCycle namespaceManagers;
+        Func<string, MessagingFactorySettings> settingsFactory;
+        readonly ReadOnlySettings settings;
 
         public MessagingFactoryCreator(IManageNamespaceManagerLifeCycle namespaceManagers, ReadOnlySettings settings)
         {
-            this._namespaceManagers = namespaceManagers;
-            this._settings = settings;
+            this.namespaceManagers = namespaceManagers;
+            this.settings = settings;
 
             if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.MessagingFactorySettingsFactory))
             {
-                _settingsFactory = settings.Get<Func<string, MessagingFactorySettings>>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.MessagingFactorySettingsFactory);
+                settingsFactory = settings.Get<Func<string, MessagingFactorySettings>>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.MessagingFactorySettingsFactory);
             }
             else
             {
-                _settingsFactory = namespaceName =>
+                settingsFactory = namespaceName =>
                 {
-                    var namespaceManager = _namespaceManagers.Get(namespaceName);
+                    var namespaceManager = this.namespaceManagers.Get(namespaceName);
 
                     var s = new MessagingFactorySettings
                     {
@@ -42,12 +42,12 @@ namespace NServiceBus.AzureServiceBus
 
         public IMessagingFactory Create(string namespaceName)
         {
-            var namespaceManager = _namespaceManagers.Get(namespaceName);
-            var factorySettings = _settingsFactory(namespaceName);
+            var namespaceManager = namespaceManagers.Get(namespaceName);
+            var factorySettings = settingsFactory(namespaceName);
             var inner = MessagingFactory.Create(namespaceManager.Address, factorySettings);
-            if (_settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy))
+            if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy))
             {
-                inner.RetryPolicy = _settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy);
+                inner.RetryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy);
             }
             return new MessagingFactoryAdapter(inner);
         }

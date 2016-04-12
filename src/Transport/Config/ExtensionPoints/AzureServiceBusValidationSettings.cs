@@ -7,11 +7,11 @@
 
     public class AzureServiceBusValidationSettings : ExposeSettings
     {
-        SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusValidationSettings(SettingsHolder settings) : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         /// <summary>
@@ -20,7 +20,7 @@
         /// </summary>
         public AzureServiceBusValidationSettings UseStrategy<T>() where T : IValidationStrategy
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(T));
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(T));
 
             return this;
         }
@@ -30,7 +30,7 @@
         /// </summary>
         public AzureServiceBusValidationSettings UseQueuePathMaximumLength(int queuePathMaximumLength)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength, queuePathMaximumLength);
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength, queuePathMaximumLength);
 
             return this;
         }
@@ -40,7 +40,7 @@
         /// </summary>
         public AzureServiceBusValidationSettings UseTopicPathMaximumLength(int topicPathMaximumLength)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength, topicPathMaximumLength);
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength, topicPathMaximumLength);
 
             return this;
         }
@@ -50,7 +50,7 @@
         /// </summary>
         public AzureServiceBusValidationSettings UseSubscriptionPathMaximumLength(int subscriptionPathMaximumLength)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength, subscriptionPathMaximumLength);
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength, subscriptionPathMaximumLength);
 
             return this;
         }

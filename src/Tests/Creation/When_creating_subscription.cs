@@ -92,7 +92,7 @@
                 LockDuration = TimeSpan.FromMinutes(3)
             };
 
-            extensions.Subscriptions().DescriptionFactory((_topicPath, subName, _settings) => subscriptionDescription);
+            extensions.Subscriptions().DescriptionFactory((x, y, z) => subscriptionDescription);
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 

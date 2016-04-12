@@ -10,18 +10,18 @@
     class AzureServiceBusQueueCreator : ICreateAzureServiceBusQueues
     {
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
-        ReadOnlySettings _settings;
-        Func<string, ReadOnlySettings, QueueDescription> _descriptionFactory;
+        ReadOnlySettings settings;
+        Func<string, ReadOnlySettings, QueueDescription> descriptionFactory;
 
         ILog logger = LogManager.GetLogger(typeof(AzureServiceBusQueueCreator));
 
         public AzureServiceBusQueueCreator(ReadOnlySettings settings)
         {
-            _settings = settings;
+            this.settings = settings;
 
-            if(!_settings.TryGet(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, out _descriptionFactory))
+            if(!this.settings.TryGet(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, out descriptionFactory))
             {
-                _descriptionFactory = (queuePath, setting) => new QueueDescription(queuePath)
+                descriptionFactory = (queuePath, setting) => new QueueDescription(queuePath)
                 {
                     LockDuration = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration),
                     MaxSizeInMegabytes = setting.GetOrDefault<long>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxSizeInMegabytes),
@@ -44,11 +44,11 @@
 
         public async Task<QueueDescription> Create(string queuePath, INamespaceManager namespaceManager)
         {
-            var description = _descriptionFactory(queuePath, _settings);
+            var description = descriptionFactory(queuePath, settings);
 
             try
             {
-                if (_settings.GetOrDefault<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
+                if (settings.GetOrDefault<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
                 {
                     if (!await ExistsAsync(namespaceManager, description.Path).ConfigureAwait(false))
                     {

@@ -9,12 +9,12 @@
 
     public class AzureServiceBusTopologySettings : TransportExtensions<AzureServiceBusTransport>
     {
-        private readonly SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusTopologySettings(SettingsHolder settings)
             : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         public AzureServiceBusTopologySettings RegisterPublisherForType(string publisherName, Type type)
@@ -37,10 +37,10 @@
         {
             Dictionary<string, List<ITypesScanner>> map;
 
-            if (!_settings.TryGet(WellKnownConfigurationKeys.Topology.Publishers, out map))
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Publishers, out map))
             {
                 map = new Dictionary<string, List<ITypesScanner>>();
-                _settings.Set(WellKnownConfigurationKeys.Topology.Publishers, map);
+                settings.Set(WellKnownConfigurationKeys.Topology.Publishers, map);
             }
 
             if (!map.ContainsKey(publisherName))
@@ -51,7 +51,7 @@
 
         private void EnsureThatConfiguredTopologyNeedsMappingConfigurationBetweenPublishersAndEventTypes()
         {
-            var topology = _settings.Get<ITopology>();
+            var topology = settings.Get<ITopology>();
 
             if (!topology.NeedsMappingConfigurationBetweenPublishersAndEventTypes)
                 throw new InvalidOperationException($"Configured topology (`{topology.GetType().FullName}`) doesn't need mapping configuration between publisher names and event types");

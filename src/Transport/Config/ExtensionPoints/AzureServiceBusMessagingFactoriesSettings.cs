@@ -9,12 +9,12 @@
 
     public class AzureServiceBusMessagingFactoriesSettings : ExposeSettings
     {
-        SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusMessagingFactoriesSettings(SettingsHolder settings)
             : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         /// <summary>
@@ -22,7 +22,7 @@
         /// </summary>
         public AzureServiceBusMessagingFactoriesSettings MessagingFactorySettingsFactory(Func<string, MessagingFactorySettings> factory)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.MessagingFactorySettingsFactory, factory);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.MessagingFactorySettingsFactory, factory);
 
             return this;
         }
@@ -33,7 +33,7 @@
         /// </summary>
         public AzureServiceBusMessagingFactoriesSettings NumberOfMessagingFactoriesPerNamespace(int number)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, number);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, number);
 
             return this;
         }
@@ -44,7 +44,7 @@
         /// </summary>
         public AzureServiceBusMessagingFactoriesSettings RetryPolicy(RetryPolicy retryPolicy)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy, retryPolicy);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy, retryPolicy);
 
             return this;
         }
@@ -55,7 +55,7 @@
         /// </summary>
         public AzureServiceBusMessagingFactoriesSettings BatchFlushInterval(TimeSpan batchFlushInterval)
         {
-            _settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval, batchFlushInterval);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval, batchFlushInterval);
 
             return this;
         }

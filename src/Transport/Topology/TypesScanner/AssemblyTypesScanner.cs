@@ -6,14 +6,14 @@
 
     class AssemblyTypesScanner : ITypesScanner, IEquatable<AssemblyTypesScanner>
     {
-        private readonly Assembly _assembly;
+        private readonly Assembly assembly;
 
         public AssemblyTypesScanner(Assembly assembly)
         {
              if (assembly == null)
                 throw new ArgumentNullException(nameof(assembly), "It's not possible to initialize an AssemblyTypesScanner without specifing an assembly");
 
-            _assembly = assembly;
+            this.assembly = assembly;
         }
 
         public override bool Equals(object obj)
@@ -24,18 +24,18 @@
 
         public override int GetHashCode()
         {
-            return _assembly.GetHashCode();
+            return assembly.GetHashCode();
         }
 
         public IEnumerable<Type> Scan()
         {
-            return _assembly.GetTypes();
+            return assembly.GetTypes();
         }
 
         public bool Equals(AssemblyTypesScanner other)
         {
             return other != null
-                   && _assembly.Equals(other._assembly);
+                   && assembly.Equals(other.assembly);
         }
     }
 }

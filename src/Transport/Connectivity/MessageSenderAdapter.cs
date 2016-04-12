@@ -4,40 +4,37 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    
+
     class MessageSenderAdapter : IMessageSender
     {
-        readonly MessageSender _sender;
+        readonly MessageSender sender;
 
         public MessageSenderAdapter(MessageSender sender)
         {
-            _sender = sender;
+            this.sender = sender;
         }
 
-        public bool IsClosed
-        {
-            get { return _sender.IsClosed; }
-        }
+        public bool IsClosed => sender.IsClosed;
 
         public RetryPolicy RetryPolicy
         {
-            get { return _sender.RetryPolicy; }
-            set { _sender.RetryPolicy = value; }
+            get { return sender.RetryPolicy; }
+            set { sender.RetryPolicy = value; }
         }
 
         public Task Send(BrokeredMessage message)
         {
-          return _sender.SendAsync(message);
+          return sender.SendAsync(message);
         }
 
         public Task SendBatch(IEnumerable<BrokeredMessage> messages)
         {
-            return _sender.SendBatchAsync(messages);
+            return sender.SendBatchAsync(messages);
         }
 
         public Task CloseAsync()
         {
-            return _sender.CloseAsync();
+            return sender.CloseAsync();
         }
     }
 }

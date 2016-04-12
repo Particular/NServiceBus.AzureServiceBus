@@ -4,18 +4,21 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
     public class HierarchyComposition : ICompositionStrategy
     {
-        Func<string, string> _pathGenerator;
+        Func<string, string> pathGenerator;
 
         public void SetPathGenerator(Func<string, string> pathGenerator)
         {
-            _pathGenerator = pathGenerator;
+            this.pathGenerator = pathGenerator;
         }
 
         public string GetEntityPath(string entityname, EntityType entityType)
         {
-            if(entityType == EntityType.Subscription) return entityname;
-            
-            return _pathGenerator(entityname) + entityname;
+            if (entityType == EntityType.Subscription)
+            {
+                return entityname;
+            }
+
+            return pathGenerator(entityname) + entityname;
         }
     }
 }

@@ -4,16 +4,16 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
     public class DiscriminatorBasedIndividualization : IIndividualizationStrategy
     {
-        Func<string> _discriminatorGenerator;
+        Func<string> discriminatorGenerator;
 
         public void SetDiscriminatorGenerator(Func<string> discriminatorGenerator)
         {
-            _discriminatorGenerator = discriminatorGenerator;
+            this.discriminatorGenerator = discriminatorGenerator;
         }
 
         public string Individualize(string endpointname)
         {
-            var discriminator = _discriminatorGenerator();
+            var discriminator = discriminatorGenerator();
 
             if (endpointname.EndsWith(discriminator))
                 return endpointname;

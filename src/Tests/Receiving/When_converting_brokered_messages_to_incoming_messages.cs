@@ -239,21 +239,21 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
         private class FakeMapper : ICanMapConnectionStringToNamespaceName
         {
-            private readonly string _input;
-            private readonly string _output;
+            private readonly string input;
+            private readonly string output;
 
             public FakeMapper(string input, string output)
             {
-                _input = input;
-                _output = output;
+                this.input = input;
+                this.output = output;
             }
 
             public EntityAddress Map(EntityAddress value)
             {
-                if (_input != value)
+                if (input != value)
                     throw new InvalidOperationException();
 
-                return _output;
+                return output;
             }
         }
     }
