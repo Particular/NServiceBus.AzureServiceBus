@@ -54,11 +54,11 @@ namespace NServiceBus.AzureServiceBus
 
                 if (!string.IsNullOrEmpty(routingOptions.ViaEntityPath))
                 {
-                    Logger.InfoFormat("Routing {0} messages to {1} via {2}", outgoingBatches.Count, entity.Path, routingOptions.ViaEntityPath);
+                    Logger.DebugFormat("Routing {0} messages to {1} via {2}", outgoingBatches.Count, entity.Path, routingOptions.ViaEntityPath);
                 }
                 else
                 {
-                    Logger.InfoFormat("Routing {0} messages to {1}", outgoingBatches.Count, entity.Path);
+                    Logger.DebugFormat("Routing {0} messages to {1}", outgoingBatches.Count, entity.Path);
                 }
 
                 // don't use via on fallback, not supported across namespaces
