@@ -5,7 +5,7 @@
     using System.Transactions;
     using EndpointTemplates;
     using AcceptanceTesting;
-    using NServiceBus.AzureServiceBus;
+    using AzureServiceBus;
     using NUnit.Framework;
 
     public class When_sending_an_oversized_message_from_a_transaction_scope : NServiceBusAcceptanceTest
