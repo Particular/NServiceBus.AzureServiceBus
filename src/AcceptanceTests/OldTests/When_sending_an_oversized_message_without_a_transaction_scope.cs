@@ -1,70 +1,56 @@
-﻿//namespace NServiceBus.AcceptanceTests.WindowsAzureServiceBus
-//{
-//    using System;
-//    using Azure.Transports.WindowsAzureServiceBus;
-//    using EndpointTemplates;
-//    using AcceptanceTesting;
-//    using NServiceBus.Config;
-//    using NServiceBus.Config.ConfigurationSource;
-//    using NUnit.Framework;
+﻿namespace NServiceBus.AcceptanceTests.WindowsAzureServiceBus
+{
+    using System;
+    using System.Threading.Tasks;
+    using EndpointTemplates;
+    using AcceptanceTesting;
+    using AzureServiceBus;
+    using NUnit.Framework;
 
-//    public class When_sending_an_oversized_message_without_a_transaction_scope : NServiceBusAcceptanceTest
-//    {  
-//        [Test]
-//        public void Should_throw_message_too_large_exception()
-//        {
-//            var context = new Context();
+    public class When_sending_an_oversized_message_without_a_transaction_scope : NServiceBusAcceptanceTest
+    {  
+        [Test]
+        public async Task Should_throw_message_too_large_exception()
+        {
+            try
+            {
+                await Scenario.Define<Context>()
+                   .WithEndpoint<MyEndpoint>(b => b.When(async bus => await bus.SendLocal(new OversizedRequest())))
+                   .Run();
+            }
+            catch (AggregateException ex)
+            {
+                var interesting = ex.InnerException.InnerException;
+                if (!(interesting is MessageTooLargeException))
+                {
+                    throw;
+                }
+            }
+        }
 
-//            try
-//            {
-//                Scenario.Define(context)
-//                   .WithEndpoint<MyEndpoint>(b => b.When(bus => bus.SendLocal(new OversizedRequest())))
-//                   .Run();
-//            }
-//            catch (AggregateException ex)
-//            {
-//                var interesting = ex.InnerException.InnerException.InnerException;
-//                if (!(interesting is MessageTooLargeException))
-//                {
-//                    throw;
-//                }
-//            }
-//        }
+        private class Context : ScenarioContext
+        {
+            public string MessageIdReceived { get; set; }
+            public bool GotRequest { get; set; }
+        }
 
-//        public class Context : ScenarioContext
-//        {
-//            public string MessageIdReceived { get; set; }
-//            public bool GotRequest { get; set; }
-//        }
+        private class MyEndpoint : EndpointConfigurationBuilder
+        {
+            public MyEndpoint()
+            {
+                EndpointSetup<DefaultServer>(config => config.UseTransport<AzureServiceBusTransport>().Queues().MaxDeliveryCount(1));
+            }
+        }
 
-//        public class MyEndpoint : EndpointConfigurationBuilder
-//        {
-//            public MyEndpoint()
-//            {
-//                EndpointSetup<DefaultServer>();
-//            }
+        [Serializable]
+        private class OversizedRequest : IMessage
+        {
+            public OversizedRequest()
+            {
+                OversizedProperty = new string('*', 265000);
+            }
 
-//            public class ConfigMaxDeliveryCount : IProvideConfiguration<AzureServiceBusQueueConfig>
-//            {
-//                public AzureServiceBusQueueConfig GetConfiguration()
-//                {
-//                    return new AzureServiceBusQueueConfig
-//                    {
-//                        MaxDeliveryCount = 1
-//                    };
-//                }
-//            }
-//        }
-
-//        [Serializable]
-//        public class OversizedRequest : IMessage
-//        {
-//            public OversizedRequest()
-//            {
-//                OversizedProperty = new string('*', 265000);
-//            }
-
-//            public string OversizedProperty { get; set; }
-//        }
-//    }
-//}
+            public string OversizedProperty { get; set; }
+        }
+    }
+}

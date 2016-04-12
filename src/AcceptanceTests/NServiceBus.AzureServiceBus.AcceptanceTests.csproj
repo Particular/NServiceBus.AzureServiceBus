@@ -281,7 +281,6 @@
     <Compile Include="ConfigureScenariosForAzureServiceBusTransport.cs" />
     <Compile Include="Infrastructure\TestIndependenceBehavior.cs" />
     <Compile Include="OldTests\When_sending_a_message_with_no_correlation_id.cs" />
-    <Compile Include="OldTests\When_overriding_endpoint_name.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_without_a_transaction_scope.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_from_a_transaction_scope.cs" />
     <Compile Include="Routing\When_scaling_out_senders_that_uses_callbacks.cs" />
