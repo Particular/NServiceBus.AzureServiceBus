@@ -1,64 +1,62 @@
-﻿//namespace NServiceBus.AcceptanceTests.WindowsAzureServiceBus
-//{
-//    using System;
-//    using System.Transactions;
-//    using AcceptanceTesting;
-//    using EndpointTemplates;
-//    using NServiceBus.Config;
-//    using NServiceBus.Config.ConfigurationSource;
-//    using NUnit.Framework;
+﻿namespace NServiceBus.AcceptanceTests.WindowsAzureServiceBus
+{
+    using System;
+    using System.Threading.Tasks;
+    using System.Transactions;
+    using EndpointTemplates;
+    using AcceptanceTesting;
+    using NServiceBus.AzureServiceBus;
+    using NUnit.Framework;
 
-//    public class When_sending_an_oversized_message_from_a_transaction_scope : NServiceBusAcceptanceTest
-//    {
-//        [Test, Ignore("Temporarily disabled until we can check for individual exceptions without failing the tests")]
-//        public void Should_log_message_too_large_exception()
-//        {
-//            var context = new Context();
+    public class When_sending_an_oversized_message_from_a_transaction_scope : NServiceBusAcceptanceTest
+    {
+        [Test]
+        public async Task Should_throw_message_too_large_exception()
+        {
+            try
+            {
+                await Scenario.Define<Context>()
+                   .WithEndpoint<MyEndpoint>(b => b.When(async bus =>
+                   {
+                       using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew))
+                       {
+                           await bus.SendLocal(new OversizedRequest());
+                           scope.Complete();
+                       }
+                   }))
+                   .Run();
+            }
+            catch (AggregateException ex)
+            {
+                var interesting = ex.InnerException.InnerException;
+                if (!(interesting is MessageTooLargeException))
+                {
+                    throw;
+                }
+            }
+        }
 
-//            Scenario.Define(context)
-//                .WithEndpoint<MyEndpoint>(b => b.When(bus =>
-//                {
-//                    using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew))
-//                    {
-//                        bus.SendLocal(new OversizedRequest());
-//                        scope.Complete();
-//                    }
-//                }))
-//                .Run();
+        private class Context : ScenarioContext
+        {
+        }
 
-//            Assert.IsTrue(context.Exceptions.StartsWith("NServiceBus.Azure.Transports.WindowsAzureServiceBus.MessageTooLargeException"));
-//        }
+        private class MyEndpoint : EndpointConfigurationBuilder
+        {
+            public MyEndpoint()
+            {
+                EndpointSetup<DefaultServer>(config => config.UseTransport<AzureServiceBusTransport>().Queues().MaxDeliveryCount(1));
+            }
+        }
 
-//        class Context : ScenarioContext{}
+        [Serializable]
+        private class OversizedRequest : IMessage
+        {
+            public OversizedRequest()
+            {
+                OversizedProperty = new string('*', 265000);
+            }
 
-//        class MyEndpoint : EndpointConfigurationBuilder
-//        {
-//            public MyEndpoint()
-//            {
-//                EndpointSetup<DefaultServer>();
-//            }
-
-//            public class ConfigMaxDeliveryCount : IProvideConfiguration<AzureServiceBusQueueConfig>
-//            {
-//                public AzureServiceBusQueueConfig GetConfiguration()
-//                {
-//                    return new AzureServiceBusQueueConfig
-//                    {
-//                        MaxDeliveryCount = 1
-//                    };
-//                }
-//            }
-//        }
-
-//        [Serializable]
-//        public class OversizedRequest : IMessage
-//        {
-//            public OversizedRequest()
-//            {
-//                OversizedProperty = new string('*', 265000);
-//            }
-
-//            public string OversizedProperty { get; set; }
-//        }
-//    }
-//}
+            public string OversizedProperty { get; set; }
+        }
+    }
+}
