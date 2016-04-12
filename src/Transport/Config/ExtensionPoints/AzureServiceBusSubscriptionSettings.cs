@@ -2,18 +2,18 @@ namespace NServiceBus
 {
     using System;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using Configuration.AdvanceExtensibility;
+    using Settings;
 
     public class AzureServiceBusSubscriptionSettings : ExposeSettings
     {
-        SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusSubscriptionSettings(SettingsHolder settings)
            : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings DescriptionFactory(Func<string, string, ReadOnlySettings, SubscriptionDescription> factory)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DescriptionFactory, factory);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DescriptionFactory, factory);
 
             return this;
         }
@@ -31,7 +31,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings DefaultMessageTimeToLive(TimeSpan expiryTimespan)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DefaultMessageTimeToLive, expiryTimespan);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DefaultMessageTimeToLive, expiryTimespan);
 
             return this;
         }
@@ -41,7 +41,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings EnableBatchedOperations(bool enableBatchedOperations)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableBatchedOperations, enableBatchedOperations);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableBatchedOperations, enableBatchedOperations);
             return this;
         }
 
@@ -50,7 +50,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings EnableDeadLetteringOnFilterEvaluationExceptions(bool enableDeadLetteringOnFilterEvaluationExceptions)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnFilterEvaluationExceptions, enableDeadLetteringOnFilterEvaluationExceptions);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnFilterEvaluationExceptions, enableDeadLetteringOnFilterEvaluationExceptions);
             return this;
         }
 
@@ -59,7 +59,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings EnableDeadLetteringOnMessageExpiration(bool enableDeadLetteringOnMessageExpiration)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnMessageExpiration, enableDeadLetteringOnMessageExpiration);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnMessageExpiration, enableDeadLetteringOnMessageExpiration);
             return this;
         }
 
@@ -76,8 +76,8 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings ForwardDeadLetteredMessagesTo(Func<string, bool> condition, string forwardDeadLetteredMessagesTo)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition, condition);
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo, forwardDeadLetteredMessagesTo);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition, condition);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo, forwardDeadLetteredMessagesTo);
 
             return this;
         }
@@ -88,7 +88,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings LockDuration(TimeSpan lockDuration)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.LockDuration, lockDuration);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.LockDuration, lockDuration);
             return this;
         }
 
@@ -97,7 +97,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings MaxDeliveryCount(int maxDeliveryCount)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.MaxDeliveryCount, maxDeliveryCount);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.MaxDeliveryCount, maxDeliveryCount);
             return this;
         }
 
@@ -106,7 +106,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings RequiresSession(bool requiresSession)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.RequiresSession, requiresSession);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.RequiresSession, requiresSession);
             return this;
         }
 
@@ -115,7 +115,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings AutoDeleteOnIdle(TimeSpan autoDeleteOnIdle)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.AutoDeleteOnIdle, autoDeleteOnIdle);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.AutoDeleteOnIdle, autoDeleteOnIdle);
             return this;
         }
     }

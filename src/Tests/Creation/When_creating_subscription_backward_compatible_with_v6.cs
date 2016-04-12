@@ -4,10 +4,10 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -30,14 +30,14 @@
         public void TopicCleanUp()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            namespaceManager.DeleteTopic(topicPath).Wait();        
+            namespaceManager.DeleteTopic(topicPath).Wait();
         }
 
         [Test]
         public async Task Should_create_a_subscription_based_on_event_type_full_name_for_an_event_name_reused_across_multiple_namespaces()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(SomeEvent).Name), 
+            await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(SomeEvent).Name),
                 new SqlSubscriptionFilter(typeof(Creation.SomeEvent)).Serialize());
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());

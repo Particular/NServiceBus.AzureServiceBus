@@ -1,9 +1,8 @@
-using System;
-
 namespace NServiceBus.AzureServiceBus
 {
+    using System;
     using System.Threading.Tasks;
-    
+
     public interface INotifyIncomingMessages
     {
         bool IsRunning { get; }

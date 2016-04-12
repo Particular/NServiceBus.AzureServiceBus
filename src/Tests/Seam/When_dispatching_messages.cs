@@ -3,13 +3,13 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.DeliveryConstraints;
-    using NServiceBus.Extensibility;
-    using NServiceBus.Settings;
+    using Tests;
+    using TestUtils;
+    using AzureServiceBus;
+    using AzureServiceBus.Topology.MetaModel;
+    using DeliveryConstraints;
+    using Extensibility;
+    using Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 
@@ -174,7 +174,7 @@
             }
         }
 
-        private class PassThroughMapper : ICanMapNamespaceNameToConnectionString
+        class PassThroughMapper : ICanMapNamespaceNameToConnectionString
         {
             public EntityAddress Map(EntityAddress value)
             {

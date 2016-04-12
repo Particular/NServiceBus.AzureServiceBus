@@ -4,12 +4,12 @@ namespace NServiceBus.AzureServiceBus.Addressing
     using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
-    using NServiceBus.Settings;
+    using Settings;
 
     public class ShardedNamespacePartitioning : INamespacePartitioningStrategy
     {
-        private readonly NamespaceConfigurations namespaces;
-        private Func<int> shardingRule;
+        NamespaceConfigurations namespaces;
+        Func<int> shardingRule;
 
         public ShardedNamespacePartitioning(ReadOnlySettings settings)
         {

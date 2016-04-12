@@ -5,21 +5,20 @@ namespace NServiceBus.AzureServiceBus
     using System.IO;
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.Logging;
-    using NServiceBus.Settings;
+    using Topology.MetaModel;
+    using Logging;
+    using Settings;
 
     class DefaultBrokeredMessagesToIncomingMessagesConverter : IConvertBrokeredMessagesToIncomingMessages
     {
         ILog logger = LogManager.GetLogger<DefaultBrokeredMessagesToIncomingMessagesConverter>();
-
-        private readonly ReadOnlySettings _settings;
-        private readonly ICanMapConnectionStringToNamespaceName _mapper;
+        ReadOnlySettings settings;
+        ICanMapConnectionStringToNamespaceName mapper;
 
         public DefaultBrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings, ICanMapConnectionStringToNamespaceName mapper)
         {
-            this._settings = settings;
-            this._mapper = mapper;
+            this.settings = settings;
+            this.mapper = mapper;
         }
 
         public IncomingMessageDetails Convert(BrokeredMessage brokeredMessage)
@@ -64,10 +63,10 @@ namespace NServiceBus.AzureServiceBus
 
             var replyToHeaderValue = headers.ContainsKey(Headers.ReplyToAddress) ?
                 headers[Headers.ReplyToAddress] : brokeredMessage.ReplyTo;
-                
+
             if (!string.IsNullOrWhiteSpace(replyToHeaderValue))
             {
-                headers[Headers.ReplyToAddress] = _mapper.Map(replyToHeaderValue);
+                headers[Headers.ReplyToAddress] = mapper.Map(replyToHeaderValue);
             }
 
             if (!string.IsNullOrWhiteSpace(brokeredMessage.CorrelationId) && !headers.ContainsKey(Headers.CorrelationId))
@@ -83,9 +82,9 @@ namespace NServiceBus.AzureServiceBus
             return new IncomingMessageDetails(brokeredMessage.MessageId, headers, rawBody);
         }
 
-        private string GetDefaultTransportEncoding()
+        string GetDefaultTransportEncoding()
         {
-            var configuredDefault = _settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
+            var configuredDefault = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
             return configuredDefault == SupportedBrokeredMessageBodyTypes.ByteArray ? "wcf/byte-array" : "application/octect-stream";
         }
     }

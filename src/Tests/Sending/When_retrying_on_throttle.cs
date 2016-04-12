@@ -6,7 +6,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
+    using AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]
@@ -34,7 +34,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             var sender = new FakeMessageSender();
             sender.ExceptionToThrow = i => { throw new NotSupportedException(); };
-          
+
             //validate
             Assert.Throws<NotSupportedException>(async () => await sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
             Assert.IsTrue(sender.IsInvoked);

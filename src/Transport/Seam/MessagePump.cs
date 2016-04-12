@@ -4,7 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading;
     using System.Threading.Tasks;
     using Extensibility;
-    using NServiceBus.Logging;
+    using Logging;
     using Transports;
 
     class MessagePump : IPushMessages, IDisposable
@@ -12,9 +12,9 @@ namespace NServiceBus.AzureServiceBus
         ITopologySectionManager topologySectionManager;
         IOperateTopology topologyOperator;
         Func<PushContext, Task> messagePump;
-        private RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
+        RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
-        string _inputQueue;
+        string inputQueue;
 
         public MessagePump(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
         {
@@ -33,8 +33,8 @@ namespace NServiceBus.AzureServiceBus
                 throw new InvalidOperationException("Azure Service Bus transport doesn't support PurgeOnStartup behaviour");
             }
 
-            _inputQueue = pushSettings.InputQueue;
-            
+            inputQueue = pushSettings.InputQueue;
+
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
             {
                 var tokenSource = new CancellationTokenSource();
@@ -53,7 +53,7 @@ namespace NServiceBus.AzureServiceBus
             return TaskEx.Completed;
         }
 
-        /// <summary>For internal testing purposes.</summary>
+        // For internal testing purposes.
         internal void OnError(Func<Exception, Task> func)
         {
             topologyOperator.OnError(exception =>
@@ -65,7 +65,7 @@ namespace NServiceBus.AzureServiceBus
 
         public void Start(PushRuntimeSettings limitations)
         {
-            var definition = topologySectionManager.DetermineReceiveResources(_inputQueue);
+            var definition = topologySectionManager.DetermineReceiveResources(inputQueue);
             topologyOperator.Start(definition, limitations.MaxConcurrency);
         }
 

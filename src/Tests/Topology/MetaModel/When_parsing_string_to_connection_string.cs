@@ -1,13 +1,13 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel
 {
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
+    using AzureServiceBus.Topology.MetaModel;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_parsing_string_to_connection_string
     {
-        private static readonly string Template = "Endpoint=sb://{0}.servicebus.windows.net;SharedAccessKeyName={1};SharedAccessKey={2}";
+        static string Template = "Endpoint=sb://{0}.servicebus.windows.net;SharedAccessKeyName={1};SharedAccessKey={2}";
 
         [Test]
         [TestCase("a")]

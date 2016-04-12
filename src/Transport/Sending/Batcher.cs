@@ -3,13 +3,13 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using NServiceBus.Settings;
-    using NServiceBus.Transports;
+    using Settings;
+    using Transports;
 
     class Batcher : IBatcher
     {
-        private readonly ITopologySectionManager topologySectionManager;
-        private int messageSizePaddingPercentage;
+        ITopologySectionManager topologySectionManager;
+        int messageSizePaddingPercentage;
 
         public Batcher(ITopologySectionManager topologySectionManager, ReadOnlySettings settings)
         {
@@ -25,7 +25,7 @@ namespace NServiceBus.AzureServiceBus
             return indexedBatches.Values.ToList();
         }
 
-        private void AddUnicastOperationBatches(TransportOperations operations, Dictionary<string, Batch> indexedBatches)
+        void AddUnicastOperationBatches(TransportOperations operations, Dictionary<string, Batch> indexedBatches)
         {
             foreach (var unicastOperation in operations.UnicastTransportOperations)
             {
@@ -47,7 +47,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        private void AddMulticastOperationBatches(TransportOperations operations, Dictionary<string, Batch> indexedBatches)
+        void AddMulticastOperationBatches(TransportOperations operations, Dictionary<string, Batch> indexedBatches)
         {
             foreach (var multicastOperation in operations.MulticastTransportOperations)
             {

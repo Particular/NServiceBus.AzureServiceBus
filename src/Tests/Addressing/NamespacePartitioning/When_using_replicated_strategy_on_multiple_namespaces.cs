@@ -2,19 +2,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
 {
     using System.Configuration;
     using System.Linq;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Settings;
+    using AzureServiceBus.Addressing;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_using_replicated_strategy_on_multiple_namespaces
     {
-        private static readonly string Primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private static readonly string Secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private static readonly string Tertiary = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string Primary = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string Secondary = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string Tertiary = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
 
-        private ReplicatedNamespacePartitioning _strategy;
+        ReplicatedNamespacePartitioning strategy;
 
         [SetUp]
         public void SetUp()
@@ -25,13 +25,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             extensions.NamespacePartitioning().AddNamespace("namespace2", Secondary);
             extensions.NamespacePartitioning().AddNamespace("namespace3", Tertiary);
 
-            _strategy = new ReplicatedNamespacePartitioning(settings);
+            strategy = new ReplicatedNamespacePartitioning(settings);
         }
 
         [Test]
         public void Replicated_partitioning_strategy_will_return_all_connectionstrings_for_purpose_of_sending()
         {
-            var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending);
+            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending);
 
             Assert.AreEqual(3, namespaces.Count());
         }
@@ -39,7 +39,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Replicated_partitioning_strategy_will_return_all_connectionstrings_for_purpose_of_creating()
         {
-            var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
+            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
 
             Assert.AreEqual(3, namespaces.Count());
         }
@@ -47,7 +47,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Replicated_partitioning_strategy_will_return_all_connectionstrings_for_purpose_of_receiving()
         {
-            var namespaces = _strategy.GetNamespaces("endpoint1", PartitioningIntent.Receiving);
+            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Receiving);
 
             Assert.AreEqual(3, namespaces.Count());
         }

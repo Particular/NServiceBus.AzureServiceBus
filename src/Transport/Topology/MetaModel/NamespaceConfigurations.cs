@@ -4,28 +4,28 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using NServiceBus.Logging;
+    using Logging;
 
     public class NamespaceConfigurations : IEnumerable<NamespaceInfo>
     {
-        static readonly ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
+        static ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
 
-        internal static readonly string DefaultName = "default";
+        internal static string DefaultName = "default";
 
-        private readonly List<NamespaceInfo> _inner;
+        List<NamespaceInfo> inner;
 
         public NamespaceConfigurations()
         {
-            _inner = new List<NamespaceInfo>();
+            inner = new List<NamespaceInfo>();
         }
 
-        public int Count => _inner.Count;
+        public int Count => inner.Count;
 
         public void Add(string name, string connectionString)
         {
             var definition = new NamespaceInfo(name, connectionString);
 
-            var namespaceInfo = _inner.SingleOrDefault(x => x.ConnectionString == definition.ConnectionString);
+            var namespaceInfo = inner.SingleOrDefault(x => x.ConnectionString == definition.ConnectionString);
             if (namespaceInfo != null)
             {
                 Log.Info($"Duplicated connection string for `{namespaceInfo.Name}` and `{name}` namespaces." + Environment.NewLine +
@@ -33,13 +33,13 @@
                 return;
             }
 
-            if (_inner.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)))
+            if (inner.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)))
             {
                 Log.Info($"Duplicated namespace name `{name}` configuration detected. Registered only once");
                 return;
             }
 
-            _inner.Add(definition);
+            inner.Add(definition);
         }
 
         public void AddDefault(string connectionString)
@@ -51,7 +51,7 @@
         {
             try
             {
-                var selected = _inner.Single(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                var selected = inner.Single(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                 return selected.ConnectionString;
             }
             catch (InvalidOperationException ex)
@@ -62,7 +62,7 @@
 
         public IEnumerator<NamespaceInfo> GetEnumerator()
         {
-            return _inner.GetEnumerator();
+            return inner.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

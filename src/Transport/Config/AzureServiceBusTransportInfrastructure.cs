@@ -2,17 +2,17 @@
 {
     using System;
     using System.Collections.Generic;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.DelayedDelivery;
-    using NServiceBus.Performance.TimeToBeReceived;
-    using NServiceBus.Routing;
-    using NServiceBus.Settings;
-    using NServiceBus.Transports;
+    using AzureServiceBus;
+    using DelayedDelivery;
+    using Performance.TimeToBeReceived;
+    using Routing;
+    using Settings;
+    using Transports;
 
     class AzureServiceBusTransportInfrastructure : TransportInfrastructure
     {
-        private readonly ITopology topology;
-        private readonly SettingsHolder settings;
+        ITopology topology;
+        SettingsHolder settings;
 
         public AzureServiceBusTransportInfrastructure(ITopology topology, SettingsHolder settings)
         {

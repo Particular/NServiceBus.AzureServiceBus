@@ -3,11 +3,11 @@
     using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
-    using NServiceBus.Settings;
+    using Settings;
 
     public class FailOverNamespacePartitioning : INamespacePartitioningStrategy
     {
-        private readonly NamespaceConfigurations namespaces;
+        NamespaceConfigurations namespaces;
 
         public FailOverNamespacePartitioning(ReadOnlySettings settings)
         {

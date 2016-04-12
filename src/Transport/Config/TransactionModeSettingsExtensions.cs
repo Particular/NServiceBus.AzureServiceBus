@@ -1,10 +1,10 @@
 ﻿namespace NServiceBus
 {
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using Settings;
 
-    internal static class TransactionModeSettingsExtensions
+    static class TransactionModeSettingsExtensions
     {
         public static TransportTransactionMode SupportedTransactionMode(this ReadOnlySettings settings)
         {

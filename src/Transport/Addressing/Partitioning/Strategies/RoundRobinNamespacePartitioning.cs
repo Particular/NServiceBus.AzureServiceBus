@@ -4,11 +4,11 @@ namespace NServiceBus.AzureServiceBus.Addressing
     using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
-    using NServiceBus.Settings;
+    using Settings;
 
     public class RoundRobinNamespacePartitioning : INamespacePartitioningStrategy
     {
-        private readonly CircularBuffer<NamespaceInfo> namespaces;
+        CircularBuffer<NamespaceInfo> namespaces;
 
         public RoundRobinNamespacePartitioning(ReadOnlySettings settings)
         {

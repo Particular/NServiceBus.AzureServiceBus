@@ -4,17 +4,17 @@ namespace NServiceBus.AzureServiceBus
 
     class NamespaceManagerLifeCycleManager : IManageNamespaceManagerLifeCycle
     {
-        ICreateNamespaceManagers _factory;
+        ICreateNamespaceManagers factory;
         ConcurrentDictionary<string, INamespaceManager> namespaceManagers = new ConcurrentDictionary<string, INamespaceManager>();
 
         public NamespaceManagerLifeCycleManager(ICreateNamespaceManagers factory)
         {
-            this._factory = factory;
+            this.factory = factory;
         }
 
         public INamespaceManager Get(string namespaceName)
         {
-            return namespaceManagers.GetOrAdd(namespaceName, s => _factory.Create(s));
+            return namespaceManagers.GetOrAdd(namespaceName, s => factory.Create(s));
         }
 
     }

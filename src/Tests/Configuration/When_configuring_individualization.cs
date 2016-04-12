@@ -1,10 +1,10 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
     using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Settings;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]

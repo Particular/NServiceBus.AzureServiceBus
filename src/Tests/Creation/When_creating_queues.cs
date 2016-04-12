@@ -4,9 +4,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -24,7 +24,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             await namespaceManager.DeleteQueue("myqueue");
 
             settings.Set("Transport.CreateQueues", false);
-            
+
             var creator = new AzureServiceBusQueueCreator(settings);
 
             await creator.Create("myqueue", namespaceManager);
@@ -40,7 +40,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var descriptionToUse = new QueueDescription("myqueue");
-            
+
             extensions.Queues().DescriptionFactory((name, s) => descriptionToUse);
 
             var creator = new AzureServiceBusQueueCreator(settings);
@@ -50,7 +50,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             Assert.IsTrue(await namespaceManager.QueueExists("myqueue"));
             Assert.AreEqual(descriptionToUse, description);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -79,7 +79,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.IsTrue(real.ForwardDeadLetteredMessagesTo.EndsWith("myotherqueue"));
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
             await namespaceManager.DeleteQueue("myotherqueue");
         }
@@ -105,7 +105,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             Assert.IsTrue(real.ForwardDeadLetteredMessagesTo.EndsWith("myotherqueue"));
             Assert.IsTrue(string.IsNullOrEmpty(forwardReal.ForwardDeadLetteredMessagesTo));
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
             await namespaceManager.DeleteQueue("myotherqueue");
         }
@@ -128,7 +128,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.IsTrue(real.EnableExpress);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -150,7 +150,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.IsTrue(real.EnableExpress, "Queue should be marked as express, but it wasn't.");
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -173,7 +173,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.AreEqual(TimeSpan.FromDays(1), real.AutoDeleteOnIdle);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -198,7 +198,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.IsTrue(real.EnablePartitioning);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -220,7 +220,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.IsFalse(real.EnableBatchedOperations);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -242,7 +242,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.AreEqual(10, real.MaxDeliveryCount);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -264,7 +264,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.AreEqual(TimeSpan.FromMinutes(20), real.DuplicateDetectionHistoryTimeWindow);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -286,7 +286,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.IsTrue(real.EnableDeadLetteringOnMessageExpiration);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -308,7 +308,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.AreEqual(TimeSpan.FromDays(1), real.DefaultMessageTimeToLive);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -333,7 +333,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.IsTrue(real.RequiresSession);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -355,7 +355,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.IsTrue(real.RequiresDuplicateDetection);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -377,7 +377,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.AreEqual(3072, real.MaxSizeInMegabytes);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -399,7 +399,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.AreEqual(TimeSpan.FromMinutes(5), real.LockDuration);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -421,7 +421,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.IsTrue(real.SupportOrdering);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -444,8 +444,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             var queueDescription = await namespaceManager.GetQueue("existingqueue");
             Assert.AreEqual(TimeSpan.FromMinutes(100), queueDescription.AutoDeleteOnIdle);
-            
-            //cleanup 
+
+            //cleanup
             await namespaceManager.DeleteQueue("existingqueue");
         }
 
@@ -473,8 +473,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             var creator = new AzureServiceBusQueueCreator(settings);
             Assert.Throws<ArgumentException>(async () =>  await creator.Create("existingqueue", namespaceManager));
-            
-            //cleanup 
+
+            //cleanup
             await namespaceManager.DeleteQueue("existingqueue");
         }
     }

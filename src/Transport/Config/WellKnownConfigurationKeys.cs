@@ -67,7 +67,7 @@ namespace NServiceBus.AzureServiceBus
                     public const string ForwardDeadLetteredMessagesToCondition = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition";
                 }
 
-                
+
             }
 
             public static class Addressing
@@ -117,7 +117,7 @@ namespace NServiceBus.AzureServiceBus
             public const string NumberOfClientsPerEntity = "AzureServiceBus.Connectivity.NumberOfClientsPerEntity";
             public const string SendViaReceiveQueue = "AzureServiceBus.Connectivity.SendViaReceiveQueue";
             public const string ConnectivityMode = "AzureServiceBus.Connectivity.ConnectivityMode";
-            
+
             public static class MessageReceivers
             {
                 public const string ReceiveMode = "AzureServiceBus.Connectivity.MessageReceivers.ReceiveMode";
@@ -153,7 +153,7 @@ namespace NServiceBus.AzureServiceBus
         public static class Serialization
         {
             public const string BrokeredMessageBodyType = "AzureServiceBus.Serialization.BrokeredMessageBodyType";
-            
+
         }
     }
 }

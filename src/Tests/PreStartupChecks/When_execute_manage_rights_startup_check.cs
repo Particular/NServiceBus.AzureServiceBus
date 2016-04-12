@@ -2,9 +2,9 @@
 {
     using System.Threading.Tasks;
     using FakeItEasy;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using Tests;
+    using AzureServiceBus;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]

@@ -2,18 +2,18 @@
 {
     using System;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using Configuration.AdvanceExtensibility;
+    using Settings;
 
     public class AzureServiceBusQueueSettings : ExposeSettings
     {
-        SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusQueueSettings(SettingsHolder settings)
             : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         /// <summary>
@@ -21,7 +21,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings DescriptionFactory(Func<string, ReadOnlySettings, QueueDescription> factory)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, factory);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, factory);
 
             return this;
         }
@@ -39,8 +39,8 @@
         /// </summary>
         public AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(Func<string, bool> condition, string forwardDeadLetteredMessagesTo)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesToCondition, condition);
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo, forwardDeadLetteredMessagesTo);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesToCondition, condition);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo, forwardDeadLetteredMessagesTo);
 
             return this;
         }
@@ -50,7 +50,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings EnableExpress(bool enableExpress)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress, enableExpress);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress, enableExpress);
 
             return this;
         }
@@ -60,8 +60,8 @@
         /// </summary>
         public AzureServiceBusQueueSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpressCondition, condition);
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress, enableExpress);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpressCondition, condition);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress, enableExpress);
 
             return this;
         }
@@ -71,7 +71,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings AutoDeleteOnIdle(TimeSpan autoDeleteOnIdle)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.AutoDeleteOnIdle, autoDeleteOnIdle);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.AutoDeleteOnIdle, autoDeleteOnIdle);
 
             return this;
         }
@@ -82,7 +82,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings EnablePartitioning(bool enablePartitioning)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning, enablePartitioning);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning, enablePartitioning);
 
             return this;
         }
@@ -92,7 +92,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings EnableBatchedOperations(bool enableBatchedOperations)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableBatchedOperations, enableBatchedOperations);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableBatchedOperations, enableBatchedOperations);
 
             return this;
         }
@@ -102,7 +102,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings MaxDeliveryCount(int maxDeliveryCount)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount, maxDeliveryCount);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount, maxDeliveryCount);
 
             return this;
         }
@@ -112,7 +112,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings DuplicateDetectionHistoryTimeWindow(TimeSpan duplicateDetectionHistoryTimeWindow)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow, duplicateDetectionHistoryTimeWindow);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow, duplicateDetectionHistoryTimeWindow);
 
             return this;
         }
@@ -122,7 +122,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings EnableDeadLetteringOnMessageExpiration(bool enableDeadLetteringOnMessageExpiration)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration, enableDeadLetteringOnMessageExpiration);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration, enableDeadLetteringOnMessageExpiration);
 
             return this;
         }
@@ -132,7 +132,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings DefaultMessageTimeToLive(TimeSpan defaultMessageTimeToLive)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.DefaultMessageTimeToLive, defaultMessageTimeToLive);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.DefaultMessageTimeToLive, defaultMessageTimeToLive);
 
             return this;
         }
@@ -142,7 +142,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings RequiresSession(bool requiresSession)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresSession, requiresSession);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresSession, requiresSession);
 
             return this;
         }
@@ -152,7 +152,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings RequiresDuplicateDetection(bool requiresDuplicateDetection)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresDuplicateDetection, requiresDuplicateDetection);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresDuplicateDetection, requiresDuplicateDetection);
 
             return this;
         }
@@ -163,7 +163,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings MaxSizeInMegabytes(SizeInMegabytes maxSizeInMegabytes)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxSizeInMegabytes, (long)maxSizeInMegabytes);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxSizeInMegabytes, (long)maxSizeInMegabytes);
 
             return this;
         }
@@ -173,7 +173,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings LockDuration(TimeSpan duration)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration, duration);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration, duration);
 
             return this;
         }
@@ -183,7 +183,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings SupportOrdering(bool supported)
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering, supported);
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering, supported);
 
             return this;
         }

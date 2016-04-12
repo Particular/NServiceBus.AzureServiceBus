@@ -5,10 +5,10 @@
 
     class EntityAddress
     {
-        private readonly string _value;
+        string value;
 
-        public string Name => _value.Split('@').First();
-        public string Suffix => _value.Contains('@') ? _value.Split('@').Last() : string.Empty;
+        public string Name => value.Split('@').First();
+        public string Suffix => value.Contains('@') ? value.Split('@').Last() : string.Empty;
         public bool HasConnectionString
         {
             get
@@ -24,7 +24,7 @@
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException("Entity address value can't be empty", nameof(value));
 
-            _value = value;
+            this.value = value;
         }
 
         public static implicit operator EntityAddress(string value)
@@ -34,7 +34,7 @@
 
         public static implicit operator string(EntityAddress address)
         {
-            return address._value;
+            return address.value;
         }
     }
 }

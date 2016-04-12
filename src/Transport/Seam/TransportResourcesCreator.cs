@@ -1,13 +1,13 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System.Threading.Tasks;
-    using NServiceBus.Transports;
+    using Transports;
 
     class TransportResourcesCreator : ICreateQueues
     {
         ITopologySectionManager sections;
         ICreateTopology topologyCreator;
-        bool resourcesCreated = false;
+        bool resourcesCreated;
 
         public TransportResourcesCreator(ICreateTopology topologyCreator, ITopologySectionManager sections)
         {

@@ -2,10 +2,10 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Threading.Tasks;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.Settings;
-    using NServiceBus.Transports;
+    using Addressing;
+    using Topology.MetaModel;
+    using Settings;
+    using Transports;
 
     public class EndpointOrientedTopology :ITopology
     {
@@ -29,7 +29,7 @@ namespace NServiceBus.AzureServiceBus
             InitializeContainer(settings);
         }
 
-        private void ApplyDefaults(SettingsHolder settings)
+        void ApplyDefaults(SettingsHolder settings)
         {
             new DefaultConfigurationValues().Apply(settings);
             // ensures settings are present/correct
@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus
             topologySectionManager = new EndpointOrientedTopologySectionManager(settings, container);
         }
 
-        private void InitializeContainer(SettingsHolder settings)
+        void InitializeContainer(SettingsHolder settings)
         {
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
@@ -106,8 +106,7 @@ namespace NServiceBus.AzureServiceBus
         {
             return () =>
             {
-                var pump = container.Resolve<MessagePump>();
-                return pump;
+                return container.Resolve<MessagePump>();
             };
         }
 

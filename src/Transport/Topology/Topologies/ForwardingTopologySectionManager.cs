@@ -5,7 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using Addressing;
-    using NServiceBus.Transports;
+    using Transports;
     using Settings;
 
     class ForwardingTopologySectionManager : ITopologySectionManager
@@ -56,7 +56,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 BuildTopicBundles(namespaces, sanitizationStrategy);
             }
-            
+
             if (settings.HasExplicitValue<QueueBindings>())
             {
                 var queueBindings = settings.Get<QueueBindings>();
@@ -93,7 +93,7 @@ namespace NServiceBus.AzureServiceBus
             var endpointName = settings.EndpointName();
             var namespaces = partitioningStrategy.GetNamespaces(endpointName.ToString(), PartitioningIntent.Creating).Where(n => n.Mode == NamespaceMode.Active).ToArray();
             var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
-            
+
             if (!topics.Any())
             {
                 BuildTopicBundles(namespaces, sanitizationStrategy);
@@ -106,7 +106,7 @@ namespace NServiceBus.AzureServiceBus
             };
         }
 
-        private IEnumerable<EntityInfo> SelectSingleRandomTopicFromBundle(List<EntityInfo> entityInfos)
+        IEnumerable<EntityInfo> SelectSingleRandomTopicFromBundle(List<EntityInfo> entityInfos)
         {
             var index = randomGenerator.Next(1, entityInfos.Count);
             yield return entityInfos[index];
@@ -164,7 +164,7 @@ namespace NServiceBus.AzureServiceBus
 
             var sanitizedInputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
             var sanitizedSubscriptionPath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Subscription);
-            // rule name needs 1) based on event full name 2) unique 3) deterministic 
+            // rule name needs 1) based on event full name 2) unique 3) deterministic
             var ruleName = SHA1DeterministicNameBuilder.Build(eventType.FullName);
 
             if (!topics.Any())
@@ -217,7 +217,7 @@ namespace NServiceBus.AzureServiceBus
                 Namespaces = namespaces
             };
         }
-        
+
         void BuildTopicBundles(RuntimeNamespaceInfo[] namespaces, ISanitizationStrategy sanitizationStrategy)
         {
             var numberOfEntitiesInBundle = settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
@@ -233,6 +233,6 @@ namespace NServiceBus.AzureServiceBus
                 }));
             }
         }
-      
+
     }
 }

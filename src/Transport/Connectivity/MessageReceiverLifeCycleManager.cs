@@ -2,31 +2,31 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
-    using NServiceBus.Settings;
+    using Settings;
 
     class MessageReceiverLifeCycleManager : IManageMessageReceiverLifeCycle
     {
-        readonly ICreateMessageReceivers _receiveFactory;
-        int _numberOfReceiversPerEntity;
+        ICreateMessageReceivers receiveFactory;
+        int numberOfReceiversPerEntity;
         ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>> MessageReceivers = new ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>>();
 
         public MessageReceiverLifeCycleManager(ICreateMessageReceivers receiveFactory, ReadOnlySettings settings)
         {
-            this._receiveFactory = receiveFactory;
-            this._numberOfReceiversPerEntity = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
+            this.receiveFactory = receiveFactory;
+            numberOfReceiversPerEntity = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
         }
 
         public IMessageReceiver Get(string entitypath, string namespaceName)
         {
-            var buffer = MessageReceivers.GetOrAdd(entitypath, s => 
+            var buffer = MessageReceivers.GetOrAdd(entitypath, s =>
             {
-                var b = new CircularBuffer<EntityClientEntry>(_numberOfReceiversPerEntity);
-                for (var i = 0; i < _numberOfReceiversPerEntity; i++)
+                var b = new CircularBuffer<EntityClientEntry>(numberOfReceiversPerEntity);
+                for (var i = 0; i < numberOfReceiversPerEntity; i++)
                 {
                     var e = new EntityClientEntry();
                     lock (e.Mutex)
                     {
-                        e.ClientEntity = _receiveFactory.Create(entitypath, namespaceName).Result;
+                        e.ClientEntity = receiveFactory.Create(entitypath, namespaceName).Result;
                     }
                     b.Put(e);
                 }
@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBus
                 {
                     if (entry.ClientEntity.IsClosed)
                     {
-                        entry.ClientEntity = _receiveFactory.Create(entitypath, namespaceName).Result;
+                        entry.ClientEntity = receiveFactory.Create(entitypath, namespaceName).Result;
                     }
                 }
             }
@@ -49,7 +49,7 @@ namespace NServiceBus.AzureServiceBus
             return entry.ClientEntity;
 
         }
-        
+
         class EntityClientEntry
         {
             internal Object Mutex = new object();

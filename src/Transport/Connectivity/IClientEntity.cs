@@ -5,7 +5,7 @@ namespace NServiceBus.AzureServiceBus
     public interface IClientEntity
     {
         bool IsClosed { get; }
-        
+
         RetryPolicy RetryPolicy { get; set; }
     }
 }

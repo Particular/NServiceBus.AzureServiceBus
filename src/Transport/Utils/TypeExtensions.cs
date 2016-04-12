@@ -3,7 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Collections.Generic;
 
-    internal static class TypeExtensions
+    static class TypeExtensions
     {
         public static IEnumerable<Type> GetParentTypes(this Type target)
         {

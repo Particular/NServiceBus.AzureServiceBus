@@ -1,6 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.EventsScanner
 {
-    using NServiceBus.AzureServiceBus.TypesScanner;
+    using AzureServiceBus.TypesScanner;
     using NUnit.Framework;
 
     [TestFixture]

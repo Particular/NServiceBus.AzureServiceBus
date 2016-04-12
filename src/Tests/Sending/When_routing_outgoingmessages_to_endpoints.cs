@@ -5,11 +5,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.DeliveryConstraints;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using AzureServiceBus.Topology.MetaModel;
+    using DeliveryConstraints;
+    using Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
 
@@ -78,7 +78,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount > 0, "expected to have messages in the queue, but there were no messages");
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -148,7 +148,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount == 2);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -218,7 +218,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount == 2);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -238,7 +238,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
             var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings, new PassThroughMapper()), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
-            
+
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
             var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
@@ -280,7 +280,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             // perform the test
             Assert.That(async () => await router.RouteBatch(batch, null), Throws.Exception.TypeOf<MessageTooLargeException>());
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -293,7 +293,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
 
             var oversizedHandler = new MyOversizedBrokeredMessageHandler();
-            
+
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
             var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
@@ -347,7 +347,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             // validate
             Assert.True(oversizedHandler.Invoked);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -415,7 +415,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var queue = await fallbackNamespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount > 0, "expected to have messages in the queue, but there were no messages");
 
-            //cleanup 
+            //cleanup
             await fallbackNamespaceManager.DeleteQueue("myqueue");
         }
 
@@ -488,7 +488,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             // validate
             Assert.True(oversizedHandler.InvocationCount == 1);
 
-            //cleanup 
+            //cleanup
             await fallbackNamespaceManager.DeleteQueue("myqueue");
             await namespaceManager.DeleteQueue("myqueue");
         }
@@ -557,7 +557,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             Assert.That(async () => await router.RouteBatch(batch, null), Throws.Exception.TypeOf<MessageTooLargeException>());
             Assert.True(oversizedHandler.InvocationCount == 1);
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
@@ -575,7 +575,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             }
         }
 
-        private class PassThroughMapper : ICanMapNamespaceNameToConnectionString
+        class PassThroughMapper : ICanMapNamespaceNameToConnectionString
         {
             public EntityAddress Map(EntityAddress value)
             {
@@ -593,10 +593,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             {
                 InvocationCount++;
                 Invoked = true;
-                
+
                 throw new MessageTooLargeException();
             }
         }
     }
-    
+
 }

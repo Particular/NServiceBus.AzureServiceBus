@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using FakeItEasy;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
+    using AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]

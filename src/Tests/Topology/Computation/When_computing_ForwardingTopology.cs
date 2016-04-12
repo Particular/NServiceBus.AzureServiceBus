@@ -1,17 +1,17 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 {
     using System.Linq;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Routing;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using Routing;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_computing_ForwardingTopology
     {
-        private const string Connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        private const string Name = "name";
+        const string Connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        const string Name = "name";
 
         [Test]
         public void Determines_the_namespace_from_partitioning_strategy()

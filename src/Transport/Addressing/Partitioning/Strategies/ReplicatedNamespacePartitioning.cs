@@ -3,11 +3,11 @@ namespace NServiceBus.AzureServiceBus.Addressing
     using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
-    using NServiceBus.Settings;
+    using Settings;
 
     public class ReplicatedNamespacePartitioning : INamespacePartitioningStrategy
     {
-        private readonly NamespaceConfigurations namespaces;
+        NamespaceConfigurations namespaces;
 
         public ReplicatedNamespacePartitioning(ReadOnlySettings settings)
         {

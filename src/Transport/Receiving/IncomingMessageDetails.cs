@@ -5,30 +5,17 @@ namespace NServiceBus.AzureServiceBus
 
     public class IncomingMessageDetails
     {
-        readonly string messageId;
-        readonly Dictionary<string, string> headers;
-        readonly Stream bodyStream;
-
         public IncomingMessageDetails(string messageId, Dictionary<string, string> headers, Stream bodyStream)
         {
-            this.messageId = messageId;
-            this.headers = headers;
-            this.bodyStream = bodyStream;
+            MessageId = messageId;
+            Headers = headers;
+            BodyStream = bodyStream;
         }
 
-        public string MessageId
-        {
-            get { return messageId; }
-        }
+        public string MessageId { get; }
 
-        public Dictionary<string, string> Headers
-        {
-            get { return headers; }
-        }
+        public Dictionary<string, string> Headers { get; }
 
-        public Stream BodyStream
-        {
-            get { return bodyStream; }
-        }
+        public Stream BodyStream { get; }
     }
 }

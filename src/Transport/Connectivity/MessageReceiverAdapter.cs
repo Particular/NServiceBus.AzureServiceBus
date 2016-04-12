@@ -7,43 +7,37 @@ namespace NServiceBus.AzureServiceBus
 
     class MessageReceiverAdapter : IMessageReceiver
     {
-        readonly MessageReceiver _receiver;
+        MessageReceiver receiver;
 
         public MessageReceiverAdapter(MessageReceiver receiver)
         {
-            _receiver = receiver;
+            this.receiver = receiver;
         }
 
-        public bool IsClosed
-        {
-            get { return _receiver.IsClosed; }
-        }
+        public bool IsClosed => receiver.IsClosed;
 
         public RetryPolicy RetryPolicy
         {
-            get { return _receiver.RetryPolicy; }
-            set { _receiver.RetryPolicy = value; }
+            get { return receiver.RetryPolicy; }
+            set { receiver.RetryPolicy = value; }
         }
 
         public int PrefetchCount
         {
-            get { return _receiver.PrefetchCount; }
-            set { _receiver.PrefetchCount = value; }
+            get { return receiver.PrefetchCount; }
+            set { receiver.PrefetchCount = value; }
         }
 
-        public ReceiveMode Mode
-        {
-            get { return _receiver.Mode; }
-        }
+        public ReceiveMode Mode => receiver.Mode;
 
         public void OnMessage(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
         {
-            _receiver.OnMessageAsync(callback, options);
+            receiver.OnMessageAsync(callback, options);
         }
 
         public Task CloseAsync()
         {
-           return _receiver.CloseAsync();
+           return receiver.CloseAsync();
         }
     }
 }

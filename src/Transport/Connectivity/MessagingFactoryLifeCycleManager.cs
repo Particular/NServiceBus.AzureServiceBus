@@ -1,33 +1,32 @@
 namespace NServiceBus.AzureServiceBus
 {
-    using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
-    using NServiceBus.Settings;
+    using Settings;
 
     class MessagingFactoryLifeCycleManager : IManageMessagingFactoryLifeCycle
     {
-        int _numberOfFactoriesPerNamespace;
-        ICreateMessagingFactories _createMessagingFactories;
+        int numberOfFactoriesPerNamespace;
+        ICreateMessagingFactories createMessagingFactories;
         ConcurrentDictionary<string, CircularBuffer<FactoryEntry>> MessagingFactories = new ConcurrentDictionary<string, CircularBuffer<FactoryEntry>>();
 
         public MessagingFactoryLifeCycleManager(ICreateMessagingFactories createMessagingFactories, ReadOnlySettings settings)
         {
-            this._createMessagingFactories = createMessagingFactories;
-            this._numberOfFactoriesPerNamespace = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);
+            this.createMessagingFactories = createMessagingFactories;
+            numberOfFactoriesPerNamespace = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);
         }
 
         public IMessagingFactory Get(string namespaceName)
         {
             var buffer = MessagingFactories.GetOrAdd(namespaceName, s =>
             {
-                var b = new CircularBuffer<FactoryEntry>(_numberOfFactoriesPerNamespace);
-                for (var i = 0; i < _numberOfFactoriesPerNamespace; i++)
+                var b = new CircularBuffer<FactoryEntry>(numberOfFactoriesPerNamespace);
+                for (var i = 0; i < numberOfFactoriesPerNamespace; i++)
                 {
                     var e = new FactoryEntry();
                     lock (e.Mutex)
                     {
-                        e.Factory = _createMessagingFactories.Create(namespaceName);
+                        e.Factory = createMessagingFactories.Create(namespaceName);
                     }
                     b.Put(e);
                 }
@@ -42,7 +41,7 @@ namespace NServiceBus.AzureServiceBus
                 {
                     if (entry.Factory.IsClosed)
                     {
-                        entry.Factory = _createMessagingFactories.Create(namespaceName);
+                        entry.Factory = createMessagingFactories.Create(namespaceName);
                     }
                 }
             }
@@ -65,7 +64,7 @@ namespace NServiceBus.AzureServiceBus
 
         class FactoryEntry
         {
-            internal Object Mutex = new object();
+            internal object Mutex = new object();
             internal IMessagingFactory Factory;
         }
     }

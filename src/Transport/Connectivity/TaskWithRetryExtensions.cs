@@ -3,7 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Logging;
+    using Logging;
 
     static class TaskWithRetryExtensions
     {

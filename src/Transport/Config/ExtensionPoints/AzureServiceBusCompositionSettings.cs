@@ -1,18 +1,18 @@
 ﻿namespace NServiceBus
 {
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
-    using NServiceBus.Configuration.AdvanceExtensibility;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
+    using Configuration.AdvanceExtensibility;
+    using Settings;
 
     public class AzureServiceBusCompositionSettings : ExposeSettings
     {
-        SettingsHolder _settings;
+        SettingsHolder settings;
 
         public AzureServiceBusCompositionSettings(SettingsHolder settings)
             : base(settings)
         {
-            _settings = settings;
+            this.settings = settings;
         }
 
         /// <summary>
@@ -22,7 +22,7 @@
         /// </summary>
         public AzureServiceBusCompositionSettings UseStrategy<T>() where T : ICompositionStrategy
         {
-            _settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(T));
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(T));
 
             return this;
         }

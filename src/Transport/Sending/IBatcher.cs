@@ -1,7 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System.Collections.Generic;
-    using NServiceBus.Transports;
+    using Transports;
 
     public interface IBatcher
     {

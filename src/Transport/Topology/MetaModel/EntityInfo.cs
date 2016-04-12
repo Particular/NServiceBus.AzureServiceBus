@@ -34,7 +34,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 return true;
             }
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
@@ -45,9 +45,9 @@ namespace NServiceBus.AzureServiceBus
         {
             unchecked
             {
-                var hashCode = (Path != null ? Path.GetHashCode() : 0);
+                var hashCode = Path?.GetHashCode() ?? 0;
                 hashCode = (hashCode*397) ^ (int) Type;
-                hashCode = (hashCode*397) ^ (Namespace != null ? Namespace.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (Namespace?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }

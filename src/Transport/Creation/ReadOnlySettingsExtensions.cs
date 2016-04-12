@@ -3,7 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Collections.Concurrent;
     using System.Reflection;
-    using NServiceBus.Settings;
+    using Settings;
 
     static class ReadOnlySettingsExtensions
     {

@@ -4,7 +4,7 @@
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Logging;
+    using Logging;
     using Settings;
 
     class AzureServiceBusTopicCreator : ICreateAzureServiceBusTopics
@@ -122,7 +122,7 @@
             return exists;
         }
 
-        private bool MembersAreNotEqual(TopicDescription existingDescription, TopicDescription newDescription)
+        bool MembersAreNotEqual(TopicDescription existingDescription, TopicDescription newDescription)
         {
             if (existingDescription.RequiresDuplicateDetection != newDescription.RequiresDuplicateDetection)
             {

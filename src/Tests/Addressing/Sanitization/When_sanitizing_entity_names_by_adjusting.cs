@@ -1,7 +1,7 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 {
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Addressing;
+    using AzureServiceBus;
+    using AzureServiceBus.Addressing;
     using NUnit.Framework;
 
     [TestFixture]
@@ -25,7 +25,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase("valid-1", EntityType.Subscription)]
         [TestCase("valid_1", EntityType.Subscription)]
         [TestCase("valid.1", EntityType.Subscription)]
-
         public void Valid_entity_names_are_returned_as_is(string endpointName, EntityType entityType)
         {
             var validation = new ValidationMock();

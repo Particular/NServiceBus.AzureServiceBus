@@ -4,17 +4,17 @@
     <id>NServiceBus.Azure.Transports.WindowsAzureServiceBus</id>
     <title>NServiceBus Azure Transports WindowsAzureServiceBus</title>
     <version>$version$</version>
-    <authors>NServiceBus Ltd</authors>
-    <owners>NServiceBus Ltd</owners>
-    <licenseUrl>http://particular.net/LicenseAgreement</licenseUrl>
-    <projectUrl>http://particular.net/</projectUrl>
-    <iconUrl>http://s3.amazonaws.com/nuget.images/NServiceBus_32.png</iconUrl>
-    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <authors>$authors$</authors>
+    <owners>$owners$</owners>
+    <licenseUrl>$licenseUrl$</licenseUrl>
+    <projectUrl>$projectUrl$</projectUrl>
+    <iconUrl>$iconUrl$</iconUrl>
+    <requireLicenseAcceptance>$requireLicenseAcceptance$</requireLicenseAcceptance>
     <description>NServiceBus Transport for the Windows Azure Servicebus</description>
-    <copyright>Copyright 2010-2014 NServiceBus. All rights reserved</copyright>
-    <tags>nservicebus servicebus msmq cqrs publish subscribe</tags>
+    <copyright>$copyright$</copyright>
+    <tags>$tags$</tags>
     <dependencies>
-      <dependency id="WindowsAzure.ServiceBus" version="[3.1.5.0, 4.0.0.0)" />
+      <dependency id="WindowsAzure.ServiceBus" version="[3.0.0.0, 4.0.0.0)" />
       <dependency id="NServiceBus" version="[6.0.0.0-beta, 7.0.0.0)" />
     </dependencies>
   </metadata>

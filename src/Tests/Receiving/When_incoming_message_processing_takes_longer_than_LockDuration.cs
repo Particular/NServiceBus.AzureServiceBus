@@ -6,10 +6,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using AzureServiceBus.Topology.MetaModel;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -62,7 +62,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                     Interlocked.Increment(ref receivedMessages);
                     if (receivedMessages > 1)
                     {
-                        Assert.Fail("Callback should only receive one message once, but it did more than that.");                        
+                        Assert.Fail("Callback should only receive one message once, but it did more than that.");
                     }
                     await Task.Delay(TimeSpan.FromSeconds(30));
                     completed.Set();
@@ -83,11 +83,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // make sure message is autocompleted
             Assert.That(queue.MessageCount, Is.EqualTo(0), "Messages where not completed!");
 
-            //cleanup 
+            //cleanup
             await namespaceManager.DeleteQueue("autorenewtimeout");
         }
 
-        private class PassThroughMapper : ICanMapConnectionStringToNamespaceName
+        class PassThroughMapper : ICanMapConnectionStringToNamespaceName
         {
             public EntityAddress Map(EntityAddress value)
             {

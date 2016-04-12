@@ -2,9 +2,9 @@
 {
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
+    using TestUtils;
 
-    internal  static class TestUtility
+    static class TestUtility
     {
         public static async Task Delete(params string[] queueNames)
         {

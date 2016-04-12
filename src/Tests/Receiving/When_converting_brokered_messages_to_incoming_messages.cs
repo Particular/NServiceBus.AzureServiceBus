@@ -5,9 +5,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using System.Linq;
     using System.Text;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.Settings;
+    using AzureServiceBus;
+    using AzureServiceBus.Topology.MetaModel;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -37,7 +37,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            
+
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
             var brokeredMessage = new BrokeredMessage();
@@ -53,7 +53,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            
+
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MappedMyQueue"));
 
             var brokeredMessage = new BrokeredMessage(new byte[] { })
@@ -229,7 +229,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var brokeredMessage = new BrokeredMessage(bytes);
             brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "wcf/byte-array";
-            
+
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
 
             var incomingMessageDetails = converter.Convert(brokeredMessage);
@@ -237,23 +237,25 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             CollectionAssert.DoesNotContain(incomingMessageDetails.Headers, BrokeredMessageHeaders.TransportEncoding, $"Headers should not contain `{BrokeredMessageHeaders.TransportEncoding}`, but it was found.");
         }
 
-        private class FakeMapper : ICanMapConnectionStringToNamespaceName
+        class FakeMapper : ICanMapConnectionStringToNamespaceName
         {
-            private readonly string _input;
-            private readonly string _output;
+            string input;
+            string output;
 
             public FakeMapper(string input, string output)
             {
-                _input = input;
-                _output = output;
+                this.input = input;
+                this.output = output;
             }
 
             public EntityAddress Map(EntityAddress value)
             {
-                if (_input != value)
+                if (input != value)
+                {
                     throw new InvalidOperationException();
+                }
 
-                return _output;
+                return output;
             }
         }
     }

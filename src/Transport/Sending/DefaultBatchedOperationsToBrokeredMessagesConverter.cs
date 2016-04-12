@@ -5,20 +5,20 @@ namespace NServiceBus.AzureServiceBus
     using System.IO;
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.DelayedDelivery;
-    using NServiceBus.Settings;
-    using NServiceBus.Transports;
+    using Topology.MetaModel;
+    using DelayedDelivery;
+    using Settings;
+    using Transports;
 
     class DefaultBatchedOperationsToBrokeredMessagesConverter : IConvertOutgoingMessagesToBrokeredMessages
     {
-        private readonly ReadOnlySettings _settings;
-        private readonly ICanMapNamespaceNameToConnectionString _mapper;
+        ReadOnlySettings settings;
+        ICanMapNamespaceNameToConnectionString mapper;
 
         public DefaultBatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings, ICanMapNamespaceNameToConnectionString mapper)
         {
-            _settings = settings;
-            _mapper = mapper;
+            this.settings = settings;
+            this.mapper = mapper;
         }
 
         public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperation> outgoingMessages, RoutingOptions routingOptions)
@@ -49,12 +49,12 @@ namespace NServiceBus.AzureServiceBus
             return brokeredMessage;
         }
 
-        private void SetEstimatedMessageSizeHeader(BrokeredMessage brokeredMessage, long estimatedSize)
+        void SetEstimatedMessageSizeHeader(BrokeredMessage brokeredMessage, long estimatedSize)
         {
             brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize] = estimatedSize;
         }
 
-        private void SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(BrokeredMessage brokeredMessage, RoutingOptions routingOptions)
+        void SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(BrokeredMessage brokeredMessage, RoutingOptions routingOptions)
         {
             if (routingOptions.SendVia && routingOptions.ViaPartitionKey != null)
             {
@@ -62,15 +62,15 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        private void SetReplyToAddress(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
+        void SetReplyToAddress(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
-                brokeredMessage.ReplyTo = _mapper.Map(outgoingMessage.Headers[Headers.ReplyToAddress]);
+                brokeredMessage.ReplyTo = mapper.Map(outgoingMessage.Headers[Headers.ReplyToAddress]);
             }
         }
 
-        private void ApplyCorrelationId(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
+        void ApplyCorrelationId(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.CorrelationId))
             {
@@ -78,7 +78,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        private void ApplyTimeToLive(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
+        void ApplyTimeToLive(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
             TimeSpan? timeToLive = null;
             if (outgoingMessage.Headers.ContainsKey(Headers.TimeToBeReceived))
@@ -94,7 +94,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        private void ApplyDeliveryConstraints(BrokeredMessage brokeredMessage, BatchedOperation operation)
+        void ApplyDeliveryConstraints(BrokeredMessage brokeredMessage, BatchedOperation operation)
         {
             DateTime? scheduledEnqueueTime = null;
 
@@ -118,10 +118,12 @@ namespace NServiceBus.AzureServiceBus
             }
 
             if (scheduledEnqueueTime.HasValue)
-                   brokeredMessage.ScheduledEnqueueTimeUtc = scheduledEnqueueTime.Value;
+            {
+                brokeredMessage.ScheduledEnqueueTimeUtc = scheduledEnqueueTime.Value;
+            }
         }
 
-        private static void CopyHeaders(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
+        static void CopyHeaders(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
             foreach (var header in outgoingMessage.Headers)
             {
@@ -129,10 +131,10 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        private BrokeredMessage CreateBrokeredMessage(OutgoingMessage outgoingMessage)
+        BrokeredMessage CreateBrokeredMessage(OutgoingMessage outgoingMessage)
         {
             BrokeredMessage brokeredMessage;
-            var bodyType = _settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
+            var bodyType = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
             switch (bodyType)
             {
                 case SupportedBrokeredMessageBodyTypes.ByteArray:

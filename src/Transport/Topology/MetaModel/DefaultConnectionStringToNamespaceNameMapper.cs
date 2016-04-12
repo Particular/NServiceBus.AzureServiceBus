@@ -2,26 +2,31 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using NServiceBus.Settings;
+    using Settings;
 
     class DefaultConnectionStringToNamespaceNameMapper : ICanMapConnectionStringToNamespaceName
     {
-        private readonly ReadOnlySettings _settings;
+        ReadOnlySettings settings;
 
         public DefaultConnectionStringToNamespaceNameMapper(ReadOnlySettings settings)
         {
-            this._settings = settings;
+            this.settings = settings;
         }
 
         public EntityAddress Map(EntityAddress value)
         {
-            if (!value.HasConnectionString) return value;
+            if (!value.HasConnectionString)
+            {
+                return value;
+            }
 
-            var namespaces = _settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
 
             var namespaceInfo = namespaces.SingleOrDefault(x => x.ConnectionString == value.Suffix);
             if (namespaceInfo != null)
+            {
                 return new EntityAddress($"{value.Name}@{namespaceInfo.Name}");
+            }
 
             throw new KeyNotFoundException();
         }

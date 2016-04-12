@@ -4,9 +4,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -91,12 +91,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedMessageReceiver : IMessageReceiver
         {
-            bool _isClosed = false;
+            bool isClosed = false;
 
-            public bool IsClosed
-            {
-                get { return _isClosed; }
-            }
+            public bool IsClosed => isClosed;
 
             public RetryPolicy RetryPolicy { get; set; }
 
@@ -115,7 +112,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
             public void Close()
             {
-                _isClosed = true;
+                isClosed = true;
             }
         }
     }

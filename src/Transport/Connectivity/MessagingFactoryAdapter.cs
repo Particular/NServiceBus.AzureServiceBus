@@ -6,42 +6,39 @@ namespace NServiceBus.AzureServiceBus
 
     class MessagingFactoryAdapter : IMessagingFactory
     {
-        readonly MessagingFactory _factory;
+        MessagingFactory factory;
 
         public MessagingFactoryAdapter(MessagingFactory factory)
         {
-            _factory = factory;
+            this.factory = factory;
         }
 
-        public bool IsClosed
-        {
-            get { return _factory.IsClosed; }
-        }
+        public bool IsClosed => factory.IsClosed;
 
         public RetryPolicy RetryPolicy
         {
-            get { return _factory.RetryPolicy; }
-            set { _factory.RetryPolicy = value; }
+            get { return factory.RetryPolicy; }
+            set { factory.RetryPolicy = value; }
         }
 
         public async Task<IMessageReceiver> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
         {
-            return new MessageReceiverAdapter(await _factory.CreateMessageReceiverAsync(entitypath, receiveMode).ConfigureAwait(false));
+            return new MessageReceiverAdapter(await factory.CreateMessageReceiverAsync(entitypath, receiveMode).ConfigureAwait(false));
         }
 
         public async Task<IMessageSender> CreateMessageSender(string entitypath)
         {
-            return new MessageSenderAdapter(await _factory.CreateMessageSenderAsync(entitypath).ConfigureAwait(false));
+            return new MessageSenderAdapter(await factory.CreateMessageSenderAsync(entitypath).ConfigureAwait(false));
         }
 
         public async Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath)
         {
-            return new MessageSenderAdapter(await _factory.CreateMessageSenderAsync(entitypath, viaEntityPath).ConfigureAwait(false));
+            return new MessageSenderAdapter(await factory.CreateMessageSenderAsync(entitypath, viaEntityPath).ConfigureAwait(false));
         }
 
         public async Task CloseAsync()
         {
-            await _factory.CloseAsync().ConfigureAwait(false);
+            await factory.CloseAsync().ConfigureAwait(false);
         }
     }
 }

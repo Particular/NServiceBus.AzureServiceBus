@@ -4,12 +4,12 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AcceptanceTesting;
-    using NServiceBus.AcceptanceTesting.Support;
+    using AcceptanceTesting;
+    using AcceptanceTesting.Support;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.MessageMutator;
+    using AzureServiceBus;
+    using MessageMutator;
     using NUnit.Framework;
 
     public class When_receiving_a_message_with_unknown_transport_encoding : NServiceBusAcceptanceTest

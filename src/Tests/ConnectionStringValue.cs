@@ -2,7 +2,7 @@
 {
     class ConnectionStringValue
     {
-        static readonly string Template = "Endpoint=sb://{0}.servicebus.windows.net;SharedAccessKeyName={1};SharedAccessKey={2}";
+        static string Template = "Endpoint=sb://{0}.servicebus.windows.net;SharedAccessKeyName={1};SharedAccessKey={2}";
 
         internal static readonly string Sample = Build();
 

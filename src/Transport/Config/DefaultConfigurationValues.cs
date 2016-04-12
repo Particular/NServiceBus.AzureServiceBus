@@ -3,8 +3,8 @@
     using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using NServiceBus.Settings;
+    using Topology.MetaModel;
+    using Settings;
 
     class DefaultConfigurationValues
     {
@@ -70,7 +70,7 @@
 
             var maxDeliveryCount = 10;// (!settings.HasExplicitValue(typeof(FirstLevelRetries).FullName) || settings.IsFeatureEnabled(typeof(FirstLevelRetries))) ? 6 : 1;
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount, maxDeliveryCount);
-            
+
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresSession, false);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning, false);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering, false);

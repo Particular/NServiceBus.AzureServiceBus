@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    
+
     /// <summary>
     /// Operational aspects of running on top of the topology
     /// Takes care of the topology and it's specific state at runtime

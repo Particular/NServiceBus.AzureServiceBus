@@ -5,9 +5,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
     using FakeItEasy;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Azure.WindowsAzureServiceBus.Tests.TestUtils;
-    using NServiceBus.AzureServiceBus;
-    using NServiceBus.Settings;
+    using TestUtils;
+    using AzureServiceBus;
+    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -205,7 +205,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             extensions.Topics().EnablePartitioning(true);
 
             var creator = new AzureServiceBusTopicCreator(settings);
-           
+
             await creator.Create(topicPath, namespaceManager);
 
             var foundTopic = await namespaceManager.GetTopic(topicPath);
@@ -300,7 +300,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             Assert.IsFalse(foundTopic.SupportOrdering);
         }
 
-        
+
         [Test]
         public async Task Should_not_throw_when_another_node_creates_the_same_topic_first()
         {
@@ -353,7 +353,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).Throws(new MessagingException("boom", false, new Exception("wrapped")));
-            
+
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var creator = new AzureServiceBusTopicCreator(settings);
 
