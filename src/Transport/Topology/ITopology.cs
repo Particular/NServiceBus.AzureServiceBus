@@ -18,6 +18,5 @@ namespace NServiceBus.AzureServiceBus
 
         bool HasNativePubSubSupport { get; }
         bool HasSupportForCentralizedPubSub { get;}
-        bool NeedsMappingConfigurationBetweenPublishersAndEventTypes { get; }
     }
 }
