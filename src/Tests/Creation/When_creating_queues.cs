@@ -36,7 +36,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         public async Task Uses_queue_description_when_provided_by_user()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var descriptionToUse = new QueueDescription("myqueue");
@@ -67,7 +67,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             // actual test
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().ForwardDeadLetteredMessagesTo("myotherqueue");
 
@@ -90,7 +90,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().ForwardDeadLetteredMessagesTo(name => name == "myqueue", "myotherqueue");
 
@@ -116,7 +116,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().EnableExpress(true);
 
@@ -138,7 +138,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().EnableExpress(name => name == "myqueue", true);
 
@@ -161,7 +161,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().AutoDeleteOnIdle(TimeSpan.FromDays(1));
 
@@ -186,7 +186,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             await namespaceManager.DeleteQueue("myqueue");
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().EnablePartitioning(true);
 
@@ -208,7 +208,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().EnableBatchedOperations(false);
 
@@ -230,7 +230,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().MaxDeliveryCount(10);
 
@@ -252,7 +252,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().DuplicateDetectionHistoryTimeWindow(TimeSpan.FromMinutes(20));
 
@@ -274,7 +274,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().EnableDeadLetteringOnMessageExpiration(true);
 
@@ -296,7 +296,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().DefaultMessageTimeToLive(TimeSpan.FromDays(1));
 
@@ -321,7 +321,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             await namespaceManager.DeleteQueue("myqueue");
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().RequiresSession(true);
 
@@ -343,7 +343,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().RequiresDuplicateDetection(true);
 
@@ -365,7 +365,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().MaxSizeInMegabytes(SizeInMegabytes.Size3072);
 
@@ -387,7 +387,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().LockDuration(TimeSpan.FromMinutes(5));
 
@@ -409,7 +409,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().SupportOrdering(true);
 
@@ -432,7 +432,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             await namespaceManager.CreateQueue(new QueueDescription("existingqueue"));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Queues().DescriptionFactory((queuePath, readOnlySettings) => new QueueDescription(queuePath)
             {
                 AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
@@ -458,11 +458,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
                 LockDuration = TimeSpan.FromSeconds(50),
                 RequiresDuplicateDetection = true,
                 EnablePartitioning = true,
-                RequiresSession = true,
+                RequiresSession = true
             });
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Queues().DescriptionFactory((queuePath, readOnlySettings) => new QueueDescription(queuePath)
             {
                 LockDuration = TimeSpan.FromSeconds(50),

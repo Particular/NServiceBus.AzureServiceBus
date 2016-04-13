@@ -13,7 +13,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_AutoDeleteOnIdle()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var idlePeriod = TimeSpan.FromDays(10);
             var queueSettings = extensions.Queues().AutoDeleteOnIdle(idlePeriod);
@@ -24,7 +24,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_DefaultMessageTimeToLive()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var expiryTimespan = TimeSpan.FromDays(1);
             var queueSettings = extensions.Queues().DefaultMessageTimeToLive(expiryTimespan);
@@ -35,7 +35,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_DuplicateDetectionHistoryTimeWindow()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var dedupTimespan = TimeSpan.FromMinutes(20);
             var queueSettings = extensions.Queues().DuplicateDetectionHistoryTimeWindow(dedupTimespan);
@@ -47,7 +47,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_EnableBatchedOperations()
         {
             var setting = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(setting);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             var queueSettings = extensions.Queues().EnableBatchedOperations(true);
 
@@ -58,7 +58,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_EnableDeadLetteringOnMessageExpiration()
         {
             var setting = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(setting);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             var queueSettings = extensions.Queues().EnableDeadLetteringOnMessageExpiration(true);
 
@@ -69,7 +69,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_EnableExpress()
         {
             var setting = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(setting);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             var queueSettings = extensions.Queues().EnableExpress(true);
 
@@ -80,7 +80,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_EnableExpress_conditionally()
         {
             var setting = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(setting);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             Func<string, bool> condition = name => name != "expressqueue";
             var queueSettings = extensions.Queues().EnableExpress(condition, true);
@@ -94,7 +94,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_EnablePartitioning()
         {
             var setting = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(setting);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             var queueSettings = extensions.Queues().EnablePartitioning(true);
 
@@ -105,7 +105,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_ForwardDeadLetteredMessagesTo()
         {
             var setting = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(setting);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             var queueSettings = extensions.Queues().ForwardDeadLetteredMessagesTo("deadletteredmessages");
 
@@ -116,7 +116,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_ForwardDeadLetteredMessagesTo_conditionally()
         {
             var setting = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(setting);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             Func<string, bool> condition = n => n != "deadletteredmessages";
             var queueSettings = extensions.Queues().ForwardDeadLetteredMessagesTo(condition, "deadletteredmessages");
@@ -129,7 +129,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_LockDuration()
         {
             var setting = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(setting);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             var lockDuration = TimeSpan.FromDays(1);
             var queueSettings = extensions.Queues().LockDuration(lockDuration);
@@ -141,7 +141,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_MaxDeliveryCount()
         {
             var setting = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(setting);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             const int selectedMaxDeliveryCount = 6;
             var queueSettings = extensions.Queues().MaxDeliveryCount(selectedMaxDeliveryCount);
@@ -153,7 +153,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_MaxSizeInMegabytes()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             const long maxTopicSizeInMB = 2048;
             var queueSettings = extensions.Queues().MaxSizeInMegabytes(SizeInMegabytes.Size2048);
@@ -165,7 +165,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_RequiresDuplicateDetection()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var queueSettings = extensions.Queues().RequiresDuplicateDetection(true);
 
@@ -176,7 +176,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_RequiresSession()
         {
             var setting = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(setting);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
 
             var queueSettings = extensions.Queues().RequiresSession(true);
 
@@ -187,7 +187,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_SupportOrdering()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var queueSettings = extensions.Queues().SupportOrdering(true);
 

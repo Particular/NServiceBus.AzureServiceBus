@@ -76,7 +76,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault<EndpointName>(new EndpointName(enpointname));
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 

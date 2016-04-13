@@ -14,7 +14,7 @@
         public void Should_be_able_to_set_AutoDeleteOnIdle()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var topicSettings = extensions.Topics().AutoDeleteOnIdle(TimeSpan.MinValue);
 
@@ -25,7 +25,7 @@
         public void Should_be_able_to_set_DefaultMessageTimeToLive()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var timeToLive = TimeSpan.FromHours(5);
             var topicSettings = extensions.Topics().DefaultMessageTimeToLive(timeToLive);
@@ -37,7 +37,7 @@
         public void Should_be_able_to_set_DuplicateDetectionHistoryTimeWindow()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var dedupTimeWindow = TimeSpan.FromMilliseconds(30000);
             var topicSettings = extensions.Topics().DuplicateDetectionHistoryTimeWindow(dedupTimeWindow);
@@ -49,7 +49,7 @@
         public void Should_be_able_to_set_EnableBatchedOperations()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var topicSettings = extensions.Topics().EnableBatchedOperations(true);
 
@@ -60,7 +60,7 @@
         public void Should_be_able_to_set_EnableExpress()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var topicSettings = extensions.Topics().EnableExpress(true);
 
@@ -71,7 +71,7 @@
         public void Should_be_able_to_set_EnableExpress_conditionally()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, bool> condition = name => name != "expresstopic";
             var topicSettings = extensions.Topics().EnableExpress(condition, true);
@@ -84,7 +84,7 @@
         public void Should_be_able_to_set_EnableFilteringMessagesBeforePublishing()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var topicSettings = extensions.Topics().EnableFilteringMessagesBeforePublishing(true);
 
@@ -95,7 +95,7 @@
         public void Should_be_able_to_set_EnablePartitioning()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var topicSettings = extensions.Topics().EnablePartitioning(true);
 
@@ -106,7 +106,7 @@
         public void Should_be_able_to_set_MaxSizeInMegabytes()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             const long maxTopicSizeInMB = 2048;
             var topicSettings = extensions.Topics().MaxSizeInMegabytes(SizeInMegabytes.Size2048);
@@ -118,7 +118,7 @@
         public void Should_be_able_to_set_RequiresDuplicateDetection()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var topicSettings = extensions.Topics().RequiresDuplicateDetection(true);
 
@@ -129,7 +129,7 @@
         public void Should_be_able_to_set_SupportOrdering()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var topicSettings = extensions.Topics().SupportOrdering(true);
 

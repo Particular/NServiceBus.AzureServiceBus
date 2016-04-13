@@ -11,14 +11,14 @@
     public class When_configuring_use_logical_namespace_name
     {
         SettingsHolder settingsHolder;
-        AzureServiceBusTopologySettings extensions;
+        TransportExtensions<AzureServiceBusTransport> extensions;
 
         [SetUp]
         public void SetUp()
         {
             settingsHolder = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settingsHolder);
-            extensions = new AzureServiceBusTopologySettings(settingsHolder);
+            extensions = new TransportExtensions<AzureServiceBusTransport>(settingsHolder);
         }
 
         [Test]

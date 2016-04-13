@@ -20,7 +20,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         public void SetUp()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace("namespace1", Primary);
             extensions.NamespacePartitioning().AddNamespace("namespace2", Secondary);
             extensions.NamespacePartitioning().AddNamespace("namespace3", Tertiary);
@@ -64,7 +64,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         public void Replicated_partitioning_strategy_will_throw_if_too_little_namespaces_are_provided()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace("namespace1", Primary);
 
             Assert.Throws<ConfigurationErrorsException>(() => new ReplicatedNamespacePartitioning(settings));
