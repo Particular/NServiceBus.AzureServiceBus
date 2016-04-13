@@ -147,7 +147,6 @@ namespace NServiceBus.AzureServiceBus
         public EndpointOrientedTopology() { }
         public bool HasNativePubSubSupport { get; }
         public bool HasSupportForCentralizedPubSub { get; }
-        public bool NeedsMappingConfigurationBetweenPublishersAndEventTypes { get; }
         public System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory() { }
         public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
         public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
@@ -192,7 +191,6 @@ namespace NServiceBus.AzureServiceBus
         public ForwardingTopology() { }
         public bool HasNativePubSubSupport { get; }
         public bool HasSupportForCentralizedPubSub { get; }
-        public bool NeedsMappingConfigurationBetweenPublishersAndEventTypes { get; }
         public System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory() { }
         public System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory() { }
         public NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
@@ -370,7 +368,6 @@ namespace NServiceBus.AzureServiceBus
     {
         bool HasNativePubSubSupport { get; }
         bool HasSupportForCentralizedPubSub { get; }
-        bool NeedsMappingConfigurationBetweenPublishersAndEventTypes { get; }
         System.Func<NServiceBus.Transports.IDispatchMessages> GetDispatcherFactory();
         System.Func<NServiceBus.Transports.IPushMessages> GetMessagePumpFactory();
         NServiceBus.Transports.OutboundRoutingPolicy GetOutboundRoutingPolicy();
@@ -535,6 +532,11 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusCompositionSettings UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy { }
     }
+    public class static AzureServiceBusEndpointOrientedTopologySettingsExtensions
+    {
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> RegisterPublisherForAssembly(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> topologySettings, string publisherName, System.Reflection.Assembly assembly) { }
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> RegisterPublisherForType(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> topologySettings, string publisherName, System.Type type) { }
+    }
     public class AzureServiceBusIndividualizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusIndividualizationSettings(NServiceBus.Settings.SettingsHolder settings) { }
@@ -633,11 +635,10 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusTopicSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusTopicSettings SupportOrdering(bool supported) { }
     }
-    public class AzureServiceBusTopologySettings : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport>
+    public class AzureServiceBusTopologySettings<T> : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport>
+        where T : NServiceBus.AzureServiceBus.ITopology
     {
         public AzureServiceBusTopologySettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusTopologySettings RegisterPublisherForAssembly(string publisherName, System.Reflection.Assembly assembly) { }
-        public NServiceBus.AzureServiceBusTopologySettings RegisterPublisherForType(string publisherName, System.Type type) { }
     }
     public class AzureServiceBusTransport : NServiceBus.Transports.TransportDefinition
     {
@@ -663,11 +664,11 @@ namespace NServiceBus
         public static NServiceBus.AzureServiceBusSubscriptionSettings Subscriptions(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusTopicSettings Topics(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void UseNamespaceNamesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
-        public static NServiceBus.AzureServiceBusTopologySettings UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
+        public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
             where T : NServiceBus.AzureServiceBus.ITopology, new () { }
-        public static NServiceBus.AzureServiceBusTopologySettings UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, System.Func<T> factory)
+        public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, System.Func<T> factory)
             where T : NServiceBus.AzureServiceBus.ITopology { }
-        public static NServiceBus.AzureServiceBusTopologySettings UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, T topology)
+        public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, T topology)
             where T : NServiceBus.AzureServiceBus.ITopology { }
         public static NServiceBus.AzureServiceBusValidationSettings Validation(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
     }
