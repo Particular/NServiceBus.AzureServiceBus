@@ -1,6 +1,5 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
-    using System;
     using System.Collections.Generic;
     using System.Reflection;
     using AzureServiceBus;
@@ -46,13 +45,13 @@
             CollectionAssert.Contains(publishers["publisherName"], new AssemblyTypesScanner(Assembly.GetExecutingAssembly()));
         }
 
-        [Test]
+        [Test, Explicit("Works as per design. It's impossible to access Publisher API using a topology other than `EndpointOrientedTopology`")]
         public void Should_not_be_possible_configure_publishers_using_forwarding_topology()
         {
-            var topologySettings = extensions.UseTopology<ForwardingTopology>();
+//            var topologySettings = extensions.UseTopology<ForwardingTopology>();
 
-            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisherForType("publisherName", typeof(MyType)));
-            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisherForAssembly("publisherName", Assembly.GetExecutingAssembly()));
+//            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisherForType("publisherName", typeof(MyType)));
+//            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisherForAssembly("publisherName", Assembly.GetExecutingAssembly()));
         }
 
         class MyType

@@ -12,13 +12,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
     public class When_configuring_validation
     {
         SettingsHolder settingsHolder;
-        AzureServiceBusTopologySettings extensions;
+        TransportExtensions<AzureServiceBusTransport> extensions;
 
         [SetUp]
         public void SetUp()
         {
             settingsHolder = new SettingsHolder();
-            extensions = new AzureServiceBusTopologySettings(settingsHolder);
+            extensions = new TransportExtensions<AzureServiceBusTransport>(settingsHolder);
         }
 
         [Test]

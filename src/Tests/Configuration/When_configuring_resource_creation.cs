@@ -15,7 +15,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_queue_description_factory_method()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, ReadOnlySettings, QueueDescription> registeredFactory = (name, s) => new QueueDescription(name);
 
@@ -28,7 +28,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_topic_description_factory_method()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, ReadOnlySettings, TopicDescription> registeredFactory = (name, s) => new TopicDescription(name);
 
@@ -41,7 +41,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_subscription_description_factory_method()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, string, ReadOnlySettings, SubscriptionDescription> registeredFactory = (topicname, subscriptionname, s) => new SubscriptionDescription(topicname, subscriptionname);
 

@@ -21,13 +21,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
 
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
+            // ReSharper disable once RedundantArgumentDefaultValue
             var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring, NamespaceMode.Active);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
         }
@@ -40,7 +41,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
@@ -58,7 +59,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);

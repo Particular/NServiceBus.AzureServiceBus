@@ -15,7 +15,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Should_be_able_to_set_the_composition_strategy()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var topicSettings = extensions.Composition().UseStrategy<MyCompositionStrategy>();
 

@@ -23,7 +23,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         public void SetUp()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
 
             strategy = new SingleNamespacePartitioning(settings);
@@ -73,7 +73,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         public void Single_partitioning_strategy_will_throw_if_more_namespaces_defined()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
             extensions.NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
 

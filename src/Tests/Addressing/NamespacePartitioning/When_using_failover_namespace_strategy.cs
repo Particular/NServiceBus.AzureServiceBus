@@ -25,7 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         public void SetUp()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
             extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
 
@@ -86,7 +86,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         public void Failover_partitioning_strategy_will_throw_if_no_secondary_namespace_is_provided()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
 
             Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning(settings));
@@ -96,7 +96,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         public void Failover_partitioning_strategy_will_throw_if_more_than_primary_and_secondary_namespaces_are_provided()
         {
             var settings = new SettingsHolder();
-            var extensions = new AzureServiceBusTopologySettings(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
             extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
             extensions.NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);

@@ -9,22 +9,22 @@ namespace NServiceBus
 
     public static class AzureServiceBusTransportExtensions
     {
-        public static AzureServiceBusTopologySettings UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions) where T : ITopology, new()
+        public static AzureServiceBusTopologySettings<T> UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions) where T : ITopology, new()
         {
             var topology = Activator.CreateInstance<T>();
             return UseTopology(transportExtensions, topology);
         }
 
-        public static AzureServiceBusTopologySettings UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, Func<T> factory) where T : ITopology
+        public static AzureServiceBusTopologySettings<T> UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, Func<T> factory) where T : ITopology
         {
             return UseTopology(transportExtensions, factory());
         }
 
-        public static AzureServiceBusTopologySettings UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, T topology) where T : ITopology
+        public static AzureServiceBusTopologySettings<T> UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, T topology) where T : ITopology
         {
             var settings = transportExtensions.GetSettings();
             settings.Set<ITopology>(topology);
-            return new AzureServiceBusTopologySettings(settings);
+            return new AzureServiceBusTopologySettings<T>(settings);
         }
 
 
