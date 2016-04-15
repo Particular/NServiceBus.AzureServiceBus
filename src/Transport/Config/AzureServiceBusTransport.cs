@@ -14,7 +14,7 @@
         {
             settings.SetDefault("Transactions.DoNotWrapHandlersExecutionInATransactionScope", true);
             settings.SetDefault("Transactions.SuppressDistributedTransactions", true);
-            settings.SetDefault<ITopology>(new EndpointOrientedTopology());
+            
             // override core default serialization
             settings.SetDefault<SerializationDefinition>(new JsonSerializer());
 
