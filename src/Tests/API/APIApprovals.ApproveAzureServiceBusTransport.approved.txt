@@ -537,6 +537,11 @@ namespace NServiceBus
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> RegisterPublisherForAssembly(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> topologySettings, string publisherName, System.Reflection.Assembly assembly) { }
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> RegisterPublisherForType(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> topologySettings, string publisherName, System.Type type) { }
     }
+    public class static AzureServiceBusForwardingTopologySettingsExtensions
+    {
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> BundlePrefix(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> topologySettings, string prefix) { }
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> topologySettings, int number) { }
+    }
     public class AzureServiceBusIndividualizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusIndividualizationSettings(NServiceBus.Settings.SettingsHolder settings) { }
