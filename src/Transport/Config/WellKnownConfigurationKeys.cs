@@ -16,7 +16,6 @@ namespace NServiceBus.AzureServiceBus
                     public const string LockDuration = "AzureServiceBus.Settings.Topology.Resources.Queues.LockDuration";
                     public const string MaxSizeInMegabytes = "AzureServiceBus.Settings.Topology.Resources.Queues.MaxSizeInMegabytes";
                     public const string RequiresDuplicateDetection = "AzureServiceBus.Settings.Topology.Resources.Queues.RequiresDuplicateDetection";
-                    public const string RequiresSession = "AzureServiceBus.Settings.Topology.Resources.Queues.RequiresSession";
                     public const string DefaultMessageTimeToLive = "AzureServiceBus.Settings.Topology.Resources.Queues.DefaultMessageTimeToLive";
                     public const string EnableDeadLetteringOnMessageExpiration = "AzureServiceBus.Settings.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration";
                     public const string DuplicateDetectionHistoryTimeWindow = "AzureServiceBus.Settings.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow";
@@ -61,7 +60,6 @@ namespace NServiceBus.AzureServiceBus
                     public const string EnableDeadLetteringOnMessageExpiration = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.EnableDeadLetteringOnMessageExpiration";
                     public const string LockDuration = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.LockDuration";
                     public const string MaxDeliveryCount = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.MaxDeliveryCount";
-                    public const string RequiresSession = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.RequiresSession";
 
                     public const string ForwardDeadLetteredMessagesTo = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo";
                     public const string ForwardDeadLetteredMessagesToCondition = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition";

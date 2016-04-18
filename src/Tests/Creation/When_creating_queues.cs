@@ -313,31 +313,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         }
 
         [Test]
-        public async Task Properly_sets_RequiresSession_on_the_created_entity()
-        {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            //make sure any existing queue is cleaned up as the RequiresSession property cannot be changed on existing queues
-            await namespaceManager.DeleteQueue("myqueue");
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.Queues().RequiresSession(true);
-
-            var creator = new AzureServiceBusQueueCreator(settings);
-
-            await creator.Create("myqueue", namespaceManager);
-
-            var real = await namespaceManager.GetQueue("myqueue");
-
-            Assert.IsTrue(real.RequiresSession);
-
-            //cleanup
-            await namespaceManager.DeleteQueue("myqueue");
-        }
-
-        [Test]
         public async Task Properly_sets_RequiresDuplicateDetection_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
