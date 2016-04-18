@@ -104,15 +104,6 @@ namespace NServiceBus
         /// <summary>
         /// <remarks> Default is false.</remarks>
         /// </summary>
-        public AzureServiceBusSubscriptionSettings RequiresSession(bool requiresSession)
-        {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.RequiresSession, requiresSession);
-            return this;
-        }
-
-        /// <summary>
-        /// <remarks> Default is false.</remarks>
-        /// </summary>
         public AzureServiceBusSubscriptionSettings AutoDeleteOnIdle(TimeSpan autoDeleteOnIdle)
         {
             settings.Set(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.AutoDeleteOnIdle, autoDeleteOnIdle);

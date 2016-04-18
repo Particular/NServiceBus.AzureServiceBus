@@ -279,28 +279,6 @@
         }
 
         [Test]
-        public async Task Should_properly_set_RequiresSession_on_the_created_entity()
-        {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().RequiresSession(true);
-
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
-
-            const string subscriptionName = "endpoint10";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
-
-            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
-
-            Assert.IsTrue(foundDescription.RequiresSession);
-
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-        }
-
-        [Test]
         public async Task Should_set_forwarding_to_an_explicitly_provided_forwardto()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));

@@ -173,17 +173,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         }
 
         [Test]
-        public void Should_be_able_to_set_RequiresSession()
-        {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
-
-            var queueSettings = extensions.Queues().RequiresSession(true);
-
-            Assert.AreEqual(true, queueSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresSession));
-        }
-
-        [Test]
         public void Should_be_able_to_set_SupportOrdering()
         {
             var settings = new SettingsHolder();

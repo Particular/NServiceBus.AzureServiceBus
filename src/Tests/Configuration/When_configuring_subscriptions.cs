@@ -114,16 +114,5 @@
 
             Assert.AreEqual(selectedMaxDeliveryCount, subscriptionSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.MaxDeliveryCount));
         }
-
-        [Test]
-        public void Should_be_able_to_set_RequiresSession()
-        {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
-
-            var subscriptionSettings = extensions.Subscriptions().RequiresSession(true);
-
-            Assert.AreEqual(true, subscriptionSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.RequiresSession));
-        }
     }
 }

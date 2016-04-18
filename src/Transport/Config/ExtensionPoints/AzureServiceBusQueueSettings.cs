@@ -140,16 +140,6 @@
         /// <summary>
         /// <remarks> Default is false.</remarks>
         /// </summary>
-        public AzureServiceBusQueueSettings RequiresSession(bool requiresSession)
-        {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresSession, requiresSession);
-
-            return this;
-        }
-
-        /// <summary>
-        /// <remarks> Default is false.</remarks>
-        /// </summary>
         public AzureServiceBusQueueSettings RequiresDuplicateDetection(bool requiresDuplicateDetection)
         {
             settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresDuplicateDetection, requiresDuplicateDetection);
