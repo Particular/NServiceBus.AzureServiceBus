@@ -600,7 +600,6 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings MaxDeliveryCount(int maxDeliveryCount) { }
         public NServiceBus.AzureServiceBusQueueSettings MaxSizeInMegabytes(NServiceBus.SizeInMegabytes maxSizeInMegabytes) { }
         public NServiceBus.AzureServiceBusQueueSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
-        public NServiceBus.AzureServiceBusQueueSettings RequiresSession(bool requiresSession) { }
         public NServiceBus.AzureServiceBusQueueSettings SupportOrdering(bool supported) { }
     }
     public class AzureServiceBusSanitizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
@@ -622,7 +621,6 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusSubscriptionSettings ForwardDeadLetteredMessagesTo(System.Func<string, bool> condition, string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings LockDuration(System.TimeSpan lockDuration) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings MaxDeliveryCount(int maxDeliveryCount) { }
-        public NServiceBus.AzureServiceBusSubscriptionSettings RequiresSession(bool requiresSession) { }
     }
     public class AzureServiceBusTopicSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
