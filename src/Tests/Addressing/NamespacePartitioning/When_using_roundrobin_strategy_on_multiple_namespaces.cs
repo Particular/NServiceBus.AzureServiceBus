@@ -36,7 +36,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Roundrobin_partitioning_strategy_will_return_a_single_connectionstring_for_purpose_of_sending()
         {
-            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending);
+            var namespaces = strategy.GetNamespaces(PartitioningIntent.Sending);
 
             Assert.AreEqual(1, namespaces.Count());
         }
@@ -44,7 +44,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Roundrobin_partitioning_strategy_will_return_all_connectionstrings_for_purpose_of_creating()
         {
-            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
+            var namespaces = strategy.GetNamespaces(PartitioningIntent.Creating);
 
             Assert.AreEqual(3, namespaces.Count());
         }
@@ -52,7 +52,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Roundrobin_partitioning_strategy_will_return_all_connectionstrings_for_purpose_of_receiving()
         {
-            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Receiving);
+            var namespaces = strategy.GetNamespaces(PartitioningIntent.Receiving);
 
             Assert.AreEqual(3, namespaces.Count());
         }
@@ -60,13 +60,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Roundrobin_partitioning_strategy_will_circle_active_namespace()
         {
-            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
-            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
-            Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
 
-            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
-            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
-            Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
         }
 
         [Test]

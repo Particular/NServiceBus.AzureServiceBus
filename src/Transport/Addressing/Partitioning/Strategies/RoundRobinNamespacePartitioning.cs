@@ -22,7 +22,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             Array.ForEach(namespaces.ToArray(), x => this.namespaces.Put(x));
         }
 
-        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
+        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {
             if (partitioningIntent == PartitioningIntent.Sending)
             {

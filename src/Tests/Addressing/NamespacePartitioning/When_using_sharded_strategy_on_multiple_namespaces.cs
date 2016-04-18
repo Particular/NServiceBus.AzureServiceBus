@@ -38,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             strategy.SetShardingRule(() => 0);
 
-            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending);
+            var namespaces = strategy.GetNamespaces(PartitioningIntent.Sending);
             Assert.AreEqual(1, namespaces.Count());
         }
 
@@ -47,7 +47,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             strategy.SetShardingRule(() => 0);
 
-            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Creating);
+            var namespaces = strategy.GetNamespaces(PartitioningIntent.Creating);
             Assert.AreEqual(3, namespaces.Count());
         }
 
@@ -56,7 +56,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             strategy.SetShardingRule(() => 0);
 
-            var namespaces = strategy.GetNamespaces("endpoint1", PartitioningIntent.Receiving);
+            var namespaces = strategy.GetNamespaces(PartitioningIntent.Receiving);
             Assert.AreEqual(3, namespaces.Count());
         }
 
@@ -64,11 +64,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         public void Sharded_partitioning_strategy_will_circle__the_active_namespace()
         {
             strategy.SetShardingRule(() => 0);
-            Assert.AreEqual(new RuntimeNamespaceInfo(Name1, ConnectionString1, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(Name1, ConnectionString1, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
             strategy.SetShardingRule(() => 1);
-            Assert.AreEqual(new RuntimeNamespaceInfo(Name2, ConnectionString2, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(Name2, ConnectionString2, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
             strategy.SetShardingRule(() => 2);
-            Assert.AreEqual(new RuntimeNamespaceInfo(Name3, ConnectionString3, NamespaceMode.Active), strategy.GetNamespaces("endpoint1", PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(Name3, ConnectionString3, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
         }
 
         [Test]

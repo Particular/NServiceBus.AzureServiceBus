@@ -24,7 +24,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             shardingRule = rule;
         }
 
-        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointname, PartitioningIntent partitioningIntent)
+        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {
             if (shardingRule == null)
             {

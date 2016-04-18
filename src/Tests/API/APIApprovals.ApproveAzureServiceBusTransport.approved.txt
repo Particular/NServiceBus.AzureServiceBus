@@ -49,7 +49,7 @@
         public FailOverNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
         public NServiceBus.AzureServiceBus.Addressing.FailOverMode Mode { get; set; }
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.FailOverNamespacePartitioning.<GetNamespaces>d__6))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
     public class FlatComposition : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
     {
@@ -72,7 +72,7 @@
     }
     public interface INamespacePartitioningStrategy
     {
-        System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent);
+        System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent);
     }
     public interface ISanitizationStrategy
     {
@@ -91,26 +91,26 @@
     public class ReplicatedNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
         public ReplicatedNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
     public class RoundRobinNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
         public RoundRobinNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.RoundRobinNamespacePartitioning.<GetNamespaces>d__2))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
     public class ShardedNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
         public ShardedNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.ShardedNamespacePartitioning.<GetNamespaces>d__4))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointname, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
         public void SetShardingRule(System.Func<int> rule) { }
     }
     public class SingleNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
         public SingleNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.SingleNamespacePartitioning.<GetNamespaces>d__2))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(string endpointName, NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
     public class ThrowOnFailingSanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {

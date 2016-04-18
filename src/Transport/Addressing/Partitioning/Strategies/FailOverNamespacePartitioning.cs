@@ -19,7 +19,7 @@
 
         public FailOverMode Mode { get; set; }
 
-        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(string endpointName, PartitioningIntent partitioningIntent)
+        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {
             var primary = namespaces.First();
             var secondary = namespaces.Last();
