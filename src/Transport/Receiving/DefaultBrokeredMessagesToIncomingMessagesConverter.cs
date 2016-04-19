@@ -14,6 +14,7 @@ namespace NServiceBus.AzureServiceBus
         ILog logger = LogManager.GetLogger<DefaultBrokeredMessagesToIncomingMessagesConverter>();
         ReadOnlySettings settings;
         ICanMapConnectionStringToNamespaceName mapper;
+        static byte[] EmptyBody = new byte[0];
 
         public DefaultBrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings, ICanMapConnectionStringToNamespaceName mapper)
         {
@@ -41,7 +42,7 @@ namespace NServiceBus.AzureServiceBus
                 case "wcf/byte-array":
                     try
                     {
-                        rawBody = new MemoryStream(brokeredMessage.GetBody<byte[]>() ?? new byte[0]);
+                        rawBody = new MemoryStream(brokeredMessage.GetBody<byte[]>() ?? EmptyBody);
                     }
                     catch (Exception e)
                     {
