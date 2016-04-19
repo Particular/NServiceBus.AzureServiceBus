@@ -33,21 +33,24 @@ namespace NServiceBus.AzureServiceBus
             maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes);
         }
 
-        public async Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContext context)
+        public Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContext context)
         {
+            var pendingBatches = new List<Task>();
             foreach (var batch in outgoingBatches)
             {
-                await RouteBatch(batch, context).ConfigureAwait(false);
+                pendingBatches.Add(RouteBatch(batch, context));
             }
+            return Task.WhenAll(pendingBatches);
         }
 
-        public async Task RouteBatch(Batch batch, ReceiveContext context)
+        public Task RouteBatch(Batch batch, ReceiveContext context)
         {
             var outgoingBatches = batch.Operations;
-            if (!outgoingBatches.Any()) return;
 
             var activeNamespaces = batch.Destinations.Namespaces.Where(n => n.Mode == NamespaceMode.Active).ToList();
             var passiveNamespaces = batch.Destinations.Namespaces.Where(n => n.Mode == NamespaceMode.Passive).ToList();
+            var pendingSends = new List<Task>();
+
             foreach (var entity in batch.Destinations.Entities)
             {
                 var routingOptions = GetRoutingOptions(context);
@@ -64,7 +67,6 @@ namespace NServiceBus.AzureServiceBus
                 // don't use via on fallback, not supported across namespaces
                 var fallbacks = passiveNamespaces.Select(ns => senders.Get(entity.Path, null, ns.Name)).ToList();
 
-                var pendingSends = new List<Task>();
                 foreach (var ns in activeNamespaces)
                 {
                     // only use via if the destination and via namespace are the same
@@ -75,9 +77,8 @@ namespace NServiceBus.AzureServiceBus
 
                     pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages));
                 }
-
-                await Task.WhenAll(pendingSends).ConfigureAwait(false);
             }
+            return Task.WhenAll(pendingSends);
         }
 
         RoutingOptions GetRoutingOptions(ReceiveContext receiveContext)
@@ -110,7 +111,6 @@ namespace NServiceBus.AzureServiceBus
 
         async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend)
         {
-
             try
             {
                 await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend).ConfigureAwait(false);

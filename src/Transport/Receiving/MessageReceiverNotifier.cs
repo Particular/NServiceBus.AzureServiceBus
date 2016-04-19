@@ -128,7 +128,7 @@ namespace NServiceBus.AzureServiceBus
                 return;
             }
 
-            var context = new BrokeredMessageReceiveContext()
+            var context = new BrokeredMessageReceiveContext
             {
                 IncomingBrokeredMessage = message,
                 Entity = entity,
@@ -146,7 +146,7 @@ namespace NServiceBus.AzureServiceBus
                 }
                 else
                 {
-                   await InvokeCompletionCallbacksAsync(message, context).ConfigureAwait(false);
+                   await InvokeCompletionCallbacksAsync(context).ConfigureAwait(false);
                 }
             }
             catch (Exception exception)
@@ -155,7 +155,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task InvokeCompletionCallbacksAsync(BrokeredMessage message, BrokeredMessageReceiveContext context)
+        async Task InvokeCompletionCallbacksAsync(BrokeredMessageReceiveContext context)
         {
             // send via receive queue only works when wrapped in a scope
             var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
@@ -166,11 +166,11 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task AbandonAsync(BrokeredMessage message)
+        Task AbandonAsync(BrokeredMessage message)
         {
             logger.Info("Received message while shutting down, abandoning it so we can process it later.");
 
-            await AbandonInternal(message).ConfigureAwait(false);
+            return AbandonInternal(message);
         }
 
         Task AbandonAsyncOnCancellation(BrokeredMessage message)

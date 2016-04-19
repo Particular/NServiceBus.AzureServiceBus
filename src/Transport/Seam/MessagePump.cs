@@ -40,7 +40,7 @@ namespace NServiceBus.AzureServiceBus
                 var tokenSource = new CancellationTokenSource();
                 receiveContext.CancellationToken = tokenSource.Token;
 
-                circuitBreaker?.Success();
+                circuitBreaker.Success();
 
                 var context = new ContextBag();
 
@@ -56,10 +56,10 @@ namespace NServiceBus.AzureServiceBus
         // For internal testing purposes.
         internal void OnError(Func<Exception, Task> func)
         {
-            topologyOperator.OnError(exception =>
+            topologyOperator.OnError(async exception =>
             {
-                circuitBreaker?.Failure(exception);
-                return func(exception);
+                await circuitBreaker.Failure(exception).ConfigureAwait(false);
+                await func(exception).ConfigureAwait(false);
             });
         }
 
@@ -84,5 +84,5 @@ namespace NServiceBus.AzureServiceBus
         }
     }
 
-    public class NoTransaction : TransportTransaction { }
+    class NoTransaction : TransportTransaction { }
 }

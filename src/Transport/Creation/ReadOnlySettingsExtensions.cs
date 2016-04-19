@@ -14,9 +14,7 @@ namespace NServiceBus.AzureServiceBus
             return GetConditional<T>(settings, () => condition(name), key);
         }
 
-        //todo, these 2 methods should become part of the core
-
-        internal static T GetConditional<T>(this ReadOnlySettings settings, Func<bool> condition, string key)
+        static T GetConditional<T>(this ReadOnlySettings settings, Func<bool> condition, string key)
         {
             if (condition())
             {
@@ -26,7 +24,7 @@ namespace NServiceBus.AzureServiceBus
             return settings.GetDefault<T>(key);
         }
 
-        internal static T GetDefault<T>(this ReadOnlySettings settings, string key)
+        static T GetDefault<T>(this ReadOnlySettings settings, string key)
         {
             object result;
             var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;

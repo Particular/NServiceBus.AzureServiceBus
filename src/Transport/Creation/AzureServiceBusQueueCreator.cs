@@ -109,10 +109,16 @@
             var key = queuePath + namespaceClient.Address;
             logger.InfoFormat("Checking existence cache for '{0}'", queuePath);
 
-            var exists = await rememberExistence.GetOrAdd(key, async s =>
+            if (removeCacheEntry)
+            {
+                Task<bool> dummy;
+                rememberExistence.TryRemove(key, out dummy);
+            }
+
+            var exists = await rememberExistence.GetOrAdd(key, s =>
             {
                 logger.InfoFormat("Checking namespace for existence of the queue '{0}'", queuePath);
-                return await namespaceClient.QueueExists(queuePath).ConfigureAwait(false);
+                return namespaceClient.QueueExists(queuePath);
             }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the queue '{0}' {1}", queuePath, exists ? "exists" : "does not exist");

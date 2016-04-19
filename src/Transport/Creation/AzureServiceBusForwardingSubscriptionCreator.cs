@@ -37,7 +37,7 @@
 
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo)
         {
-            var meta = (metadata as ForwardingTopologySubscriptionMetadata);
+            var meta = metadata as ForwardingTopologySubscriptionMetadata;
             if (meta == null)
             {
                 throw new InvalidOperationException($"Cannot create subscription `{subscriptionName}` for topic `{topicPath}` without namespace inforation required.");
@@ -147,10 +147,10 @@
                 rememberExistence.TryRemove(key, out dummy);
             }
 
-            var exists = await rememberExistence.GetOrAdd(key, async notFoundKey =>
+            var exists = await rememberExistence.GetOrAdd(key, notFoundKey =>
             {
                 logger.Info($"Checking namespace for existence of subscription '{subscriptionName}' for the topic '{topicPath}'");
-                return await namespaceClient.SubscriptionExists(topicPath, subscriptionName).ConfigureAwait(false);
+                return namespaceClient.SubscriptionExists(topicPath, subscriptionName);
             }).ConfigureAwait(false);
 
             logger.Info($"Determined, from cache, that the subscription '{subscriptionName}' {(exists ? "exists" : "does not exist")}");

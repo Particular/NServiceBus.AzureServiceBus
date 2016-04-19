@@ -121,10 +121,10 @@
                 rememberExistence.TryRemove(key, out dummy);
             }
 
-            var exists = await rememberExistence.GetOrAdd(key, async notFoundKey =>
+            var exists = await rememberExistence.GetOrAdd(key, notFoundKey =>
             {
                 logger.InfoFormat("Checking namespace for existence of subscription '{0}' for the topic '{1}'", subscriptionName, topicPath);
-                return await namespaceClient.SubscriptionExists(topicPath, subscriptionName).ConfigureAwait(false);
+                return namespaceClient.SubscriptionExists(topicPath, subscriptionName);
             }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the subscription '{0}' {1}", subscriptionName, exists ? "exists" : "does not exist");
