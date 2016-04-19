@@ -40,7 +40,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
-            var queue = await creator.Create("autorenewtimeout", namespaceManager);
+            await creator.Create("autorenewtimeout", namespaceManager);
 
             var receivedMessages = 0;
             var completed = new AsyncAutoResetEvent(false);
@@ -59,13 +59,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             notifier.Initialize(new EntityInfo { Path = "autorenewtimeout", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 async (message, context) =>
                 {
-                    Interlocked.Increment(ref receivedMessages);
-                    if (receivedMessages > 1)
+                    if (message.MessageId == messageToSend.MessageId)
                     {
-                        Assert.Fail("Callback should only receive one message once, but it did more than that.");
+                        Interlocked.Increment(ref receivedMessages);
+                        if (receivedMessages > 1)
+                        {
+                            Assert.Fail("Callback should only receive one message once, but it did more than that.");
+                        }
+                        await Task.Delay(TimeSpan.FromSeconds(30));
+                        completed.Set();
                     }
-                    await Task.Delay(TimeSpan.FromSeconds(30));
-                    completed.Set();
                 }, null, 10);
 
 
@@ -73,15 +76,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             sw.Start();
             notifier.Start();
             await completed.WaitOne();
+            await Task.Delay(TimeSpan.FromSeconds(10));
             sw.Stop();
 
             await notifier.Stop();
 
-            Assert.IsTrue(receivedMessages == 1);
+            Assert.AreEqual(1, receivedMessages, $"Expected to receive message once, but got {receivedMessages}.");
             Console.WriteLine($"Callback processing took {sw.ElapsedMilliseconds} milliseconds");
-
-            // make sure message is autocompleted
-            Assert.That(queue.MessageCount, Is.EqualTo(0), "Messages where not completed!");
 
             //cleanup
             await namespaceManager.DeleteQueue("autorenewtimeout");
