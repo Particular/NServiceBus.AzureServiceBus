@@ -166,11 +166,11 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task AbandonAsync(BrokeredMessage message)
+        Task AbandonAsync(BrokeredMessage message)
         {
             logger.Info("Received message while shutting down, abandoning it so we can process it later.");
 
-            await AbandonInternal(message).ConfigureAwait(false);
+            return AbandonInternal(message);
         }
 
         Task AbandonAsyncOnCancellation(BrokeredMessage message)
