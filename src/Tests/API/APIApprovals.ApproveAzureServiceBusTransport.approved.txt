@@ -440,10 +440,6 @@ namespace NServiceBus.AzureServiceBus
         Active = 0,
         Passive = 1,
     }
-    public class NoTransaction : NServiceBus.Transports.TransportTransaction
-    {
-        public NoTransaction() { }
-    }
     public abstract class ReceiveContext
     {
         protected ReceiveContext() { }
