@@ -111,10 +111,10 @@
                 rememberExistence.TryRemove(topicPath, out dummy);
             }
 
-            var exists = await rememberExistence.GetOrAdd(topicPath, async notFoundTopicPath =>
+            var exists = await rememberExistence.GetOrAdd(topicPath, notFoundTopicPath =>
             {
                 logger.InfoFormat("Checking namespace for existence of the topic '{0}'", notFoundTopicPath);
-                return await namespaceClient.TopicExists(notFoundTopicPath).ConfigureAwait(false);
+                return namespaceClient.TopicExists(notFoundTopicPath);
             }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the topic '{0}' {1}", topicPath, exists ? "exists" : "does not exist");
