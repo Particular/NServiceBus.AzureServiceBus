@@ -40,7 +40,7 @@
                 Logger.WarnFormat("The circuit breaker for {0} is now in the armed state", name);
             }
 
-            return Task.Delay(TimeSpan.FromSeconds(1));
+            return TaskEx.Completed;
         }
 
         public void Dispose()
