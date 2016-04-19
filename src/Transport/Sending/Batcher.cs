@@ -2,7 +2,6 @@ namespace NServiceBus.AzureServiceBus
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using Settings;
     using Transports;
 
@@ -29,7 +28,7 @@ namespace NServiceBus.AzureServiceBus
         {
             foreach (var unicastOperation in operations.UnicastTransportOperations)
             {
-                var key = ComputeKeyFor(unicastOperation);
+                var key = $"unicast-{unicastOperation.Destination}-consistency-{unicastOperation.RequiredDispatchConsistency}";
                 Batch batch;
                 if (!indexedBatches.TryGetValue(key, out batch))
                 {
@@ -51,7 +50,7 @@ namespace NServiceBus.AzureServiceBus
         {
             foreach (var multicastOperation in operations.MulticastTransportOperations)
             {
-                var key = ComputeKeyFor(multicastOperation);
+                var key = $"multicast-{multicastOperation.MessageType}-consistency-{multicastOperation.RequiredDispatchConsistency}";
                 Batch batch;
                 if (!indexedBatches.TryGetValue(key, out batch))
                 {
@@ -67,24 +66,6 @@ namespace NServiceBus.AzureServiceBus
                     Message = multicastOperation.Message
                 });
             }
-        }
-
-        string ComputeKeyFor(MulticastTransportOperation operation)
-        {
-            var sb = new StringBuilder();
-            sb.Append($"multicast;-{operation.MessageType}");
-            sb.Append($"-consistency-{operation.RequiredDispatchConsistency}");
-            return sb.ToString();
-        }
-
-        string ComputeKeyFor(UnicastTransportOperation operation)
-        {
-            var sb = new StringBuilder();
-
-            sb.Append($"unicast-{operation.Destination}");
-            sb.Append($"-consistency-{operation.RequiredDispatchConsistency}");
-
-            return sb.ToString();
         }
     }
 }
