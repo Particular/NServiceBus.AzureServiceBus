@@ -38,7 +38,7 @@
         }
 
         [Test]
-        public void Should_batch_transport_operations_of_the_same_type_with_the_same_dispatch_consitency()
+        public void Should_batch_transport_operations_of_the_same_type_with_the_same_dispatch_consistency()
         {
             var headers = new Dictionary<string, string>();
             var body = new byte[0];
@@ -62,7 +62,7 @@
         }
 
         [Test]
-        public void Should_not_batch_transport_operations_of_the_same_type_with_different_dispatch_consitency()
+        public void Should_not_batch_transport_operations_of_the_same_type_with_different_dispatch_consistency()
         {
             var headers = new Dictionary<string, string>();
             var body = new byte[0];

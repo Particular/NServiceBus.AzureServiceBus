@@ -22,7 +22,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.EventsScanner
         }
 
         [Test]
-        public void Two_scanners_should_be_not_equal_if_they_reference_two_differents_types()
+        public void Two_scanners_should_be_not_equal_if_they_reference_two_different_types()
         {
             var scanner1 = new SingleTypeScanner(typeof(MyType1));
             var scanner2 = new SingleTypeScanner(typeof(MyType2));

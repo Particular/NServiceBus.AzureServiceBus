@@ -4,7 +4,6 @@
 
     [TestFixture]
     [Category("AzureServiceBus")]
-
     public class When_creating_sizeinmegabytes
     {
         [Test]
