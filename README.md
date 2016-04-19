@@ -6,3 +6,6 @@ The Azure ServiceBus transport for NServiceBus enables the use of the Azure Serv
 
 [Azure Transport](http://docs.particular.net/nservicebus/windows-azure-transport)
 [Samples](http://docs.particular.net/samples/azure/)
+
+## Maintainers
+The following team is responsible for this repository: @Particular/azure-service-bus-maintainers
