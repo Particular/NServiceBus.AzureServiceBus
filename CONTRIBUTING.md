@@ -12,6 +12,14 @@ top of things.
   * If it is a bug make sure you tell us what version you have encountered this bug on.
 * Fork the repository on GitHub
 
+## Running the Acceptance Tests
+ 
+Follow these steps to run the acceptance tests locally:
+
+* Add a new environment variable `Transport.UseSpecific` with the value `AzureServiceBusTransport`
+* Add a new environment variable `AzureServiceBusTransport.ConnectionString` containing a connection string to your Azure storage account 
+* Add a new environment variable `AzureServiceBusTransport.Topology` and set it to _ForwardingTopology_ to run tests configuring transport with `ForwardingTopology` topology. Don't setup `AzureServiceBusTransport.Topology` environment variable to run tests with `EndpointOrientedTopology` topology
+
 ## Making Changes
 
 * Create a feature branch from where you want to base your work.
