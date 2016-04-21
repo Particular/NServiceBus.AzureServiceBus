@@ -131,7 +131,6 @@
     <Compile Include="Topology\MetaModel\PassThroughNamespaceNameToConnectionStringMapper.cs" />
     <Compile Include="Topology\MetaModel\SubscriptionMetadata.cs" />
     <Compile Include="Topology\PreStartupChecks\ManageRightsCheck.cs" />
-    <Compile Include="Topology\PreStartupChecks\TopicPartitioningCheckForForwardingTopology.cs" />
     <Compile Include="Topology\PublishersConfiguration.cs" />
     <Compile Include="Utils\BrokeredMessageHeaders.cs" />
     <Compile Include="Sending\IHandleOversizedBrokeredMessages.cs" />

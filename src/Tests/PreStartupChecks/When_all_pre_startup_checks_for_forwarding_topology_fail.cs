@@ -36,7 +36,6 @@
             var result = await topology.RunPreStartupChecks();
 
             Assert.That(result.ErrorMessage, Is.StringContaining("Configured to create topology, but have no manage rights for the following namespace(s)"));
-            Assert.That(result.ErrorMessage, Is.StringContaining("topic partitioning should be disabled. Disable topic partitioning by removing"));
             Console.WriteLine(result.ErrorMessage);
         }
     }
