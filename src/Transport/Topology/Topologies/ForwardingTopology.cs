@@ -121,12 +121,10 @@ namespace NServiceBus.AzureServiceBus
             var settings = container.Resolve<ReadOnlySettings>();
 
             var manageRightsCheck = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycle>(), settings);
-            var topicPartitioningCheck = new TopicPartitioningCheckForForwardingTopology(settings);
 
             var results = new List<StartupCheckResult>
             {
                 await manageRightsCheck.Run().ConfigureAwait(false),
-                await topicPartitioningCheck.Run().ConfigureAwait(false)
             };
 
             if (results.Any(x => x.Succeeded == false))

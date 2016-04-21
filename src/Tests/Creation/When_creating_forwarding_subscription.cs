@@ -357,7 +357,7 @@
         [Test]
         public async Task Should_create_subscription_with_sql_filter()
         {
-            const string subscriptionName = "SomeEvent";
+            const string subscriber = "subscriber";
             const string filter = @"[NServiceBus.EnclosedMessageTypes] LIKE 'Test.SomeEvent%'"
                                 + " OR [NServiceBus.EnclosedMessageTypes] LIKE '%Test.SomeEvent%'"
                                 + " OR [NServiceBus.EnclosedMessageTypes] LIKE '%Test.SomeEvent'"
@@ -368,7 +368,7 @@
 
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
-            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, filter, namespaceManager, forwardToQueue);
+            var subscriptionDescription = await creator.Create(topicPath, subscriber, metadata, filter, namespaceManager, forwardToQueue);
             var rules = await namespaceManager.GetRules(subscriptionDescription);
             var foundFilter = rules.First().Filter as SqlFilter;
 
@@ -376,7 +376,7 @@
             Assert.IsTrue(rules.Count() == 1, "Subscription should only have 1 rule");
             Assert.AreEqual(filter, foundFilter.SqlExpression, "Rule was expected to have a specific SQL filter, but it didn't");
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriber);
         }
 
 
@@ -443,5 +443,38 @@
             var rules = await namespaceManager.GetRules(new SubscriptionDescription(topicPath, "someendpoint"));
             Assert.AreEqual(1, rules.Count());
         }
+
+        [Test]
+        public async Task Should_be_able_to_create_partitioned_topic_with_multiple_rules()
+        {
+            const string subscriber = "subscriber";
+            const string filter1 = @"[x] LIKE 'x%'";
+            const string filter2 = @"[y] LIKE 'y%'";
+            var metadata2 = new ForwardingTopologySubscriptionMetadata
+            {
+                Description = "endpoint blah",
+                NamespaceInfo = new RuntimeNamespaceInfo("name", AzureServiceBusConnectionString.Value),
+                SubscribedEventFullName = "event2.full.name",
+                SubscriptionNameBasedOnEventWithNamespace = "sha1.of.event2.full.name"
+            };
+
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseTopology<ForwardingTopology>().Topics().EnablePartitioning(true);
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
+            // add subscription with one rule
+            await creator.Create(topicPath, subscriber, metadata, filter1, namespaceManager, forwardToQueue);
+            // add additional rule to the same subscription
+            var subscriptionDescription = await creator.Create(topicPath, subscriber, metadata2, filter2, namespaceManager, forwardToQueue);
+            var rules = await namespaceManager.GetRules(subscriptionDescription);
+
+            Assert.That(rules.Count(), Is.EqualTo(2), "Subscription didn't have correct number of rules");
+
+            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriber);
+        }
+
     }
 }
