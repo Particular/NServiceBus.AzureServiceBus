@@ -20,8 +20,6 @@
         /// <remarks> Default is <see cref="SingleNamespacePartitioning"/>. 
         /// Additional strategies are <see cref="RoundRobinNamespacePartitioning"/>,
         /// <see cref="FailOverNamespacePartitioning"/>,
-        /// <see cref="ShardedNamespacePartitioning"/>,
-        /// <see cref="ReplicatedNamespacePartitioning"/>.
         /// </remarks>
         /// </summary>
         public AzureServiceBusNamespacePartitioningSettings UseStrategy<T>() where T : INamespacePartitioningStrategy

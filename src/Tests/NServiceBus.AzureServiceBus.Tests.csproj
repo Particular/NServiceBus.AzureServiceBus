@@ -94,9 +94,7 @@
     <Compile Include="Addressing\Composition\When_using_flat_composition_strategy.cs" />
     <Compile Include="Addressing\Individualization\When_using_core_individualization_strategy.cs" />
     <Compile Include="Addressing\Individualization\When_using_discriminator_individualization_strategy.cs" />
-    <Compile Include="Addressing\NamespacePartitioning\When_using_sharded_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_failover_namespace_strategy.cs" />
-    <Compile Include="Addressing\NamespacePartitioning\When_using_replicated_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_roundrobin_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_single_namespace_strategy.cs" />
     <Compile Include="Addressing\Sanitization\When_building_SHA1_based_name.cs" />

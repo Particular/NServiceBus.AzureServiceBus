@@ -148,10 +148,8 @@
     <Compile Include="Receiving\ReceiveContext.cs" />
     <Compile Include="Sending\RoutingOptions.cs" />
     <Compile Include="Addressing\Partitioning\PartitioningIntent.cs" />
-    <Compile Include="Addressing\Partitioning\Strategies\ShardedNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioning.cs" />
-    <Compile Include="Addressing\Partitioning\Strategies\ReplicatedNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioning.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitization.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\EndpointValidationException.cs" />
