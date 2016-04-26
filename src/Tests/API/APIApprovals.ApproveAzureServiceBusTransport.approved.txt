@@ -88,23 +88,11 @@
         Sending = 1,
         Creating = 2,
     }
-    public class ReplicatedNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
-    {
-        public ReplicatedNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
-    }
     public class RoundRobinNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
         public RoundRobinNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.RoundRobinNamespacePartitioning.<GetNamespaces>d__2))]
         public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
-    }
-    public class ShardedNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
-    {
-        public ShardedNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.ShardedNamespacePartitioning.<GetNamespaces>d__4))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
-        public void SetShardingRule(System.Func<int> rule) { }
     }
     public class SingleNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
     {
@@ -222,7 +210,6 @@ namespace NServiceBus.AzureServiceBus
     }
     public interface IConvertOutgoingMessagesToBrokeredMessages
     {
-        Microsoft.ServiceBus.Messaging.BrokeredMessage Convert(NServiceBus.AzureServiceBus.BatchedOperation outgoingOperation, NServiceBus.AzureServiceBus.RoutingOptions routingOptions);
         System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> Convert(System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.BatchedOperation> outgoingOperations, NServiceBus.AzureServiceBus.RoutingOptions routingOptions);
     }
     public interface ICreateAzureServiceBusQueues
