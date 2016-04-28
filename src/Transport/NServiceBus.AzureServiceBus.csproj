@@ -152,7 +152,6 @@
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioning.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitization.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\EndpointValidationException.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitization.cs" />
     <Compile Include="Addressing\Validation\IValidationStrategy.cs" />
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />

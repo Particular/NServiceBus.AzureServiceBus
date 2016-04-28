@@ -22,13 +22,6 @@
         public string Individualize(string endpointname) { }
         public void SetDiscriminatorGenerator(System.Func<string> discriminatorGenerator) { }
     }
-    public class EndpointValidationException : System.Exception
-    {
-        public EndpointValidationException() { }
-        public EndpointValidationException(string message) { }
-        public EndpointValidationException(string message, System.Exception inner) { }
-        protected EndpointValidationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
-    }
     public class EntityNameValidationRules : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy
     {
         public EntityNameValidationRules(NServiceBus.Settings.ReadOnlySettings settings) { }
