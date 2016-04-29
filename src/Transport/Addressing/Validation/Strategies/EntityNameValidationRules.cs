@@ -16,24 +16,30 @@ namespace NServiceBus.AzureServiceBus.Addressing
         public bool IsValid(string entityPath, EntityType entityType)
         {
             // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
-            var topicQueueNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$");
+            var topicAndQueueNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$");
             // Except for subscriptions, these cannot contain slashes (/)
-            var subscriptionNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
+            var subscriptionAndRuleNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
             var valid = true;
 
             switch (entityType)
             {
                 case EntityType.Queue:
                     valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength);
-                    valid &= topicQueueNameRegex.IsMatch(entityPath);
+                    valid &= topicAndQueueNameRegex.IsMatch(entityPath);
                     break;
                 case EntityType.Topic:
                     valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength);
-                    valid &= topicQueueNameRegex.IsMatch(entityPath);
+                    valid &= topicAndQueueNameRegex.IsMatch(entityPath);
                     break;
                 case EntityType.Subscription:
                     valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength);
-                    valid &= subscriptionNameRegex.IsMatch(entityPath);
+                    valid &= subscriptionAndRuleNameRegex.IsMatch(entityPath);
+                    break;
+                case EntityType.Rule:
+                    valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength);
+                    valid &= subscriptionAndRuleNameRegex.IsMatch(entityPath);
+                    break;
+                case EntityType.EventHub:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);

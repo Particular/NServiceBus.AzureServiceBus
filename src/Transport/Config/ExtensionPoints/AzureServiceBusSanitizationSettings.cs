@@ -9,15 +9,14 @@ namespace NServiceBus
     {
          SettingsHolder settings;
 
-         public AzureServiceBusSanitizationSettings(SettingsHolder settings)
-            : base(settings)
+         public AzureServiceBusSanitizationSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }
 
         /// <summary>
         /// Rules to apply for entity path/name sanitization.
-        /// <remarks> Default is <see cref="AdjustmentSanitization"/>. For backwards compatibility, use <see cref="AdjustmentSanitizationV6"/>.</remarks>
+        /// <remarks> Default is <see cref="ThrowOnFailingSanitization"/>. For backward compatibility with <see cref="EndpointOrientedTopology"/> use <see cref="EndpointOrientedTopologySanitization"/>.</remarks>
         /// </summary>
         public AzureServiceBusSanitizationSettings UseStrategy<T>() where T : ISanitizationStrategy
          {

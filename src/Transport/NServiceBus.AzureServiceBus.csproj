@@ -88,7 +88,7 @@
     <Compile Include="Addressing\Partitioning\Strategies\FailOverMode.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualization.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualization.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitizationV6.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\EndpointOrientedTopologySanitization.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\SHA1DeterministicNameBuilder.cs" />
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationV6Rules.cs" />
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
@@ -152,7 +152,6 @@
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioning.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\AdjustmentSanitization.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\EndpointValidationException.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitization.cs" />
     <Compile Include="Addressing\Validation\IValidationStrategy.cs" />
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
