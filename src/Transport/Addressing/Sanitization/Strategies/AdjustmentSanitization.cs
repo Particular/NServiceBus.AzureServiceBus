@@ -3,7 +3,8 @@ namespace NServiceBus.AzureServiceBus.Addressing
     using System.Text.RegularExpressions;
     using Topology.MetaModel;
 
-    public class AdjustmentSanitization : ISanitizationStrategy
+    // TODO: remove when converted into a sample
+    class AdjustmentSanitization : ISanitizationStrategy
     {
         IValidationStrategy validationStrategy;
 
@@ -12,12 +13,12 @@ namespace NServiceBus.AzureServiceBus.Addressing
             this.validationStrategy = validationStrategy;
         }
 
-        public string Sanitize(string entityPath, EntityType entityType)
+        public string Sanitize(string entityPathOrName, EntityType entityType)
         {
             if (entityType == EntityType.Queue)
             {
-                var address = new EntityAddress(entityPath);
-                entityPath = address.Name;
+                var address = new EntityAddress(entityPathOrName);
+                entityPathOrName = address.Name;
             }
 
             // remove invalid characters
@@ -26,23 +27,22 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 var regexQueueAndTopicValidCharacters = new Regex(@"[^a-zA-Z0-9\-\._\/]");
                 var regexLeadingAndTrailingForwardSlashes = new Regex(@"^\/|\/$");
 
-                entityPath = regexQueueAndTopicValidCharacters.Replace(entityPath, "");
-                entityPath = regexLeadingAndTrailingForwardSlashes.Replace(entityPath, "");
+                entityPathOrName = regexQueueAndTopicValidCharacters.Replace(entityPathOrName, "");
+                entityPathOrName = regexLeadingAndTrailingForwardSlashes.Replace(entityPathOrName, "");
             }
 
             if (entityType == EntityType.Subscription || entityType == EntityType.Rule || entityType == EntityType.EventHub)
             {
                 var rgx = new Regex(@"[^a-zA-Z0-9\-\._]");
-                entityPath = rgx.Replace(entityPath, "");
+                entityPathOrName = rgx.Replace(entityPathOrName, "");
             }
 
-            if (!validationStrategy.IsValid(entityPath, entityType))
+            if (!validationStrategy.IsValid(entityPathOrName, entityType))
             {
-                // turn long name into a guid
-                entityPath = SHA1DeterministicNameBuilder.Build(entityPath);
+                entityPathOrName = SHA1DeterministicNameBuilder.Build(entityPathOrName);
             }
 
-            return entityPath;
+            return entityPathOrName;
         }
     }
 }

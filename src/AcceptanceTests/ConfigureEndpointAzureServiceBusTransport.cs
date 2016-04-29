@@ -64,7 +64,7 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisherForType("MultiSubscribingToAPolymorphicEventOnMulticastTransports.Publisher2", typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent2));
         }
 
-        transportConfig.Sanitization().UseStrategy<AdjustmentSanitization>();
+        transportConfig.Sanitization().UseStrategy<EndpointOrientedTopologySanitization>();
 
         config.RegisterComponents(c => { c.ConfigureComponent<TestIndependenceMutator>(DependencyLifecycle.SingleInstance); });
 

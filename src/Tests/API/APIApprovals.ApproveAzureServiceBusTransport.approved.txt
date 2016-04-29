@@ -1,16 +1,6 @@
 ﻿namespace NServiceBus.AzureServiceBus.Addressing
 {
     
-    public class AdjustmentSanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
-    {
-        public AdjustmentSanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
-        public string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
-    }
-    public class AdjustmentSanitizationV6 : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
-    {
-        public AdjustmentSanitizationV6(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
-        public string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
-    }
     public class CoreIndividualization : NServiceBus.AzureServiceBus.Addressing.IIndividualizationStrategy
     {
         public CoreIndividualization() { }
@@ -21,6 +11,11 @@
         public DiscriminatorBasedIndividualization() { }
         public string Individualize(string endpointname) { }
         public void SetDiscriminatorGenerator(System.Func<string> discriminatorGenerator) { }
+    }
+    public class EndpointOrientedTopologySanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    {
+        public EndpointOrientedTopologySanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
+        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
     }
     public class EntityNameValidationRules : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy
     {
@@ -69,7 +64,7 @@
     }
     public interface ISanitizationStrategy
     {
-        string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType);
+        string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType);
     }
     public interface IValidationStrategy
     {
@@ -96,7 +91,7 @@
     public class ThrowOnFailingSanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
         public ThrowOnFailingSanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
-        public string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
+        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
     }
 }
 namespace NServiceBus.AzureServiceBus
