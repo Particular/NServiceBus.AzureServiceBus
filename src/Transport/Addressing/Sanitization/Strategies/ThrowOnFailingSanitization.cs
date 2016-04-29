@@ -11,7 +11,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             this.validationStrategy = validationStrategy;
         }
 
-        public string Sanitize(string entityPath, EntityType entityType)
+        public string Sanitize(string entityPathOrName, EntityType entityType)
         {
             var pathOrName = "path";
 
@@ -20,12 +20,12 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 pathOrName = "name";
             }
 
-            if (!validationStrategy.IsValid(entityPath, entityType))
+            if (!validationStrategy.IsValid(entityPathOrName, entityType))
             {
-                throw new Exception($"Invalid {entityType} {pathOrName} `{entityPath}` that cannot be used with Azure Service Bus. {entityType} {pathOrName} exceeds length or contains invalid characters.");
+                throw new Exception($"Invalid {entityType} {pathOrName} `{entityPathOrName}` that cannot be used with Azure Service Bus. {entityType} {pathOrName} exceeds length or contains invalid characters.");
             }
 
-            return entityPath;
+            return entityPathOrName;
         }
     }
 }
