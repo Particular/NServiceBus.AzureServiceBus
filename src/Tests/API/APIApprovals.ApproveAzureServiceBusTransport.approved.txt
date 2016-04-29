@@ -166,6 +166,7 @@ namespace NServiceBus.AzureServiceBus
         Topic = 1,
         Subscription = 2,
         EventHub = 3,
+        Rule = 4,
     }
     public class ForwardingTopology : NServiceBus.AzureServiceBus.ITopology
     {
@@ -655,6 +656,7 @@ namespace NServiceBus
     {
         public AzureServiceBusValidationSettings(NServiceBus.Settings.SettingsHolder settings) { }
         public NServiceBus.AzureServiceBusValidationSettings UseQueuePathMaximumLength(int queuePathMaximumLength) { }
+        public NServiceBus.AzureServiceBusValidationSettings UseRulePathMaximumLength(int rulePathMaximumLength) { }
         public NServiceBus.AzureServiceBusValidationSettings UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy { }
         public NServiceBus.AzureServiceBusValidationSettings UseSubscriptionPathMaximumLength(int subscriptionPathMaximumLength) { }

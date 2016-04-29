@@ -104,7 +104,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var sectionManager = container.Resolve<ITopologySectionManager>();
             sectionManager.DetermineResourcesToCreate();
 
-            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeEvent));
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
 
             Assert.That(section.Entities.Count(), Is.EqualTo(2));
             // TODO: need to verify that subscription is done on each topic
@@ -129,7 +129,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var sectionManager = container.Resolve<ITopologySectionManager>();
             sectionManager.DetermineResourcesToCreate();
 
-            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeEvent));
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
 
             Assert.IsTrue(section.Entities.All(e => e.Path == "sales"), "Subscription name should be matching subscribing endpoint name, but it wasn't.");
         }
@@ -152,14 +152,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var sectionManager = container.Resolve<ITopologySectionManager>();
             sectionManager.DetermineResourcesToCreate();
 
-            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeEvent));
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
 
             Assert.IsFalse(section.Entities.Any(x => x.ShouldBeListenedTo));
         }
-
-
-        class SomeEvent
-        {
-        }
     }
+}
+
+class SomeTestEvent
+{
 }
