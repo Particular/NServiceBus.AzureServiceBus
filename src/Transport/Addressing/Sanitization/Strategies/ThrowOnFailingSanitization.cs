@@ -15,7 +15,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
         {
             if (!validationStrategy.IsValid(entityPath, entityType))
             {
-                throw new Exception("The entity path {0} cannot be used as a path for azure servicebus entities");
+                throw new Exception($"The entity path `{entityPath}` cannot be used as a path for azure service bus {entityType}");
             }
 
             return entityPath;

@@ -17,7 +17,7 @@ namespace NServiceBus
 
         /// <summary>
         /// Rules to apply for entity path/name sanitization.
-        /// <remarks> Default is <see cref="AdjustmentSanitization"/>. For backwards compatibility, use <see cref="AdjustmentSanitizationV6"/>.</remarks>
+        /// <remarks> Default is <see cref="ThrowOnFailingSanitization"/>. For backwards compatibility, use <see cref="AdjustmentSanitizationV6"/>.</remarks>
         /// </summary>
         public AzureServiceBusSanitizationSettings UseStrategy<T>() where T : ISanitizationStrategy
          {
