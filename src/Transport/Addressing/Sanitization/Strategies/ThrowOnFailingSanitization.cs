@@ -22,7 +22,8 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
             if (!validationStrategy.IsValid(entityPathOrName, entityType))
             {
-                throw new Exception($"Invalid {entityType} {pathOrName} `{entityPathOrName}` that cannot be used with Azure Service Bus. {entityType} {pathOrName} exceeds length or contains invalid characters.");
+                throw new Exception($"Invalid {entityType} {pathOrName} `{entityPathOrName}` that cannot be used with Azure Service Bus. {entityType} {pathOrName} exceeds maximum allowed length or contains invalid characters. " + 
+                                    "Check for invalid characters, shorten the name, or use `Sanitization().UseStrategy<ISanitizationStrategy>()` configuration extension.");
             }
 
             return entityPathOrName;
