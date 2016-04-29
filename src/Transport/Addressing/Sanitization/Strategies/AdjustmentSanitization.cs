@@ -30,7 +30,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 entityPath = regexLeadingAndTrailingForwardSlashes.Replace(entityPath, "");
             }
 
-            if (entityType == EntityType.Subscription || entityType == EntityType.EventHub)
+            if (entityType == EntityType.Subscription || entityType == EntityType.Rule || entityType == EntityType.EventHub)
             {
                 var rgx = new Regex(@"[^a-zA-Z0-9\-\._]");
                 entityPath = rgx.Replace(entityPath, "");
