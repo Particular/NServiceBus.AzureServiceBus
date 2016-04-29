@@ -38,7 +38,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(SomeEvent).Name),
-                new SqlSubscriptionFilter(typeof(Creation.SomeEvent)).Serialize());
+                new SqlSubscriptionFilter(typeof(SomeEvent)).Serialize());
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -55,8 +55,6 @@
             Assert.AreEqual(metadata.Description, subscriptionDescription.UserMetadata);
             Assert.AreEqual(metadata.SubscriptionNameBasedOnEventWithNamespace, subscriptionDescription.Name);
         }
-
-        class SomeEvent {}
     }
 
     class SomeEvent { }
