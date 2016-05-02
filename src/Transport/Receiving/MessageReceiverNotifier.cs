@@ -55,7 +55,7 @@ namespace NServiceBus.AzureServiceBus
 
             options = new OnMessageOptions
             {
-                AutoComplete = true,
+                AutoComplete = false,
                 AutoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
                 MaxConcurrentCalls = maximumConcurrency
             };
@@ -148,6 +148,8 @@ namespace NServiceBus.AzureServiceBus
                 {
                    await InvokeCompletionCallbacksAsync(context).ConfigureAwait(false);
                 }
+
+                await message.SafeCompleteAsync().ConfigureAwait(false);
             }
             catch (Exception exception)
             {
