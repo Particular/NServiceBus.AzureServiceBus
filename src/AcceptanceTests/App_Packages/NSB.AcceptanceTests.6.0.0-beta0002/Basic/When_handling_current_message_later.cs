@@ -6,7 +6,7 @@
     using EndpointTemplates;
     using Features;
     using NServiceBus.Config;
-    using NServiceBus.UnitOfWork;
+    using UnitOfWork;
     using NUnit.Framework;
 
     public class When_handling_current_message_later : NServiceBusAcceptanceTest
