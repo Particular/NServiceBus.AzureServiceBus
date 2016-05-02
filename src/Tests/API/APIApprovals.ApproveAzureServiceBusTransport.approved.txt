@@ -1,6 +1,16 @@
 ﻿namespace NServiceBus.AzureServiceBus.Addressing
 {
     
+    public class AdjustmentSanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    {
+        public AdjustmentSanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
+        public string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
+    }
+    public class AdjustmentSanitizationV6 : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    {
+        public AdjustmentSanitizationV6(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
+        public string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
+    }
     public class CoreIndividualization : NServiceBus.AzureServiceBus.Addressing.IIndividualizationStrategy
     {
         public CoreIndividualization() { }
@@ -12,10 +22,12 @@
         public string Individualize(string endpointname) { }
         public void SetDiscriminatorGenerator(System.Func<string> discriminatorGenerator) { }
     }
-    public class EndpointOrientedTopologySanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    public class EndpointValidationException : System.Exception
     {
-        public EndpointOrientedTopologySanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
-        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
+        public EndpointValidationException() { }
+        public EndpointValidationException(string message) { }
+        public EndpointValidationException(string message, System.Exception inner) { }
+        protected EndpointValidationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
     }
     public class EntityNameValidationRules : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy
     {
@@ -64,7 +76,7 @@
     }
     public interface ISanitizationStrategy
     {
-        string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType);
+        string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType);
     }
     public interface IValidationStrategy
     {
@@ -91,7 +103,7 @@
     public class ThrowOnFailingSanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
         public ThrowOnFailingSanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
-        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
+        public string Sanitize(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
     }
 }
 namespace NServiceBus.AzureServiceBus
@@ -161,7 +173,6 @@ namespace NServiceBus.AzureServiceBus
         Topic = 1,
         Subscription = 2,
         EventHub = 3,
-        Rule = 4,
     }
     public class ForwardingTopology : NServiceBus.AzureServiceBus.ITopology
     {
@@ -651,7 +662,6 @@ namespace NServiceBus
     {
         public AzureServiceBusValidationSettings(NServiceBus.Settings.SettingsHolder settings) { }
         public NServiceBus.AzureServiceBusValidationSettings UseQueuePathMaximumLength(int queuePathMaximumLength) { }
-        public NServiceBus.AzureServiceBusValidationSettings UseRulePathMaximumLength(int rulePathMaximumLength) { }
         public NServiceBus.AzureServiceBusValidationSettings UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy { }
         public NServiceBus.AzureServiceBusValidationSettings UseSubscriptionPathMaximumLength(int subscriptionPathMaximumLength) { }

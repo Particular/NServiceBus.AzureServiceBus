@@ -54,15 +54,5 @@
 
             return this;
         }
-
-        /// <summary>
-        /// <remarks> Default is 50 characters.</remarks>
-        /// </summary>
-        public AzureServiceBusValidationSettings UseRulePathMaximumLength(int rulePathMaximumLength)
-        {
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength, rulePathMaximumLength);
-
-            return this;
-        }
     }
 }

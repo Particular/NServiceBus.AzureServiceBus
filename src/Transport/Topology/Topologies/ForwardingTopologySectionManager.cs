@@ -64,14 +64,14 @@ namespace NServiceBus.AzureServiceBus
                 {
                     inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
                     {
-                        Path = sanitizationStrategy.Sanitize(p, EntityType.Queue),
+                        Path = p,
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
 
                     inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
                     {
-                        Path = sanitizationStrategy.Sanitize(p, EntityType.Queue),
+                        Path = p,
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
@@ -163,8 +163,8 @@ namespace NServiceBus.AzureServiceBus
 
             var sanitizedInputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
             var sanitizedSubscriptionPath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Subscription);
-            // rule name needs to be 1) based on event full name 2) unique 3) deterministic
-            var ruleName = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Rule);
+            // rule name needs 1) based on event full name 2) unique 3) deterministic
+            var ruleName = SHA1DeterministicNameBuilder.Build(eventType.FullName);
 
             if (!topics.Any())
             {

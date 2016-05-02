@@ -64,7 +64,7 @@ namespace NServiceBus.AzureServiceBus
                 {
                     entities.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
                     {
-                        Path = sanitizationStrategy.Sanitize(p, EntityType.Queue),
+                        Path = p,
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
@@ -72,7 +72,7 @@ namespace NServiceBus.AzureServiceBus
                     // assumed errorq and auditq are in here
                     entities.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
                     {
-                        Path = sanitizationStrategy.Sanitize(p, EntityType.Queue),
+                        Path = p,
                         Type = EntityType.Queue,
                         Namespace = n
                     }));

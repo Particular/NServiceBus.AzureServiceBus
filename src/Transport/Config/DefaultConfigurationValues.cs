@@ -26,7 +26,6 @@
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength, 260);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength, 260);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength, 50);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength, 50);
         }
 
         void ApplyDefaultValuesForSerialization(SettingsHolder settings)
