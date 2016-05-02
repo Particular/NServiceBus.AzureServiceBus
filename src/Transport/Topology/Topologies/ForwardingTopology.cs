@@ -5,6 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
     using Addressing;
+    using Routing;
     using Topology.MetaModel;
     using Settings;
     using Transports;
@@ -35,7 +36,7 @@ namespace NServiceBus.AzureServiceBus
             new DefaultConfigurationValues().Apply(settings);
             // ensures settings are present/correct
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(FlatComposition));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(DiscriminatorBasedIndividualization));
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(CoreIndividualization));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioning));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(AdjustmentSanitization));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(EntityNameValidationRules));
@@ -80,6 +81,8 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<Dispatcher>();
             container.Register<MessagePump>();
 
+            container.Register<AddressingLogic>();
+
             var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
             container.Register(compositionStrategyType);
 
@@ -94,6 +97,12 @@ namespace NServiceBus.AzureServiceBus
 
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
             container.Register(validationStrategyType);
+        }
+
+        public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
+        {
+            var individualization = container.Resolve<IIndividualizationStrategy>();
+            return new EndpointInstance(individualization.Individualize(instance.Endpoint.ToString()), instance.Discriminator, instance.Properties);
         }
 
         public Func<ICreateQueues> GetQueueCreatorFactory()

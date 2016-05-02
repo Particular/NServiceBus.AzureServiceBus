@@ -22,7 +22,7 @@
 
         public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
         {
-            return instance;
+            return topology.BindToLocalEndpoint(instance);
         }
 
         public override string ToTransportAddress(LogicalAddress logicalAddress)
