@@ -82,6 +82,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addressing\AddressingLogic.cs" />
     <Compile Include="Addressing\Composition\Strategies\FlatComposition.cs" />
     <Compile Include="Addressing\Composition\Strategies\HierarchyComposition.cs" />
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
