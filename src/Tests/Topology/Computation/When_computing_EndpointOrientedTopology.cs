@@ -1,5 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 {
+    using System;
     using System.Linq;
     using AzureServiceBus;
     using Routing;
@@ -50,6 +51,28 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == Connectionstring));
         }
+
+        [TestCase("Path is too long", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")]
+        [TestCase("Path contains invalid character", "input%queue")]
+        public void Should_fail_sanitization_for_invalid_endpoint_name(string reasonToFail, string endpointName)
+        {
+            var container = new TransportPartsContainer();
+
+            var settings = new SettingsHolder();
+            container.Register(typeof(SettingsHolder), () => settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            settings.SetDefault<EndpointName>(new EndpointName(endpointName));
+            extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
+
+            var topology = new ForwardingTopology(container);
+
+            topology.Initialize(settings);
+
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(), "Was expected to fail: " + reasonToFail);
+        }
+
 
         [Test]
         public void Determines_there_should_be_a_topic_with_same_name_as_endpointname_followed_by_dot_events()
