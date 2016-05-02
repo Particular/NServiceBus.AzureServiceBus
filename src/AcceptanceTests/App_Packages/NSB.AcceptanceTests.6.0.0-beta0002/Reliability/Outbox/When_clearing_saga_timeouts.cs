@@ -9,7 +9,7 @@
     using Extensibility;
     using Features;
     using NServiceBus.Outbox;
-    using NServiceBus.Persistence;
+    using Persistence;
     using NUnit.Framework;
     using ScenarioDescriptors;
 
