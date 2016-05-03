@@ -1,5 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 {
+    using System;
     using AzureServiceBus;
     using AzureServiceBus.Addressing;
     using NUnit.Framework;
@@ -25,7 +26,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
             var sanitization = new ThrowOnFailingSanitization(validation);
             var endpointname = "invalidendpoint";
 
-            Assert.Throws<EndpointValidationException>(() => sanitization.Sanitize(endpointname, EntityType.Queue));
+            Assert.Throws<Exception>(() => sanitization.Sanitize(endpointname, EntityType.Queue));
         }
 
         class ValidationMock : IValidationStrategy

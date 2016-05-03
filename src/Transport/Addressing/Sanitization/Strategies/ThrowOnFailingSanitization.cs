@@ -1,5 +1,7 @@
 namespace NServiceBus.AzureServiceBus.Addressing
 {
+    using System;
+
     public class ThrowOnFailingSanitization : ISanitizationStrategy
     {
         IValidationStrategy validationStrategy;
@@ -9,14 +11,22 @@ namespace NServiceBus.AzureServiceBus.Addressing
             this.validationStrategy = validationStrategy;
         }
 
-        public string Sanitize(string entityPath, EntityType entityType)
+        public string Sanitize(string entityPathOrName, EntityType entityType)
         {
-            if (!validationStrategy.IsValid(entityPath, entityType))
+            var pathOrName = "path";
+
+            if (entityType == EntityType.Rule || entityType == EntityType.Subscription)
             {
-                throw new EndpointValidationException("The entity path {0} cannot be used as a path for azure servicebus entities");
+                pathOrName = "name";
             }
 
-            return entityPath;
+            if (!validationStrategy.IsValid(entityPathOrName, entityType))
+            {
+                throw new Exception($"Invalid {entityType} {pathOrName} `{entityPathOrName}` that cannot be used with Azure Service Bus. {entityType} {pathOrName} exceeds maximum allowed length or contains invalid characters. " + 
+                                    "Check for invalid characters, shorten the name, or use `Sanitization().UseStrategy<ISanitizationStrategy>()` configuration extension.");
+            }
+
+            return entityPathOrName;
         }
     }
 }

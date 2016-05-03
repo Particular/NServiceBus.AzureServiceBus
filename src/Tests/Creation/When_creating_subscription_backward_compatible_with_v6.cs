@@ -6,7 +6,6 @@
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
     using AzureServiceBus;
-    using AzureServiceBus.Addressing;
     using Settings;
     using NUnit.Framework;
 
@@ -37,27 +36,39 @@
         public async Task Should_create_a_subscription_based_on_event_type_full_name_for_an_event_name_reused_across_multiple_namespaces()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(SomeEvent).Name),
-                new SqlSubscriptionFilter(typeof(Creation.SomeEvent)).Serialize());
+            await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(Ns1.ReusedEvent).Name), new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize());
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var creator = new AzureServiceBusSubscriptionCreatorV6(settings);
-            var shortedSubscriptionName = MD5DeterministicNameBuilder.Build(typeof(SomeEvent).FullName);
-            var metadata = new SubscriptionMetadata
+            var metadata1 = new SubscriptionMetadata
             {
-                SubscriptionNameBasedOnEventWithNamespace = shortedSubscriptionName,
+                SubscriptionNameBasedOnEventWithNamespace = typeof(Ns1.ReusedEvent).FullName,
                 Description = Guid.NewGuid().ToString()
             };
-            await creator.Create(topicPath, typeof(SomeEvent).Name, metadata, new SqlSubscriptionFilter(typeof(SomeEvent)).Serialize(), namespaceManager);
+            var metadata2 = new SubscriptionMetadata
+            {
+                SubscriptionNameBasedOnEventWithNamespace = typeof(Ns2.ReusedEvent).FullName,
+                Description = Guid.NewGuid().ToString()
+            };
+            var shortedSubscriptionName = typeof(Ns2.ReusedEvent).FullName;
+
+            await creator.Create(topicPath, typeof(Ns1.ReusedEvent).Name, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager);
+            await creator.Create(topicPath, typeof(Ns2.ReusedEvent).Name, metadata2, new SqlSubscriptionFilter(typeof(Ns2.ReusedEvent)).Serialize(), namespaceManager);
 
             var subscriptionDescription = await namespaceManager.GetSubscription(topicPath, shortedSubscriptionName);
-            Assert.AreEqual(metadata.Description, subscriptionDescription.UserMetadata);
-            Assert.AreEqual(metadata.SubscriptionNameBasedOnEventWithNamespace, subscriptionDescription.Name);
+            Assert.AreEqual(metadata2.Description, subscriptionDescription.UserMetadata);
+            Assert.AreEqual(metadata2.SubscriptionNameBasedOnEventWithNamespace, subscriptionDescription.Name);
         }
-
-        class SomeEvent {}
     }
+}
 
-    class SomeEvent { }
+namespace Ns1
+{
+    class ReusedEvent { }
+}
+
+namespace Ns2
+{
+    class ReusedEvent { }
 }

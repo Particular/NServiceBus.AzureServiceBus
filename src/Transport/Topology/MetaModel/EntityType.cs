@@ -5,6 +5,7 @@ namespace NServiceBus.AzureServiceBus
         Queue,
         Topic,
         Subscription,
-        EventHub
+        EventHub,
+        Rule
     }
 }
