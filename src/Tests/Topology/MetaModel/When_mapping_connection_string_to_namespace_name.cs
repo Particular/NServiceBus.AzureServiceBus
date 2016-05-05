@@ -1,7 +1,6 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel
 {
     using System;
-    using System.Collections.Generic;
     using AzureServiceBus;
     using AzureServiceBus.Topology.MetaModel;
     using Settings;
