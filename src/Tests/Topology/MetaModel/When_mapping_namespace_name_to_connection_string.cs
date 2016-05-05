@@ -1,5 +1,6 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel
 {
+    using System;
     using System.Collections.Generic;
     using AzureServiceBus;
     using AzureServiceBus.Topology.MetaModel;
@@ -36,7 +37,8 @@
         [Test]
         public void Should_throw_if_namespace_name_has_not_been_mapped()
         {
-            Assert.Throws<KeyNotFoundException>(() => mapper.Map("queuename@namespace"));
+            var exception = Assert.Throws<InvalidOperationException>(() => mapper.Map("queuename@myNamespaceName"));
+            StringAssert.Contains("myNamespaceName", exception.Message);
         }
 
         [Test]

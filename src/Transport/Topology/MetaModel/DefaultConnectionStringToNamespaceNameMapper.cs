@@ -1,6 +1,6 @@
 ﻿namespace NServiceBus.AzureServiceBus.Topology.MetaModel
 {
-    using System.Collections.Generic;
+    using System;
     using System.Linq;
     using Settings;
 
@@ -28,7 +28,9 @@
                 return new EntityAddress($"{value.Name}@{namespaceInfo.Name}");
             }
 
-            throw new KeyNotFoundException();
+            var namespaceName = new ConnectionString(value.Suffix).NamespaceName;
+            throw new InvalidOperationException($"Connection string for {namespaceName} hasn't been configured. {Environment.NewLine}" +
+                                                "Use `AddNamespace` configuration API to map connection string to namespace name.");
         }
     }
 }
