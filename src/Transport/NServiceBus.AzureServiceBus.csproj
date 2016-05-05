@@ -103,6 +103,7 @@
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
     <Compile Include="Creation\AzureServiceBusForwardingSubscriptionCreator.cs" />
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
+    <Compile Include="obsoletes.cs" />
     <Compile Include="Receiving\BrokeredMessageReceiveContext.cs" />
     <Compile Include="Resharper.Annotations.g.cs" />
     <Compile Include="Receiving\UnsupportedBrokeredMessageBodyTypeException.cs" />
