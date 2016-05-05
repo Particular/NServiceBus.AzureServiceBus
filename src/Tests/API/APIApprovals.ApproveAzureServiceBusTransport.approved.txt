@@ -667,3 +667,12 @@ namespace NServiceBus
         public static NServiceBus.SizeInMegabytes Create(long sizeInMegabytes) { }
     }
 }
+namespace NServiceBus.Config
+{
+    
+    [System.ObsoleteAttribute("Use code-based configuration API. Will be removed in version 8.0.0.", true)]
+    public class AzureServiceBusQueueConfig : System.Configuration.ConfigurationSection
+    {
+        public AzureServiceBusQueueConfig() { }
+    }
+}
