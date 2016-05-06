@@ -1,6 +1,6 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel
 {
-    using System.Collections.Generic;
+    using System;
     using AzureServiceBus;
     using AzureServiceBus.Topology.MetaModel;
     using Settings;
@@ -38,7 +38,8 @@
         [Test]
         public void Should_throw_if_connection_string_has_not_been_mapped()
         {
-            Assert.Throws<KeyNotFoundException>(() => mapper.Map("queuename@Endpoint=sb://namespace.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret"));
+            var exception = Assert.Throws<InvalidOperationException>(() => mapper.Map("queuename@Endpoint=sb://myNamespaceName.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret"));
+            StringAssert.Contains("myNamespaceName", exception.Message);
         }
 
         [Test]
