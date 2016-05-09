@@ -105,6 +105,7 @@
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
     <Compile Include="obsoletes.cs" />
     <Compile Include="Receiving\BrokeredMessageReceiveContext.cs" />
+    <Compile Include="Receiving\CompleteMessagesBackgroundProcess.cs" />
     <Compile Include="Resharper.Annotations.g.cs" />
     <Compile Include="Receiving\UnsupportedBrokeredMessageBodyTypeException.cs" />
     <Compile Include="Seam\TransportResourcesCreator.cs" />
