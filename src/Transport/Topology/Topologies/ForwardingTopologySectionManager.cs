@@ -26,11 +26,11 @@ namespace NServiceBus.AzureServiceBus
         public TopologySection DetermineReceiveResources(string inputQueue)
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
+            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
 
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Receiving).ToArray();
 
-            var inputQueuePath = sanitizationStrategy.Sanitize(inputQueue, EntityType.Queue);
+            var inputQueuePath = addressingLogic.Apply(inputQueue, EntityType.Queue);
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
             return new TopologySection()
@@ -45,16 +45,16 @@ namespace NServiceBus.AzureServiceBus
             var endpointName = settings.EndpointName();
 
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
+            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
 
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
-            var inputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
+            var inputQueuePath = addressingLogic.Apply(endpointName.ToString(), EntityType.Queue);
             var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
             if (!topics.Any())
             {
-                BuildTopicBundles(namespaces, sanitizationStrategy);
+                BuildTopicBundles(namespaces, addressingLogic);
             }
 
             if (settings.HasExplicitValue<QueueBindings>())
@@ -64,14 +64,14 @@ namespace NServiceBus.AzureServiceBus
                 {
                     inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
                     {
-                        Path = sanitizationStrategy.Sanitize(p, EntityType.Queue),
+                        Path = addressingLogic.Apply(p, EntityType.Queue),
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
 
                     inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
                     {
-                        Path = sanitizationStrategy.Sanitize(p, EntityType.Queue),
+                        Path = addressingLogic.Apply(p, EntityType.Queue),
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
@@ -91,11 +91,11 @@ namespace NServiceBus.AzureServiceBus
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).Where(n => n.Mode == NamespaceMode.Active).ToArray();
-            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
+            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
 
             if (!topics.Any())
             {
-                BuildTopicBundles(namespaces, sanitizationStrategy);
+                BuildTopicBundles(namespaces, addressingLogic);
             }
 
             return new TopologySection()
@@ -114,11 +114,11 @@ namespace NServiceBus.AzureServiceBus
         public TopologySection DetermineSendDestination(string destination)
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
+            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
 
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
 
-            var inputQueuePath = sanitizationStrategy.Sanitize(destination, EntityType.Queue);
+            var inputQueuePath = addressingLogic.Apply(destination, EntityType.Queue);
             var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
 
             return new TopologySection
@@ -159,16 +159,16 @@ namespace NServiceBus.AzureServiceBus
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var endpointName = settings.EndpointName();
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
-            var sanitizationStrategy = (ISanitizationStrategy)container.Resolve(typeof(ISanitizationStrategy));
+            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
 
-            var sanitizedInputQueuePath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Queue);
-            var sanitizedSubscriptionPath = sanitizationStrategy.Sanitize(endpointName.ToString(), EntityType.Subscription);
+            var sanitizedInputQueuePath = addressingLogic.Apply(endpointName.ToString(), EntityType.Queue);
+            var sanitizedSubscriptionPath = addressingLogic.Apply(endpointName.ToString(), EntityType.Subscription);
             // rule name needs to be 1) based on event full name 2) unique 3) deterministic
-            var ruleName = sanitizationStrategy.Sanitize(eventType.FullName, EntityType.Rule);
+            var ruleName = addressingLogic.Apply(eventType.FullName, EntityType.Rule);
 
             if (!topics.Any())
             {
-                BuildTopicBundles(namespaces, sanitizationStrategy);
+                BuildTopicBundles(namespaces, addressingLogic);
             }
             var subs = new List<SubscriptionInfo>();
             foreach (var topic in topics)
@@ -217,7 +217,7 @@ namespace NServiceBus.AzureServiceBus
             };
         }
 
-        void BuildTopicBundles(RuntimeNamespaceInfo[] namespaces, ISanitizationStrategy sanitizationStrategy)
+        void BuildTopicBundles(RuntimeNamespaceInfo[] namespaces, AddressingLogic addressingLogic)
         {
             var numberOfEntitiesInBundle = settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
             var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
@@ -226,7 +226,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 topics.AddRange(namespaces.Select(n => new EntityInfo
                 {
-                    Path = sanitizationStrategy.Sanitize(bundlePrefix + i, EntityType.Topic),
+                    Path = addressingLogic.Apply(bundlePrefix + i, EntityType.Topic),
                     Type = EntityType.Topic,
                     Namespace = n
                 }));
