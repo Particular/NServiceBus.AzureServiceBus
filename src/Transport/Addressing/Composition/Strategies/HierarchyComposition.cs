@@ -13,12 +13,19 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
         public string GetEntityPath(string entityname, EntityType entityType)
         {
-            if (entityType == EntityType.Subscription)
+            switch (entityType)
             {
-                return entityname;
-            }
+                case EntityType.Queue:
+                case EntityType.Topic:
+                    return pathGenerator(entityname) + entityname;
 
-            return pathGenerator(entityname) + entityname;
+                case EntityType.Subscription:
+                case EntityType.Rule:
+                    return entityname;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
+            }
         }
     }
 }
