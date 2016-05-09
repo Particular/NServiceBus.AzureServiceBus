@@ -64,14 +64,14 @@ namespace NServiceBus.AzureServiceBus
                 {
                     inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
                     {
-                        Path = sanitizationStrategy.Sanitize(p, EntityType.Queue),
+                        Path = addressingLogic.Apply(p, EntityType.Queue),
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
 
                     inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
                     {
-                        Path = sanitizationStrategy.Sanitize(p, EntityType.Queue),
+                        Path = addressingLogic.Apply(p, EntityType.Queue),
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
