@@ -9,8 +9,7 @@
     {
         SettingsHolder settings;
 
-        public AzureServiceBusCompositionSettings(SettingsHolder settings)
-            : base(settings)
+        public AzureServiceBusCompositionSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }
@@ -20,11 +19,11 @@
         /// <remarks>Default is <see cref="FlatComposition"/></remarks>
         /// <seealso cref="HierarchyComposition"/>
         /// </summary>
-        public AzureServiceBusCompositionSettings UseStrategy<T>() where T : ICompositionStrategy
+        public AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>() where T : ICompositionStrategy
         {
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(T));
 
-            return this;
+            return new AzureServiceBusCompositionExtensionPoint<T>(settings);
         }
     }
 }

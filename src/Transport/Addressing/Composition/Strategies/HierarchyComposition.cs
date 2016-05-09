@@ -1,18 +1,23 @@
 namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System;
+    using Settings;
 
     public class HierarchyComposition : ICompositionStrategy
     {
-        Func<string, string> pathGenerator;
+        internal const string PathGeneratorSettingsKey = "HierarchyComposition.PathGenerator";
 
-        public void SetPathGenerator(Func<string, string> pathGenerator)
+        ReadOnlySettings settings;
+        
+        public HierarchyComposition(ReadOnlySettings settings)
         {
-            this.pathGenerator = pathGenerator;
+            this.settings = settings;
         }
 
         public string GetEntityPath(string entityname, EntityType entityType)
         {
+            var pathGenerator = settings.Get<Func<string, string>>(PathGeneratorSettingsKey);
+
             switch (entityType)
             {
                 case EntityType.Queue:
