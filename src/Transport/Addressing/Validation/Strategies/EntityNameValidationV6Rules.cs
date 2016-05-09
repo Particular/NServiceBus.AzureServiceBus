@@ -38,8 +38,6 @@
                     isValid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength);
                     isValid &= v6PathRegex.IsMatch(entityPath);
                     break;
-                case EntityType.EventHub:
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
             }

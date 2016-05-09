@@ -161,8 +161,7 @@ namespace NServiceBus.AzureServiceBus
         Queue = 0,
         Topic = 1,
         Subscription = 2,
-        EventHub = 3,
-        Rule = 4,
+        Rule = 3,
     }
     public class ForwardingTopology : NServiceBus.AzureServiceBus.ITopology
     {
