@@ -7,28 +7,27 @@
     using Logging;
     using Microsoft.ServiceBus.Messaging;
 
-    class CompleteMessagesBackgroundProcess
+    class CompleteMessagesBackgroundProcess : ICompleteMessagesScheduler
     {
         static ILog logger = LogManager.GetLogger<CompleteMessagesBackgroundProcess>();
 
-        readonly ConcurrentDictionary<Guid, Task> _pendingTasks;
+        readonly ConcurrentDictionary<Task, Task> _pendingTasks;
 
         public CompleteMessagesBackgroundProcess()
         {
-            _pendingTasks = new ConcurrentDictionary<Guid, Task>();
+            _pendingTasks = new ConcurrentDictionary<Task, Task>();
         }
 
         public void ScheduleMessageToComplete(BrokeredMessage message)
         {
-            var task = new Task(() => message.SafeCompleteAsync().ConfigureAwait(false));
+            var task = Task.Run(message.SafeCompleteAsync);
+            _pendingTasks.TryAdd(task, task);
+
             task.ContinueWith(x =>
             {
                 Task outTask;
-                _pendingTasks.TryRemove(message.LockToken, out outTask);
+                _pendingTasks.TryRemove(task, out outTask);
             });
-            _pendingTasks.TryAdd(message.LockToken, task);
-
-            task.RunSynchronously();
         }
 
         public async Task Stop()
@@ -42,5 +41,10 @@
                 logger.Error("Process to complete messages failed to stop with in the time allowed (30s)");
             }
         }
+    }
+
+    public interface ICompleteMessagesScheduler
+    {
+        void ScheduleMessageToComplete(BrokeredMessage message);
     }
 }

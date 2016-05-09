@@ -68,7 +68,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var expected = 1000 - faulted;
             // sending messages to the queue is done
 
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings, new CompleteMessagesBackgroundProcess());
             notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 (message, context) =>
                 {

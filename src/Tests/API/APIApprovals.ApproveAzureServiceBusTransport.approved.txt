@@ -193,6 +193,10 @@ namespace NServiceBus.AzureServiceBus
     {
         bool Execute(object message);
     }
+    public interface ICompleteMessagesScheduler
+    {
+        void ScheduleMessageToComplete(Microsoft.ServiceBus.Messaging.BrokeredMessage message);
+    }
     public interface IConvertBrokeredMessagesToIncomingMessages
     {
         NServiceBus.AzureServiceBus.IncomingMessageDetails Convert(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage);

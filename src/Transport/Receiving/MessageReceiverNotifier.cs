@@ -16,6 +16,7 @@ namespace NServiceBus.AzureServiceBus
         IManageMessageReceiverLifeCycle clientEntities;
         IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
         ReadOnlySettings settings;
+        readonly ICompleteMessagesScheduler completeMessageScheduler;
         IMessageReceiver internalReceiver;
         ReceiveMode receiveMode;
         OnMessageOptions options;
@@ -28,11 +29,12 @@ namespace NServiceBus.AzureServiceBus
 
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
 
-        public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
+        public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings, ICompleteMessagesScheduler completeMessageScheduler)
         {
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.settings = settings;
+            this.completeMessageScheduler = completeMessageScheduler;
         }
 
         public bool IsRunning { get; private set; }
@@ -149,7 +151,7 @@ namespace NServiceBus.AzureServiceBus
                    await InvokeCompletionCallbacksAsync(context).ConfigureAwait(false);
                 }
 
-                await message.SafeCompleteAsync().ConfigureAwait(false);
+                completeMessageScheduler.ScheduleMessageToComplete(message);
             }
             catch (Exception exception)
             {

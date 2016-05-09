@@ -70,7 +70,12 @@ namespace NServiceBus.AzureServiceBus
 
         public Task Stop(IEnumerable<EntityInfo> subscriptions)
         {
-            return StopNotifiersForAsync(subscriptions);
+            return StopNotifiersForAsync(subscriptions)
+                .ContinueWith(t =>
+                {
+                    var backgroundProcess = container.Resolve<CompleteMessagesBackgroundProcess>();
+                    backgroundProcess.Stop().ConfigureAwait(false);
+                });
         }
 
         public void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func)
