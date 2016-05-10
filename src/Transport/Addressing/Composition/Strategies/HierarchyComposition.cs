@@ -5,8 +5,6 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
     public class HierarchyComposition : ICompositionStrategy
     {
-        internal const string PathGeneratorSettingsKey = "HierarchyComposition.PathGenerator";
-
         ReadOnlySettings settings;
         
         public HierarchyComposition(ReadOnlySettings settings)
@@ -16,7 +14,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
         public string GetEntityPath(string entityname, EntityType entityType)
         {
-            var pathGenerator = settings.Get<Func<string, string>>(PathGeneratorSettingsKey);
+            var pathGenerator = settings.Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator);
 
             switch (entityType)
             {

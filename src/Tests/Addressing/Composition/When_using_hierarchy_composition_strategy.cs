@@ -17,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
             var entityname = "myqueue";
 
             var settings = new SettingsHolder();
-            settings.Set(HierarchyComposition.PathGeneratorSettingsKey, (Func<string, string>)(s => prefix));
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
             var strategy = new HierarchyComposition(settings);
 
             Assert.AreEqual(prefix + entityname, strategy.GetEntityPath(entityname, EntityType.Queue));
@@ -30,7 +30,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
             var entityname = "mytopic";
 
             var settings = new SettingsHolder();
-            settings.Set(HierarchyComposition.PathGeneratorSettingsKey, (Func<string, string>)(s => prefix));
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
             var strategy = new HierarchyComposition(settings);
 
             Assert.AreEqual(prefix + entityname, strategy.GetEntityPath(entityname, EntityType.Topic));
@@ -43,7 +43,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
             var entityname = "myqueue";
 
             var settings = new SettingsHolder();
-            settings.Set(HierarchyComposition.PathGeneratorSettingsKey, (Func<string, string>)(s => prefix));
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
             var strategy = new HierarchyComposition(settings);
 
             Assert.AreEqual(entityname, strategy.GetEntityPath(entityname, EntityType.Subscription));
@@ -56,7 +56,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
             var entityname = "myrule";
 
             var settings = new SettingsHolder();
-            settings.Set(HierarchyComposition.PathGeneratorSettingsKey, (Func<string, string>)(s => prefix));
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
             var strategy = new HierarchyComposition(settings);
 
             Assert.AreEqual(entityname, strategy.GetEntityPath(entityname, EntityType.Rule));

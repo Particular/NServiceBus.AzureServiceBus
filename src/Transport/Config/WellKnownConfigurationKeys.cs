@@ -81,6 +81,7 @@ namespace NServiceBus.AzureServiceBus
                 public static class Composition
                 {
                     public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Composition.Strategy";
+                    public const string HierarchyCompositionPathGenerator = "AzureServiceBus.Settings.Topology.Addressing.Composition.HierarchyCompositionPathGenerator";
                 }
 
                 public static class Validation
