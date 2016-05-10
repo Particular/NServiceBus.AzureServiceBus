@@ -11,6 +11,7 @@ namespace NServiceBus.AzureServiceBus
     using Logging;
     using Azure.Transports.WindowsAzureServiceBus;
     using Settings;
+    using Utils;
 
     class MessageReceiverNotifier : INotifyIncomingMessages
     {
@@ -26,9 +27,9 @@ namespace NServiceBus.AzureServiceBus
         string fullPath;
         EntityInfo entity;
         bool stopping;
-        ConcurrentQueue<Guid> locksIdsToComplete;
-        CancellationTokenSource lockIdCompletionCts;
-
+        ConcurrentQueue<Guid> locksTokensToComplete;
+        CancellationTokenSource batchedCompletionCts;
+        Task batchedCompletionTask;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
 
         public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
@@ -36,8 +37,8 @@ namespace NServiceBus.AzureServiceBus
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.settings = settings;
-            locksIdsToComplete = new ConcurrentQueue<Guid>();
-            lockIdCompletionCts = new CancellationTokenSource();
+            locksTokensToComplete = new ConcurrentQueue<Guid>();
+            batchedCompletionCts = new CancellationTokenSource();
         }
 
         public bool IsRunning { get; private set; }
@@ -113,32 +114,49 @@ namespace NServiceBus.AzureServiceBus
 
             internalReceiver.OnMessage(callback, options);
 
-            StartCompletionTask();
+            StartBatchedCompletionTask();
         }
 
-        void StartCompletionTask()
+        void StartBatchedCompletionTask()
         {
-            Task.Factory.StartNew(async () =>
+            batchedCompletionTask = Task.Run(async () =>
             {
-                while (!lockIdCompletionCts.Token.IsCancellationRequested)
+                while (!batchedCompletionCts.Token.IsCancellationRequested)
                 {
-                    if (locksIdsToComplete.IsEmpty)
+                    if (locksTokensToComplete.IsEmpty)
                     {
                         await Task.Delay(TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
                         continue;
                     }
 
                     var ids = new List<Guid>();
-                    for (var i = 0; i < locksIdsToComplete.Count; i++)
+                    for (var i = 0; i < locksTokensToComplete.Count; i++)
                     {
                         Guid dummy;
-                        locksIdsToComplete.TryDequeue(out dummy);
+                        locksTokensToComplete.TryDequeue(out dummy);
                         ids.Add(dummy);
                     }
 
-                    await internalReceiver.CompleteBatchAsync(ids).ConfigureAwait(false);
+                    await internalReceiver.SafeCompleteBatchAsync(ids).ConfigureAwait(false);
                 }
-            }, lockIdCompletionCts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+
+                // run last check when task has been cancelled to drain remaining lock tokens
+                if (locksTokensToComplete.IsEmpty)
+                {
+                    return;
+                }
+
+                var remainingTokens = new List<Guid>(locksTokensToComplete.Count);
+                for (var i = 0; i < locksTokensToComplete.Count; i++)
+                {
+                    Guid dummy;
+                    locksTokensToComplete.TryDequeue(out dummy);
+                    remainingTokens.Add(dummy);
+                }
+
+                await internalReceiver.SafeCompleteBatchAsync(remainingTokens).ConfigureAwait(false);
+
+            }, CancellationToken.None);
         }
 
         async Task ProcessMessageAsync(BrokeredMessage message)
@@ -181,8 +199,7 @@ namespace NServiceBus.AzureServiceBus
                     await InvokeCompletionCallbacksAsync(context).ConfigureAwait(false);
                 }
 
-                //await message.SafeCompleteAsync().ConfigureAwait(false);
-                locksIdsToComplete.Enqueue(message.LockToken);
+                locksTokensToComplete.Enqueue(message.LockToken);
             }
             catch (Exception exception)
             {
@@ -256,9 +273,8 @@ namespace NServiceBus.AzureServiceBus
                 logger.Error("The receiver failed to stop with in the time allowed (30s)");
             }
 
-            // drain the last messages before signaling to stop batched completion task
-            while (!locksIdsToComplete.IsEmpty) {}
-            lockIdCompletionCts.Cancel();
+            batchedCompletionCts.Cancel();
+            await Task.WhenAll(batchedCompletionTask).ConfigureAwait(false);
 
             pipelineInvocationTasks.Clear();
 
