@@ -37,7 +37,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings, new CompleteMessagesBackgroundProcess());
 
             notifier.Initialize(new EntityInfo { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, 10);
 
@@ -72,7 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings, new CompleteMessagesBackgroundProcess());
 
             notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, 10);
 
@@ -115,7 +115,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await sender.Send(new BrokeredMessage());
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings, new CompleteMessagesBackgroundProcess());
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);

@@ -3,7 +3,6 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
     using Logging;
 
@@ -17,8 +16,6 @@ namespace NServiceBus.AzureServiceBus
         Func<Exception, Task> onError;
 
         ConcurrentDictionary<EntityInfo, INotifyIncomingMessages> notifiers = new ConcurrentDictionary<EntityInfo, INotifyIncomingMessages>();
-
-        CancellationTokenSource cancellationTokenSource;
 
         bool running;
         List<Action> pendingStartOperations = new List<Action>();
@@ -36,8 +33,6 @@ namespace NServiceBus.AzureServiceBus
             maxConcurrency = maximumConcurrency;
             topology = topologySection;
 
-            cancellationTokenSource = new CancellationTokenSource();
-
             StartNotifiersFor(topology.Entities);
 
             foreach (var operation in pendingStartOperations)
@@ -52,8 +47,6 @@ namespace NServiceBus.AzureServiceBus
         public async Task Stop()
         {
             logger.Info("Stopping messagepump");
-
-            cancellationTokenSource.Cancel();
 
             logger.Info("Stopping notifiers");
             await StopNotifiersForAsync(topology.Entities).ConfigureAwait(false);
@@ -77,7 +70,12 @@ namespace NServiceBus.AzureServiceBus
 
         public Task Stop(IEnumerable<EntityInfo> subscriptions)
         {
-            return StopNotifiersForAsync(subscriptions);
+            return StopNotifiersForAsync(subscriptions)
+                .ContinueWith(t =>
+                {
+                    var backgroundProcess = container.Resolve<CompleteMessagesBackgroundProcess>();
+                    backgroundProcess.Stop().ConfigureAwait(false);
+                });
         }
 
         public void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func)

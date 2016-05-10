@@ -97,6 +97,8 @@ namespace NServiceBus.AzureServiceBus
 
             var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
             container.Register(validationStrategyType);
+
+            container.RegisterSingleton(typeof(CompleteMessagesBackgroundProcess));
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)

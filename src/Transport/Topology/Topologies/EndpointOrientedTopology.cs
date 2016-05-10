@@ -97,6 +97,8 @@ namespace NServiceBus.AzureServiceBus
             var conventions = settings.Get<Conventions>();
             var publishersConfiguration = new PublishersConfiguration(new ConventionsAdapter(conventions), settings);
             container.Register<PublishersConfiguration>(() => publishersConfiguration);
+
+            container.RegisterSingleton(typeof(CompleteMessagesBackgroundProcess));
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
