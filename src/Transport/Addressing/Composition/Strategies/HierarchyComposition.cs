@@ -1,24 +1,34 @@
 namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System;
+    using Settings;
 
     public class HierarchyComposition : ICompositionStrategy
     {
-        Func<string, string> pathGenerator;
-
-        public void SetPathGenerator(Func<string, string> pathGenerator)
+        ReadOnlySettings settings;
+        
+        public HierarchyComposition(ReadOnlySettings settings)
         {
-            this.pathGenerator = pathGenerator;
+            this.settings = settings;
         }
 
         public string GetEntityPath(string entityname, EntityType entityType)
         {
-            if (entityType == EntityType.Subscription)
-            {
-                return entityname;
-            }
+            var pathGenerator = settings.Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator);
 
-            return pathGenerator(entityname) + entityname;
+            switch (entityType)
+            {
+                case EntityType.Queue:
+                case EntityType.Topic:
+                    return pathGenerator(entityname) + entityname;
+
+                case EntityType.Subscription:
+                case EntityType.Rule:
+                    return entityname;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
+            }
         }
     }
 }

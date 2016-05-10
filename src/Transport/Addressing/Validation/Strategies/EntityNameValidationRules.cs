@@ -39,8 +39,6 @@ namespace NServiceBus.AzureServiceBus.Addressing
                     valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength);
                     valid &= subscriptionAndRuleNameRegex.IsMatch(entityPath);
                     break;
-                case EntityType.EventHub:
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
             }

@@ -93,8 +93,10 @@
     <Compile Include="Addressing\Validation\Strategies\EntityNameValidationV6Rules.cs" />
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
     <Compile Include="Config\AzureServiceBusTransportInfrastructure.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusCompositionExtensionPoint.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusEndpointOrientedTopologySettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusForwardingTopologySettingsExtensions.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusHierarchyCompositionSettingsExtensions.cs" />
     <Compile Include="Config\TransactionModeSettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopologySettings.cs" />
     <Compile Include="Config\ExtensionPoints\SizeInMegabytes.cs" />

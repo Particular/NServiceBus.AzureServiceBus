@@ -46,9 +46,8 @@
     }
     public class HierarchyComposition : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
     {
-        public HierarchyComposition() { }
+        public HierarchyComposition(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string GetEntityPath(string entityname, NServiceBus.AzureServiceBus.EntityType entityType) { }
-        public void SetPathGenerator(System.Func<string, string> pathGenerator) { }
     }
     public interface ICompositionStrategy
     {
@@ -161,8 +160,7 @@ namespace NServiceBus.AzureServiceBus
         Queue = 0,
         Topic = 1,
         Subscription = 2,
-        EventHub = 3,
-        Rule = 4,
+        Rule = 3,
     }
     public class ForwardingTopology : NServiceBus.AzureServiceBus.ITopology
     {
@@ -501,10 +499,15 @@ namespace NServiceBus.AzureServiceBus.Topology.MetaModel
 namespace NServiceBus
 {
     
+    public class AzureServiceBusCompositionExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+        where T : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
+    {
+        public AzureServiceBusCompositionExtensionPoint(NServiceBus.Settings.SettingsHolder settings) { }
+    }
     public class AzureServiceBusCompositionSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusCompositionSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusCompositionSettings UseStrategy<T>()
+        public NServiceBus.AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy { }
     }
     public class static AzureServiceBusEndpointOrientedTopologySettingsExtensions
@@ -516,6 +519,10 @@ namespace NServiceBus
     {
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> BundlePrefix(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> topologySettings, string prefix) { }
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> topologySettings, int number) { }
+    }
+    public class static AzureServiceBusHierarchyCompositionSettingsExtensions
+    {
+        public static NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.AzureServiceBus.Addressing.HierarchyComposition> PathGenerator(this NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.AzureServiceBus.Addressing.HierarchyComposition> composition, System.Func<string, string> pathGenerator) { }
     }
     public class AzureServiceBusIndividualizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
