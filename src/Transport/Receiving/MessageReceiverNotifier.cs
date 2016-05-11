@@ -27,7 +27,7 @@ namespace NServiceBus.AzureServiceBus
         string fullPath;
         EntityInfo entity;
         bool stopping;
-        ConcurrentQueue<Guid> locksTokensToComplete;
+        ConcurrentStack<Guid> locksTokensToComplete;
         CancellationTokenSource batchedCompletionCts;
         Task batchedCompletionTask;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
@@ -37,7 +37,7 @@ namespace NServiceBus.AzureServiceBus
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.settings = settings;
-            locksTokensToComplete = new ConcurrentQueue<Guid>();
+            locksTokensToComplete = new ConcurrentStack<Guid>();
             batchedCompletionCts = new CancellationTokenSource();
         }
 
@@ -114,13 +114,16 @@ namespace NServiceBus.AzureServiceBus
 
             internalReceiver.OnMessage(callback, options);
 
-            StartBatchedCompletionTask();
+            PerformBatchedCompletionTask();
         }
 
-        void StartBatchedCompletionTask()
+        void PerformBatchedCompletionTask()
         {
             batchedCompletionTask = Task.Run(async () =>
             {
+                int count;
+                var buffer = new Guid[5000];
+
                 while (!batchedCompletionCts.Token.IsCancellationRequested)
                 {
                     if (locksTokensToComplete.IsEmpty)
@@ -129,15 +132,9 @@ namespace NServiceBus.AzureServiceBus
                         continue;
                     }
 
-                    var ids = new List<Guid>();
-                    for (var i = 0; i < locksTokensToComplete.Count; i++)
-                    {
-                        Guid dummy;
-                        locksTokensToComplete.TryDequeue(out dummy);
-                        ids.Add(dummy);
-                    }
-
-                    await internalReceiver.SafeCompleteBatchAsync(ids).ConfigureAwait(false);
+                    count = locksTokensToComplete.TryPopRange(buffer);
+                    await internalReceiver.SafeCompleteBatchAsync(buffer.Take(count)).ConfigureAwait(false);
+                    Array.Clear(buffer, 0, buffer.Length);
                 }
 
                 // run last check when task has been cancelled to drain remaining lock tokens
@@ -146,15 +143,9 @@ namespace NServiceBus.AzureServiceBus
                     return;
                 }
 
-                var remainingTokens = new List<Guid>(locksTokensToComplete.Count);
-                for (var i = 0; i < locksTokensToComplete.Count; i++)
-                {
-                    Guid dummy;
-                    locksTokensToComplete.TryDequeue(out dummy);
-                    remainingTokens.Add(dummy);
-                }
-
-                await internalReceiver.SafeCompleteBatchAsync(remainingTokens).ConfigureAwait(false);
+                count = locksTokensToComplete.TryPopRange(buffer);
+                await internalReceiver.SafeCompleteBatchAsync(buffer.Take(count)).ConfigureAwait(false);
+                Array.Clear(buffer, 0, buffer.Length);
 
             }, CancellationToken.None);
         }
@@ -199,7 +190,7 @@ namespace NServiceBus.AzureServiceBus
                     await InvokeCompletionCallbacksAsync(context).ConfigureAwait(false);
                 }
 
-                locksTokensToComplete.Enqueue(message.LockToken);
+                locksTokensToComplete.Push(message.LockToken);
             }
             catch (Exception exception)
             {
