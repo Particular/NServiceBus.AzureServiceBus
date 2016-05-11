@@ -1,6 +1,7 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
@@ -124,6 +125,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             }
 
             public Task CloseAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task CompleteBatchAsync(IEnumerable<Guid> lockTokens)
             {
                 throw new NotImplementedException();
             }

@@ -259,6 +259,7 @@ namespace NServiceBus.AzureServiceBus
         Microsoft.ServiceBus.Messaging.ReceiveMode Mode { get; }
         int PrefetchCount { get; set; }
         System.Threading.Tasks.Task CloseAsync();
+        System.Threading.Tasks.Task CompleteBatchAsync(System.Collections.Generic.IEnumerable<System.Guid> lockTokens);
         void OnMessage(System.Func<Microsoft.ServiceBus.Messaging.BrokeredMessage, System.Threading.Tasks.Task> callback, Microsoft.ServiceBus.Messaging.OnMessageOptions options);
     }
     public interface IMessageSender : NServiceBus.AzureServiceBus.IClientEntity

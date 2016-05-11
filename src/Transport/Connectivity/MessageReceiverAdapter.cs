@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
@@ -38,6 +39,11 @@ namespace NServiceBus.AzureServiceBus
         public Task CloseAsync()
         {
            return receiver.CloseAsync();
+        }
+
+        public Task CompleteBatchAsync(IEnumerable<Guid> lockTokens)
+        {
+            return receiver.CompleteBatchAsync(lockTokens);
         }
     }
 }
