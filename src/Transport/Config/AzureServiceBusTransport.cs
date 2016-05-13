@@ -14,11 +14,11 @@
         {
             settings.SetDefault("Transactions.DoNotWrapHandlersExecutionInATransactionScope", true);
             settings.SetDefault("Transactions.SuppressDistributedTransactions", true);
-            
+
             // override core default serialization
             settings.SetDefault<SerializationDefinition>(new JsonSerializer());
 
-            var topology = settings.Get<ITopology>();
+            var topology = GetConfiguredTopology(settings);
             topology.Initialize(settings);
 
             RegisterConnectionStringAsNamespace(connectionString, settings);
@@ -28,6 +28,16 @@
             SetConnectivityMode(settings);
 
             return new AzureServiceBusTransportInfrastructure(topology, settings);
+        }
+
+        static ITopology GetConfiguredTopology(SettingsHolder settings)
+        {
+            var configuredTopology = settings.GetOrDefault<ITopology>();
+            if (configuredTopology == null)
+            {
+                throw new Exception("Azure Service Bus transport requires a topology to be specified. Use `.UseTopology<ITopology>()` configuration API to specify topology to use.");
+            }
+            return configuredTopology;
         }
 
         void MatchSettingsToConsistencyRequirements(SettingsHolder settings)
@@ -76,5 +86,4 @@
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
     }
-
 }
