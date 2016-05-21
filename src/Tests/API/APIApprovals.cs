@@ -16,6 +16,7 @@
         [UseReporter(typeof(DiffReporter))]
         public void ApproveAzureServiceBusTransport()
         {
+            Directory.SetCurrentDirectory(TestContext.CurrentContext.TestDirectory);
             var assemblyPath = Path.GetFullPath(typeof(AzureServiceBusTransport).Assembly.Location);
             var asm = AssemblyDefinition.ReadAssembly(assemblyPath);
             var publicApi = PublicApiGenerator.CreatePublicApiForAssembly(asm, definition => true, false);

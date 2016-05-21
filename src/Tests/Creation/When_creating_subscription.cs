@@ -18,7 +18,7 @@
         static SubscriptionMetadata metadata = new SubscriptionMetadata { Description = "eventname" };
         const string sqlFilter = "1=1";
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void TopicSetup()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -28,7 +28,7 @@
             }
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TopicCleanUp()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -425,7 +425,7 @@
             });
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
-            Assert.Throws<ArgumentException>(async () => await creator.Create("sometopic2", "existingsubscription2", metadata, sqlFilter, namespaceManager));
+            Assert.ThrowsAsync<ArgumentException>(async () => await creator.Create("sometopic2", "existingsubscription2", metadata, sqlFilter, namespaceManager));
 
             //cleanup
             await namespaceManager.DeleteTopic("sometopic2");

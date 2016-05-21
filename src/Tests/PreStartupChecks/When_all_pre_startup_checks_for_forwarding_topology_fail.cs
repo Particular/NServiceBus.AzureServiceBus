@@ -35,7 +35,7 @@
 
             var result = await topology.RunPreStartupChecks();
 
-            Assert.That(result.ErrorMessage, Is.StringContaining("Configured to create topology, but have no manage rights for the following namespace(s)"));
+            Assert.That(result.ErrorMessage, Does.Contain("Configured to create topology, but have no manage rights for the following namespace(s)"));
             Console.WriteLine(result.ErrorMessage);
         }
     }
