@@ -46,8 +46,6 @@ namespace NServiceBus.AzureServiceBus
 
         public async Task Stop()
         {
-            logger.Info("Stopping messagepump");
-
             logger.Info("Stopping notifiers");
             await StopNotifiersForAsync(topology.Entities).ConfigureAwait(false);
 
