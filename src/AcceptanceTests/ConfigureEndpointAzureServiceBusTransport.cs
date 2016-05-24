@@ -22,7 +22,7 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
         topology = topology ?? Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
 
         var transportConfig = config.UseTransport<AzureServiceBusTransport>().ConnectionString(connectionString);
-
+        
         if (topology == "ForwardingTopology")
         {
             transportConfig.UseTopology<ForwardingTopology>();

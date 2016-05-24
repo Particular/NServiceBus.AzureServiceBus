@@ -36,7 +36,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             sender.ExceptionToThrow = i => { throw new NotSupportedException(); };
 
             //validate
-            Assert.Throws<NotSupportedException>(async () => await sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
+            Assert.ThrowsAsync<NotSupportedException>(async () => await sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
             Assert.IsTrue(sender.IsInvoked);
             Assert.AreEqual(1, sender.InvocationCount);
         }
@@ -47,7 +47,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var sender = new FakeMessageSender();
             sender.ExceptionToThrow = i => { throw new ServerBusyException("Sorry, don't feel like serving you right now"); };
 
-            Assert.Throws<ServerBusyException>(async () => await sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(1), 5));
+            Assert.ThrowsAsync<ServerBusyException>(async () => await sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(1), 5));
 
             Assert.IsTrue(sender.IsInvoked);
             Assert.AreEqual(6, sender.InvocationCount); // 6 = initial invocation + 5 retries
@@ -74,7 +74,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var sw = new Stopwatch();
             sw.Start();
 
-            Assert.Throws<ServerBusyException>(async () => await sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(5), 1));
+            Assert.ThrowsAsync<ServerBusyException>(async () => await sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(5), 1));
 
             sw.Stop();
 

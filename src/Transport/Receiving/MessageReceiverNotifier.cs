@@ -188,9 +188,11 @@ namespace NServiceBus.AzureServiceBus
                 else
                 {
                     await InvokeCompletionCallbacksAsync(context).ConfigureAwait(false);
+                    if (context.ReceiveMode == ReceiveMode.PeekLock)
+                    {
+                        locksTokensToComplete.Push(message.LockToken);
+                    }
                 }
-
-                locksTokensToComplete.Push(message.LockToken);
             }
             catch (Exception exception)
             {

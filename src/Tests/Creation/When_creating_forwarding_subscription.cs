@@ -25,7 +25,7 @@
             SubscriptionNameBasedOnEventWithNamespace = "sha1.of.event.full.name"
         };
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void TopicSetup()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -39,7 +39,7 @@
             }
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TopicCleanUp()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -85,7 +85,7 @@
             Assert.IsFalse(subscriptionDescription.RequiresSession);
             Assert.AreEqual(6, subscriptionDescription.MaxDeliveryCount);
             Assert.IsNull(subscriptionDescription.ForwardDeadLetteredMessagesTo);
-            Assert.That(subscriptionDescription.ForwardTo, Is.StringEnding(forwardToQueue));
+            Assert.That(subscriptionDescription.ForwardTo, Does.EndWith(forwardToQueue));
 
             await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
         }
@@ -420,7 +420,7 @@
             });
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
-            Assert.Throws<ArgumentException>(async () => await creator.Create(topicPath, "existingendpoint2", metadata, sqlFilter, namespaceManager, forwardToQueue));
+            Assert.ThrowsAsync<ArgumentException>(async () => await creator.Create(topicPath, "existingendpoint2", metadata, sqlFilter, namespaceManager, forwardToQueue));
         }
 
         [Test]

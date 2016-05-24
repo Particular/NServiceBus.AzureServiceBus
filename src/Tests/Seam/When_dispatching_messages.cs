@@ -9,6 +9,7 @@
     using AzureServiceBus.Topology.MetaModel;
     using DeliveryConstraints;
     using Extensibility;
+    using Microsoft.ServiceBus.Messaging;
     using Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
@@ -83,7 +84,7 @@
             var dispatcher = new Dispatcher(router, new FakeBatcher());
 
             // validate
-            Assert.That(async () => await dispatcher.Dispatch(new TransportOperations(), new ContextBag()), Throws.Exception);
+            Assert.ThrowsAsync<MessagingEntityNotFoundException>(async () => await dispatcher.Dispatch(new TransportOperations(), new ContextBag()));
         }
 
 

@@ -6,7 +6,7 @@ using NUnit.Framework;
 [SetUpFixture]
 public class SetupAcceptanceTests
 {
-    [SetUp]
+    [OneTimeSetUp]
     public void SetUp()
     {
        

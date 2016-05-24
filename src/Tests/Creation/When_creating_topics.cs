@@ -332,11 +332,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var creator = new AzureServiceBusTopicCreator(settings);
 
-            Assert.Throws<TimeoutException>(async () => await creator.Create("faketopic", namespaceManager));
+            Assert.ThrowsAsync<TimeoutException>(async () => await creator.Create("faketopic", namespaceManager));
         }
 
         [Test]
-        public async Task Should_not_throw_TimeoutException_if_creation_of_entity_timed_out_and_topic_was_created()
+        public Task Should_not_throw_TimeoutException_if_creation_of_entity_timed_out_and_topic_was_created()
         {
             var namespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).ReturnsNextFromSequence(Task.FromResult(false), Task.FromResult(true));
@@ -345,7 +345,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var creator = new AzureServiceBusTopicCreator(settings);
 
-            await creator.Create("faketopic", namespaceManager);
+            return creator.Create("faketopic", namespaceManager);
         }
 
         [Test]
@@ -357,7 +357,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var creator = new AzureServiceBusTopicCreator(settings);
 
-            Assert.Throws<MessagingException>(async () => await creator.Create("faketopic", namespaceManager));
+            Assert.ThrowsAsync<MessagingException>(async () => await creator.Create("faketopic", namespaceManager));
         }
 
         [Test]
@@ -406,7 +406,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             });
 
             var creator = new AzureServiceBusTopicCreator(settings);
-            Assert.Throws<ArgumentException>(async () => await creator.Create("existingtopic2", namespaceManager));
+            Assert.ThrowsAsync<ArgumentException>(async () => await creator.Create("existingtopic2", namespaceManager));
         }
     }
 }

@@ -15,7 +15,7 @@
     {
         const string topicPath = "topicV6";
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void TopicSetup()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -25,7 +25,7 @@
             }
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TopicCleanUp()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));

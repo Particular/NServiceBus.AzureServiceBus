@@ -447,7 +447,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             });
 
             var creator = new AzureServiceBusQueueCreator(settings);
-            Assert.Throws<ArgumentException>(async () =>  await creator.Create("existingqueue", namespaceManager));
+            Assert.ThrowsAsync<ArgumentException>(async () =>  await creator.Create("existingqueue", namespaceManager));
 
             //cleanup
             await namespaceManager.DeleteQueue("existingqueue");
