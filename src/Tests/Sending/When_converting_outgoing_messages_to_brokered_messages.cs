@@ -67,7 +67,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         }
 
         [Test]
-        public void Should_copy_the_message_id()
+        public void Should_NOT_copy_the_message_id()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -81,7 +81,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
-            Assert.IsTrue(brokeredMessage.MessageId == "SomeId");
+            Assert.That(brokeredMessage.MessageId, Is.Not.EqualTo("SomeId"));
         }
 
         [Test]
