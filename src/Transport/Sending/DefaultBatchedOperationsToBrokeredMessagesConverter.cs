@@ -30,7 +30,7 @@ namespace NServiceBus.AzureServiceBus
         {
             var outgoingMessage = outgoingOperation.Message;
             var brokeredMessage = CreateBrokeredMessage(outgoingMessage);
-            brokeredMessage.MessageId = outgoingMessage.MessageId;
+            brokeredMessage.MessageId = Guid.NewGuid().ToString();
 
             CopyHeaders(outgoingMessage, brokeredMessage);
 
