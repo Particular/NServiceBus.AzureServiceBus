@@ -71,7 +71,7 @@
             Assert.IsFalse(subscriptionDescription.EnableDeadLetteringOnFilterEvaluationExceptions);
             Assert.IsFalse(subscriptionDescription.EnableDeadLetteringOnMessageExpiration);
             Assert.IsFalse(subscriptionDescription.RequiresSession);
-            Assert.AreEqual(6, subscriptionDescription.MaxDeliveryCount);
+            Assert.AreEqual(10, subscriptionDescription.MaxDeliveryCount);
             Assert.IsNull(subscriptionDescription.ForwardDeadLetteredMessagesTo);
             Assert.IsNull(subscriptionDescription.ForwardTo);
 
