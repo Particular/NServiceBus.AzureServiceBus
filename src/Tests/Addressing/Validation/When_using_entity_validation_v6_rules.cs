@@ -18,24 +18,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Validation
         const string illegalCharacterSubscriptionName = "6pwTRR34FFr/6YhPi-iDNfdSRLNDFIqZ97_Ky64w49r50n72vk";
 
         [Test]
-        public void Namespaces_allow_queues_with_paths_up_to_260_characters()
+        public void Namespaces_allow_queues_with_paths_up_to_260_characters_with_slashes_dashes_dots_and_underscores()
         {
             var settingsHolder = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(validEntityName, EntityType.Queue);
 
-            Assert.IsTrue(validation.IsValid(validEntityName, EntityType.Queue));
-        }
-
-        [Test]
-        public void Namespaces_allow_queues_with_slashes_dashes_dots_and_underscores()
-        {
-            var settingsHolder = new SettingsHolder();
-            new DefaultConfigurationValues().Apply(settingsHolder);
-            var validation = new EntityNameValidationV6Rules(settingsHolder);
-
-            Assert.IsTrue(validation.IsValid(validEntityName, EntityType.Queue));
+            Assert.IsTrue(validationResult.IsValid);
+            Assert.That(validationResult.Errors, Is.Empty);
         }
 
         [Test]
@@ -45,8 +37,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Validation
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(tooLongEntityName, EntityType.Queue);
 
-            Assert.IsFalse(validation.IsValid(tooLongEntityName, EntityType.Queue));
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(1));
         }
 
         [Test]
@@ -56,43 +50,39 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Validation
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(illegalCharacterEntityName, EntityType.Queue);
 
-            Assert.IsFalse(validation.IsValid(illegalCharacterEntityName, EntityType.Queue));
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(1));
         }
 
-        [TestCase("/" + validEntityName)]
-        [TestCase(validEntityName + "/")]
+        [TestCase("/queue")]
+        [TestCase("queue/")]
         public void Namespaces_do_not_allows_queues_with_leading_or_trailing_slash(string entityPath)
         {
             var settingsHolder = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(entityPath, EntityType.Queue);
 
-            Assert.IsFalse(validation.IsValid(entityPath, EntityType.Queue));
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(1));
         }
 
         [Test]
-        public void Namespaces_allow_topics_with_paths_up_to_260_characters()
+        public void Namespaces_allow_topics_with_paths_up_to_260_characters_with_slashes_dashes_dots_and_underscores()
         {
             var settingsHolder = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(validEntityName, EntityType.Topic);
 
-            Assert.IsTrue(validation.IsValid(validEntityName, EntityType.Topic));
+            Assert.IsTrue(validationResult.IsValid);
+            Assert.That(validationResult.Errors, Is.Empty);
         }
 
-        [Test]
-        public void Namespaces_allow_topics_with_slashes_dashes_dots_and_underscores()
-        {
-            var settingsHolder = new SettingsHolder();
-            new DefaultConfigurationValues().Apply(settingsHolder);
-
-            var validation = new EntityNameValidationV6Rules(settingsHolder);
-
-            Assert.IsTrue(validation.IsValid(validEntityName, EntityType.Queue));
-        }
 
         [Test]
         public void Namespaces_do_not_allow_topics_with_paths_over_260_characters()
@@ -101,8 +91,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Validation
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(tooLongEntityName, EntityType.Topic);
 
-            Assert.IsFalse(validation.IsValid(tooLongEntityName, EntityType.Topic));
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(1));
         }
 
         [Test]
@@ -112,42 +104,37 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Validation
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(illegalCharacterEntityName, EntityType.Queue);
 
-            Assert.IsFalse(validation.IsValid(illegalCharacterEntityName, EntityType.Queue));
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(1));
         }
 
-        [TestCase("/" + validEntityName)]
-        [TestCase(validEntityName + "/")]
+        [TestCase("/topic")]
+        [TestCase("topic/")]
         public void Namespaces_do_not_allow_topics_with_leading_or_trailing_slash(string entityPath)
         {
             var settingsHolder = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(entityPath, EntityType.Queue);
 
-            Assert.IsFalse(validation.IsValid(entityPath, EntityType.Queue));
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(1));
         }
 
         [Test]
-        public void Namespaces_allow_subscriptions_with_paths_up_to_50_characters()
+        public void Namespaces_allow_subscriptions_with_paths_up_to_50_characters_with_dashes_dots_and_underscores()
         {
             var settingsHolder = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(validSubscriptionName, EntityType.Subscription);
 
-            Assert.IsTrue(validation.IsValid(validSubscriptionName, EntityType.Subscription));
-        }
-
-        [Test]
-        public void Namespaces_allow_subscriptions_with_dashes_dots_and_underscores()
-        {
-            var settingsHolder = new SettingsHolder();
-            new DefaultConfigurationValues().Apply(settingsHolder);
-
-            var validation = new EntityNameValidationV6Rules(settingsHolder);
-
-            Assert.IsTrue(validation.IsValid(validSubscriptionName, EntityType.Subscription));
+            Assert.IsTrue(validationResult.IsValid);
+            Assert.That(validationResult.Errors, Is.Empty);
         }
 
         [Test]
@@ -157,8 +144,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Validation
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(tooLongSubscriptionName, EntityType.Subscription);
 
-            Assert.IsFalse(validation.IsValid(tooLongSubscriptionName, EntityType.Subscription));
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(1));
         }
 
         [Test]
@@ -168,8 +157,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Validation
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(illegalCharacterSubscriptionName, EntityType.Subscription);
 
-            Assert.IsFalse(validation.IsValid(illegalCharacterSubscriptionName, EntityType.Subscription));
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(1));
         }
 
         [TestCase("illegal/queue")]
@@ -182,8 +173,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Validation
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(queuePath, EntityType.Queue);
 
-            Assert.IsFalse(validation.IsValid(queuePath, EntityType.Queue));
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(1));
         }
 
         [TestCase("illegal/topic")]
@@ -196,8 +189,22 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Validation
             new DefaultConfigurationValues().Apply(settingsHolder);
 
             var validation = new EntityNameValidationV6Rules(settingsHolder);
+            var validationResult = validation.IsValid(topicPath, EntityType.Topic);
 
-            Assert.IsFalse(validation.IsValid(topicPath, EntityType.Topic));
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(1));
+        }
+
+        public void Should_return_2_error_messages_for_length_and_invalid_characters()
+        {
+            var settingsHolder = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settingsHolder);
+
+            var validation = new EntityNameValidationRules(settingsHolder);
+            var validationResult = validation.IsValid(tooLongEntityName + "$$$", EntityType.Queue);
+
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.That(validationResult.Errors.Count, Is.EqualTo(2));
         }
     }
 }

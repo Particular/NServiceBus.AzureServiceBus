@@ -7,42 +7,60 @@
     public class EntityNameValidationV6Rules : IValidationStrategy
     {
         ReadOnlySettings settings;
+        // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
+        // Except for subscriptions, these cannot contain slashes (/)
+        Regex v6PathRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
 
         public EntityNameValidationV6Rules(ReadOnlySettings settings)
         {
             this.settings = settings;
         }
 
-        public bool IsValid(string entityPath, EntityType entityType)
+        public ValidationResult IsValid(string entityPath, EntityType entityType)
         {
-            // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
-            // Except for subscriptions, these cannot contain slashes (/)
-            var v6PathRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
+            var validationResult = new ValidationResult();
 
-            var isValid = false;
             switch (entityType)
             {
                 case EntityType.Queue:
-                    isValid = entityPath.Length <= settings.Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength);
-                    isValid &= v6PathRegex.IsMatch(entityPath);
+                    if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength))
+                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength)));
                     break;
+
                 case EntityType.Topic:
-                    isValid = entityPath.Length <= settings.Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength);
-                    isValid &= v6PathRegex.IsMatch(entityPath);
+                    if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength))
+                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength)));
                     break;
+
                 case EntityType.Subscription:
-                    isValid = entityPath.Length <= settings.Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength);
-                    isValid &= v6PathRegex.IsMatch(entityPath);
+                    if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength))
+                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength)));
                     break;
+
                 case EntityType.Rule:
-                    isValid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength);
-                    isValid &= v6PathRegex.IsMatch(entityPath);
+                    if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength))
+                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength)));
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
             }
 
-            return isValid;
+            if (!v6PathRegex.IsMatch(entityPath))
+                validationResult.AddError(FormatCharactersError(entityType, v6PathRegex));
+
+            return validationResult;
+        }
+
+        static string FormatLengthError(EntityType entityType, int maximumLength)
+        {
+            var pathOrName = entityType == EntityType.Queue || entityType == EntityType.Topic ? "path" : "topic";
+            return $"{entityType} {pathOrName} exceeds maximum length of {maximumLength} characters.";
+        }
+        static string FormatCharactersError(EntityType entityType, Regex regex)
+        {
+            var pathOrName = entityType == EntityType.Queue || entityType == EntityType.Topic ? "path" : "topic";
+            return $"{entityType} {pathOrName} contains illegal characters. Legal characters should match the following regex: `{regex}`.";
         }
     }
 }
