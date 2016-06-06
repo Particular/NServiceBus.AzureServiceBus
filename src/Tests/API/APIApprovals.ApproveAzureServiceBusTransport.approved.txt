@@ -20,12 +20,12 @@
     public class EntityNameValidationRules : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy
     {
         public EntityNameValidationRules(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public bool IsValid(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
+        public NServiceBus.AzureServiceBus.Addressing.ValidationResult IsValid(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
     }
     public class EntityNameValidationV6Rules : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy
     {
         public EntityNameValidationV6Rules(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public bool IsValid(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
+        public NServiceBus.AzureServiceBus.Addressing.ValidationResult IsValid(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
     }
     public enum FailOverMode
     {
@@ -67,7 +67,7 @@
     }
     public interface IValidationStrategy
     {
-        bool IsValid(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType);
+        NServiceBus.AzureServiceBus.Addressing.ValidationResult IsValid(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType);
     }
     public enum PartitioningIntent
     {
@@ -91,6 +91,13 @@
     {
         public ThrowOnFailingSanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
         public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
+    }
+    public class ValidationResult
+    {
+        public ValidationResult() { }
+        public System.Collections.ObjectModel.ReadOnlyCollection<string> Errors { get; }
+        public bool IsValid { get; }
+        public void AddError(string error) { }
     }
 }
 namespace NServiceBus.AzureServiceBus

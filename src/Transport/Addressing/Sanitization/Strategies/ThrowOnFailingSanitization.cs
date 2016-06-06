@@ -23,7 +23,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             var validationResult = validationStrategy.IsValid(entityPathOrName, entityType);
             if (!validationResult.IsValid)
             {
-                throw new Exception($"Invalid {entityType} {pathOrName} `{entityPathOrName}` that cannot be used with Azure Service Bus. Errors: " + string.Join("; ", validationResult.Errors) 
+                throw new Exception($"Invalid {entityType} entity {pathOrName} `{entityPathOrName}` that cannot be used with Azure Service Bus. Errors: " + string.Join("; ", validationResult.Errors) 
                                     + Environment.NewLine + "Use `Sanitization().UseStrategy<ISanitizationStrategy>()` configuration API to register a custom sanitization strategy if required.");
             }
 
