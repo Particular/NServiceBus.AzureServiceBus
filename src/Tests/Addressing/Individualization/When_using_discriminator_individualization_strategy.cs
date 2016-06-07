@@ -1,5 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualization
 {
+    using System;
     using AzureServiceBus.Addressing;
     using NUnit.Framework;
     using Settings;
@@ -21,6 +22,20 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualiz
             var strategy = new DiscriminatorBasedIndividualization(settingsHolder);
             
             Assert.That(strategy.Individualize(endpointname), Is.EqualTo(endpointname + discriminator));
+        }
+
+        [Test]
+        public void Discriminator_individualization_will_blow_up_if_no_discriminator_generator_is_registered()
+        {
+            const string endpointname = "myendpoint";
+
+            var settingsHolder = new SettingsHolder();
+            var config = new AzureServiceBusIndividualizationSettings(settingsHolder);
+            config.UseStrategy<DiscriminatorBasedIndividualization>();
+
+            var strategy = new DiscriminatorBasedIndividualization(settingsHolder);
+            
+            Assert.Throws<Exception>(() => strategy.Individualize(endpointname));
         }
     }
 }

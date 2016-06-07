@@ -14,7 +14,13 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
         public string Individualize(string endpointName)
         {
-            var discriminatorGenerator = settings.Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Individualization.DiscriminatorBasedIndividualizationDiscriminatorGenerator);
+            Func<string, string> discriminatorGenerator;
+            var found = settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Individualization.DiscriminatorBasedIndividualizationDiscriminatorGenerator, out discriminatorGenerator);
+            if (found == false)
+            {
+                var strategyName = typeof(DiscriminatorBasedIndividualization).Name;
+                throw new Exception($"{strategyName} required discrimination generator to be registered. Use `.UseStrategy<{strategyName}>().DiscriminatorGenerator()` configuration API to register discrimination generator.");
+            }
 
             var discriminator = discriminatorGenerator(endpointName);
 
