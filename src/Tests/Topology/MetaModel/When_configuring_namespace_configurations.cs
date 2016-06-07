@@ -49,16 +49,6 @@
         }
 
         [Test]
-        public void Should_add_default_connection_string_if_it_does_not_exist()
-        {
-            namespaces.AddDefault(ConnectionStringValue.Sample);
-            var connectionString = namespaces.GetConnectionString(NamespaceConfigurations.DefaultName);
-
-            Assert.AreEqual(1, namespaces.Count);
-            Assert.AreEqual(ConnectionStringValue.Sample, connectionString);
-        }
-
-        [Test]
         [TestCase("name", "name")]
         [TestCase("name", "Name")]
         [TestCase("name", "NAME")]

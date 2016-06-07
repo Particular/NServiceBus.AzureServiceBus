@@ -104,6 +104,15 @@ namespace NServiceBus
         }
 
         /// <summary>
+        /// Choose the name of the default namespace.
+        /// </summary>
+        public static void DefaultNamespaceName(this TransportExtensions<AzureServiceBusTransport> transportExtensions, Func<string> func )
+        {
+            var settings = transportExtensions.GetSettings();
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName, func);
+        }
+
+        /// <summary>
         /// Access to queues configuration.
         /// </summary>
         public static AzureServiceBusQueueSettings Queues(this TransportExtensions<AzureServiceBusTransport> transportExtensions)

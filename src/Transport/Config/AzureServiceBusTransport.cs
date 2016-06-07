@@ -76,7 +76,8 @@
         static void RegisterConnectionStringAsNamespace(string connectionString, ReadOnlySettings settings)
         {
             var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespaces.AddDefault(connectionString);
+            var defaultName = settings.Get<Func<string>>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
+            namespaces.Add(defaultName(), connectionString);
         }
 
         public override bool RequiresConnectionString { get; } = false;
