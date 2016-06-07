@@ -27,7 +27,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             if (partitioningIntent == PartitioningIntent.Sending)
             {
                 var @namespace = namespaces.Get();
-                yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, NamespaceMode.Active);
+                yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, @namespace.Purpose, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Receiving || partitioningIntent == PartitioningIntent.Creating)
@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 for (var i = 0; i < namespaces.Size; i++)
                 {
                     var @namespace = namespaces.Get();
-                    yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, mode);
+                    yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, @namespace.Purpose, mode);
                     mode = NamespaceMode.Passive;
                 }
             }

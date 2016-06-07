@@ -60,13 +60,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Roundrobin_partitioning_strategy_will_circle_active_namespace()
         {
-            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
-            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
-            Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString), strategy.GetNamespaces(PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString), strategy.GetNamespaces(PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString), strategy.GetNamespaces(PartitioningIntent.Sending).First());
 
-            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
-            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
-            Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString, NamespaceMode.Active), strategy.GetNamespaces(PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString), strategy.GetNamespaces(PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString), strategy.GetNamespaces(PartitioningIntent.Sending).First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(TertiaryName, TertiaryConnectionString), strategy.GetNamespaces(PartitioningIntent.Sending).First());
         }
 
         [Test]

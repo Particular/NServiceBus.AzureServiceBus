@@ -77,7 +77,7 @@
         {
             var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
             var defaultName = settings.Get<Func<string>>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
-            namespaces.Add(defaultName(), connectionString);
+            namespaces.Add(defaultName(), connectionString, NamespacePurpose.Partitioning);
         }
 
         public override bool RequiresConnectionString { get; } = false;

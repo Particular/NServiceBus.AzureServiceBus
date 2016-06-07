@@ -6,9 +6,9 @@
     {
         NamespaceInfo info;
 
-        public RuntimeNamespaceInfo(string name, string connectionString, NamespaceMode mode = NamespaceMode.Active)
+        public RuntimeNamespaceInfo(string name, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning, NamespaceMode mode = NamespaceMode.Active)
         {
-            info = new NamespaceInfo(name, connectionString);
+            info = new NamespaceInfo(name, connectionString, purpose);
             Mode = mode;
         }
 

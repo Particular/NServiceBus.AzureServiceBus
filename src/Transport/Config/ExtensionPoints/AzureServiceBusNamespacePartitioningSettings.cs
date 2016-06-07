@@ -29,7 +29,7 @@
             return this;
         }
 
-        public AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString)
+        public AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
         {
             NamespaceConfigurations namespaces;
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces))
@@ -38,7 +38,7 @@
                 settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
             }
             
-            namespaces.Add(name, connectionString);
+            namespaces.Add(name, connectionString, purpose);
             return this;
         }
     }
