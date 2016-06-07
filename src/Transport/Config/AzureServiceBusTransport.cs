@@ -82,7 +82,7 @@
             namespaces.AddDefault(connectionString);
         }
 
-        public override bool RequiresConnectionString { get; } = true;
+        public override bool RequiresConnectionString { get; } = false;
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
     }
