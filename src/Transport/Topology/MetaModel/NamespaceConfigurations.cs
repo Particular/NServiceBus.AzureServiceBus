@@ -10,7 +10,7 @@
     {
         static ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
 
-        internal static string DefaultName = "default";
+     //   internal static Func<string> DefaultName = () => "default";
 
         List<NamespaceInfo> inner;
 
@@ -40,11 +40,6 @@
             }
 
             inner.Add(definition);
-        }
-
-        public void AddDefault(string connectionString)
-        {
-            Add(DefaultName, connectionString);
         }
 
         public string GetConnectionString(string name)

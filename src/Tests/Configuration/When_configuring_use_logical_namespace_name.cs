@@ -38,5 +38,17 @@
 
             Assert.AreEqual(typeof(PassThroughNamespaceNameToConnectionStringMapper), mapper);
         }
+
+        [Test]
+        public void Should_use_supplied_default_namespace_name()
+        {
+            var ns = "myDefault";
+
+            extensions.DefaultNamespaceName(() => ns);
+
+            var f = settingsHolder.Get<Func<string>>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
+
+            Assert.AreEqual(f(), ns);
+        }
     }
 }
