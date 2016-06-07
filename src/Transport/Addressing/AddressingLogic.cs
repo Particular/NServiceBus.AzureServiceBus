@@ -16,7 +16,8 @@
         public string Apply(string entityname, EntityType entityType)
         {
             var path = composition.GetEntityPath(entityname, entityType);
-            if (!validationStrategy.IsValid(path, entityType))
+            var validationResult = validationStrategy.IsValid(path, entityType);
+            if (!validationResult.IsValid)
             {
                 path = sanitizationStrategy.Sanitize(path, entityType);
             }

@@ -20,10 +20,11 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 pathOrName = "name";
             }
 
-            if (!validationStrategy.IsValid(entityPathOrName, entityType))
+            var validationResult = validationStrategy.IsValid(entityPathOrName, entityType);
+            if (!validationResult.IsValid)
             {
-                throw new Exception($"Invalid {entityType} {pathOrName} `{entityPathOrName}` that cannot be used with Azure Service Bus. {entityType} {pathOrName} exceeds maximum allowed length or contains invalid characters. " + 
-                                    "Check for invalid characters, shorten the name, or use `Sanitization().UseStrategy<ISanitizationStrategy>()` configuration extension.");
+                throw new Exception($"Invalid {entityType} entity {pathOrName} `{entityPathOrName}` that cannot be used with Azure Service Bus. Errors: " + string.Join("; ", validationResult.Errors) 
+                                    + Environment.NewLine + "Use `Sanitization().UseStrategy<ISanitizationStrategy>()` configuration API to register a custom sanitization strategy if required.");
             }
 
             return entityPathOrName;

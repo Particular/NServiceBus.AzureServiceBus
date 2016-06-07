@@ -7,43 +7,71 @@ namespace NServiceBus.AzureServiceBus.Addressing
     public class EntityNameValidationRules : IValidationStrategy
     {
         ReadOnlySettings settings;
+        // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
+        Regex topicAndQueueNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$");
+        // Except for subscriptions and rules, these cannot contain slashes (/)
+        Regex subscriptionAndRuleNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
 
         public EntityNameValidationRules(ReadOnlySettings settings)
         {
             this.settings = settings;
         }
 
-        public bool IsValid(string entityPath, EntityType entityType)
+        public ValidationResult IsValid(string entityPath, EntityType entityType)
         {
-            // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
-            var topicAndQueueNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$");
-            // Except for subscriptions, these cannot contain slashes (/)
-            var subscriptionAndRuleNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
-            var valid = true;
+            var validationResult = new ValidationResult();
 
             switch (entityType)
             {
                 case EntityType.Queue:
-                    valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength);
-                    valid &= topicAndQueueNameRegex.IsMatch(entityPath);
+                    if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength))
+                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength)));
+
+                    if (!topicAndQueueNameRegex.IsMatch(entityPath))
+                        validationResult.AddError(FormatCharactersError(entityType, topicAndQueueNameRegex));
                     break;
+
                 case EntityType.Topic:
-                    valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength);
-                    valid &= topicAndQueueNameRegex.IsMatch(entityPath);
+                    if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength))
+                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength)));
+
+                    if (!topicAndQueueNameRegex.IsMatch(entityPath))
+                        validationResult.AddError(FormatCharactersError(entityType, topicAndQueueNameRegex));
                     break;
+
                 case EntityType.Subscription:
-                    valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength);
-                    valid &= subscriptionAndRuleNameRegex.IsMatch(entityPath);
+                    if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength))
+                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength)));
+
+                    if (!subscriptionAndRuleNameRegex.IsMatch(entityPath))
+                        validationResult.AddError(FormatCharactersError(entityType, subscriptionAndRuleNameRegex));
                     break;
+
                 case EntityType.Rule:
-                    valid &= entityPath.Length <= settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength);
-                    valid &= subscriptionAndRuleNameRegex.IsMatch(entityPath);
+                    if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength))
+                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength)));
+
+                    if (!subscriptionAndRuleNameRegex.IsMatch(entityPath))
+                        validationResult.AddError(FormatCharactersError(entityType, subscriptionAndRuleNameRegex));
                     break;
+
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
             }
 
-            return valid;
+            return validationResult;
+        }
+
+        static string FormatLengthError(EntityType entityType, int maximumLength)
+        {
+            var pathOrName = entityType == EntityType.Queue || entityType == EntityType.Topic ? "path" : "topic";
+            return $"{entityType} {pathOrName} exceeds maximum length of {maximumLength} characters.";
+        }
+        static string FormatCharactersError(EntityType entityType, Regex regex)
+        {
+            var pathOrName = entityType == EntityType.Queue || entityType == EntityType.Topic ? "path" : "topic";
+            return $"{entityType} {pathOrName} contains illegal characters. Legal characters should match the following regex: `{regex}`.";
         }
     }
 }

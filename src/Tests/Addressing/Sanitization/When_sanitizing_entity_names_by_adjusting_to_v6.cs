@@ -56,9 +56,20 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 
         class ValidationMock : IValidationStrategy
         {
-            public bool IsValid(string entityPath, EntityType entityType)
+            public ValidationResult IsValid(string entityPath, EntityType entityType)
             {
-                return !entityPath.Contains("$") && entityPath.Length < 260;
+                var validationResult = new ValidationResult();
+                if (entityPath.Contains("$"))
+                {
+                    validationResult.AddError("contains `$` sign");
+                }
+
+                if (entityPath.Length > 260)
+                {
+                    validationResult.AddError("lenth is more than 260 characters");
+                }
+
+                return validationResult;
             }
         }
     }

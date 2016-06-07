@@ -38,9 +38,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
                 this.shouldValidationPass = shouldValidationPass;
             }
 
-            public bool IsValid(string entityPath, EntityType entityType)
+            public ValidationResult IsValid(string entityPath, EntityType entityType)
             {
-                return shouldValidationPass;
+                var validationResult = new ValidationResult();
+
+                if (!shouldValidationPass)
+                {
+                    validationResult.AddError("validation should fail");
+                }
+
+                return validationResult;
             }
         }
     }
