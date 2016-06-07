@@ -2,6 +2,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualiz
 {
     using AzureServiceBus.Addressing;
     using NUnit.Framework;
+    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -10,13 +11,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualiz
         [Test]
         public void Discriminator_individualization_will_append_discriminator_to_endpointname()
         {
-            var strategy = new DiscriminatorBasedIndividualization();
-            var endpointname = "myendpoint";
-            var discriminator = "-mydiscriminator";
+            const string endpointname = "myendpoint";
+            const string discriminator = "-mydiscriminator";
 
-            strategy.SetDiscriminatorGenerator(() => discriminator);
+            var settingsHolder = new SettingsHolder();
+            var config = new AzureServiceBusIndividualizationSettings(settingsHolder);
+            config.UseStrategy<DiscriminatorBasedIndividualization>().DiscriminatorGenerator(endpointName => discriminator);
 
-            Assert.AreEqual(endpointname + discriminator, strategy.Individualize(endpointname));
+            var strategy = new DiscriminatorBasedIndividualization(settingsHolder);
+            
+            Assert.That(strategy.Individualize(endpointname), Is.EqualTo(endpointname + discriminator));
         }
     }
 }

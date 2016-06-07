@@ -1,26 +1,29 @@
 namespace NServiceBus.AzureServiceBus.Addressing
 {
     using System;
+    using Settings;
 
     public class DiscriminatorBasedIndividualization : IIndividualizationStrategy
     {
-        Func<string> discriminatorGenerator;
+        ReadOnlySettings settings;
 
-        public void SetDiscriminatorGenerator(Func<string> discriminatorGenerator)
+        public DiscriminatorBasedIndividualization(ReadOnlySettings settings)
         {
-            this.discriminatorGenerator = discriminatorGenerator;
+            this.settings = settings;
         }
 
-        public string Individualize(string endpointname)
+        public string Individualize(string endpointName)
         {
-            var discriminator = discriminatorGenerator();
+            var discriminatorGenerator = settings.Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Individualization.DiscriminatorBasedIndividualizationDiscriminatorGenerator);
 
-            if (endpointname.EndsWith(discriminator))
+            var discriminator = discriminatorGenerator(endpointName);
+
+            if (endpointName.EndsWith(discriminator))
             {
-                return endpointname;
+                return endpointName;
             }
 
-            return endpointname + discriminator;
+            return endpointName + discriminator;
         }
     }
 }

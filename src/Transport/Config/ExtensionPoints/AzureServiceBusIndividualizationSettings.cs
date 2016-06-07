@@ -9,8 +9,7 @@
     {
         SettingsHolder settings;
 
-        public AzureServiceBusIndividualizationSettings(SettingsHolder settings)
-            : base(settings)
+        public AzureServiceBusIndividualizationSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }
@@ -19,12 +18,13 @@
         /// Provide individualization strategy to use.
         /// <remarks>Default is <see cref="DiscriminatorBasedIndividualization"/></remarks>
         /// <seealso cref="CoreIndividualization"/>
+        /// <seealso cref="DiscriminatorBasedIndividualization"/>
         /// </summary>
-        public AzureServiceBusIndividualizationSettings UseStrategy<T>() where T : IIndividualizationStrategy
+        public AzureServiceBusIndividualizationExtensionPoint<T> UseStrategy<T>() where T : IIndividualizationStrategy
         {
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(T));
 
-            return this;
+            return new AzureServiceBusIndividualizationExtensionPoint<T>(settings);
         }
     }
 }
