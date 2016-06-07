@@ -21,27 +21,27 @@ namespace NServiceBus.AzureServiceBus
 
         public long GetEstimatedSize()
         {
-            const int assumeSize = 256;
+            const int stringHeaderValueAssumedSizeInBytes = 256;
             var standardPropertiesSize = GetStringSizeInBytes(Message.MessageId) +
-                                         assumeSize + // ContentType +
-                                         assumeSize + // CorrelationId +
+                                         stringHeaderValueAssumedSizeInBytes + // ContentType +
+                                         stringHeaderValueAssumedSizeInBytes + // CorrelationId +
                                          4 + // DeliveryCount
                                          8 + // EnqueuedSequenceNumber
                                          8 + // EnqueuedTimeUtc
                                          8 + // ExpiresAtUtc
                                          1 + // ForcePersistence
                                          1 + // IsBodyConsumed
-                                         assumeSize + // Label
+                                         stringHeaderValueAssumedSizeInBytes + // Label
                                          8 + // LockedUntilUtc
                                          16 + // LockToken
-                                         assumeSize + // PartitionKey
+                                         stringHeaderValueAssumedSizeInBytes + // PartitionKey
                                          8 + // ScheduledEnqueueTimeUtc
                                          8 + // SequenceNumber
-                                         assumeSize + // SessionId
+                                         stringHeaderValueAssumedSizeInBytes + // SessionId
                                          4 + // State
                                          8 + // TimeToLive +
-                                         assumeSize + // To +
-                                         assumeSize;  // ViaPartitionKey;
+                                         stringHeaderValueAssumedSizeInBytes + // To +
+                                         stringHeaderValueAssumedSizeInBytes;  // ViaPartitionKey;
 
             var headers = Message.Headers.Sum(property => GetStringSizeInBytes(property.Key) + GetStringSizeInBytes(property.Value));
             var bodySize = Message.Body.Length;
