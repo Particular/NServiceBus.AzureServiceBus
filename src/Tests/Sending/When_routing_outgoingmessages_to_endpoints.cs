@@ -376,7 +376,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
-            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback);
+            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var batch = new Batch
             {
@@ -449,7 +449,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
-            var @fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value);
+            var @fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, mode: NamespaceMode.Passive);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
             var batch = new Batch
