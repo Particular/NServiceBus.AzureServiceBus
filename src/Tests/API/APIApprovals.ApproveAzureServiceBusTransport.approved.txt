@@ -13,8 +13,8 @@
     }
     public class EndpointOrientedTopologySanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
-        public EndpointOrientedTopologySanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
-        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
+        public EndpointOrientedTopologySanitization() { }
+        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType, NServiceBus.AzureServiceBus.Addressing.ValidationResult validationResult) { }
     }
     public class EntityNameValidationRules : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy
     {
@@ -62,7 +62,7 @@
     }
     public interface ISanitizationStrategy
     {
-        string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType);
+        string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType, NServiceBus.AzureServiceBus.Addressing.ValidationResult validationResult);
     }
     public interface IValidationStrategy
     {
@@ -88,15 +88,18 @@
     }
     public class ThrowOnFailingSanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
-        public ThrowOnFailingSanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
-        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
+        public ThrowOnFailingSanitization() { }
+        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType, NServiceBus.AzureServiceBus.Addressing.ValidationResult validationResult) { }
     }
     public class ValidationResult
     {
         public ValidationResult() { }
+        public bool CharactersAreValid { get; }
         public System.Collections.ObjectModel.ReadOnlyCollection<string> Errors { get; }
         public bool IsValid { get; }
-        public void AddError(string error) { }
+        public bool LengthIsValid { get; }
+        public void AddErrorForInvalidCharacter(string error) { }
+        public void AddErrorForInvalidLength(string error) { }
     }
 }
 namespace NServiceBus.AzureServiceBus

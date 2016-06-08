@@ -4,14 +4,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
     public class ThrowOnFailingSanitization : ISanitizationStrategy
     {
-        IValidationStrategy validationStrategy;
-
-        public ThrowOnFailingSanitization(IValidationStrategy validationStrategy)
-        {
-            this.validationStrategy = validationStrategy;
-        }
-
-        public string Sanitize(string entityPathOrName, EntityType entityType)
+        public string Sanitize(string entityPathOrName, EntityType entityType, ValidationResult validationResult)
         {
             var pathOrName = "path";
 
@@ -20,7 +13,6 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 pathOrName = "name";
             }
 
-            var validationResult = validationStrategy.IsValid(entityPathOrName, entityType);
             if (!validationResult.IsValid)
             {
                 throw new Exception($"Invalid {entityType} entity {pathOrName} `{entityPathOrName}` that cannot be used with Azure Service Bus. Errors: " + string.Join("; ", validationResult.Errors) 

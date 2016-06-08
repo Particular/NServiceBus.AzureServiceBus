@@ -25,34 +25,34 @@ namespace NServiceBus.AzureServiceBus.Addressing
             {
                 case EntityType.Queue:
                     if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength))
-                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength)));
+                        validationResult.AddErrorForInvalidLength(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.QueuePathMaximumLength)));
 
                     if (!topicAndQueueNameRegex.IsMatch(entityPath))
-                        validationResult.AddError(FormatCharactersError(entityType, topicAndQueueNameRegex));
+                        validationResult.AddErrorForInvalidCharacter(FormatCharactersError(entityType, topicAndQueueNameRegex));
                     break;
 
                 case EntityType.Topic:
                     if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength))
-                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength)));
+                        validationResult.AddErrorForInvalidLength(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.TopicPathMaximumLength)));
 
                     if (!topicAndQueueNameRegex.IsMatch(entityPath))
-                        validationResult.AddError(FormatCharactersError(entityType, topicAndQueueNameRegex));
+                        validationResult.AddErrorForInvalidCharacter(FormatCharactersError(entityType, topicAndQueueNameRegex));
                     break;
 
                 case EntityType.Subscription:
                     if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength))
-                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength)));
+                        validationResult.AddErrorForInvalidLength(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.SubscriptionPathMaximumLength)));
 
                     if (!subscriptionAndRuleNameRegex.IsMatch(entityPath))
-                        validationResult.AddError(FormatCharactersError(entityType, subscriptionAndRuleNameRegex));
+                        validationResult.AddErrorForInvalidCharacter(FormatCharactersError(entityType, subscriptionAndRuleNameRegex));
                     break;
 
                 case EntityType.Rule:
                     if (entityPath.Length > settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength))
-                        validationResult.AddError(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength)));
+                        validationResult.AddErrorForInvalidLength(FormatLengthError(entityType, settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Validation.RuleNameMaximumLength)));
 
                     if (!subscriptionAndRuleNameRegex.IsMatch(entityPath))
-                        validationResult.AddError(FormatCharactersError(entityType, subscriptionAndRuleNameRegex));
+                        validationResult.AddErrorForInvalidCharacter(FormatCharactersError(entityType, subscriptionAndRuleNameRegex));
                     break;
 
 
