@@ -101,6 +101,7 @@ namespace NServiceBus.AzureServiceBus
                 public static class Individualization
                 {
                     public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Individualization.Strategy";
+                    public const string DiscriminatorBasedIndividualizationDiscriminatorGenerator = "AzureServiceBus.Settings.Topology.Addressing.Individualization.DiscriminatorBasedIndividualizationDiscriminatorGenerator";
                 }
             }
 
