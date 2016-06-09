@@ -27,7 +27,7 @@
         [TestCase("validendpoint@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "validendpoint")]
         [TestCase("endpoint$name@namespaceName", "endpoint$name")]
         [TestCase("endpoint$name@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "endpoint$name")]
-        public void Only_queue_name_without_suffix_should_be_sanitized(string endpointName, string expectedEndpointName)
+        public void Sanitization_strategy_should_receive_value_without_suffix(string endpointName, string expectedEndpointName)
         {
             addressingLogic.Apply(endpointName, EntityType.Queue);
 
@@ -39,7 +39,7 @@
         [TestCase("validendpoint@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "validendpoint")]
         [TestCase("endpoint$name@namespaceName", "endpoint$name")]
         [TestCase("endpoint$name@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "endpoint$name")]
-        public void Only_queue_name_without_suffix_should_be_validated(string endpointName, string expectedEndpointName)
+        public void Validation_strategy_should_receive_value_without_suffix(string endpointName, string expectedEndpointName)
         {
             addressingLogic.Apply(endpointName, EntityType.Queue);
 
@@ -51,7 +51,7 @@
         [TestCase("validendpoint@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "validendpoint")]
         [TestCase("endpoint$name@namespaceName", "endpoint$name")]
         [TestCase("endpoint$name@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "endpoint$name")]
-        public void Only_queue_name_without_suffix_should_be_composed(string endpointName, string expectedEndpointName)
+        public void Composition_strategy_should_receive_value_without_suffix(string endpointName, string expectedEndpointName)
         {
             addressingLogic.Apply(endpointName, EntityType.Queue);
 
