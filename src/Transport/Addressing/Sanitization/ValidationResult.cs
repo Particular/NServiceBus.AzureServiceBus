@@ -4,7 +4,7 @@
     using System.Collections.ObjectModel;
     using System.Linq;
 
-    public class ValidationResult
+    public class ValidationResultX
     {
         List<string> validationErrors = new List<string>();
 

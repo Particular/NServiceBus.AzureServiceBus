@@ -1,7 +1,6 @@
 ﻿namespace NServiceBus
 {
     using AzureServiceBus;
-    using AzureServiceBus.Addressing;
     using Configuration.AdvanceExtensibility;
     using Settings;
 
@@ -12,17 +11,6 @@
         public AzureServiceBusValidationSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
-        }
-
-        /// <summary>
-        /// Rules to apply for entity path/name validation.
-        /// <remarks> Default is <see cref="EntityNameValidationRules"/>. For backwards compatibility, use <see cref="EntityNameValidationV6Rules"/>.</remarks>
-        /// </summary>
-        public AzureServiceBusValidationSettings UseStrategy<T>() where T : IValidationStrategy
-        {
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(T));
-
-            return this;
         }
 
         /// <summary>

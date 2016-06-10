@@ -90,8 +90,7 @@
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualization.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualization.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\EndpointOrientedTopologySanitization.cs" />
-    <Compile Include="Addressing\Validation\Strategies\EntityNameValidationV6Rules.cs" />
-    <Compile Include="Addressing\Validation\ValidationResult.cs" />
+    <Compile Include="Addressing\Sanitization\ValidationResult.cs" />
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
     <Compile Include="Config\AzureServiceBusTransportInfrastructure.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusCompositionExtensionPoint.cs" />
@@ -159,7 +158,6 @@
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioning.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitization.cs" />
-    <Compile Include="Addressing\Validation\IValidationStrategy.cs" />
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />
     <Compile Include="Addressing\Partitioning\INamespacePartitioningStrategy.cs" />
@@ -198,7 +196,6 @@
     <Compile Include="Connectivity\NamespaceManagerLifeCycleManager.cs" />
     <Compile Include="Creation\AzureServiceBusQueueCreator.cs" />
     <Compile Include="Creation\AzureServiceBusTopicCreator.cs" />
-    <Compile Include="Addressing\Validation\Strategies\EntityNameValidationRules.cs" />
     <Compile Include="Config\AzureServiceBusTransport.cs" />
     <Compile Include="Config\ExtensionMethods\AzureServiceBusTransportExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusCompositionSettings.cs" />

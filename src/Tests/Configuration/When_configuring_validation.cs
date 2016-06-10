@@ -1,8 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
-    using System;
     using AzureServiceBus;
-    using AzureServiceBus.Addressing;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using Settings;
     using NUnit.Framework;
@@ -19,22 +17,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         {
             settingsHolder = new SettingsHolder();
             extensions = new TransportExtensions<AzureServiceBusTransport>(settingsHolder);
-        }
-
-        [Test]
-        public void Should_be_able_to_set_the_validation_strategy()
-        {
-            var validationSettings = extensions.Validation().UseStrategy<MyValidationStrategy>();
-
-            Assert.AreEqual(typeof(MyValidationStrategy), validationSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy));
-        }
-
-        class MyValidationStrategy : IValidationStrategy
-        {
-            public ValidationResult IsValid(string entityPath, EntityType entityType)
-            {
-                throw new NotImplementedException(); // not relevant for test
-            }
         }
 
 

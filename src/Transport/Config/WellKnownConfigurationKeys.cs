@@ -86,7 +86,6 @@ namespace NServiceBus.AzureServiceBus
 
                 public static class Validation
                 {
-                    public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Validation.Strategy";
                     public const string QueuePathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Validation.QueuePathMaximumLength";
                     public const string TopicPathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Validation.TopicPathMaximumLength";
                     public const string SubscriptionPathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Validation.SubscriptionPathMaximumLength";
