@@ -97,10 +97,8 @@
     <Compile Include="Addressing\NamespacePartitioning\When_using_failover_namespace_strategy.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_roundrobin_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_single_namespace_strategy.cs" />
-    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_by_adjusting_to_v6.cs" />
-    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_by_throwing_exception.cs" />
-    <Compile Include="Addressing\Validation\When_using_entity_validation_v6_rules.cs" />
-    <Compile Include="Addressing\Validation\When_using_entity_validation_rules.cs" />
+    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_using_EndpointOrientedSanitization.cs" />
+    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_using_ThrowOnFailingSanitization_sanitization.cs" />
     <Compile Include="Addressing\When_apply_addressing_logic.cs" />
     <Compile Include="API\APIApprovals.cs" />
     <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiApprover.cs" />
