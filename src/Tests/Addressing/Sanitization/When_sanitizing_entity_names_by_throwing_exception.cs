@@ -12,21 +12,21 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [Test]
         public void Valid_entity_names_are_returned_as_is()
         {
-            var validation = new ValidationMock(shouldValidationPass:true);
-            var sanitization = new ThrowOnFailingSanitization(validation);
+            var sanitization = new ThrowOnFailingSanitization();
             var endpointname = "validendpoint";
+            var validationResult = new ValidationMock(shouldValidationPass: true).IsValid(endpointname, EntityType.Queue);
 
-            Assert.AreEqual(endpointname, sanitization.Sanitize(endpointname, EntityType.Queue));
+            Assert.AreEqual(endpointname, sanitization.Sanitize(endpointname, EntityType.Queue, validationResult));
         }
 
         [Test]
         public void Invalid_entity_names_result_in_exception()
         {
-            var validation = new ValidationMock(shouldValidationPass:false);
-            var sanitization = new ThrowOnFailingSanitization(validation);
+            var sanitization = new ThrowOnFailingSanitization();
             var endpointname = "invalidendpoint";
+            var validationResult = new ValidationMock(shouldValidationPass:false).IsValid(endpointname, EntityType.Queue);
 
-            Assert.Throws<Exception>(() => sanitization.Sanitize(endpointname, EntityType.Queue));
+            Assert.Throws<Exception>(() => sanitization.Sanitize(endpointname, EntityType.Queue, validationResult));
         }
 
         class ValidationMock : IValidationStrategy
@@ -44,7 +44,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 
                 if (!shouldValidationPass)
                 {
-                    validationResult.AddError("validation should fail");
+                    validationResult.AddErrorForInvalidLength("validation should fail");
                 }
 
                 return validationResult;

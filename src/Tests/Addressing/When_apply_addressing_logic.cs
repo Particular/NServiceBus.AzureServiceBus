@@ -67,7 +67,7 @@
                 ProvidedEntityPath = entityPath;
 
                 var validationResult = new ValidationResult();
-                validationResult.AddError("fake error only for testing purpose");
+                validationResult.AddErrorForInvalidCharacter("fake error only for testing purpose");
                 return validationResult;
             }
         }
@@ -76,7 +76,7 @@
         {
             public string ProvidedEntityPathOrName { get; private set; }
 
-            public string Sanitize(string entityPathOrName, EntityType entityType)
+            public string Sanitize(string entityPathOrName, EntityType entityType, ValidationResult validationResult)
             {
                 ProvidedEntityPathOrName = entityPathOrName;
                 return entityPathOrName;

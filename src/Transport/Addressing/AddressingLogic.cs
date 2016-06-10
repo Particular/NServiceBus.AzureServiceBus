@@ -24,7 +24,7 @@
             var validationResult = validationStrategy.IsValid(path, entityType);
             if (!validationResult.IsValid)
             {
-                path = sanitizationStrategy.Sanitize(path, entityType);
+                path = sanitizationStrategy.Sanitize(path, entityType, validationResult);
             }
             return path;
         }
