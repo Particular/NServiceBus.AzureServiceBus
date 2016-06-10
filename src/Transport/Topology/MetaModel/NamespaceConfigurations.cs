@@ -10,13 +10,16 @@
     {
         static ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
 
-     //   internal static Func<string> DefaultName = () => "default";
-
         List<NamespaceInfo> inner;
 
         public NamespaceConfigurations()
         {
             inner = new List<NamespaceInfo>();
+        }
+
+        internal NamespaceConfigurations(List<NamespaceInfo> configurations)
+        {
+            inner = configurations;
         }
 
         public int Count => inner.Count;

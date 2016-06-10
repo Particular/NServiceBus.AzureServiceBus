@@ -19,6 +19,8 @@
         }
         public bool HasSuffix => !string.IsNullOrWhiteSpace(Suffix);
 
+        public EntityAddress(string name, string suffix) : this(name + "@" + suffix) { }
+
         public EntityAddress(string value)
         {
             if (string.IsNullOrWhiteSpace(value))

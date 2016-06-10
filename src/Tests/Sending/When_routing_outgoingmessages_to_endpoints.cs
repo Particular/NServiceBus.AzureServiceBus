@@ -133,6 +133,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                             Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
                         },
+
                         new BatchedOperation
                         {
                             Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
