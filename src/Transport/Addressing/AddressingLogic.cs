@@ -1,26 +1,35 @@
 ﻿namespace NServiceBus.AzureServiceBus.Addressing
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Settings;
     using Topology.MetaModel;
 
     class AddressingLogic
     {
         readonly ICompositionStrategy composition;
-        readonly ISanitizationStrategy sanitizationStrategy;
+        readonly SettingsHolder settings;
 
-        public AddressingLogic(ISanitizationStrategy sanitizationStrategy, ICompositionStrategy composition)
+        public AddressingLogic(SettingsHolder settings, ICompositionStrategy composition)
         {
-            this.sanitizationStrategy = sanitizationStrategy;
+            this.settings = settings;
             this.composition = composition;
         }
 
-        public string Apply(string entityname, EntityType entityType)
+        public string Apply(string entityPathOrName, EntityType entityType)
         {
-            var address = new EntityAddress(entityname);
-            entityname = address.Name;
+            var address = new EntityAddress(entityPathOrName);
+            entityPathOrName = address.Name;
 
-            var path = composition.GetEntityPath(entityname, entityType);
-            path = sanitizationStrategy.Sanitize(path, entityType);
-            return path;
+            var pathOrName = composition.GetEntityPath(entityPathOrName, entityType);
+            var allStrategies = settings.Get<HashSet<SanitizationStrategy>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
+            var strategiesForEntityType = allStrategies.Where(x => x.CanSanitize == entityType);
+            foreach (var strategy in strategiesForEntityType)
+            {
+                pathOrName = strategy.Sanitize(pathOrName);
+            }
+
+            return pathOrName;
         }
     }
 }

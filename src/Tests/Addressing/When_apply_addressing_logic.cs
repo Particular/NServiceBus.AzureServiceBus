@@ -3,21 +3,27 @@
     using AzureServiceBus;
     using AzureServiceBus.Addressing;
     using NUnit.Framework;
+    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_apply_addressing_logic
     {
-        SanitizationStrategy sanitizationStrategy;
-        CompositionStrategy compositionStrategy;
+        FakeSanitizationStrategy sanitizationStrategy;
+        FakeCompositionStrategy compositionStrategy;
         AddressingLogic addressingLogic;
 
         [SetUp]
         public void SetUp()
         {
-            sanitizationStrategy = new SanitizationStrategy();
-            compositionStrategy = new CompositionStrategy();
-            addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
+            compositionStrategy = new FakeCompositionStrategy();
+            sanitizationStrategy = new FakeSanitizationStrategy();
+
+            var settings = new SettingsHolder();
+            var sanitizationSettings = new AzureServiceBusSanitizationSettings(settings);
+            sanitizationSettings.UseStrategy(sanitizationStrategy);
+
+            addressingLogic = new AddressingLogic(settings, compositionStrategy);
         }
 
         [Test]
@@ -29,7 +35,7 @@
         {
             addressingLogic.Apply(endpointName, EntityType.Queue);
 
-            Assert.AreEqual(expectedEndpointName, sanitizationStrategy.ProvidedEntityPathOrName);
+            Assert.AreEqual(expectedEndpointName, sanitizationStrategy.ProvidedEntityPath);
         }
 
         [Test]
@@ -41,21 +47,23 @@
         {
             addressingLogic.Apply(endpointName, EntityType.Queue);
 
-            Assert.AreEqual(expectedEndpointName, compositionStrategy.ProvidedEntityName);
+            Assert.AreEqual(expectedEndpointName, sanitizationStrategy.ProvidedEntityPath);
         }
 
-        class SanitizationStrategy : ISanitizationStrategy
+        class FakeSanitizationStrategy : SanitizationStrategy
         {
-            public string ProvidedEntityPathOrName { get; private set; }
+            public string ProvidedEntityPath { get; private set; }
 
-            public string Sanitize(string entityPathOrName, EntityType entityType)
+            public override string Sanitize(string entityPathOrName)
             {
-                ProvidedEntityPathOrName = entityPathOrName;
+                ProvidedEntityPath = entityPathOrName;
                 return entityPathOrName;
             }
+
+            public override EntityType CanSanitize { get; } = EntityType.Queue;
         }
 
-        class CompositionStrategy : ICompositionStrategy
+        class FakeCompositionStrategy : ICompositionStrategy
         {
             public string ProvidedEntityName { get; private set; }
 
