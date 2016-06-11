@@ -38,8 +38,8 @@ namespace NServiceBus.AzureServiceBus
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(FlatComposition));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(CoreIndividualization));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioning));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(ThrowOnFailingSanitization));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy, typeof(EntityNameValidationRules));
+            var sanitization = new HashSet<SanitizationStrategy> { new ThrowOnFailingSanitizationForQueues(settings), new ThrowOnFailingSanitizationForTopics(settings), new ThrowOnFailingSanitizationForSubscription(settings), new ThrowOnFailingSanitizationForRules(settings) };
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, sanitization);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle, 2);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix, "bundle-");
             topologySectionManager = new ForwardingTopologySectionManager(settings, container);
@@ -91,12 +91,6 @@ namespace NServiceBus.AzureServiceBus
 
             var partitioningStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
             container.Register(partitioningStrategyType);
-
-            var sanitizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            container.Register(sanitizationStrategyType);
-
-            var validationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Validation.Strategy);
-            container.Register(validationStrategyType);
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)

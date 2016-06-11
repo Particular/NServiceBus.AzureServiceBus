@@ -145,14 +145,6 @@ namespace NServiceBus
         }
 
         /// <summary>
-        /// Access to entities path/name length validation configuration.
-        /// </summary>
-        public static AzureServiceBusValidationSettings Validation(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusValidationSettings(transportExtensions.GetSettings());
-        }
-
-        /// <summary>
         /// Access to entities path/name sanitization configuration.
         /// </summary>
         public static AzureServiceBusSanitizationSettings Sanitization(this TransportExtensions<AzureServiceBusTransport> transportExtensions)

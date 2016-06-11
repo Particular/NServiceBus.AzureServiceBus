@@ -3,23 +3,27 @@
     using AzureServiceBus;
     using AzureServiceBus.Addressing;
     using NUnit.Framework;
+    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_apply_addressing_logic
     {
-        ValidationStrategy validationStrategy;
-        SanitizationStrategy sanitizationStrategy;
-        CompositionStrategy compositionStrategy;
+        FakeSanitizationStrategy sanitizationStrategy;
+        FakeCompositionStrategy compositionStrategy;
         AddressingLogic addressingLogic;
 
         [SetUp]
         public void SetUp()
         {
-            validationStrategy = new ValidationStrategy();
-            sanitizationStrategy = new SanitizationStrategy();
-            compositionStrategy = new CompositionStrategy();
-            addressingLogic = new AddressingLogic(validationStrategy, sanitizationStrategy, compositionStrategy);
+            compositionStrategy = new FakeCompositionStrategy();
+            sanitizationStrategy = new FakeSanitizationStrategy();
+
+            var settings = new SettingsHolder();
+            var sanitizationSettings = new AzureServiceBusSanitizationSettings(settings);
+            sanitizationSettings.UseStrategy(sanitizationStrategy);
+
+            addressingLogic = new AddressingLogic(settings, compositionStrategy);
         }
 
         [Test]
@@ -31,19 +35,7 @@
         {
             addressingLogic.Apply(endpointName, EntityType.Queue);
 
-            Assert.AreEqual(expectedEndpointName, sanitizationStrategy.ProvidedEntityPathOrName);
-        }
-
-        [Test]
-        [TestCase("validendpoint@namespaceName", "validendpoint")]
-        [TestCase("validendpoint@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "validendpoint")]
-        [TestCase("endpoint$name@namespaceName", "endpoint$name")]
-        [TestCase("endpoint$name@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "endpoint$name")]
-        public void Validation_strategy_should_receive_value_without_suffix(string endpointName, string expectedEndpointName)
-        {
-            addressingLogic.Apply(endpointName, EntityType.Queue);
-
-            Assert.AreEqual(expectedEndpointName, validationStrategy.ProvidedEntityPath);
+            Assert.AreEqual(expectedEndpointName, sanitizationStrategy.ProvidedEntityPath);
         }
 
         [Test]
@@ -55,35 +47,23 @@
         {
             addressingLogic.Apply(endpointName, EntityType.Queue);
 
-            Assert.AreEqual(expectedEndpointName, compositionStrategy.ProvidedEntityName);
+            Assert.AreEqual(expectedEndpointName, sanitizationStrategy.ProvidedEntityPath);
         }
 
-        class ValidationStrategy : IValidationStrategy
+        class FakeSanitizationStrategy : SanitizationStrategy
         {
             public string ProvidedEntityPath { get; private set; }
 
-            public ValidationResult IsValid(string entityPath, EntityType entityType)
+            public override string Sanitize(string entityPathOrName)
             {
-                ProvidedEntityPath = entityPath;
-
-                var validationResult = new ValidationResult();
-                validationResult.AddError("fake error only for testing purpose");
-                return validationResult;
-            }
-        }
-
-        class SanitizationStrategy : ISanitizationStrategy
-        {
-            public string ProvidedEntityPathOrName { get; private set; }
-
-            public string Sanitize(string entityPathOrName, EntityType entityType)
-            {
-                ProvidedEntityPathOrName = entityPathOrName;
+                ProvidedEntityPath = entityPathOrName;
                 return entityPathOrName;
             }
+
+            public override EntityType CanSanitize { get; } = EntityType.Queue;
         }
 
-        class CompositionStrategy : ICompositionStrategy
+        class FakeCompositionStrategy : ICompositionStrategy
         {
             public string ProvidedEntityName { get; private set; }
 
