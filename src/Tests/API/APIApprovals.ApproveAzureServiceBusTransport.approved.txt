@@ -313,12 +313,13 @@ namespace NServiceBus.AzureServiceBus
     {
         bool IsRunning { get; }
         int RefCount { get; set; }
-        void Initialize(NServiceBus.AzureServiceBus.EntityInfo entity, System.Func<NServiceBus.AzureServiceBus.IncomingMessageDetails, NServiceBus.AzureServiceBus.ReceiveContext, System.Threading.Tasks.Task> callback, System.Func<System.Exception, System.Threading.Tasks.Task> errorCallback, int maximumConcurrency);
+        void Initialize(NServiceBus.AzureServiceBus.EntityInfo entity, System.Func<NServiceBus.AzureServiceBus.IncomingMessageDetails, NServiceBus.AzureServiceBus.ReceiveContext, System.Threading.Tasks.Task> callback, System.Func<System.Exception, System.Threading.Tasks.Task> errorCallback, System.Func<NServiceBus.Transports.ErrorContext, System.Threading.Tasks.Task<bool>> onRetryError, int maximumConcurrency);
         void Start();
         System.Threading.Tasks.Task Stop();
     }
     public interface IOperateTopology
     {
+        System.Func<NServiceBus.Transports.ErrorContext, System.Threading.Tasks.Task<bool>> OnRetryError { get; set; }
         void OnError(System.Func<System.Exception, System.Threading.Tasks.Task> func);
         void OnIncomingMessage(System.Func<NServiceBus.AzureServiceBus.IncomingMessageDetails, NServiceBus.AzureServiceBus.ReceiveContext, System.Threading.Tasks.Task> func);
         void Start(NServiceBus.AzureServiceBus.TopologySection topology, int maximumConcurrency);

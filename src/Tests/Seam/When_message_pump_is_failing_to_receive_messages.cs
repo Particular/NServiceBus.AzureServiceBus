@@ -44,7 +44,7 @@
                 return TaskEx.Completed;
             });
 
-            await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+            await pump.Init(context => TaskEx.Completed, errorContext => Task.FromResult(true), criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.Start(new PushRuntimeSettings(1));
 
             await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new MemoryStream()), new BrokeredMessageReceiveContext());
@@ -126,6 +126,8 @@
             {
                 onError = func;
             }
+
+            public Func<ErrorContext, Task<bool>> OnRetryError { get; set; }
         }
 
         class FakeEndpoint : IEndpointInstance

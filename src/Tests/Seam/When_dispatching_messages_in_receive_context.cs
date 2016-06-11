@@ -73,7 +73,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
 
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+            }, errorContext => Task.FromResult(true), criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -157,7 +157,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue") , DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
                 await dispatcher.Dispatch(transportOperations, context.Context);
 
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+            }, errorContext => Task.FromResult(true), criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -242,7 +242,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
 
                 // TODO: TransportTransactionMode will need to change with topology
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+            }, errorContext => Task.FromResult(true), criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -333,7 +333,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 await dispatcher.Dispatch(transportOperations, context.Context);
 
                 // TODO: TransportTransactionMode will need to change with topology
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+            }, errorContext => Task.FromResult(true), criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -435,7 +435,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 await dispatcher.Dispatch(transportOperations, context.Context);
 
                 // TODO: TransportTransactionMode will need to change with topology
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+            }, errorContext => Task.FromResult(true), criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));

@@ -10,7 +10,9 @@ namespace NServiceBus.AzureServiceBus
     using Microsoft.ServiceBus.Messaging;
     using Logging;
     using Azure.Transports.WindowsAzureServiceBus;
+    using Extensibility;
     using Settings;
+    using Transports;
     using Utils;
 
     class MessageReceiverNotifier : INotifyIncomingMessages
@@ -23,6 +25,7 @@ namespace NServiceBus.AzureServiceBus
         OnMessageOptions options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
+        Func<ErrorContext, Task<bool>> onRetryErrorCallback;
         ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
         string fullPath;
         EntityInfo entity;
@@ -44,12 +47,13 @@ namespace NServiceBus.AzureServiceBus
         public bool IsRunning { get; private set; }
         public int RefCount { get; set; }
 
-        public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
+        public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<bool>> onRetryError, int maximumConcurrency)
         {
             receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
             incomingCallback = callback;
             this.errorCallback = errorCallback;
+            onRetryErrorCallback = onRetryError;
             this.entity = entity;
 
             fullPath = entity.Path;
@@ -196,7 +200,22 @@ namespace NServiceBus.AzureServiceBus
             }
             catch (Exception exception)
             {
-                await AbandonAsync(message, exception).ConfigureAwait(false);
+                // if we're in in receive and delete mode? just swallow the exception
+
+                // TODO: do we need the context bag?
+                var errorContext = new ErrorContext(exception, message.DeliveryCount, incomingMessage.MessageId, incomingMessage.Headers, incomingMessage.BodyStream, new ContextBag());
+                var retryImmediately = await onRetryErrorCallback(errorContext).ConfigureAwait(false);
+                if (retryImmediately)
+                {
+                    await AbandonAsync(message, exception).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Scenarios:
+                    // 1. FLR only: message needs to be completed and core will issue a message for the error queue
+                    // 1. FLR+SLR: message retried with SLR - original incoming message has to be completed
+                    locksTokensToComplete.Push(message.LockToken);
+                }
             }
         }
 

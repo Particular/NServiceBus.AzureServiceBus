@@ -51,7 +51,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 return TaskEx.Completed;
 
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+            }, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
             // execute
             pump.Start(new PushRuntimeSettings(1));
