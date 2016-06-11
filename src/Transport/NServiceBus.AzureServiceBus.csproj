@@ -89,7 +89,13 @@
     <Compile Include="Addressing\Partitioning\Strategies\FailOverMode.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualization.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualization.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\EndpointOrientedTopologySanitization.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\EndpointOrientedTopologySanitizationForRules.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\EndpointOrientedTopologySanitizationForSubscriptions.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\EndpointOrientedTopologySanitizationForTopics.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\EndpointOrientedTopologySanitizationForQueues.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitizationForRules.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitizationForSubscription.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitizationForTopics.cs" />
     <Compile Include="Addressing\Sanitization\ValidationResult.cs" />
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
     <Compile Include="Config\AzureServiceBusTransportInfrastructure.cs" />
@@ -157,7 +163,7 @@
     <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioning.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitization.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitizationForQueues.cs" />
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />
     <Compile Include="Addressing\Partitioning\INamespacePartitioningStrategy.cs" />
@@ -205,7 +211,6 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSanitizationSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSubscriptionSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopicSettings.cs" />
-    <Compile Include="Config\ExtensionPoints\AzureServiceBusValidationSettings.cs" />
     <Compile Include="Config\WellKnownConfigurationKeys.cs" />
     <Compile Include="Connectivity\ICreateMessageSenders.cs" />
     <Compile Include="Connectivity\ICreateMessagingFactories.cs" />

@@ -84,17 +84,14 @@ namespace NServiceBus.AzureServiceBus
                     public const string HierarchyCompositionPathGenerator = "AzureServiceBus.Settings.Topology.Addressing.Composition.HierarchyCompositionPathGenerator";
                 }
 
-                public static class Validation
-                {
-                    public const string QueuePathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Validation.QueuePathMaximumLength";
-                    public const string TopicPathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Validation.TopicPathMaximumLength";
-                    public const string SubscriptionPathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Validation.SubscriptionPathMaximumLength";
-                    public const string RuleNameMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Validation.RuleNameMaximumLength";
-                }
-
                 public static class Sanitization
                 {
                     public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.Strategy";
+                    public const string QueuePathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.QueuePathMaximumLength";
+                    public const string TopicPathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.TopicPathMaximumLength";
+                    public const string SubscriptionPathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.SubscriptionPathMaximumLength";
+                    public const string RuleNameMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.RuleNameMaximumLength";
+
                 }
 
                 public static class Individualization

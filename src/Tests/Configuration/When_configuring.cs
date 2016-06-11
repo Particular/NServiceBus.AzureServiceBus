@@ -43,17 +43,6 @@
         }
 
         [Test]
-        public void Should_be_able_to_extend_validation_settings()
-        {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            var validationSettings = extensions.Validation();
-
-            Assert.IsInstanceOf<AzureServiceBusValidationSettings>(validationSettings);
-        }
-
-        [Test]
         public void Should_be_able_to_extend_individualization_settings()
         {
             var settings = new SettingsHolder();

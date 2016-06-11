@@ -1,7 +1,8 @@
 ﻿namespace NServiceBus.AzureServiceBus.Addressing
 {
-    public interface ISanitizationStrategy
+    public abstract class SanitizationStrategy
     {
-        string Sanitize(string entityPathOrName, EntityType entityType);
+        public abstract EntityType CanSanitize { get;  }
+        public abstract string Sanitize(string entityPathOrName);
     }
 }

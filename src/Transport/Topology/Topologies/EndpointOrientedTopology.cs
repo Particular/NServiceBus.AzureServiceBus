@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Addressing;
     using Routing;
@@ -36,7 +37,8 @@ namespace NServiceBus.AzureServiceBus
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(FlatComposition));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(CoreIndividualization));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioning));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(ThrowOnFailingSanitization));
+            var sanitization = new HashSet<SanitizationStrategy> { new EndpointOrientedTopologySanitizationForQueues(settings), new EndpointOrientedTopologySanitizationForTopics(settings), new EndpointOrientedTopologySanitizationForSubscriptions(settings), new EndpointOrientedTopologySanitizationForRules(settings) };
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, sanitization);
             topologySectionManager = new EndpointOrientedTopologySectionManager(settings, container);
         }
 
@@ -86,9 +88,6 @@ namespace NServiceBus.AzureServiceBus
 
             var partitioningStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
             container.Register(partitioningStrategyType);
-
-            var sanitizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            container.Register(sanitizationStrategyType);
 
             var conventions = settings.Get<Conventions>();
             var publishersConfiguration = new PublishersConfiguration(new ConventionsAdapter(conventions), settings);

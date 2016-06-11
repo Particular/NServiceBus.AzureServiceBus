@@ -11,7 +11,6 @@ using NServiceBus.AcceptanceTests.Versioning;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AzureServiceBus;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
-using NServiceBus.AzureServiceBus.Addressing;
 
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
 {
@@ -63,8 +62,6 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisherForType("MultiSubscribingToAPolymorphicEventOnMulticastTransports.Publisher1", typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent1))
                 .RegisterPublisherForType("MultiSubscribingToAPolymorphicEventOnMulticastTransports.Publisher2", typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent2));
         }
-
-        transportConfig.Sanitization().UseStrategy<EndpointOrientedTopologySanitization>();
 
         config.RegisterComponents(c => { c.ConfigureComponent<TestIndependenceMutator>(DependencyLifecycle.SingleInstance); });
 
