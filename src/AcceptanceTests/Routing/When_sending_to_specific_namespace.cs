@@ -21,7 +21,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             ctx.Callback = (endpointName, extensions) =>
             {
                 var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-                var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString.Fallback");
+                var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
                 extensions.UseNamespaceNamesInsteadOfConnectionStrings();
                 extensions.NamespacePartitioning()
                             .AddNamespace("source", connectionString, endpointName == "UsingMultipleNamespaces.EndpointInTargetNamespace" ? NamespacePurpose.DestinationOnly : NamespacePurpose.Partitioning)
