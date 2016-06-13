@@ -18,7 +18,10 @@
             var topology = GetConfiguredTopology(settings);
             topology.Initialize(settings);
 
-            RegisterConnectionStringAsNamespace(connectionString, settings);
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                RegisterConnectionStringAsNamespace(connectionString, settings);
+            }
 
             MatchSettingsToConsistencyRequirements(settings);
 
