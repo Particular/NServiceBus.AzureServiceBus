@@ -78,8 +78,11 @@ namespace NServiceBus.AzureServiceBus
                     {
                         selected = namespaces.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);
                     }
-                    
-                    replyTo = mapper.Map(new EntityAddress(replyTo.Name, selected?.Name));
+
+                    if (selected != null)
+                    {
+                        replyTo = mapper.Map(new EntityAddress(replyTo.Name, selected.Name));
+                    }
                 }
 
                 outgoingMessage.Headers[Headers.ReplyToAddress] = replyTo;
