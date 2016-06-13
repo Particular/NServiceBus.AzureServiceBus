@@ -15,7 +15,7 @@ namespace NServiceBus.AzureServiceBus.Topology.MetaModel
 
         public EntityAddress Map(EntityAddress value)
         {
-            if (!value.HasSuffix) return value;
+            if (!value.HasSuffix || value.HasConnectionString) return value;
 
             var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
 
