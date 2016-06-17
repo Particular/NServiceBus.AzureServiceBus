@@ -113,6 +113,22 @@ namespace NServiceBus
         }
 
         /// <summary>
+        /// Adds a namespace for a specific purpose.
+        /// </summary>
+        public static void AddNamespace(this TransportExtensions<AzureServiceBusTransport> transportExtensions, string name, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
+        {
+            var settings = transportExtensions.GetSettings();
+            NamespaceConfigurations namespaces;
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces))
+            {
+                namespaces = new NamespaceConfigurations();
+                settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
+            }
+
+            namespaces.Add(name, connectionString, purpose);
+        }
+
+        /// <summary>
         /// Access to queues configuration.
         /// </summary>
         public static AzureServiceBusQueueSettings Queues(this TransportExtensions<AzureServiceBusTransport> transportExtensions)

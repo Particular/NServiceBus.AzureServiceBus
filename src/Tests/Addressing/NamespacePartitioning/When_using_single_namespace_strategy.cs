@@ -24,7 +24,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
+            extensions.AddNamespace(Name, ConnectionString);
 
             strategy = new SingleNamespacePartitioning(settings);
         }
@@ -74,8 +74,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
-            extensions.NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
+            extensions.AddNamespace(Name, ConnectionString);
+            extensions.AddNamespace(OtherName, OtherConnectionString);
 
             Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioning(settings));
         }
