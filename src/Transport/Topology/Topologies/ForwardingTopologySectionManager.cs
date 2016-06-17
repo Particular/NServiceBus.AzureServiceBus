@@ -115,7 +115,7 @@ namespace NServiceBus.AzureServiceBus
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
-            var defaultName = settings.Get<Func<string>>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName)();
+            var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
 
             var inputQueueAddress = addressingLogic.Apply(destination, EntityType.Queue);
 

@@ -128,7 +128,7 @@
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, new NamespaceConfigurations());
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings, typeof(DefaultNamespaceNameToConnectionStringMapper));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName, new Func<string>(() => "default"));
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName, "default");
         }
 
         void ApplyDefaultsForConnectivity(SettingsHolder settings)

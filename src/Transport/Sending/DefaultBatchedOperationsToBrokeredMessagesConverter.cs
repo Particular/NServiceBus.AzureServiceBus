@@ -72,7 +72,7 @@ namespace NServiceBus.AzureServiceBus
                 if (!replyTo.HasSuffix)
                 {
                     var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-                    var defaultName = settings.Get<Func<string>>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName)();
+                    var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
                     var selected = namespaces.FirstOrDefault(ns => ns.Name == defaultName);
                     if (selected == null)
                     {

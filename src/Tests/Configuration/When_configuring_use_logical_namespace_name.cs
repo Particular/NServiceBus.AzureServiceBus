@@ -44,11 +44,11 @@
         {
             var ns = "myDefault";
 
-            extensions.DefaultNamespaceName(() => ns);
+            extensions.DefaultNamespaceName(ns);
 
-            var f = settingsHolder.Get<Func<string>>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
+            var n = settingsHolder.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
 
-            Assert.AreEqual(f(), ns);
+            Assert.AreEqual(n, ns);
         }
     }
 }
