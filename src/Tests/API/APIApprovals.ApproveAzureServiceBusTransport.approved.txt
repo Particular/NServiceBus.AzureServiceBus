@@ -11,11 +11,6 @@
         public DiscriminatorBasedIndividualization(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Individualize(string endpointName) { }
     }
-    public class EndpointOrientedTopologySanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
-    {
-        public EndpointOrientedTopologySanitization(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
-    }
     public enum FailOverMode
     {
         Primary = 0,
@@ -72,10 +67,26 @@
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.SingleNamespacePartitioning.<GetNamespaces>d__2))]
         public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
-    public class ThrowOnFailingSanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    public class ThrowOnFailedValidation : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
-        public ThrowOnFailingSanitization(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public ThrowOnFailedValidation(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
+    }
+    public class ValidateAndHashIfNeeded : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    {
+        public ValidateAndHashIfNeeded(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
+    }
+    public class ValidationResult
+    {
+        public ValidationResult() { }
+        public bool CharactersAreValid { get; }
+        public string CharactersError { get; set; }
+        public bool IsValid { get; }
+        public string LengthError { get; set; }
+        public bool LengthIsValid { get; }
+        public void AddErrorForInvalidCharacters(string error) { }
+        public void AddErrorForInvalidLenth(string error) { }
     }
 }
 namespace NServiceBus.AzureServiceBus
@@ -579,12 +590,26 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusQueueSettings SupportOrdering(bool supported) { }
     }
+    public class AzureServiceBusSanitizationExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+        where T : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    {
+        public AzureServiceBusSanitizationExtensionPoint(NServiceBus.Settings.SettingsHolder settings) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> Hash(System.Func<string, string> hash) { }
+    }
     public class AzureServiceBusSanitizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusSanitizationSettings(NServiceBus.Settings.SettingsHolder settings) { }
+        public NServiceBus.AzureServiceBusSanitizationSettings QueuePathSanitization(System.Func<string, string> queuePathSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationSettings QueuePathValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> queuePathValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationSettings RuleNameSanitization(System.Func<string, string> ruleNameSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationSettings RuleNameValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> ruleNameValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationSettings SubscriptionNameSanitization(System.Func<string, string> subscriptionNameSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationSettings SubscriptionNameValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> subscriptionNameValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationSettings TopicPathSanitization(System.Func<string, string> topicPathSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationSettings TopicPathValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> topicPathValidator) { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseQueuePathMaximumLength(int queuePathMaximumLength) { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseRulePathMaximumLength(int rulePathMaximumLength) { }
-        public NServiceBus.AzureServiceBusSanitizationSettings UseStrategy<T>()
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseSubscriptionPathMaximumLength(int subscriptionPathMaximumLength) { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseTopicPathMaximumLength(int topicPathMaximumLength) { }

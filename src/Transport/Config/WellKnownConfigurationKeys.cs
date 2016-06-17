@@ -89,9 +89,17 @@ namespace NServiceBus.AzureServiceBus
                     public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.Strategy";
                     public const string QueuePathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.QueuePathMaximumLength";
                     public const string TopicPathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.TopicPathMaximumLength";
-                    public const string SubscriptionPathMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.SubscriptionPathMaximumLength";
+                    public const string SubscriptionNameMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength";
                     public const string RuleNameMaximumLength = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.RuleNameMaximumLength";
-
+                    public const string QueuePathValidator = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.QueuePathValidator";
+                    public const string TopicPathValidator = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.TopicPathValidator";
+                    public const string SubscriptionNameValidator = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.SubscriptionNameValidator";
+                    public const string RuleNameValidator = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.RuleNameValidator";
+                    public const string QueuePathSanitizer = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.QueuePathSanitizer";
+                    public const string TopicPathSanitizer = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.TopicPathSanitizer";
+                    public const string SubscriptionNameSanitizer = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.SubscriptionNameSanitizer";
+                    public const string RuleNameSanitizer = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.RuleNameSanitizer";
+                    public const string Hash = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.Hash";
                 }
 
                 public static class Individualization

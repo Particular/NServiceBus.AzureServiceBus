@@ -97,8 +97,8 @@
     <Compile Include="Addressing\NamespacePartitioning\When_using_failover_namespace_strategy.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_roundrobin_strategy_on_multiple_namespaces.cs" />
     <Compile Include="Addressing\NamespacePartitioning\When_using_single_namespace_strategy.cs" />
-    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_using_EndpointOrientedSanitization.cs" />
-    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_using_ThrowOnFailingSanitization_sanitization.cs" />
+    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_using_ValidateAndHashIfNeeded_with_default_validation.cs" />
+    <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_using_ThrowOnFailedValidation_sanitization.cs" />
     <Compile Include="Addressing\When_apply_addressing_logic.cs" />
     <Compile Include="API\APIApprovals.cs" />
     <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiApprover.cs" />
@@ -114,12 +114,12 @@
     <Compile Include="Configuration\When_configuring_publishers.cs" />
     <Compile Include="Configuration\When_configuring_queues.cs" />
     <Compile Include="Configuration\When_configuring_resource_creation.cs" />
-    <Compile Include="Configuration\When_configuring_sanitization.cs" />
+    <Compile Include="Configuration\When_configuring_sanitization_strategy.cs" />
     <Compile Include="Configuration\When_configuring_subscriptions.cs" />
     <Compile Include="Configuration\When_configuring_topics.cs" />
     <Compile Include="Configuration\When_configuring_serialization.cs" />
     <Compile Include="Configuration\When_configuring_use_logical_namespace_name.cs" />
-    <Compile Include="Configuration\When_configuring_validation.cs" />
+    <Compile Include="Configuration\When_configuring_sanitization.cs" />
     <Compile Include="Configuration\When_creating_sizeinmegabytes.cs" />
     <Compile Include="Configuration\When_using_default_configuration.cs" />
     <Compile Include="ConnectionStringValue.cs" />

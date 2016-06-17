@@ -89,7 +89,8 @@
     <Compile Include="Addressing\Partitioning\Strategies\FailOverMode.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualization.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualization.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\EndpointOrientedTopologySanitization.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\ValidateAndHashIfNeeded.cs" />
+    <Compile Include="Addressing\Sanitization\ValidationResult.cs" />
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
     <Compile Include="Config\AzureServiceBusTransportInfrastructure.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusCompositionExtensionPoint.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusForwardingTopologySettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusHierarchyCompositionSettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusIndividualizationExtensionPoint.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusSanitizationExtensionPoint.cs" />
     <Compile Include="Config\TransactionModeSettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopologySettings.cs" />
     <Compile Include="Config\ExtensionPoints\SizeInMegabytes.cs" />
@@ -156,7 +158,7 @@
     <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioning.cs" />
-    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailingSanitization.cs" />
+    <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailedValidation.cs" />
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />
     <Compile Include="Addressing\Partitioning\INamespacePartitioningStrategy.cs" />
