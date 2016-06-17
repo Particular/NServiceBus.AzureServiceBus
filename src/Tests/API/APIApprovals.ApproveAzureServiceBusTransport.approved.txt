@@ -571,7 +571,6 @@ namespace NServiceBus
     public class AzureServiceBusNamespacePartitioningSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusNamespacePartitioningSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose = 1) { }
         public NServiceBus.AzureServiceBusNamespacePartitioningSettings UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy { }
     }
@@ -663,10 +662,11 @@ namespace NServiceBus
     }
     public class static AzureServiceBusTransportExtensions
     {
+        public static void AddNamespace(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose = 1) { }
         public static void BrokeredMessageBodyType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, NServiceBus.AzureServiceBus.SupportedBrokeredMessageBodyTypes type) { }
         public static NServiceBus.AzureServiceBusCompositionSettings Composition(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void ConnectivityMode(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, Microsoft.ServiceBus.ConnectivityMode connectivityMode) { }
-        public static void DefaultNamespaceName(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, System.Func<string> func) { }
+        public static void DefaultNamespaceName(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, string name) { }
         public static NServiceBus.AzureServiceBusIndividualizationSettings Individualization(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusMessageReceiverSettings MessageReceivers(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusMessageSenderSettings MessageSenders(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
