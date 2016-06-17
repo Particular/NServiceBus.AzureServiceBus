@@ -22,7 +22,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
             if (namespaces.Count <= 1)
             {
-                throw new ConfigurationErrorsException("The 'RoundRobin' namespace partitioning strategy requires more than one namespace, please configure multiple azure servicebus namespaces");
+                throw new ConfigurationErrorsException($"The 'RoundRobin' namespace partitioning strategy requires more than one namespace for the purpose of partitioning, found {namespaces.Count}. Please configure multiple azure servicebus namespaces");
             }
 
             this.namespaces = new CircularBuffer<NamespaceInfo>(namespaces.Count);
