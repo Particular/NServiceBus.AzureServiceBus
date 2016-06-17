@@ -27,7 +27,7 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
         var transportConfig = config.UseTransport<AzureServiceBusTransport>();
 
         AzureServiceBusTransportConfigContext azureServiceBusTransportConfigContext;
-        if(settings.TryGet("AzureServiceBus.TransportConfigContext", out azureServiceBusTransportConfigContext))
+        if(settings.TryGet("AzureServiceBus.AcceptanceTests.TransportConfigContext", out azureServiceBusTransportConfigContext))
         {
             azureServiceBusTransportConfigContext.Callback?.Invoke(endpointName, transportConfig);
         }

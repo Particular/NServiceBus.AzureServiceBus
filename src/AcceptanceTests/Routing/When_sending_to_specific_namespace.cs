@@ -29,7 +29,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
 
             };
 
-            runSettings.Set("AzureServiceBus.TransportConfigContext", ctx);
+            runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);
 
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<EndpointInSourceNamespace>(b =>
