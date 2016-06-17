@@ -20,7 +20,7 @@
 
             if (namespaces.Count != 2)
             {
-                throw new ConfigurationErrorsException($"The 'FailOver' namespace partitioning strategy requires exactly two namespaces for the purpose of configuring, found {namespaces.Count}");
+                throw new ConfigurationErrorsException($"The 'FailOver' namespace partitioning strategy requires exactly two namespaces for the purpose of partitioning, found {namespaces.Count}");
             }
         }
 
