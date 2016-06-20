@@ -12,9 +12,6 @@
     {
         protected override TransportInfrastructure Initialize(SettingsHolder settings, string connectionString)
         {
-            settings.SetDefault("Transactions.DoNotWrapHandlersExecutionInATransactionScope", true);
-            settings.SetDefault("Transactions.SuppressDistributedTransactions", true);
-
             // override core default serialization
             settings.SetDefault<SerializationDefinition>(new JsonSerializer());
 
