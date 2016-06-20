@@ -72,11 +72,11 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
         Func<string, string> sanitizer = pathOrName => new Regex(@"[^a-zA-Z0-9\-\._]").Replace(pathOrName, "");
  
         transportConfig.Sanitization()
+            .UseStrategy<ValidateAndHashIfNeeded>()
             .QueuePathSanitization(x => sanitizer(x))
             .TopicPathSanitization(x => sanitizer(x))
             .SubscriptionNameSanitization(x => sanitizer(x))
             .RuleNameSanitization(x => sanitizer(x))
-            .UseStrategy<ValidateAndHashIfNeeded>()
             .Hash(pathOrName => MD5DeterministicNameBuilder.Build(pathOrName));
 
         config.RegisterComponents(c => { c.ConfigureComponent<TestIndependenceMutator>(DependencyLifecycle.SingleInstance); });

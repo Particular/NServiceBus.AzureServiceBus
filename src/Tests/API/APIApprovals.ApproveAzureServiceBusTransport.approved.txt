@@ -595,18 +595,18 @@ namespace NServiceBus
     {
         public AzureServiceBusSanitizationExtensionPoint(NServiceBus.Settings.SettingsHolder settings) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> Hash(System.Func<string, string> hash) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> QueuePathSanitization(System.Func<string, string> queuePathSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> QueuePathValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> queuePathValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> RuleNameSanitization(System.Func<string, string> ruleNameSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> RuleNameValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> ruleNameValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> SubscriptionNameSanitization(System.Func<string, string> subscriptionNameSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> SubscriptionNameValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> subscriptionNameValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> TopicPathSanitization(System.Func<string, string> topicPathSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> TopicPathValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> topicPathValidator) { }
     }
     public class AzureServiceBusSanitizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusSanitizationSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusSanitizationSettings QueuePathSanitization(System.Func<string, string> queuePathSanitizer) { }
-        public NServiceBus.AzureServiceBusSanitizationSettings QueuePathValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> queuePathValidator) { }
-        public NServiceBus.AzureServiceBusSanitizationSettings RuleNameSanitization(System.Func<string, string> ruleNameSanitizer) { }
-        public NServiceBus.AzureServiceBusSanitizationSettings RuleNameValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> ruleNameValidator) { }
-        public NServiceBus.AzureServiceBusSanitizationSettings SubscriptionNameSanitization(System.Func<string, string> subscriptionNameSanitizer) { }
-        public NServiceBus.AzureServiceBusSanitizationSettings SubscriptionNameValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> subscriptionNameValidator) { }
-        public NServiceBus.AzureServiceBusSanitizationSettings TopicPathSanitization(System.Func<string, string> topicPathSanitizer) { }
-        public NServiceBus.AzureServiceBusSanitizationSettings TopicPathValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> topicPathValidator) { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseQueuePathMaximumLength(int queuePathMaximumLength) { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseRulePathMaximumLength(int rulePathMaximumLength) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>()
