@@ -23,7 +23,8 @@
         public void Should_throw_if_mapping_does_not_exist()
         {
             var exception = Assert.Throws<InvalidOperationException>(() => configuration.GetPublishersFor(typeof(MyType)));
-            Assert.AreEqual($"No publishers configured for `{typeof(MyType).FullName}`", exception.Message);
+            StringAssert.Contains($"No publishers configured for `{typeof(MyType).FullName}`", exception.Message);
+            StringAssert.Contains($"Register mappings via `endpointConfiguration.UseTransport<AzureServiceBusTransport>().UseTopology<EndpointOrientedTopology>().RegisterPublisherForType(\"endpointname\", typeof({typeof(MyType).FullName}))`", exception.Message);
         }
 
         [Test]
@@ -31,8 +32,7 @@
         {
             configuration.Map("publisher", typeof(MyType));
 
-            var exception = Assert.Throws<InvalidOperationException>(() => configuration.GetPublishersFor(typeof(MyType)));
-            Assert.AreEqual($"No publishers configured for `{typeof(MyType).FullName}`", exception.Message);
+            Assert.Throws<InvalidOperationException>(() => configuration.GetPublishersFor(typeof(MyType)));
         }
 
         [Test]
