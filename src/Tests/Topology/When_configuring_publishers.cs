@@ -32,9 +32,7 @@
         {
             configuration.Map("publisher", typeof(MyType));
 
-            var exception = Assert.Throws<InvalidOperationException>(() => configuration.GetPublishersFor(typeof(MyType)));
-            StringAssert.Contains($"No publishers configured for `{typeof(MyType).FullName}`", exception.Message);
-            StringAssert.Contains($"Register mappings via `endpointConfiguration.UseTransport<AzureServiceBusTransport>().UseTopology<EndpointOrientedTopology>().RegisterPublisherForType(\"endpointname\", typeof({typeof(MyType).FullName}))`", exception.Message);
+            Assert.Throws<InvalidOperationException>(() => configuration.GetPublishersFor(typeof(MyType)));
         }
 
         [Test]
