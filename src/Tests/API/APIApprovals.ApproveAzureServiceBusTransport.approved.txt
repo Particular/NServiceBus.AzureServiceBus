@@ -11,21 +11,6 @@
         public DiscriminatorBasedIndividualization(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Individualize(string endpointName) { }
     }
-    public class EndpointOrientedTopologySanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
-    {
-        public EndpointOrientedTopologySanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
-        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
-    }
-    public class EntityNameValidationRules : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy
-    {
-        public EntityNameValidationRules(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public NServiceBus.AzureServiceBus.Addressing.ValidationResult IsValid(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
-    }
-    public class EntityNameValidationV6Rules : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy
-    {
-        public EntityNameValidationV6Rules(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public NServiceBus.AzureServiceBus.Addressing.ValidationResult IsValid(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType) { }
-    }
     public enum FailOverMode
     {
         Primary = 0,
@@ -64,10 +49,6 @@
     {
         string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType);
     }
-    public interface IValidationStrategy
-    {
-        NServiceBus.AzureServiceBus.Addressing.ValidationResult IsValid(string entityPath, NServiceBus.AzureServiceBus.EntityType entityType);
-    }
     public enum PartitioningIntent
     {
         Receiving = 0,
@@ -86,17 +67,26 @@
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.SingleNamespacePartitioning.<GetNamespaces>d__2))]
         public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
     }
-    public class ThrowOnFailingSanitization : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    public class ThrowOnFailedValidation : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
-        public ThrowOnFailingSanitization(NServiceBus.AzureServiceBus.Addressing.IValidationStrategy validationStrategy) { }
+        public ThrowOnFailedValidation(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
+    }
+    public class ValidateAndHashIfNeeded : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    {
+        public ValidateAndHashIfNeeded(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
     }
     public class ValidationResult
     {
         public ValidationResult() { }
-        public System.Collections.ObjectModel.ReadOnlyCollection<string> Errors { get; }
+        public bool CharactersAreValid { get; }
+        public string CharactersError { get; set; }
         public bool IsValid { get; }
-        public void AddError(string error) { }
+        public string LengthError { get; set; }
+        public bool LengthIsValid { get; }
+        public void AddErrorForInvalidCharacters(string error) { }
+        public void AddErrorForInvalidLenth(string error) { }
     }
 }
 namespace NServiceBus.AzureServiceBus
@@ -600,11 +590,29 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusQueueSettings SupportOrdering(bool supported) { }
     }
+    public class AzureServiceBusSanitizationExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+        where T : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+    {
+        public AzureServiceBusSanitizationExtensionPoint(NServiceBus.Settings.SettingsHolder settings) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> Hash(System.Func<string, string> hash) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> QueuePathSanitization(System.Func<string, string> queuePathSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> QueuePathValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> queuePathValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> RuleNameSanitization(System.Func<string, string> ruleNameSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> RuleNameValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> ruleNameValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> SubscriptionNameSanitization(System.Func<string, string> subscriptionNameSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> SubscriptionNameValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> subscriptionNameValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> TopicPathSanitization(System.Func<string, string> topicPathSanitizer) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> TopicPathValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> topicPathValidator) { }
+    }
     public class AzureServiceBusSanitizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusSanitizationSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusSanitizationSettings UseStrategy<T>()
+        public NServiceBus.AzureServiceBusSanitizationSettings UseQueuePathMaximumLength(int queuePathMaximumLength) { }
+        public NServiceBus.AzureServiceBusSanitizationSettings UseRulePathMaximumLength(int rulePathMaximumLength) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy { }
+        public NServiceBus.AzureServiceBusSanitizationSettings UseSubscriptionPathMaximumLength(int subscriptionPathMaximumLength) { }
+        public NServiceBus.AzureServiceBusSanitizationSettings UseTopicPathMaximumLength(int topicPathMaximumLength) { }
     }
     public class AzureServiceBusSubscriptionSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
@@ -671,17 +679,6 @@ namespace NServiceBus
             where T : NServiceBus.AzureServiceBus.ITopology { }
         public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, T topology)
             where T : NServiceBus.AzureServiceBus.ITopology { }
-        public static NServiceBus.AzureServiceBusValidationSettings Validation(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
-    }
-    public class AzureServiceBusValidationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-    {
-        public AzureServiceBusValidationSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusValidationSettings UseQueuePathMaximumLength(int queuePathMaximumLength) { }
-        public NServiceBus.AzureServiceBusValidationSettings UseRulePathMaximumLength(int rulePathMaximumLength) { }
-        public NServiceBus.AzureServiceBusValidationSettings UseStrategy<T>()
-            where T : NServiceBus.AzureServiceBus.Addressing.IValidationStrategy { }
-        public NServiceBus.AzureServiceBusValidationSettings UseSubscriptionPathMaximumLength(int subscriptionPathMaximumLength) { }
-        public NServiceBus.AzureServiceBusValidationSettings UseTopicPathMaximumLength(int topicPathMaximumLength) { }
     }
     public class SizeInMegabytes
     {

@@ -1,8 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
-    using System;
     using AzureServiceBus;
-    using AzureServiceBus.Addressing;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using Settings;
     using NUnit.Framework;
@@ -11,23 +9,39 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
     [Category("AzureServiceBus")]
     public class When_configuring_sanitization
     {
-        [Test]
-        public void Should_be_able_to_set_the_sanitization_strategy()
+        SettingsHolder settingsHolder;
+        TransportExtensions<AzureServiceBusTransport> extensions;
+
+        [SetUp]
+        public void SetUp()
         {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            var topicSettings = extensions.Sanitization().UseStrategy<MySanitizationStrategy>();
-
-            Assert.AreEqual(typeof(MySanitizationStrategy), topicSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy));
+            settingsHolder = new SettingsHolder();
+            extensions = new TransportExtensions<AzureServiceBusTransport>(settingsHolder);
         }
 
-        class MySanitizationStrategy : ISanitizationStrategy
+
+        [Test]
+        public void Should_be_able_to_set_queue_path_maximum_length()
         {
-            public string Sanitize(string entityPathOrName, EntityType entityType)
-            {
-                throw new NotImplementedException();//not relevant for test
-            }
+            var validationSettings = extensions.Sanitization().UseQueuePathMaximumLength(10);
+
+            Assert.AreEqual(10, validationSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength));
+        }
+
+        [Test]
+        public void Should_be_able_to_set_topic_path_maximum_length()
+        {
+            var validationSettings = extensions.Sanitization().UseTopicPathMaximumLength(20);
+
+            Assert.AreEqual(20, validationSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength));
+        }
+
+        [Test]
+        public void Should_be_able_to_set_subscription_path_maximum_length()
+        {
+            var validationSettings = extensions.Sanitization().UseSubscriptionPathMaximumLength(30);
+
+            Assert.AreEqual(30, validationSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength));
         }
     }
 }
