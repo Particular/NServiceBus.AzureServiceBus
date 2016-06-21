@@ -23,9 +23,17 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                 var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
                 var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
                 extensions.UseNamespaceNamesInsteadOfConnectionStrings();
-                extensions.AddNamespace("source", connectionString, endpointName == "UsingMultipleNamespaces.EndpointInTargetNamespace" ? NamespacePurpose.DestinationOnly : NamespacePurpose.Partitioning);
-                extensions.AddNamespace("target", targetConnectionString, endpointName == "UsingMultipleNamespaces.EndpointInTargetNamespace" ? NamespacePurpose.Partitioning : NamespacePurpose.DestinationOnly);
 
+                if (endpointName == "UsingMultipleNamespaces.EndpointInTargetNamespace")
+                {
+                    extensions.AddDestinationNamespace("source", connectionString);
+                    extensions.AddDestinationNamespace("target", targetConnectionString);
+                }
+                else
+                {
+                    extensions.AddPartitioningNamespace("source", connectionString);
+                    extensions.AddPartitioningNamespace("target", targetConnectionString);
+                }
             };
 
             runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);

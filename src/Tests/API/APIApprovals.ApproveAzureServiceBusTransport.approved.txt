@@ -662,7 +662,8 @@ namespace NServiceBus
     }
     public class static AzureServiceBusTransportExtensions
     {
-        public static void AddNamespace(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose = 1) { }
+        public static void AddDestinationNamespace(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, string name, string connectionString) { }
+        public static void AddPartitioningNamespace(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, string name, string connectionString) { }
         public static void BrokeredMessageBodyType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, NServiceBus.AzureServiceBus.SupportedBrokeredMessageBodyTypes type) { }
         public static NServiceBus.AzureServiceBusCompositionSettings Composition(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void ConnectivityMode(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, Microsoft.ServiceBus.ConnectivityMode connectivityMode) { }

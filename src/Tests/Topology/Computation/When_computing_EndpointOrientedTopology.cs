@@ -25,7 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
 
-            extensions.AddNamespace(Name, Connectionstring);
+            extensions.AddPartitioningNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
@@ -45,7 +45,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.AddNamespace(Name, Connectionstring);
+            extensions.AddPartitioningNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 
@@ -63,7 +63,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName(endpointName));
-            extensions.AddNamespace(Name, Connectionstring);
+            extensions.AddPartitioningNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -85,7 +85,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault<EndpointName>(new EndpointName("sales"));
-            extensions.AddNamespace(Name, Connectionstring);
+            extensions.AddPartitioningNamespace(Name, Connectionstring);
 
             var definition = DetermineResourcesToCreate(settings, container);
 

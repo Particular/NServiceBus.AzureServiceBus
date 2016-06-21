@@ -31,7 +31,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.AddNamespace(name, connectionString);
+            extensions.AddPartitioningNamespace(name, connectionString);
 
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
 

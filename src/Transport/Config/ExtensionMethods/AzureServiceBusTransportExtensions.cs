@@ -113,9 +113,26 @@ namespace NServiceBus
         }
 
         /// <summary>
-        /// Adds a namespace for a specific purpose.
+        /// Adds a namespace for partitioning.
         /// </summary>
-        public static void AddNamespace(this TransportExtensions<AzureServiceBusTransport> transportExtensions, string name, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
+        public static void AddPartitioningNamespace(this TransportExtensions<AzureServiceBusTransport> transportExtensions, string name, string connectionString)
+        {
+            var namespaces = EnsureNamespaceConfigurations(transportExtensions);
+
+            namespaces.Add(name, connectionString, NamespacePurpose.Partitioning);
+        }
+
+        /// <summary>
+        /// Adds a namespace to be used as a destination only.
+        /// </summary>
+        public static void AddDestinationNamespace(this TransportExtensions<AzureServiceBusTransport> transportExtensions, string name, string connectionString)
+        {
+            var namespaces = EnsureNamespaceConfigurations(transportExtensions);
+
+            namespaces.Add(name, connectionString, NamespacePurpose.DestinationOnly);
+        }
+
+        static NamespaceConfigurations EnsureNamespaceConfigurations(TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();
             NamespaceConfigurations namespaces;
@@ -124,8 +141,7 @@ namespace NServiceBus
                 namespaces = new NamespaceConfigurations();
                 settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
             }
-
-            namespaces.Add(name, connectionString, purpose);
+            return namespaces;
         }
 
         /// <summary>
