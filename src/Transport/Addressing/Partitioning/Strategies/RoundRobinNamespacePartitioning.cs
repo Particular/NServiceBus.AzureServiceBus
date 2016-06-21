@@ -15,14 +15,14 @@ namespace NServiceBus.AzureServiceBus.Addressing
             NamespaceConfigurations namespaces;
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces))
             {
-                throw new ConfigurationErrorsException("The 'RoundRobin' namespace partitioning strategy requires more than one namespace, please configure multiple azure servicebus namespaces");
+                throw new ConfigurationErrorsException($"The '{nameof(RoundRobinNamespacePartitioning)}' strategy requires more than one namespace, please configure multiple azure servicebus namespaces");
             }
 
             namespaces = new NamespaceConfigurations(namespaces.Where(n => n.Purpose == NamespacePurpose.Partitioning).ToList());
 
             if (namespaces.Count <= 1)
             {
-                throw new ConfigurationErrorsException($"The 'RoundRobin' namespace partitioning strategy requires more than one namespace for the purpose of partitioning, found {namespaces.Count}. Please configure multiple azure servicebus namespaces");
+                throw new ConfigurationErrorsException($"The '{nameof(RoundRobinNamespacePartitioning)}' strategy requires more than one namespace for the purpose of partitioning, found {namespaces.Count}. Please configure multiple azure servicebus namespaces");
             }
 
             this.namespaces = new CircularBuffer<NamespaceInfo>(namespaces.Count);
