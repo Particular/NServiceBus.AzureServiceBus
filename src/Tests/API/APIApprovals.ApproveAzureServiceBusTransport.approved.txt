@@ -394,8 +394,8 @@ namespace NServiceBus.AzureServiceBus
         public System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription) { }
-        public async System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription) { }
-        public async System.Threading.Tasks.Task DeleteQueue(string path) { }
+        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription) { }
+        public System.Threading.Tasks.Task DeleteQueue(string path) { }
         public System.Threading.Tasks.Task DeleteSubscriptionAsync(string topicPath, string subscriptionName) { }
         public System.Threading.Tasks.Task DeleteTopic(string path) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> GetQueue(string path) { }

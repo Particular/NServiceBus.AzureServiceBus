@@ -45,7 +45,7 @@
         }
 
         [Test]
-        public async Task Should_not_throw_for_successful_retry()
+        public Task Should_not_throw_for_successful_retry()
         {
             var messageSender = A.Fake<IMessageSender>();
             var brokeredMessage = new BrokeredMessage();
@@ -53,7 +53,7 @@
             A.CallTo(() => messageSender.Send(brokeredMessage))
                 .ReturnsNextFromSequence(Task.Run(() => { throw new ServerBusyException("busy, come later"); }), TaskEx.Completed);
 
-            await messageSender.RetryOnThrottleAsync(s => s.Send(brokeredMessage), s => s.Send(brokeredMessage), TimeSpan.Zero, 1);
+            return messageSender.RetryOnThrottleAsync(s => s.Send(brokeredMessage), s => s.Send(brokeredMessage), TimeSpan.Zero, 1);
         }
     }
 }
