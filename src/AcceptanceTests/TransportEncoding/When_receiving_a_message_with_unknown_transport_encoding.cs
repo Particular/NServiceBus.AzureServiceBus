@@ -30,9 +30,9 @@
                     .Done(ctx =>
                     {
                         var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString"))); // get connection string from test env
-                        var factory = MessagingFactory.Create(namespaceManager.Address, namespaceManager.Settings.TokenProvider);
+                        var factory = MessagingFactory.CreateAsync(namespaceManager.Address, namespaceManager.Settings.TokenProvider).GetAwaiter().GetResult();
                         var queueClient = factory.CreateQueueClient("receivingamessagewithunknowntransportencoding.receiver/$DeadLetterQueue", ReceiveMode.ReceiveAndDelete); // queue name from the test name
-                        var message = queueClient.Receive();
+                        var message = queueClient.ReceiveAsync().GetAwaiter().GetResult();
                         var receivedMessageIdMatchesTheOriginal = message.Properties["NServiceBus.MessageId"].ToString() == ctx.OriginalMessageId;
                         var testRunIdMatchesTheCurrectTestRun = message.Properties["$AcceptanceTesting.TestRunId"] as string == ctx.TestRunId.ToString();
                         var deliveredOnceOnly = message.DeliveryCount == 1;

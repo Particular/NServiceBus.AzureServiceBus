@@ -53,14 +53,14 @@ namespace NServiceBus.AzureServiceBus
             return manager.QueueExistsAsync(path);
         }
 
-        public async Task<TopicDescription> CreateTopic(TopicDescription topicDescription)
+        public Task<TopicDescription> CreateTopic(TopicDescription topicDescription)
         {
-            return await manager.CreateTopicAsync(topicDescription).ConfigureAwait(false);
+            return manager.CreateTopicAsync(topicDescription);
         }
 
-        public async Task DeleteQueue(string path)
+        public Task DeleteQueue(string path)
         {
-            await manager.DeleteQueueAsync(path).ConfigureAwait(false);
+            return manager.DeleteQueueAsync(path);
         }
 
         public Task DeleteTopic(string path)
