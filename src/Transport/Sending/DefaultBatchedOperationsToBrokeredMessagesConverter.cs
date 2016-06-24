@@ -71,7 +71,7 @@ namespace NServiceBus.AzureServiceBus
                 // ensure that the reply to address contains namespace info in case the message is sent to destination only namespace.
                 if (!replyTo.HasSuffix)
                 {
-                    var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+                    var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
                     var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
                     var selected = namespaces.FirstOrDefault(ns => ns.Name == defaultName);
                     if (selected == null)

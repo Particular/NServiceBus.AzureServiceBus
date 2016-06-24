@@ -26,8 +26,8 @@
 
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -63,8 +63,8 @@
 
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);

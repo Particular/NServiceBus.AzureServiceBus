@@ -21,8 +21,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // set lock duration on a queue to 20 seconds and emulate message processing that takes longer than that, but less than AutoRenewTimeout
             settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration, TimeSpan.FromSeconds(20));

@@ -131,7 +131,7 @@ namespace NServiceBus.AzureServiceBus
                 else
                 {
                     NamespaceConfigurations configuredNamespaces;
-                    if (settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out configuredNamespaces))
+                    if (settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out configuredNamespaces))
                     {
                         var configured = configuredNamespaces.FirstOrDefault(n => n.Name == inputQueueAddress.Suffix);
                         if (configured != null)

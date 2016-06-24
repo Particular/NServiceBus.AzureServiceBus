@@ -22,8 +22,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -87,8 +87,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -158,8 +158,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -228,8 +228,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -290,8 +290,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             var oversizedHandler = new MyOversizedBrokeredMessageHandler();
 
@@ -357,9 +357,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value);
-            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
+            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -425,9 +425,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value);
-            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
+            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
 
             var oversizedHandler = new MyOversizedBrokeredMessageHandler();
 
@@ -499,9 +499,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value);
-            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
+            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
 
             var oversizedHandler = new MyThrowingOversizedBrokeredMessageHandler();
 

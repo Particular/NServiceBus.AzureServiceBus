@@ -371,7 +371,7 @@ namespace NServiceBus.AzureServiceBus
     {
         public NamespaceConfigurations() { }
         public int Count { get; }
-        public void Add(string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose = 1) { }
+        public void Add(string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose) { }
         public string GetConnectionString(string name) { }
         public System.Collections.Generic.IEnumerator<NServiceBus.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
     }

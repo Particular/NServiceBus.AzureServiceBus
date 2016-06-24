@@ -72,11 +72,11 @@ namespace NServiceBus.AzureServiceBus
             {
                 public const string UseNamespaceNamesInsteadOfConnectionStrings = "AzureServiceBus.Settings.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings";
                 public const string DefaultNamespaceName = "AzureServiceBus.Settings.Topology.Addressing.DefaultNamespaceName";
+                public const string Namespaces = "AzureServiceBus.Settings.Topology.Addressing.Namespaces";
 
                 public static class Partitioning
                 {
                     public const string Strategy = "AzureServiceBus.Settings.Topology.Addressing.Partitioning.Strategy";
-                    public const string Namespaces = "AzureServiceBus.Settings.Topology.Addressing.Partitioning.Namespaces";
                 }
 
                 public static class Composition

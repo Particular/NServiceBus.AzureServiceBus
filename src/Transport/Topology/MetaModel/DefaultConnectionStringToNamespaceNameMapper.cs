@@ -20,7 +20,7 @@
                 return value;
             }
 
-            var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
+            var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
 
             var namespaceInfo = namespaces.SingleOrDefault(x => x.ConnectionString == value.Suffix);
             if (namespaceInfo != null)

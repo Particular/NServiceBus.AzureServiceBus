@@ -24,7 +24,7 @@
 
         public int Count => inner.Count;
 
-        public void Add(string name, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
+        public void Add(string name, string connectionString, NamespacePurpose purpose)
         {
             var definition = new NamespaceInfo(name, connectionString, purpose);
 
