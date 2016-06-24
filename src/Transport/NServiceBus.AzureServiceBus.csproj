@@ -99,6 +99,7 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusForwardingTopologySettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusHierarchyCompositionSettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusIndividualizationExtensionPoint.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusNamespaceRoutingSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSanitizationExtensionPoint.cs" />
     <Compile Include="Config\TransactionModeSettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusTopologySettings.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="Sending\Time.cs" />
     <Compile Include="Topology\ConventionsAdapter.cs" />
     <Compile Include="Topology\IConventions.cs" />
+    <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Utils\MessageReceiverExtensions.cs" />
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />

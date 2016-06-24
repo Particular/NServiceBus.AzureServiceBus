@@ -371,16 +371,16 @@ namespace NServiceBus.AzureServiceBus
     {
         public NamespaceConfigurations() { }
         public int Count { get; }
-        public void Add(string name, string connectionString) { }
-        public void AddDefault(string connectionString) { }
+        public void Add(string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose) { }
         public string GetConnectionString(string name) { }
         public System.Collections.Generic.IEnumerator<NServiceBus.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
     }
     public class NamespaceInfo : System.IEquatable<NServiceBus.AzureServiceBus.NamespaceInfo>
     {
-        public NamespaceInfo(string name, string connectionString) { }
+        public NamespaceInfo(string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose = 1) { }
         public NServiceBus.AzureServiceBus.Topology.MetaModel.ConnectionString ConnectionString { get; }
         public string Name { get; }
+        public NServiceBus.AzureServiceBus.NamespacePurpose Purpose { get; }
         public bool Equals(NServiceBus.AzureServiceBus.NamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
@@ -414,6 +414,11 @@ namespace NServiceBus.AzureServiceBus
         Active = 0,
         Passive = 1,
     }
+    public enum NamespacePurpose
+    {
+        Routing = 0,
+        Partitioning = 1,
+    }
     public abstract class ReceiveContext
     {
         protected ReceiveContext() { }
@@ -430,7 +435,7 @@ namespace NServiceBus.AzureServiceBus
     }
     public class RuntimeNamespaceInfo : System.IEquatable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo>
     {
-        public RuntimeNamespaceInfo(string name, string connectionString, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
+        public RuntimeNamespaceInfo(string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose = 1, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
         public string ConnectionString { get; }
         public NServiceBus.AzureServiceBus.NamespaceMode Mode { get; }
         public string Name { get; }
@@ -566,9 +571,14 @@ namespace NServiceBus
     public class AzureServiceBusNamespacePartitioningSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusNamespacePartitioningSettings(NServiceBus.Settings.SettingsHolder settings) { }
-        public NServiceBus.AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString) { }
+        public void AddNamespace(string name, string connectionString) { }
         public NServiceBus.AzureServiceBusNamespacePartitioningSettings UseStrategy<T>()
             where T : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy { }
+    }
+    public class AzureServiceBusNamespaceRoutingSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    {
+        public AzureServiceBusNamespaceRoutingSettings(NServiceBus.Settings.SettingsHolder settings) { }
+        public void AddNamespace(string name, string connectionString) { }
     }
     public class AzureServiceBusQueueSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
@@ -661,11 +671,13 @@ namespace NServiceBus
         public static void BrokeredMessageBodyType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, NServiceBus.AzureServiceBus.SupportedBrokeredMessageBodyTypes type) { }
         public static NServiceBus.AzureServiceBusCompositionSettings Composition(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void ConnectivityMode(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, Microsoft.ServiceBus.ConnectivityMode connectivityMode) { }
+        public static void DefaultNamespaceName(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, string name) { }
         public static NServiceBus.AzureServiceBusIndividualizationSettings Individualization(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusMessageReceiverSettings MessageReceivers(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusMessageSenderSettings MessageSenders(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusMessagingFactoriesSettings MessagingFactories(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusNamespacePartitioningSettings NamespacePartitioning(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusNamespaceRoutingSettings NamespaceRouting(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void NumberOfClientsPerEntity(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, int number) { }
         public static NServiceBus.AzureServiceBusQueueSettings Queues(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusSanitizationSettings Sanitization(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }

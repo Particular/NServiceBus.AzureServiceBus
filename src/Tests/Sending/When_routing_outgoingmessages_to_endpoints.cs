@@ -22,8 +22,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -40,7 +40,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var batch = new Batch
             {
@@ -87,8 +87,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -105,7 +105,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var batch = new Batch
             {
@@ -133,6 +133,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                             Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
                         },
+
                         new BatchedOperation
                         {
                             Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
@@ -157,8 +158,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -175,7 +176,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
             var bytes = Enumerable.Range(0, 220 * 1024).Select(x => (byte)(x % 256)).ToArray();
             var batch = new Batch
             {
@@ -227,8 +228,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -245,7 +246,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
             var batch = new Batch
@@ -289,8 +290,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             var oversizedHandler = new MyOversizedBrokeredMessageHandler();
 
@@ -309,7 +310,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+            var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
             var batch = new Batch
@@ -356,9 +357,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value);
-            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
+            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -375,8 +376,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await creator.Create("myqueue", fallbackNamespaceManager);
 
             // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
-            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, NamespaceMode.Passive);
+            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
+            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var batch = new Batch
             {
@@ -424,9 +425,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value);
-            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
+            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
 
             var oversizedHandler = new MyOversizedBrokeredMessageHandler();
 
@@ -448,8 +449,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await creator.Create("myqueue", fallbackNamespaceManager);
 
             // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
-            var @fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, NamespaceMode.Passive);
+            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
+            var @fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, mode: NamespaceMode.Passive);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
             var batch = new Batch
@@ -498,9 +499,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value);
-            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
+            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
 
             var oversizedHandler = new MyThrowingOversizedBrokeredMessageHandler();
 
@@ -519,8 +520,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
-            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, NamespaceMode.Passive);
+            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
+            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, mode: NamespaceMode.Passive);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
             var batch = new Batch

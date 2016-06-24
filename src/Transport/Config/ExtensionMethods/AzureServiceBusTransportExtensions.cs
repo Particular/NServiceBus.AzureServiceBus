@@ -104,6 +104,15 @@ namespace NServiceBus
         }
 
         /// <summary>
+        /// Choose the name of the default namespace.
+        /// </summary>
+        public static void DefaultNamespaceName(this TransportExtensions<AzureServiceBusTransport> transportExtensions, string name )
+        {
+            var settings = transportExtensions.GetSettings();
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName, name);
+        }
+
+        /// <summary>
         /// Access to queues configuration.
         /// </summary>
         public static AzureServiceBusQueueSettings Queues(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
@@ -134,6 +143,14 @@ namespace NServiceBus
         public static AzureServiceBusNamespacePartitioningSettings NamespacePartitioning(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             return new AzureServiceBusNamespacePartitioningSettings(transportExtensions.GetSettings());
+        }
+
+        /// <summary>
+        /// Access to namespace routing.
+        /// </summary>
+        public static AzureServiceBusNamespaceRoutingSettings NamespaceRouting(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        {
+            return new AzureServiceBusNamespaceRoutingSettings(transportExtensions.GetSettings());
         }
 
         /// <summary>

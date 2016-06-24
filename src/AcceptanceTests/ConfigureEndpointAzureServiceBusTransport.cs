@@ -24,8 +24,18 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
         var topology = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology", EnvironmentVariableTarget.User);
         topology = topology ?? Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
 
-        var transportConfig = config.UseTransport<AzureServiceBusTransport>().ConnectionString(connectionString);
-        
+        var transportConfig = config.UseTransport<AzureServiceBusTransport>();
+
+        AzureServiceBusTransportConfigContext azureServiceBusTransportConfigContext;
+        if(settings.TryGet("AzureServiceBus.AcceptanceTests.TransportConfigContext", out azureServiceBusTransportConfigContext))
+        {
+            azureServiceBusTransportConfigContext.Callback?.Invoke(endpointName, transportConfig);
+        }
+        else
+        {
+            transportConfig.ConnectionString(connectionString);
+        }
+
         if (topology == "ForwardingTopology")
         {
             transportConfig.UseTopology<ForwardingTopology>();

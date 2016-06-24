@@ -61,7 +61,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var namespaces = strategy.GetNamespaces(PartitioningIntent.Creating);
 
-            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString, NamespaceMode.Active), namespaces.First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(PrimaryName, PrimaryConnectionString), namespaces.First());
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
 
             var namespaces = strategy.GetNamespaces(PartitioningIntent.Sending);
 
-            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString, NamespaceMode.Active), namespaces.First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString), namespaces.First());
         }
 
         [Test]

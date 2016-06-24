@@ -10,8 +10,6 @@
     {
         static ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
 
-        internal static string DefaultName = "default";
-
         List<NamespaceInfo> inner;
 
         public NamespaceConfigurations()
@@ -19,11 +17,16 @@
             inner = new List<NamespaceInfo>();
         }
 
+        internal NamespaceConfigurations(List<NamespaceInfo> configurations)
+        {
+            inner = configurations;
+        }
+
         public int Count => inner.Count;
 
-        public void Add(string name, string connectionString)
+        public void Add(string name, string connectionString, NamespacePurpose purpose)
         {
-            var definition = new NamespaceInfo(name, connectionString);
+            var definition = new NamespaceInfo(name, connectionString, purpose);
 
             var namespaceInfo = inner.SingleOrDefault(x => x.ConnectionString == definition.ConnectionString);
             if (namespaceInfo != null)
@@ -40,11 +43,6 @@
             }
 
             inner.Add(definition);
-        }
-
-        public void AddDefault(string connectionString)
-        {
-            Add(DefaultName, connectionString);
         }
 
         public string GetConnectionString(string name)

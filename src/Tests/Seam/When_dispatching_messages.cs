@@ -26,8 +26,8 @@
 
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -63,8 +63,8 @@
 
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value);
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -94,7 +94,7 @@
             {
                 // we don't care about incoming operations as we'll fake batcher and return pre-canned batches
 
-                var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value, NamespaceMode.Active);
+                var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
 

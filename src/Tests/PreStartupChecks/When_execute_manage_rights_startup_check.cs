@@ -31,10 +31,10 @@
 
             var namespaces = new NamespaceConfigurations
             {
-                {"name1", ConnectionStringValue.Build("namespace1")},
-                {"name2", ConnectionStringValue.Build("namespace2")}
+                {"name1", ConnectionStringValue.Build("namespace1"), NamespacePurpose.Partitioning},
+                {"name2", ConnectionStringValue.Build("namespace2"), NamespacePurpose.Partitioning}
             };
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
 
             var namespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => namespaceManager.CanManageEntities()).Returns(Task.FromResult(true));
@@ -55,10 +55,10 @@
 
             var namespaces = new NamespaceConfigurations
             {
-                {"name1", ConnectionStringValue.Build("namespace1")},
-                {"name2", ConnectionStringValue.Build("namespace2")}
+                {"name1", ConnectionStringValue.Build("namespace1"), NamespacePurpose.Partitioning},
+                {"name2", ConnectionStringValue.Build("namespace2"), NamespacePurpose.Partitioning}
             };
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
 
             var trueNamespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => trueNamespaceManager.CanManageEntities()).Returns(Task.FromResult(true));
@@ -82,11 +82,11 @@
 
             var namespaces = new NamespaceConfigurations
             {
-                {"name1", ConnectionStringValue.Build("namespace1")},
-                {"name2", ConnectionStringValue.Build("namespace2")},
-                {"name3", ConnectionStringValue.Build("namespace3")},
+                {"name1", ConnectionStringValue.Build("namespace1"), NamespacePurpose.Partitioning},
+                {"name2", ConnectionStringValue.Build("namespace2"), NamespacePurpose.Partitioning},
+                {"name3", ConnectionStringValue.Build("namespace3"), NamespacePurpose.Partitioning},
             };
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
 
             var trueNamespaceManager = A.Fake<INamespaceManager>();
             A.CallTo(() => trueNamespaceManager.CanManageEntities()).Returns(Task.FromResult(true));

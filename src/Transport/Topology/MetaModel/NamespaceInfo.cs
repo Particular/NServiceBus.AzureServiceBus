@@ -7,8 +7,9 @@
     {
         public string Name { get; }
         public ConnectionString ConnectionString { get; }
+        public NamespacePurpose Purpose { get; }
 
-        public NamespaceInfo(string name, string connectionString)
+        public NamespaceInfo(string name, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -22,6 +23,7 @@
 
             Name = name;
             ConnectionString = new ConnectionString(connectionString);
+            Purpose = purpose;
         }
 
         public bool Equals(NamespaceInfo other)

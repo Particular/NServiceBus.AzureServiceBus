@@ -13,14 +13,14 @@
             this.composition = composition;
         }
 
-        public string Apply(string entityname, EntityType entityType)
+        public EntityAddress Apply(string value, EntityType entityType)
         {
-            var address = new EntityAddress(entityname);
-            entityname = address.Name;
-
-            var path = composition.GetEntityPath(entityname, entityType);
+            var address = new EntityAddress(value);
+           
+            var path = composition.GetEntityPath(address.Name, entityType);
             path = sanitizationStrategy.Sanitize(path, entityType);
-            return path;
+            return new EntityAddress(path, address.Suffix);
         }
     }
+    
 }

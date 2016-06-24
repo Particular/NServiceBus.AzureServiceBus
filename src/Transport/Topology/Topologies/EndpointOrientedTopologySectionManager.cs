@@ -27,7 +27,7 @@ namespace NServiceBus.AzureServiceBus
 
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Receiving).ToArray();
 
-            var inputQueuePath = addressingLogic.Apply(inputQueue, EntityType.Queue);
+            var inputQueuePath = addressingLogic.Apply(inputQueue, EntityType.Queue).Name;
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
             return new TopologySection()
@@ -48,10 +48,10 @@ namespace NServiceBus.AzureServiceBus
 
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
-            var inputQueuePath = addressingLogic.Apply(endpointName.ToString(), EntityType.Queue);
+            var inputQueuePath = addressingLogic.Apply(endpointName.ToString(), EntityType.Queue).Name;
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
-            var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic);
+            var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
             var topics =
                 namespaces.Select(n => new EntityInfo {Path = topicPath, Type = EntityType.Topic, Namespace = n})
                     .ToArray();
@@ -64,7 +64,7 @@ namespace NServiceBus.AzureServiceBus
                 {
                     entities.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
                     {
-                        Path = addressingLogic.Apply(p, EntityType.Queue),
+                        Path = addressingLogic.Apply(p, EntityType.Queue).Name,
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
@@ -72,7 +72,7 @@ namespace NServiceBus.AzureServiceBus
                     // assumed errorq and auditq are in here
                     entities.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
                     {
-                        Path = addressingLogic.Apply(p, EntityType.Queue),
+                        Path = addressingLogic.Apply(p, EntityType.Queue).Name,
                         Type = EntityType.Queue,
                         Namespace = n
                     }));
@@ -95,7 +95,7 @@ namespace NServiceBus.AzureServiceBus
 
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
 
-            var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic);
+            var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
             var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
 
             return new TopologySection
@@ -109,11 +109,46 @@ namespace NServiceBus.AzureServiceBus
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
+            var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
 
-            var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+            var inputQueueAddress = addressingLogic.Apply(destination, EntityType.Queue);
 
-            var inputQueuePath = addressingLogic.Apply(destination, EntityType.Queue);
-            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToArray();
+            RuntimeNamespaceInfo[] namespaces = null;
+            if (inputQueueAddress.HasSuffix && inputQueueAddress.Suffix != defaultName) // sending to specific namespace
+            {
+                if (inputQueueAddress.HasConnectionString)
+                {
+                    namespaces = new[]{
+                        new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing, NamespaceMode.Active)
+                    };
+                }
+                else
+                {
+                    NamespaceConfigurations configuredNamespaces;
+                    if (settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out configuredNamespaces))
+                    {
+                        var configured = configuredNamespaces.FirstOrDefault(n => n.Name == inputQueueAddress.Suffix);
+                        if (configured != null)
+                        {
+                            namespaces = new[]
+                            {
+                                new RuntimeNamespaceInfo(configured.Name, configured.ConnectionString, configured.Purpose, NamespaceMode.Active)
+                            };
+                        }
+                    }
+                }
+            }
+            else // sending to the partition
+            {
+                namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+            }
+
+            if (namespaces == null)
+            {
+                throw new Exception($"Could not determine namespace for destination {destination}");
+            }
+
+            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueueAddress.Name, Type = EntityType.Queue, Namespace = n }).ToArray();
 
             return new TopologySection
             {
@@ -142,15 +177,15 @@ namespace NServiceBus.AzureServiceBus
             var topicPaths = DetermineTopicsFor(eventType);
 
             var subscriptionNameCandidateV6 = endpointName + "." + eventType.Name;
-            var subscriptionNameV6 = addressingLogic.Apply(subscriptionNameCandidateV6, EntityType.Subscription);
+            var subscriptionNameV6 = addressingLogic.Apply(subscriptionNameCandidateV6, EntityType.Subscription).Name;
             var subscriptionNameCandidate = endpointName + "." + eventType.FullName;
-            var subscriptionName = addressingLogic.Apply(subscriptionNameCandidate, EntityType.Subscription);
+            var subscriptionName = addressingLogic.Apply(subscriptionNameCandidate, EntityType.Subscription).Name;
 
             var topics = new List<EntityInfo>();
             var subs = new List<SubscriptionInfo>();
             foreach (var topicPath in topicPaths)
             {
-                var path = addressingLogic.Apply(topicPath, EntityType.Topic);
+                var path = addressingLogic.Apply(topicPath, EntityType.Topic).Name;
                 topics.AddRange(namespaces.Select(ns => new EntityInfo()
                 {
                     Namespace = ns,

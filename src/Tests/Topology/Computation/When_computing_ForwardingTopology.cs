@@ -34,7 +34,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var definition = sectionManager.DetermineResourcesToCreate();
 
             // ReSharper disable once RedundantArgumentDefaultValue
-            var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring, NamespaceMode.Active);
+            var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring);
             Assert.IsTrue(definition.Namespaces.Any(nsi => nsi == namespaceInfo));
         }
 

@@ -18,7 +18,10 @@
             var topology = GetConfiguredTopology(settings);
             topology.Initialize(settings);
 
-            RegisterConnectionStringAsNamespace(connectionString, settings);
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                RegisterConnectionStringAsNamespace(connectionString, settings);
+            }
 
             MatchSettingsToConsistencyRequirements(settings);
 
@@ -75,11 +78,12 @@
 
         static void RegisterConnectionStringAsNamespace(string connectionString, ReadOnlySettings settings)
         {
-            var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces);
-            namespaces.AddDefault(connectionString);
+            var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
+            namespaces.Add(defaultName, connectionString, NamespacePurpose.Partitioning);
         }
 
-        public override bool RequiresConnectionString { get; } = true;
+        public override bool RequiresConnectionString { get; } = false;
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
     }

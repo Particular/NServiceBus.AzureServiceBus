@@ -13,9 +13,16 @@ namespace NServiceBus.AzureServiceBus.Addressing
         public RoundRobinNamespacePartitioning(ReadOnlySettings settings)
         {
             NamespaceConfigurations namespaces;
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces) || namespaces.Count <= 1)
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
             {
-                throw new ConfigurationErrorsException("The 'RoundRobin' namespace partitioning strategy requires more than one namespace, please configure multiple azure servicebus namespaces");
+                throw new ConfigurationErrorsException($"The '{nameof(RoundRobinNamespacePartitioning)}' strategy requires more than one namespace, please use {nameof(AzureServiceBusTransportExtensions.NamespacePartitioning)}().{nameof(AzureServiceBusNamespacePartitioningSettings.AddNamespace)}() to register multiple namespaces");
+            }
+
+            namespaces = new NamespaceConfigurations(namespaces.Where(n => n.Purpose == NamespacePurpose.Partitioning).ToList());
+
+            if (namespaces.Count <= 1)
+            {
+                throw new ConfigurationErrorsException($"The '{nameof(RoundRobinNamespacePartitioning)}' strategy requires more than one namespace for the purpose of partitioning, found {namespaces.Count}. , please use {nameof(AzureServiceBusTransportExtensions.NamespacePartitioning)}().{nameof(AzureServiceBusNamespacePartitioningSettings.AddNamespace)}() to register additional namespaces");
             }
 
             this.namespaces = new CircularBuffer<NamespaceInfo>(namespaces.Count);
@@ -27,7 +34,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
             if (partitioningIntent == PartitioningIntent.Sending)
             {
                 var @namespace = namespaces.Get();
-                yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, NamespaceMode.Active);
+                yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, @namespace.Purpose, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Receiving || partitioningIntent == PartitioningIntent.Creating)
@@ -36,7 +43,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 for (var i = 0; i < namespaces.Size; i++)
                 {
                     var @namespace = namespaces.Get();
-                    yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, mode);
+                    yield return new RuntimeNamespaceInfo(@namespace.Name, @namespace.ConnectionString, @namespace.Purpose, mode);
                     mode = NamespaceMode.Passive;
                 }
             }

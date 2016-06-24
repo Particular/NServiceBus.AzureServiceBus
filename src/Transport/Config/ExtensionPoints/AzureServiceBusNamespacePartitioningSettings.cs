@@ -29,17 +29,20 @@
             return this;
         }
 
-        public AzureServiceBusNamespacePartitioningSettings AddNamespace(string name, string connectionString)
+        /// <summary>
+        /// Adds a namespace for partitioning.
+        /// </summary>
+        public void AddNamespace( string name, string connectionString)
         {
             NamespaceConfigurations namespaces;
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces))
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
             {
                 namespaces = new NamespaceConfigurations();
-                settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
+                settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
             }
-            
-            namespaces.Add(name, connectionString);
-            return this;
+
+            namespaces.Add(name, connectionString, NamespacePurpose.Partitioning);
         }
+
     }
 }

@@ -32,8 +32,6 @@ namespace NServiceBus.AzureServiceBus
             var brokeredMessage = CreateBrokeredMessage(outgoingMessage);
             brokeredMessage.MessageId = Guid.NewGuid().ToString();
 
-            CopyHeaders(outgoingMessage, brokeredMessage);
-
             ApplyDeliveryConstraints(brokeredMessage, outgoingOperation);
 
             ApplyTimeToLive(outgoingMessage, brokeredMessage);
@@ -45,6 +43,8 @@ namespace NServiceBus.AzureServiceBus
             SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(brokeredMessage, routingOptions);
 
             SetEstimatedMessageSizeHeader(brokeredMessage, outgoingOperation.GetEstimatedSize());
+
+            CopyHeaders(outgoingMessage, brokeredMessage);
 
             return brokeredMessage;
         }
@@ -66,7 +66,27 @@ namespace NServiceBus.AzureServiceBus
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
-                brokeredMessage.ReplyTo = mapper.Map(outgoingMessage.Headers[Headers.ReplyToAddress]);
+                var replyTo = mapper.Map(outgoingMessage.Headers[Headers.ReplyToAddress]);
+
+                // ensure that the reply to address contains namespace info in case the message is sent to destination only namespace.
+                if (!replyTo.HasSuffix)
+                {
+                    var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+                    var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
+                    var selected = namespaces.FirstOrDefault(ns => ns.Name == defaultName);
+                    if (selected == null)
+                    {
+                        selected = namespaces.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);
+                    }
+
+                    if (selected != null)
+                    {
+                        replyTo = mapper.Map(new EntityAddress(replyTo.Name, selected.Name));
+                    }
+                }
+
+                outgoingMessage.Headers[Headers.ReplyToAddress] = replyTo;
+                brokeredMessage.ReplyTo = replyTo;
             }
         }
 
