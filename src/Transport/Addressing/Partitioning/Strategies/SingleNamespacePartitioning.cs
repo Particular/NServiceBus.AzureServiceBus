@@ -20,7 +20,7 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
             if (namespaces.Count != 1)
             {
-                throw new ConfigurationErrorsException($"The '{nameof(SingleNamespacePartitioning)}' strategy requires exactly one namespace for the purpose of partitioning, found {namespaces.Count}. Please configure the connection string to your azure servicebus namespace");
+                throw new ConfigurationErrorsException($"The '{nameof(SingleNamespacePartitioning)}' strategy requires exactly one namespace for the purpose of partitioning, found {namespaces.Count}. Please remove additional namespace registrations");
             }
         }
 
