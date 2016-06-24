@@ -26,8 +26,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.AddPartitioningNamespace(PrimaryName, PrimaryConnectionString);
-            extensions.AddPartitioningNamespace(SecondaryName, SecondaryConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
 
             strategy = new FailOverNamespacePartitioning(settings);
         }
@@ -87,7 +87,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.AddPartitioningNamespace(PrimaryName, PrimaryConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
 
             Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning(settings));
         }
@@ -97,9 +97,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.AddPartitioningNamespace(PrimaryName, PrimaryConnectionString);
-            extensions.AddPartitioningNamespace(SecondaryName, SecondaryConnectionString);
-            extensions.AddPartitioningNamespace(OtherName, OtherConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
+            extensions.NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
 
             Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning(settings));
         }

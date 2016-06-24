@@ -113,38 +113,6 @@ namespace NServiceBus
         }
 
         /// <summary>
-        /// Adds a namespace for partitioning.
-        /// </summary>
-        public static void AddPartitioningNamespace(this TransportExtensions<AzureServiceBusTransport> transportExtensions, string name, string connectionString)
-        {
-            var namespaces = EnsureNamespaceConfigurations(transportExtensions);
-
-            namespaces.Add(name, connectionString, NamespacePurpose.Partitioning);
-        }
-
-        /// <summary>
-        /// Adds a namespace to be used as a destination only.
-        /// </summary>
-        public static void AddDestinationNamespace(this TransportExtensions<AzureServiceBusTransport> transportExtensions, string name, string connectionString)
-        {
-            var namespaces = EnsureNamespaceConfigurations(transportExtensions);
-
-            namespaces.Add(name, connectionString, NamespacePurpose.DestinationOnly);
-        }
-
-        static NamespaceConfigurations EnsureNamespaceConfigurations(TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            var settings = transportExtensions.GetSettings();
-            NamespaceConfigurations namespaces;
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces))
-            {
-                namespaces = new NamespaceConfigurations();
-                settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
-            }
-            return namespaces;
-        }
-
-        /// <summary>
         /// Access to queues configuration.
         /// </summary>
         public static AzureServiceBusQueueSettings Queues(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
@@ -175,6 +143,14 @@ namespace NServiceBus
         public static AzureServiceBusNamespacePartitioningSettings NamespacePartitioning(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             return new AzureServiceBusNamespacePartitioningSettings(transportExtensions.GetSettings());
+        }
+
+        /// <summary>
+        /// Access to namespace routing.
+        /// </summary>
+        public static AzureServiceBusNamespaceRoutingSettings NamespaceRouting(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        {
+            return new AzureServiceBusNamespaceRoutingSettings(transportExtensions.GetSettings());
         }
 
         /// <summary>

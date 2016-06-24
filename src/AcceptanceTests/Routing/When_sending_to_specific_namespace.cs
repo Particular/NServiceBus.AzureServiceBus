@@ -26,13 +26,13 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
 
                 if (endpointName == "UsingMultipleNamespaces.EndpointInTargetNamespace")
                 {
-                    extensions.AddDestinationNamespace("source", connectionString);
-                    extensions.AddPartitioningNamespace("target", targetConnectionString);
+                    extensions.NamespaceRouting().AddNamespace("source", connectionString);
+                    extensions.NamespacePartitioning().AddNamespace("target", targetConnectionString);
                 }
                 else
                 {
-                    extensions.AddPartitioningNamespace("source", connectionString);
-                    extensions.AddDestinationNamespace("target", targetConnectionString);
+                    extensions.NamespacePartitioning().AddNamespace("source", connectionString);
+                    extensions.NamespaceRouting().AddNamespace("target", targetConnectionString);
                 }
             };
 

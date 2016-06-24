@@ -28,5 +28,21 @@
 
             return this;
         }
+
+        /// <summary>
+        /// Adds a namespace for partitioning.
+        /// </summary>
+        public void AddNamespace( string name, string connectionString)
+        {
+            NamespaceConfigurations namespaces;
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, out namespaces))
+            {
+                namespaces = new NamespaceConfigurations();
+                settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Namespaces, namespaces);
+            }
+
+            namespaces.Add(name, connectionString, NamespacePurpose.Partitioning);
+        }
+
     }
 }

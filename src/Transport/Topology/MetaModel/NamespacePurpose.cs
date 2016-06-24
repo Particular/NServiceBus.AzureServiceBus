@@ -2,7 +2,7 @@
 {
     public enum NamespacePurpose
     {
-        DestinationOnly,
+        Routing,
         Partitioning
     }
 }
