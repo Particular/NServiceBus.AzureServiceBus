@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Tests;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]

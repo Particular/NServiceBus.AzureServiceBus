@@ -6,8 +6,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
-    using AzureServiceBus;
-    using AzureServiceBus.Topology.MetaModel;
+    using Transport.AzureServiceBus;
     using DeliveryConstraints;
     using Settings;
     using Transport;

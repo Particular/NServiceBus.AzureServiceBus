@@ -1,7 +1,7 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using NServiceBus.Configuration.AdvanceExtensibility;
     using Settings;
     using NUnit.Framework;

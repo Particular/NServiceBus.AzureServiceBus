@@ -6,7 +6,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]

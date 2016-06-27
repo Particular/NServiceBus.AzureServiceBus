@@ -6,7 +6,7 @@
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
 

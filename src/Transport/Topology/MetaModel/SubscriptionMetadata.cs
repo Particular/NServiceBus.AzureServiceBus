@@ -1,4 +1,5 @@
-﻿namespace NServiceBus.AzureServiceBus
+﻿namespace NServiceBus.Transport.AzureServiceBus
+
 {
     public class SubscriptionMetadata
     {

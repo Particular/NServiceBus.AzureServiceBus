@@ -1,5 +1,5 @@
-﻿namespace NServiceBus.AzureServiceBus.Addressing
-{
+﻿namespace NServiceBus.Transport.AzureServiceBus
+{ 
     public class ValidationResult
     {
         public bool LengthIsValid { get; private set; } = true;

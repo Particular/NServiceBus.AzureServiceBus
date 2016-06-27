@@ -4,7 +4,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AcceptanceTesting.Support;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NUnit.Framework;

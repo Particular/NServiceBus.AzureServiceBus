@@ -1,11 +1,10 @@
-﻿namespace NServiceBus.AzureServiceBus
+﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using Transport;
 
     public interface ITopologySectionManager
     {
-
         TopologySection DetermineReceiveResources(string inputQueue);
         TopologySection DetermineResourcesToCreate(QueueBindings queueBindings);
 

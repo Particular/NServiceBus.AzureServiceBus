@@ -2,7 +2,7 @@
 {
     using System;
     using System.Reflection;
-    using AzureServiceBus.TypesScanner;
+    using Transport.AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]

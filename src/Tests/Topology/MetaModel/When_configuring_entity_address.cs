@@ -1,7 +1,7 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel
 {
     using System;
-    using AzureServiceBus.Topology.MetaModel;
+    using Transport.AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]

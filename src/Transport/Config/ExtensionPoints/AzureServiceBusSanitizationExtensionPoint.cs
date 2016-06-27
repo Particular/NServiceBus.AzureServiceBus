@@ -1,10 +1,9 @@
 namespace NServiceBus
 {
     using System;
-    using AzureServiceBus;
-    using AzureServiceBus.Addressing;
     using Configuration.AdvanceExtensibility;
     using Settings;
+    using Transport.AzureServiceBus;
 
     public class AzureServiceBusSanitizationExtensionPoint<T> : ExposeSettings where T : ISanitizationStrategy
     {

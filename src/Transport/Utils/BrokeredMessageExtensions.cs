@@ -1,4 +1,4 @@
-namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
+namespace NServiceBus.Transport.AzureServiceBus
 {
     using Logging;
     using System;
@@ -6,7 +6,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
     using System.Threading.Tasks;
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
-    using AzureServiceBus;
 
     static class BrokeredMessageExtensions
     {

@@ -1,7 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualization
 {
     using System;
-    using AzureServiceBus.Addressing;
     using NUnit.Framework;
     using Settings;
 

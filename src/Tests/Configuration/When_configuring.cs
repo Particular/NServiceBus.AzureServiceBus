@@ -1,7 +1,7 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using FakeItEasy;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
 

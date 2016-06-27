@@ -1,8 +1,9 @@
-﻿namespace NServiceBus.AzureServiceBus.Addressing
+﻿namespace NServiceBus
 {
     using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
+    using Transport.AzureServiceBus;
     using Settings;
 
     public class FailOverNamespacePartitioning : INamespacePartitioningStrategy

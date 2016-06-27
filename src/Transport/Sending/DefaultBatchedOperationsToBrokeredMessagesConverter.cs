@@ -1,11 +1,10 @@
-namespace NServiceBus.AzureServiceBus
+namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
-    using Topology.MetaModel;
     using DelayedDelivery;
     using Settings;
     using Transport;

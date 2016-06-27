@@ -1,8 +1,7 @@
-﻿namespace NServiceBus.AzureServiceBus
+﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
-    using Topology.MetaModel;
-
+    
     public class NamespaceInfo : IEquatable<NamespaceInfo>
     {
         public string Name { get; }

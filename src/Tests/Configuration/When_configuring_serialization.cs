@@ -1,6 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
 

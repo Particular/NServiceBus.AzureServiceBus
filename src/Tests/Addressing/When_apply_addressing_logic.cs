@@ -1,7 +1,6 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing
 {
-    using AzureServiceBus;
-    using AzureServiceBus.Addressing;
+    using Transport.AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]

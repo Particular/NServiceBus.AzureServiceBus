@@ -1,4 +1,4 @@
-﻿namespace NServiceBus.AzureServiceBus
+﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     class ForwardingTopologySubscriptionMetadata : SubscriptionMetadata
     {

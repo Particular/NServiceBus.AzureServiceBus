@@ -4,8 +4,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using AzureServiceBus;
-    using AzureServiceBus.Topology.MetaModel;
+    using Transport.AzureServiceBus;
     using DelayedDelivery;
     using DeliveryConstraints;
     using Settings;

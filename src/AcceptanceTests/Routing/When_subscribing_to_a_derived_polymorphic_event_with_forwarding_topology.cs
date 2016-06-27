@@ -5,7 +5,7 @@
     using AcceptanceTesting;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using Features;
     using Settings;
     using NUnit.Framework;

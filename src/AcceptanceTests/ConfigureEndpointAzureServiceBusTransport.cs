@@ -9,9 +9,7 @@ using NServiceBus.AcceptanceTests.Routing.AutomaticSubscriptions;
 using NServiceBus.AcceptanceTests.Sagas;
 using NServiceBus.AcceptanceTests.Versioning;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
-using NServiceBus.AzureServiceBus;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
-using NServiceBus.AzureServiceBus.Addressing;
 
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
 {

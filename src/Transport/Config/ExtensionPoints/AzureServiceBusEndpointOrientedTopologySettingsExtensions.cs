@@ -3,10 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using AzureServiceBus;
-    using AzureServiceBus.TypesScanner;
     using Configuration.AdvanceExtensibility;
     using Settings;
+    using Transport.AzureServiceBus;
 
     public static class AzureServiceBusEndpointOrientedTopologySettingsExtensions
     {

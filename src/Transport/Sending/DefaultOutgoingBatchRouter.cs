@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBus
+namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,6 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
-    using Azure.Transports.WindowsAzureServiceBus;
     using Logging;
     using Settings;
     using Transport;

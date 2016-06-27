@@ -2,8 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Reflection;
-    using AzureServiceBus;
-    using AzureServiceBus.TypesScanner;
+    using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
 

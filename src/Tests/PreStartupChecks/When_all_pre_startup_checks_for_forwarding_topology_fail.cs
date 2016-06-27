@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using FakeItEasy;
     using Tests;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
 
