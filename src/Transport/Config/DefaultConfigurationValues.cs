@@ -1,7 +1,6 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
-    using System.Text.RegularExpressions;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Topology.MetaModel;

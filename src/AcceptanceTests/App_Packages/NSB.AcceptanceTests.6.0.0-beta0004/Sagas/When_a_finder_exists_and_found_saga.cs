@@ -5,7 +5,7 @@
     using EndpointTemplates;
     using Extensibility;
     using Features;
-    using NServiceBus.Persistence;
+    using Persistence;
     using NServiceBus.Sagas;
     using NUnit.Framework;
 

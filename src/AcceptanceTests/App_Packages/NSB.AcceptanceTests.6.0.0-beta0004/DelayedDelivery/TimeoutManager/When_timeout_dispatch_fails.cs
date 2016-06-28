@@ -7,7 +7,7 @@
     using EndpointTemplates;
     using Extensibility;
     using Features;
-    using NServiceBus.Persistence;
+    using Persistence;
     using NServiceBus.Pipeline;
     using NUnit.Framework;
     using ScenarioDescriptors;
