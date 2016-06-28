@@ -1,7 +1,5 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 {
-    using System;
-    using System.Text.RegularExpressions;
     using AzureServiceBus;
     using AzureServiceBus.Addressing;
     using NUnit.Framework;
@@ -22,8 +20,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase(validNameForSubscription, EntityType.Subscription)]
         public void Should_not_change_valid_paths_or_names(string entityPathOrName, EntityType entityType)
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = new SettingsHolder();
             var sanitization = new ValidateAndHashIfNeeded(settings);
+            sanitization.SetDefaultRules(settings);
+
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 
             Assert.That(sanitizedResult, Is.EqualTo(entityPathOrName));
@@ -33,16 +33,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase("endpoint$name", EntityType.Topic, "endpointname")]
         [TestCase("endpoint$name", EntityType.Subscription, "endpointname")]
         [TestCase("endpoint$name", EntityType.Rule, "endpointname")]
+        [TestCase("endpoint+name", EntityType.Rule, "endpointname")]
         public void Should_sanitize_invalid_characters_for_registered_sanitizer(string entityPathOrName, EntityType entityType, string expectedPathOrName)
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = new SettingsHolder();
             var sanitization = new ValidateAndHashIfNeeded(settings);
-
-            Func<string, string> sanitizer = pathOrName => new Regex(@"[^a-zA-Z0-9\-\._]").Replace(pathOrName, "");
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathSanitizer, sanitizer);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathSanitizer, sanitizer);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameSanitizer, sanitizer);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameSanitizer, sanitizer);
+            sanitization.SetDefaultRules(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 
@@ -55,14 +51,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase("endpoint/name", EntityType.Rule, "endpointname")]
         public void Should_not_sanitize_characters_passing_default_validation_for_registered_sanitizer(string entityPathOrName, EntityType entityType, string expectedPathOrName)
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = new SettingsHolder();
             var sanitization = new ValidateAndHashIfNeeded(settings);
-
-            Func<string, string> sanitizer = pathOrName => new Regex(@"[^a-zA-Z0-9\-\._]").Replace(pathOrName, "");
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathSanitizer, sanitizer);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathSanitizer, sanitizer);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameSanitizer, sanitizer);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameSanitizer, sanitizer);
+            sanitization.SetDefaultRules(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 
@@ -74,11 +65,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase(tooLongNameForSubscription, EntityType.Subscription)]
         public void Should_sanitize_longer_than_maximum_path_or_name(string entityPathOrName, EntityType entityType)
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = new SettingsHolder();
             var sanitization = new ValidateAndHashIfNeeded(settings);
-
-            Func<string, string> hash = pathOrName => MD5DeterministicNameBuilder.Build(pathOrName);
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Hash, hash);
+            sanitization.SetDefaultRules(settings);
             
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 
@@ -86,17 +75,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 
             Assert.That(sanitizedResult, Is.EqualTo(expectedPathOrName));
         }
-
-        [TestCase(tooLongEntityName, EntityType.Queue)]
-        [TestCase(tooLongEntityName, EntityType.Topic)]
-        [TestCase(tooLongNameForSubscription, EntityType.Subscription)]
-        public void Should_not_sanitize_longer_than_maximum_path_or_name_for_default_hash(string entityPathOrName, EntityType entityType)
-        {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var sanitization = new ValidateAndHashIfNeeded(settings);
-            var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
-            
-            Assert.That(sanitizedResult, Is.EqualTo(entityPathOrName));
-        }
+        
     }
 }

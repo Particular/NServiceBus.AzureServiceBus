@@ -3,6 +3,7 @@
     using AzureServiceBus;
     using AzureServiceBus.Addressing;
     using NUnit.Framework;
+    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -47,6 +48,10 @@
         class SanitizationStrategy : ISanitizationStrategy
         {
             public string ProvidedEntityPathOrName { get; private set; }
+
+            public void SetDefaultRules(SettingsHolder settings)
+            {
+            }
 
             public string Sanitize(string entityPathOrName, EntityType entityType)
             {
