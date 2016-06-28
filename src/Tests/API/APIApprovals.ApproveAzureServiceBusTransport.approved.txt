@@ -48,6 +48,7 @@
     public interface ISanitizationStrategy
     {
         string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType);
+        void SetDefaultRules(NServiceBus.Settings.SettingsHolder settings);
     }
     public enum PartitioningIntent
     {
@@ -71,11 +72,13 @@
     {
         public ThrowOnFailedValidation(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
+        public void SetDefaultRules(NServiceBus.Settings.SettingsHolder settings) { }
     }
     public class ValidateAndHashIfNeeded : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
     {
         public ValidateAndHashIfNeeded(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
+        public void SetDefaultRules(NServiceBus.Settings.SettingsHolder settings) { }
     }
     public class ValidationResult
     {
