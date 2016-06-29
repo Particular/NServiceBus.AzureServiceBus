@@ -78,7 +78,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 
         [TestCase("/endpoint/name/", EntityType.Queue, "endpoint/name")]
         [TestCase("/endpoint/name/", EntityType.Topic, "endpoint/name")]
-        public void Should_not_leading_and_trailing_slashes_from_queues_and_topics(string entityPathOrName, EntityType entityType, string expectedPathOrName)
+        [TestCase("/endpoint/name/", EntityType.Subscription, "endpointname")]
+        [TestCase("/endpoint/name/", EntityType.Rule, "endpointname")]
+        public void Should_remove_leading_and_trailing_slashes(string entityPathOrName, EntityType entityType, string expectedPathOrName)
         {
             var settings = new SettingsHolder();
             var sanitization = new ValidateAndHashIfNeeded(settings);

@@ -9,12 +9,15 @@
         readonly ReadOnlySettings settings;
 
         // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
-        Regex queueAndTopicNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$");
+        Regex queueAndTopicPathValidationRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$");
 
         // Except for subscriptions and rules, these cannot contain slashes (/)
-        Regex subscriptionAndRuleNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
+        Regex subscriptionAndRuleNameValidationRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
 
-        Regex sanitizationRegex = new Regex(@"[^a-zA-Z0-9\-\._]");
+        // Sanitize anything that is [NOT letters, numbers, periods (.), hyphens (-), underscores (-)], and leading or trailing slashes (/)
+        Regex queueAndTopicPathSanitizationRegex = new Regex(@"[^a-zA-Z0-9\-\._/]|^/*|/*$");
+
+        Regex subscriptionAndRuleNameSanitizationRegex = new Regex(@"[^a-zA-Z0-9\-\._]");
 
         public ValidateAndHashIfNeeded(ReadOnlySettings settings)
         {
@@ -34,7 +37,7 @@
             {
                 var validationResult = new ValidationResult();
 
-                if (!queueAndTopicNameRegex.IsMatch(queuePath))
+                if (!queueAndTopicPathValidationRegex.IsMatch(queuePath))
                     validationResult.AddErrorForInvalidCharacters($"Queue path {queuePath} contains illegal characters. Legal characters should match the following regex: `{queuePath}`.");
 
                 var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength);
@@ -49,7 +52,7 @@
             {
                 var validationResult = new ValidationResult();
 
-                if (!queueAndTopicNameRegex.IsMatch(topicPath))
+                if (!queueAndTopicPathValidationRegex.IsMatch(topicPath))
                     validationResult.AddErrorForInvalidCharacters($"Topic path {topicPath} contains illegal characters. Legal characters should match the following regex: `{topicPath}`.");
 
                 var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength);
@@ -64,7 +67,7 @@
             {
                 var validationResult = new ValidationResult();
 
-                if (!subscriptionAndRuleNameRegex.IsMatch(subscriptionName))
+                if (!subscriptionAndRuleNameValidationRegex.IsMatch(subscriptionName))
                     validationResult.AddErrorForInvalidCharacters($"Subscription name {subscriptionName} contains illegal characters. Legal characters should match the following regex: `{subscriptionName}`.");
 
                 var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength);
@@ -79,7 +82,7 @@
             {
                 var validationResult = new ValidationResult();
 
-                if (!subscriptionAndRuleNameRegex.IsMatch(ruleName))
+                if (!subscriptionAndRuleNameValidationRegex.IsMatch(ruleName))
                     validationResult.AddErrorForInvalidCharacters($"Rule name {ruleName} contains illegal characters. Legal characters should match the following regex: `{ruleName}`.");
 
                 var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameMaximumLength);
@@ -93,16 +96,16 @@
 
             // sanitizers
 
-            Func<string, string> qps = queuePath => sanitizationRegex.Replace(queuePath, string.Empty);
+            Func<string, string> qps = queuePath => queueAndTopicPathSanitizationRegex.Replace(queuePath, string.Empty);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathSanitizer, qps);
 
-            Func<string, string> tps = topicPath => sanitizationRegex.Replace(topicPath, string.Empty);
+            Func<string, string> tps = topicPath => queueAndTopicPathSanitizationRegex.Replace(topicPath, string.Empty);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathSanitizer, tps);
 
-            Func<string, string> sns = subscriptionPath => sanitizationRegex.Replace(subscriptionPath, string.Empty);
+            Func<string, string> sns = subscriptionPath => subscriptionAndRuleNameSanitizationRegex.Replace(subscriptionPath, string.Empty);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameSanitizer, sns);
 
-            Func<string, string> rns = rulePath => sanitizationRegex.Replace(rulePath, string.Empty);
+            Func<string, string> rns = rulePath => subscriptionAndRuleNameSanitizationRegex.Replace(rulePath, string.Empty);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameSanitizer, rns);
 
             // hash
