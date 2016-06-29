@@ -9,7 +9,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
     [Category("AzureServiceBus")]
     public class When_sanitizing_entity_names_using_ValidateAndHashIfNeeded_with_default_validation
     {
-        const string validPathForQueueOrTopic = "rw3pSH5zk5aQahkzt-E_U0aPf6KbXpWMZ7vnRFb_8_AAptt5Gp6YVt3rSnWwREBx3-BgnqNw9ol-Rn.wFRTFR1UzoCuHZM443EqKvSt-fzpMHPusH8rm4OQeiBCwBRVDA29rLC6RlOBZ4Xs_h415HW2lAdOPR6j4L-CaaVkfnDO2-9bjUTAGCDKs6jWYmgoCYMBx6x5PS_e0nRT05S_J78qd3SOKWTM-YjVj9fwQZ9xG2x02uCW-XIh0siprJp9c3jLE";
+        const string validPathForQueueOrTopic = "rw/pSH5zk5aQahkzt-E_U0aPf6KbXpWMZ7vnRFb_8_AAptt5Gp6YVt3rSnWwREBx3-BgnqNw9ol-Rn.wFRTFR1UzoCuHZM443EqKvSt-fzpMHPusH8rm4OQeiBCwBRVDA29rLC6RlOBZ4Xs_h415HW2lAdOPR6j4L-CaaVkfnDO2-9bjUTAGCDKs6jWYmgoCYMBx6x5PS_e0nRT05S_J78qd3SOKWTM-YjVj9fwQZ9xG2x02uCW-XIh0siprJp9c3jLE";
         const string tooLongEntityName = "rw3pSH5zk5aQahkzt-E_U0aPf6KbXpWMZ7vnRFb28dAAptt5Gp6YVt3rSnWwREBx3-BgnqNw9ol-Rn.wFRTFR1UzoCuHZM443EqKvSt-fzpMHPusH8rm4OQeiBCwBRVDA29rLC6RlOBZ4Xs_h415HW2lAdOPR6j4L-CaaVkfnDO2-9bjUTAGCDKs6jWYmgoCYMBx6x5PS_e0nRT05S_J78qd3SOKWTM-YjVj9fwQZ9xG2x02uCW-XIh0siprJp9c3jLETooLong";
 
         const string validNameForSubscription = "6pwTRR34FFr.6YhPi-iDNfdSRLNDFIqZ97_Ky64w49r50n72vk";
@@ -75,6 +75,18 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 
             Assert.That(sanitizedResult, Is.EqualTo(expectedPathOrName));
         }
-        
+
+        [TestCase("/endpoint/name/", EntityType.Queue, "endpoint/name")]
+        [TestCase("/endpoint/name/", EntityType.Topic, "endpoint/name")]
+        public void Should_not_leading_and_trailing_slashes_from_queues_and_topics(string entityPathOrName, EntityType entityType, string expectedPathOrName)
+        {
+            var settings = new SettingsHolder();
+            var sanitization = new ValidateAndHashIfNeeded(settings);
+            sanitization.SetDefaultRules(settings);
+
+            var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
+
+            Assert.That(sanitizedResult, Is.EqualTo(expectedPathOrName));
+        }
     }
 }
