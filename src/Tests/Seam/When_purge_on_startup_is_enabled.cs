@@ -1,6 +1,7 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 {
     using System;
+    using System.Threading.Tasks;
     using AzureServiceBus;
     using NServiceBus.Transports;
     using NUnit.Framework;
@@ -17,7 +18,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             const bool purgeOnStartup = true;
 
-            Assert.ThrowsAsync< InvalidOperationException> (async () => await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", purgeOnStartup, TransportTransactionMode.SendsAtomicWithReceive)));
+            Assert.ThrowsAsync< InvalidOperationException> (async () => await pump.Init(context => TaskEx.Completed, errorContext => Task.FromResult(true), criticalError, new PushSettings("sales", "error", purgeOnStartup, TransportTransactionMode.SendsAtomicWithReceive)));
         }
     }
 }

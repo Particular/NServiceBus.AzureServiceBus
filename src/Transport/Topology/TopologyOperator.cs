@@ -5,6 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Logging;
+    using Transports;
 
     class TopologyOperator : IOperateTopology, IDisposable
     {
@@ -71,15 +72,11 @@ namespace NServiceBus.AzureServiceBus
             return StopNotifiersForAsync(subscriptions);
         }
 
-        public void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func)
-        {
-            onMessage = func;
-        }
+        public void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func) => onMessage = func;
 
-        public void OnError(Func<Exception, Task> func)
-        {
-            onError = func;
-        }
+        public void OnError(Func<Exception, Task> func) => onError = func;
+
+        public Func<ErrorContext, Task<bool>> OnRetryError { get; set; }
 
         void StartNotifiersFor(IEnumerable<EntityInfo> entities)
         {
@@ -91,7 +88,7 @@ namespace NServiceBus.AzureServiceBus
                 var notifier = notifiers.GetOrAdd(entity, e =>
                 {
                     var n = CreateNotifier(entity.Type);
-                    n.Initialize(e, onMessage, onError, maxConcurrency);
+                    n.Initialize(e, onMessage, onError, OnRetryError, maxConcurrency);
                     return n;
                 });
 

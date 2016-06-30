@@ -22,7 +22,7 @@ namespace NServiceBus.AzureServiceBus
             this.topologyOperator = topologyOperator;
         }
 
-        public Task Init(Func<PushContext, Task> pump, CriticalError criticalError, PushSettings pushSettings)
+        public Task Init(Func<PushContext, Task> pump, Func<ErrorContext, Task<bool>> errorPipe, CriticalError criticalError, PushSettings pushSettings)
         {
             messagePump = pump;
             var name = $"MessagePump on the queue `{pushSettings.InputQueue}`";
@@ -34,6 +34,8 @@ namespace NServiceBus.AzureServiceBus
             }
 
             inputQueue = pushSettings.InputQueue;
+
+            topologyOperator.OnRetryError = errorPipe;
 
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
             {
