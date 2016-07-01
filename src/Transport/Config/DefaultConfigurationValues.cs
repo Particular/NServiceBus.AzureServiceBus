@@ -15,6 +15,7 @@
             ApplyDefaultValuesForQueueDescriptions(settings);
             ApplyDefaultValuesForTopics(settings);
             ApplyDefaultValuesForSubscriptions(settings);
+            ApplyDefaultValuesForRules(settings);
             ApplyDefaultValuesForSerialization(settings);
             return settings;
         }
@@ -96,8 +97,7 @@
         void ApplyDefaultValuesForSubscriptions(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength, 50);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameMaximumLength, 50);
-
+            
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.AutoDeleteOnIdle, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DefaultMessageTimeToLive, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.LockDuration, TimeSpan.FromMilliseconds(30000));
@@ -109,6 +109,11 @@
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition, new Func<string, bool>(name => true));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo, null);
+        }
+
+        static void ApplyDefaultValuesForRules(SettingsHolder settings)
+        {
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameMaximumLength, 50);
         }
     }
 }
