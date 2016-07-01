@@ -19,21 +19,25 @@
 
         Regex subscriptionAndRuleNameSanitizationRegex = new Regex(@"[^a-zA-Z0-9\-\._]");
 
+        Func<string, ValidationResult> defaultQueuePathValidation;
+        Func<string, ValidationResult> defaultTopicPathValidation;
+        Func<string, ValidationResult> defaultSubscriptionNameValidation;
+        Func<string, ValidationResult> defaultRuleNameValidation;
+
+        Func<string, string> defaultQueuePathSanitization;
+        Func<string, string> defaultTopicPathSanitization;
+        Func<string, string> defaultSubscriptionNameSanitization;
+        Func<string, string> defaultRuleNameSanitization;
+
+        Func<string, string> defaultHashing;
+
         public ValidateAndHashIfNeeded(ReadOnlySettings settings)
         {
             this.settings = settings;
-        }
-
-        public void SetDefaultRules(SettingsHolder settings)
-        {
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength, 260);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength, 260);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength, 50);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameMaximumLength, 50);
 
             // validators
 
-            Func<string, ValidationResult> qpv = queuePath =>
+            defaultQueuePathValidation = queuePath =>
             {
                 var validationResult = new ValidationResult();
 
@@ -46,9 +50,8 @@
 
                 return validationResult;
             };
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathValidator, qpv);
 
-            Func<string, ValidationResult> tpv = topicPath =>
+            defaultTopicPathValidation = topicPath =>
             {
                 var validationResult = new ValidationResult();
 
@@ -61,9 +64,8 @@
 
                 return validationResult;
             };
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathValidator, tpv);
 
-            Func<string, ValidationResult> spv = subscriptionName =>
+            defaultSubscriptionNameValidation = subscriptionName =>
             {
                 var validationResult = new ValidationResult();
 
@@ -76,9 +78,8 @@
 
                 return validationResult;
             };
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameValidator, spv);
 
-            Func<string, ValidationResult> rpv = ruleName =>
+            defaultRuleNameValidation = ruleName =>
             {
                 var validationResult = new ValidationResult();
 
@@ -92,26 +93,16 @@
                 return validationResult;
 
             };
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameValidator, rpv);
 
             // sanitizers
 
-            Func<string, string> qps = queuePath => queueAndTopicPathSanitizationRegex.Replace(queuePath, string.Empty);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathSanitizer, qps);
-
-            Func<string, string> tps = topicPath => queueAndTopicPathSanitizationRegex.Replace(topicPath, string.Empty);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathSanitizer, tps);
-
-            Func<string, string> sns = subscriptionPath => subscriptionAndRuleNameSanitizationRegex.Replace(subscriptionPath, string.Empty);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameSanitizer, sns);
-
-            Func<string, string> rns = rulePath => subscriptionAndRuleNameSanitizationRegex.Replace(rulePath, string.Empty);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameSanitizer, rns);
+            defaultQueuePathSanitization = queuePath => queueAndTopicPathSanitizationRegex.Replace(queuePath, string.Empty);
+            defaultTopicPathSanitization = topicPath => queueAndTopicPathSanitizationRegex.Replace(topicPath, string.Empty);
+            defaultSubscriptionNameSanitization = subscriptionPath => subscriptionAndRuleNameSanitizationRegex.Replace(subscriptionPath, string.Empty);
+            defaultRuleNameSanitization = rulePath => subscriptionAndRuleNameSanitizationRegex.Replace(rulePath, string.Empty);
 
             // hash
-
-            Func<string, string> hash = entityPathOrName => MD5DeterministicNameBuilder.Build(entityPathOrName);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Hash, hash);
+            defaultHashing = entityPathOrName => MD5DeterministicNameBuilder.Build(entityPathOrName);
         }
 
         public string Sanitize(string entityPathOrName, EntityType entityType)
@@ -123,23 +114,46 @@
             switch (entityType)
             {
                 case EntityType.Queue:
-                    validator = settings.GetOrDefault<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathValidator);
-                    sanitizer = settings.GetOrDefault<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathSanitizer);
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathValidator, out validator))
+                    {
+                        validator = defaultQueuePathValidation;
+                    }
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathSanitizer, out sanitizer))
+                    {
+                        sanitizer = defaultQueuePathSanitization;
+                    }
                     break;
-
                 case EntityType.Topic:
-                    validator = settings.GetOrDefault<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathValidator);
-                    sanitizer = settings.GetOrDefault<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathSanitizer);
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathValidator, out validator))
+                    {
+                        validator = defaultTopicPathValidation;
+                    }
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathSanitizer, out sanitizer))
+                    {
+                        sanitizer = defaultTopicPathSanitization;
+                    }
                     break;
 
                 case EntityType.Subscription:
-                    validator = settings.GetOrDefault<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameValidator);
-                    sanitizer = settings.GetOrDefault<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameSanitizer);
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameValidator, out validator))
+                    {
+                        validator = defaultSubscriptionNameValidation;
+                    }
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameSanitizer, out sanitizer))
+                    {
+                        sanitizer = defaultSubscriptionNameSanitization;
+                    }
                     break;
 
                 case EntityType.Rule:
-                    validator = settings.GetOrDefault<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameValidator);
-                    sanitizer = settings.GetOrDefault<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameSanitizer);
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameValidator, out validator))
+                    {
+                        validator = defaultRuleNameValidation;
+                    }
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameSanitizer, out sanitizer))
+                    {
+                        sanitizer = defaultRuleNameSanitization;
+                    }
                     break;
 
                 default:
@@ -159,7 +173,13 @@
             if (validationResult.LengthIsValid)
                 return sanitizedValue;
 
-            return settings.GetOrDefault<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Hash)(sanitizedValue);
+            Func<string, string> hash;
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Hash, out hash))
+            {
+                hash = defaultHashing;
+            }
+
+            return hash(sanitizedValue);
         }
     }
 }

@@ -14,21 +14,18 @@ namespace NServiceBus.AzureServiceBus.Addressing
         // Except for subscriptions and rules, these cannot contain slashes (/)
         static Regex subscriptionAndRuleNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
 
+        Func<string, ValidationResult> defaultQueuePathValidation;
+        Func<string, ValidationResult> defaultTopicPathValidation;
+        Func<string, ValidationResult> defaultSubscriptionNameValidation;
+        Func<string, ValidationResult> defaultRuleNameValidation;
+
         public ThrowOnFailedValidation(ReadOnlySettings settings)
         {
             this.settings = settings;
-        }
-
-        public void SetDefaultRules(SettingsHolder settings)
-        {
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength, 260);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength, 260);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength, 50);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameMaximumLength, 50);
 
             // validators
 
-            Func<string, ValidationResult> qpv = queuePath =>
+            defaultQueuePathValidation = queuePath =>
             {
                 var validationResult = new ValidationResult();
 
@@ -41,9 +38,8 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
                 return validationResult;
             };
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathValidator, qpv);
 
-            Func<string, ValidationResult> tpv = topicPath =>
+            defaultTopicPathValidation = topicPath =>
             {
                 var validationResult = new ValidationResult();
 
@@ -56,9 +52,8 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
                 return validationResult;
             };
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathValidator, tpv);
 
-            Func<string, ValidationResult> spv = subscriptionName =>
+            defaultSubscriptionNameValidation = subscriptionName =>
             {
                 var validationResult = new ValidationResult();
 
@@ -71,9 +66,8 @@ namespace NServiceBus.AzureServiceBus.Addressing
 
                 return validationResult;
             };
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameValidator, spv);
 
-            Func<string, ValidationResult> rpv = ruleName =>
+            defaultRuleNameValidation = ruleName =>
             {
                 var validationResult = new ValidationResult();
 
@@ -87,7 +81,6 @@ namespace NServiceBus.AzureServiceBus.Addressing
                 return validationResult;
 
             };
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameValidator, rpv);
             
         }
 
@@ -98,19 +91,31 @@ namespace NServiceBus.AzureServiceBus.Addressing
             switch (entityType)
             {
                 case EntityType.Queue:
-                    validator = settings.GetOrDefault<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathValidator);
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathValidator, out validator))
+                    {
+                        validator = defaultQueuePathValidation;
+                    }
                     break;
 
                 case EntityType.Topic:
-                    validator = settings.GetOrDefault<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathValidator);
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathValidator, out validator))
+                    {
+                        validator = defaultTopicPathValidation;
+                    }
                     break;
 
                 case EntityType.Subscription:
-                    validator = settings.GetOrDefault<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameValidator);
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameValidator, out validator))
+                    {
+                        validator = defaultSubscriptionNameValidation;
+                    }
                     break;
 
                 case EntityType.Rule:
-                    validator = settings.GetOrDefault<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameValidator);
+                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameValidator, out validator))
+                    {
+                        validator = defaultRuleNameValidation;
+                    }
                     break;
 
                 default:

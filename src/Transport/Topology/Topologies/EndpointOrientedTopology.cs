@@ -27,7 +27,6 @@ namespace NServiceBus.AzureServiceBus
         {
             ApplyDefaults(settings);
             InitializeContainer(settings);
-            InitializeSanitizationDefaults(settings);
         }
 
         void ApplyDefaults(SettingsHolder settings)
@@ -94,12 +93,6 @@ namespace NServiceBus.AzureServiceBus
             var conventions = settings.Get<Conventions>();
             var publishersConfiguration = new PublishersConfiguration(new ConventionsAdapter(conventions), settings);
             container.Register<PublishersConfiguration>(() => publishersConfiguration);
-        }
-
-        void InitializeSanitizationDefaults(SettingsHolder settings)
-        {
-            var sanitizationStrategy = container.Resolve<ISanitizationStrategy>();
-            sanitizationStrategy.SetDefaultRules(settings);
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)

@@ -49,10 +49,6 @@
         {
             public string ProvidedEntityPathOrName { get; private set; }
 
-            public void SetDefaultRules(SettingsHolder settings)
-            {
-            }
-
             public string Sanitize(string entityPathOrName, EntityType entityType)
             {
                 ProvidedEntityPathOrName = entityPathOrName;
