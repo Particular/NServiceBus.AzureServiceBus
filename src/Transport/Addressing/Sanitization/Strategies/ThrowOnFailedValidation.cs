@@ -9,10 +9,10 @@ namespace NServiceBus.AzureServiceBus.Addressing
         ReadOnlySettings settings;
 
         // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
-        static Regex queueAndTopicNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$");
+        static Regex queueAndTopicNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$", RegexOptions.Compiled);
 
         // Except for subscriptions and rules, these cannot contain slashes (/)
-        static Regex subscriptionAndRuleNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
+        static Regex subscriptionAndRuleNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$", RegexOptions.Compiled);
 
         Func<string, ValidationResult> defaultQueuePathValidation;
         Func<string, ValidationResult> defaultTopicPathValidation;
