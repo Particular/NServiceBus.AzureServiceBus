@@ -67,6 +67,31 @@ namespace NServiceBus.AzureServiceBus
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
                 var replyTo = mapper.Map(outgoingMessage.Headers[Headers.ReplyToAddress]);
+
+                if (!replyTo.HasSuffix)
+                {
+                    var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+                    var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
+                    var selected = namespaces.FirstOrDefault(ns => ns.Name == defaultName);
+                    if (selected == null)
+                    {
+                        selected = namespaces.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);
+                    }
+
+                    if (selected != null)
+                    {
+                        if (mapper is DefaultNamespaceNameToConnectionStringMapper)
+                        {
+                            replyTo = new EntityAddress(replyTo.Name, selected.ConnectionString);
+                        }
+                        else
+                        {
+                            replyTo = new EntityAddress(replyTo.Name, selected.Name);
+                        }
+                    }
+
+                }
+
                 outgoingMessage.Headers[Headers.ReplyToAddress] = replyTo;
                 brokeredMessage.ReplyTo = replyTo;
             }
