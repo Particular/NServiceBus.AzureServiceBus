@@ -3,7 +3,6 @@
     using AzureServiceBus;
     using AzureServiceBus.Addressing;
     using NUnit.Framework;
-    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
