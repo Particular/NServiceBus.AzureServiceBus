@@ -3,6 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using Microsoft.ServiceBus;
     using Settings;
+    using Topology.MetaModel;
 
     class NamespaceManagerCreator : ICreateNamespaceManagers
     {
@@ -24,11 +25,15 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        public INamespaceManager Create(string namespaceName)
+        public INamespaceManager Create(string @namespace)
         {
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
-            var connectionString = namespacesDefinition.GetConnectionString(namespaceName);
-            
+            var connectionString = @namespace;
+            if (!ConnectionString.IsConnectionString(connectionString))
+            {
+                connectionString = namespacesDefinition.GetConnectionString(connectionString);
+            }
+
             NamespaceManager manager;
             if (settingsFactory != null)
             {

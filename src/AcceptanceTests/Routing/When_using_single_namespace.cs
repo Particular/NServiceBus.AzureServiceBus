@@ -9,10 +9,10 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NUnit.Framework;
 
-    public class When_using_multiple_namespaces : NServiceBusAcceptanceTest
+    public class When_using_single_namespace : NServiceBusAcceptanceTest
     {
         [Test]
-        public async Task Should_support_request_reply_across_namespaces_using_names()
+        public async Task Should_append_namespace_name_to_reply_address_when_using_names()
         {
             var runSettings = new RunSettings();
             runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
@@ -21,92 +21,63 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             ctx.Callback = (endpointName, extensions) =>
             {
                 var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-                var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
+                extensions.ConnectionString(connectionString);
                 extensions.UseNamespaceNamesInsteadOfConnectionStrings();
-
-                if (endpointName == "UsingMultipleNamespaces.EndpointInTargetNamespace")
-                {
-                    extensions.NamespaceRouting().AddNamespace("source", connectionString);
-                    extensions.NamespacePartitioning().AddNamespace("target", targetConnectionString);
-                }
-                else
-                {
-                    extensions.NamespacePartitioning().AddNamespace("source", connectionString);
-                    extensions.NamespaceRouting().AddNamespace("target", targetConnectionString);
-                }
             };
 
             runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);
 
             var context = await Scenario.Define<Context>()
-                .WithEndpoint<EndpointInSourceNamespace>(b =>
-                {
-                    b.When(async (bus, c) =>
-                    {
-                            var sendOptions = new SendOptions();
-                            sendOptions.SetDestination("usingmultiplenamespaces.endpointintargetnamespace@target");
-                            await bus.Send(new MyRequest(), sendOptions);
-                    });
-                })
-                .WithEndpoint<EndpointInTargetNamespace>()
-                .Done(c => c.ReplyReceived )
-                .Run(runSettings);
-
-            Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
-            Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
-        }
-
-
-        [Test]
-        public async Task Should_support_request_reply_across_namespaces_using_connection_strings()
-        {
-            var runSettings = new RunSettings();
-            runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
-
-            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-            var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
-            
-            var ctx = new AzureServiceBusTransportConfigContext();
-            ctx.Callback = (endpointName, extensions) =>
-            {
-                   if (endpointName == "UsingMultipleNamespaces.EndpointInTargetNamespace")
-                {
-                    extensions.NamespaceRouting().AddNamespace("source", connectionString);
-                    extensions.NamespacePartitioning().AddNamespace("target", targetConnectionString);
-                }
-                else
-                {
-                    extensions.NamespacePartitioning().AddNamespace("source", connectionString);
-                    extensions.NamespaceRouting().AddNamespace("target", targetConnectionString);
-                }
-            };
-
-            runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);
-
-            var context = await Scenario.Define<Context>()
-                .WithEndpoint<EndpointInSourceNamespace>(b =>
+                .WithEndpoint<SourceEndpoint>(b =>
                 {
                     b.When(async (bus, c) =>
                     {
                         var sendOptions = new SendOptions();
-                        sendOptions.SetDestination("usingmultiplenamespaces.endpointintargetnamespace@" + targetConnectionString);
+                        sendOptions.SetDestination("usingsinglenamespace.targetendpoint");
                         await bus.Send(new MyRequest(), sendOptions);
                     });
                 })
-                .WithEndpoint<EndpointInTargetNamespace>()
+                .WithEndpoint<TargetEndpoint>()
                 .Done(c => c.ReplyReceived)
                 .Run(runSettings);
 
             Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
             Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
+            Assert.IsTrue(context.ReplyToContainsNamespace, "context.ReplyToContainsNamespace");
         }
 
-        public class EndpointInSourceNamespace : EndpointConfigurationBuilder
+
+        [Test]
+        public async Task Should_not_append_namespace_name_to_reply_address_when_using_connection_strings()
         {
-            public EndpointInSourceNamespace()
+            var runSettings = new RunSettings();
+            runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
+
+            var context = await Scenario.Define<Context>()
+                .WithEndpoint<SourceEndpoint>(b =>
+                {
+                    b.When(async (bus, c) =>
+                    {
+                        var sendOptions = new SendOptions();
+                        sendOptions.SetDestination("usingsinglenamespace.targetendpoint");
+                        await bus.Send(new MyRequest(), sendOptions);
+                    });
+                })
+                .WithEndpoint<TargetEndpoint>()
+                .Done(c => c.ReplyReceived)
+                .Run(runSettings);
+
+            Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
+            Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
+            Assert.IsFalse(context.ReplyToContainsNamespace, "context.ReplyToContainsNamespace");
+        }
+
+        public class SourceEndpoint : EndpointConfigurationBuilder
+        {
+            public SourceEndpoint()
             {
                 EndpointSetup<DefaultServer>()
-                    .AddMapping<MyRequest>(typeof(EndpointInTargetNamespace));
+                    .AddMapping<MyRequest>(typeof(TargetEndpoint));
             }
 
             class MyResponseHandler : IHandleMessages<MyResponse>
@@ -121,9 +92,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             }
         }
 
-        public class EndpointInTargetNamespace : EndpointConfigurationBuilder
+        public class TargetEndpoint : EndpointConfigurationBuilder
         {
-            public EndpointInTargetNamespace()
+            public TargetEndpoint()
             {
                 EndpointSetup<DefaultServer>();
             }
@@ -135,6 +106,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                 public async Task Handle(MyRequest message, IMessageHandlerContext context)
                 {
                     Context.RequestReceived = true;
+                    Context.ReplyToContainsNamespace = context.ReplyToAddress.Contains("@");
                     await context.Reply(new MyResponse());
                 }
             }
@@ -152,6 +124,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         {
             public bool RequestReceived { get; set; }
             public bool ReplyReceived { get; set; }
+            public bool ReplyToContainsNamespace { get; set; }
         }
     }
 }

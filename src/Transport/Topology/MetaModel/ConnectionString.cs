@@ -71,6 +71,12 @@
             }
         }
 
+        public static bool IsConnectionString(string value)
+        {
+            ConnectionString sampler;
+            return TryParse(value, out sampler);
+        }
+
         public static implicit operator string(ConnectionString connectionString)
         {
             return connectionString.ToString();
