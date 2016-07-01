@@ -43,34 +43,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
 
             Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
             Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
-            Assert.IsTrue(context.ReplyToContainsNamespace, "context.ReplyToContainsNamespace");
+            Assert.IsTrue(context.ReplyToContainsNamespaceName, "context.ReplyToContainsNamespaceName");
         }
-
-
-        [Test]
-        public async Task Should_not_append_namespace_name_to_reply_address_when_using_connection_strings()
-        {
-            var runSettings = new RunSettings();
-            runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
-
-            var context = await Scenario.Define<Context>()
-                .WithEndpoint<SourceEndpoint>(b =>
-                {
-                    b.When(async (bus, c) =>
-                    {
-                        var sendOptions = new SendOptions();
-                        sendOptions.SetDestination("usingsinglenamespace.targetendpoint");
-                        await bus.Send(new MyRequest(), sendOptions);
-                    });
-                })
-                .WithEndpoint<TargetEndpoint>()
-                .Done(c => c.ReplyReceived)
-                .Run(runSettings);
-
-            Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
-            Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
-            Assert.IsFalse(context.ReplyToContainsNamespace, "context.ReplyToContainsNamespace");
-        }
+      
 
         public class SourceEndpoint : EndpointConfigurationBuilder
         {
@@ -106,7 +81,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                 public async Task Handle(MyRequest message, IMessageHandlerContext context)
                 {
                     Context.RequestReceived = true;
-                    Context.ReplyToContainsNamespace = context.ReplyToAddress.Contains("@");
+                    Context.ReplyToContainsNamespaceName = context.ReplyToAddress.Contains("@default");
                     await context.Reply(new MyResponse());
                 }
             }
@@ -124,7 +99,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         {
             public bool RequestReceived { get; set; }
             public bool ReplyReceived { get; set; }
-            public bool ReplyToContainsNamespace { get; set; }
+            public bool ReplyToContainsNamespaceName { get; set; }
         }
     }
 }
