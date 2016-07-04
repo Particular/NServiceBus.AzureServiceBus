@@ -66,7 +66,7 @@ namespace NServiceBus.AzureServiceBus
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
-                var replyTo = mapper.Map(outgoingMessage.Headers[Headers.ReplyToAddress]);
+                var replyTo = new EntityAddress(outgoingMessage.Headers[Headers.ReplyToAddress]);
 
                 if (!replyTo.HasSuffix)
                 {
@@ -89,7 +89,6 @@ namespace NServiceBus.AzureServiceBus
                             replyTo = new EntityAddress(replyTo.Name, selected.Name);
                         }
                     }
-
                 }
 
                 outgoingMessage.Headers[Headers.ReplyToAddress] = replyTo;
