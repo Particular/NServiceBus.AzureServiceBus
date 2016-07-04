@@ -99,6 +99,7 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusForwardingTopologySettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusHierarchyCompositionSettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusIndividualizationExtensionPoint.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusNamespaceManagersSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusNamespaceRoutingSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSanitizationExtensionPoint.cs" />
     <Compile Include="Config\TransactionModeSettingsExtensions.cs" />

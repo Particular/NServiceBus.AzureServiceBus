@@ -93,6 +93,13 @@ namespace NServiceBus
             return new AzureServiceBusMessagingFactoriesSettings(transportExtensions.GetSettings());
         }
 
+        /// <summary>
+        /// Access to namespace managers configuration.
+        /// </summary>
+        public static AzureServiceBusNamespaceManagersSettings NamespaceManagers(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        {
+            return new AzureServiceBusNamespaceManagersSettings(transportExtensions.GetSettings());
+        }
 
         /// <summary>
         /// Force usage of namespace names instead of raw connection strings.

@@ -568,6 +568,13 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusMessagingFactoriesSettings NumberOfMessagingFactoriesPerNamespace(int number) { }
         public NServiceBus.AzureServiceBusMessagingFactoriesSettings RetryPolicy(Microsoft.ServiceBus.RetryPolicy retryPolicy) { }
     }
+    public class AzureServiceBusNamespaceManagersSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    {
+        public AzureServiceBusNamespaceManagersSettings(NServiceBus.Settings.SettingsHolder settings) { }
+        public NServiceBus.AzureServiceBusNamespaceManagersSettings NamespaceManagerSettingsFactory(System.Func<string, Microsoft.ServiceBus.NamespaceManagerSettings> factory) { }
+        public NServiceBus.AzureServiceBusNamespaceManagersSettings RetryPolicy(Microsoft.ServiceBus.RetryPolicy retryPolicy) { }
+        public NServiceBus.AzureServiceBusNamespaceManagersSettings TokenProvider(System.Func<string, Microsoft.ServiceBus.TokenProvider> factory) { }
+    }
     public class AzureServiceBusNamespacePartitioningSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public AzureServiceBusNamespacePartitioningSettings(NServiceBus.Settings.SettingsHolder settings) { }
@@ -676,6 +683,7 @@ namespace NServiceBus
         public static NServiceBus.AzureServiceBusMessageReceiverSettings MessageReceivers(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusMessageSenderSettings MessageSenders(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusMessagingFactoriesSettings MessagingFactories(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusNamespaceManagersSettings NamespaceManagers(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusNamespacePartitioningSettings NamespacePartitioning(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusNamespaceRoutingSettings NamespaceRouting(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void NumberOfClientsPerEntity(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, int number) { }
