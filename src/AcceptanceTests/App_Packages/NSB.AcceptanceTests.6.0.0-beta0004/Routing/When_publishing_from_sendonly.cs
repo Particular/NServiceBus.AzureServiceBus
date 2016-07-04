@@ -8,7 +8,7 @@
     using EndpointTemplates;
     using Extensibility;
     using Features;
-    using NServiceBus.Persistence;
+    using Persistence;
     using NUnit.Framework;
     using ScenarioDescriptors;
     using Unicast.Subscriptions;

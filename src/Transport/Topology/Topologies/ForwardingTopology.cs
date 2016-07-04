@@ -31,7 +31,7 @@ namespace NServiceBus.AzureServiceBus
             InitializeContainer(settings);
         }
 
-         void ApplyDefaults(SettingsHolder settings)
+        void ApplyDefaults(SettingsHolder settings)
         {
             new DefaultConfigurationValues().Apply(settings);
             // ensures settings are present/correct

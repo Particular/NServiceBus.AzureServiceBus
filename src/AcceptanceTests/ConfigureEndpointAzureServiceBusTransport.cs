@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
@@ -36,7 +33,7 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
             transportConfig.ConnectionString(connectionString);
         }
 
-        if (topology == "ForwardingTopology")
+        if (topology == nameof(ForwardingTopology))
         {
             transportConfig.UseTopology<ForwardingTopology>();
         }
@@ -77,17 +74,8 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisherForType("MultiSubscribingToAPolymorphicEventOnMulticastTransports.Publisher2", typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent2));
         }
 
-        // TODO: remove with config API on .UseStrategy<ValidateAndHashIfNeeded>().WithV6Compatibility()
-        // similar to what the original EndpointOrientedSanitization was doing
-        Func<string, string> sanitizer = pathOrName => new Regex(@"[^a-zA-Z0-9\-\._]").Replace(pathOrName, "");
- 
         transportConfig.Sanitization()
-            .UseStrategy<ValidateAndHashIfNeeded>()
-            .QueuePathSanitization(x => sanitizer(x))
-            .TopicPathSanitization(x => sanitizer(x))
-            .SubscriptionNameSanitization(x => sanitizer(x))
-            .RuleNameSanitization(x => sanitizer(x))
-            .Hash(pathOrName => MD5DeterministicNameBuilder.Build(pathOrName));
+            .UseStrategy<ValidateAndHashIfNeeded>();
 
         config.RegisterComponents(c => { c.ConfigureComponent<TestIndependenceMutator>(DependencyLifecycle.SingleInstance); });
 
@@ -96,23 +84,6 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
 
         return Task.FromResult(0);
     }
-
-    // TODO: remove with config API on .UseStrategy<ValidateAndHashIfNeeded>().WithV6Compatibility()
-    static class MD5DeterministicNameBuilder
-    {
-        public static string Build(string input)
-        {
-            //use MD5 hash to get a 16-byte hash of the string
-            using (var provider = new MD5CryptoServiceProvider())
-            {
-                var inputBytes = Encoding.Default.GetBytes(input);
-                var hashBytes = provider.ComputeHash(inputBytes);
-
-                return new Guid(hashBytes).ToString();
-            }
-        }
-    }
-
 
     public Task Cleanup()
     {
