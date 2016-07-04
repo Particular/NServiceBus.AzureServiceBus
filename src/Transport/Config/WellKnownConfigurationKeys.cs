@@ -149,6 +149,13 @@ namespace NServiceBus.AzureServiceBus
                 public const string MessagingFactorySettingsFactory = "AzureServiceBus.Connectivity.MessagingFactories.MessagingFactorySettingsFactory";
                 public const string BatchFlushInterval = "AzureServiceBus.Connectivity.MessagingFactories.BatchFlushInterval";
             }
+
+            public static class NamespaceManagers
+            {
+                public const string RetryPolicy = "AzureServiceBus.Connectivity.NamespaceManagers.RetryPolicy";
+                public const string NamespaceManagerSettingsFactory = "AzureServiceBus.Connectivity.NamespaceManagers.NamespaceManagerSettingsFactory";
+                public const string TokenProviderFactory = "AzureServiceBus.Connectivity.NamespaceManagers.TokenProviderFactory";
+            }
         }
 
         internal static class Core
