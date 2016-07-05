@@ -229,7 +229,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
-            Assert.IsTrue(brokeredMessage.ReplyTo == "MappedMyQueue");
+            Assert.IsTrue(brokeredMessage.ReplyTo == "MyQueue"); // the mapper should be ignored, need to respect user's setting
         }
 
         [Test]
