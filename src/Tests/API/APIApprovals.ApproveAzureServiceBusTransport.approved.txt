@@ -494,6 +494,7 @@ namespace NServiceBus.AzureServiceBus.Topology.MetaModel
         public bool Equals(NServiceBus.AzureServiceBus.Topology.MetaModel.ConnectionString other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
+        public static bool IsConnectionString(string value) { }
         public override string ToString() { }
         public static bool TryParse(string value, out NServiceBus.AzureServiceBus.Topology.MetaModel.ConnectionString connectionString) { }
     }

@@ -66,9 +66,8 @@ namespace NServiceBus.AzureServiceBus
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
-                var replyTo = mapper.Map(outgoingMessage.Headers[Headers.ReplyToAddress]);
+                var replyTo = new EntityAddress(outgoingMessage.Headers[Headers.ReplyToAddress]);
 
-                // ensure that the reply to address contains namespace info in case the message is sent to destination only namespace.
                 if (!replyTo.HasSuffix)
                 {
                     var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
@@ -81,7 +80,14 @@ namespace NServiceBus.AzureServiceBus
 
                     if (selected != null)
                     {
-                        replyTo = mapper.Map(new EntityAddress(replyTo.Name, selected.Name));
+                        if (mapper is DefaultNamespaceNameToConnectionStringMapper)
+                        {
+                            replyTo = new EntityAddress(replyTo.Name, selected.ConnectionString);
+                        }
+                        else
+                        {
+                            replyTo = new EntityAddress(replyTo.Name, selected.Name);
+                        }
                     }
                 }
 
