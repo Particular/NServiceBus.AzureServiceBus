@@ -106,6 +106,8 @@
     <Compile Include="Configuration\When_configuring.cs" />
     <Compile Include="Configuration\When_configuring_composition.cs" />
     <Compile Include="Configuration\When_configuring_connectivity.cs" />
+    <Compile Include="Configuration\When_configuring_custom_brokered_message_to_incoming_message_converter.cs" />
+    <Compile Include="Configuration\When_configuring_custom_outgoing_message_to_brokered_message_converter.cs" />
     <Compile Include="Configuration\When_configuring_individualization.cs" />
     <Compile Include="Configuration\When_configuring_message_receivers.cs" />
     <Compile Include="Configuration\When_configuring_message_senders.cs" />

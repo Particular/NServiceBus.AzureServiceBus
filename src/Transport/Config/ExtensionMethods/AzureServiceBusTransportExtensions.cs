@@ -27,7 +27,6 @@ namespace NServiceBus
             return new AzureServiceBusTopologySettings<T>(settings);
         }
 
-
         /// <summary>
         /// <see cref="BrokeredMessage"/> body type used to store and retrieve messages.
         /// <remarks>Default is SupportedBrokeredMessageBodyTypes.ByteArray.</remarks>
@@ -36,6 +35,26 @@ namespace NServiceBus
         {
             var settings = transportExtensions.GetSettings();
             settings.Set(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType, type);
+        }
+
+        /// <summary>
+        /// Provide custom implementation to convert brokered message to incoming message
+        /// </summary>
+        public static void UseBrokeredMessageToIncomingMessageConverter<T>(this TransportExtensions<AzureServiceBusTransport>  transportExtensions)
+            where T : IConvertBrokeredMessagesToIncomingMessages
+        {
+            var settings = transportExtensions.GetSettings();
+            settings.Set(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter, typeof(T));
+        }
+
+        /// <summary>
+        /// Provide custom implementation to convert outgoing message to brokered message
+        /// </summary>
+        public static void UseOutgoingMessageToBrokeredMessageConverter<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+            where T : IConvertOutgoingMessagesToBrokeredMessages
+        {
+            var settings = transportExtensions.GetSettings();
+            settings.Set(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter, typeof(T));
         }
 
         /// <summary>
