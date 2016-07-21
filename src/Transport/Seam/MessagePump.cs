@@ -6,6 +6,7 @@ namespace NServiceBus.AzureServiceBus
     using Extensibility;
     using Logging;
     using Transports;
+    using Unicast;
 
     class MessagePump : IPushMessages, IDisposable
     {
@@ -22,7 +23,7 @@ namespace NServiceBus.AzureServiceBus
             this.topologyOperator = topologyOperator;
         }
 
-        public Task Init(Func<PushContext, Task> pump, CriticalError criticalError, PushSettings pushSettings)
+        public Task Init(Func<PushContext, Task> pump, Func<ErrorContext, Task<ErrorHandleResult>> onError, CriticalError criticalError, PushSettings pushSettings)
         {
             messagePump = pump;
             var name = $"MessagePump on the queue `{pushSettings.InputQueue}`";
@@ -48,6 +49,8 @@ namespace NServiceBus.AzureServiceBus
                 return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, transportTransaction, tokenSource, new ContextBag()));
             });
 
+            topologyOperator.OnProcessingFailure(onError);
+
             return TaskEx.Completed;
         }
 
@@ -60,6 +63,8 @@ namespace NServiceBus.AzureServiceBus
                 await func(exception).ConfigureAwait(false);
             });
         }
+
+        
 
         public void Start(PushRuntimeSettings limitations)
         {

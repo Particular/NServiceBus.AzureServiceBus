@@ -48,7 +48,7 @@ namespace NServiceBus.AzureServiceBus
 
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
-            var inputQueuePath = addressingLogic.Apply(endpointName.ToString(), EntityType.Queue).Name;
+            var inputQueuePath = addressingLogic.Apply(endpointName, EntityType.Queue).Name;
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
             var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;

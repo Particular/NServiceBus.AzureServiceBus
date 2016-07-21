@@ -8,7 +8,7 @@ namespace NServiceBus.AzureServiceBus
     using Topology.MetaModel;
     using DelayedDelivery;
     using Settings;
-    using Transports;
+    using Transport;
 
     class DefaultBatchedOperationsToBrokeredMessagesConverter : IConvertOutgoingMessagesToBrokeredMessages
     {

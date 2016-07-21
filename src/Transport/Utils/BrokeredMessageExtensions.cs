@@ -2,6 +2,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
 {
     using Logging;
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
@@ -45,11 +46,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             return false;
         }
 
-        public static async Task<bool> SafeAbandonAsync(this BrokeredMessage msg)
+        public static async Task<bool> SafeAbandonAsync(this BrokeredMessage msg, IDictionary<string, object> propertiesToModify=null)
         {
             try
             {
-                await msg.AbandonAsync().ConfigureAwait(false);
+                if (propertiesToModify == null)
+                    await msg.AbandonAsync().ConfigureAwait(false);
+                else
+                    await msg.AbandonAsync(propertiesToModify).ConfigureAwait(false);
+
                 return true;
             }
             catch (MessageLockLostException ex)
