@@ -519,8 +519,8 @@ namespace NServiceBus
     }
     public class static AzureServiceBusEndpointOrientedTopologySettingsExtensions
     {
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> RegisterPublisherForAssembly(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> topologySettings, string publisherName, System.Reflection.Assembly assembly) { }
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> RegisterPublisherForType(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> topologySettings, string publisherName, System.Type type) { }
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> topologySettings, System.Type type, string publisherName) { }
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> topologySettings, System.Reflection.Assembly assembly, string publisherName) { }
     }
     public class static AzureServiceBusForwardingTopologySettingsExtensions
     {

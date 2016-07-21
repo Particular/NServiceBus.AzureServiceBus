@@ -25,7 +25,7 @@
         public void Should_be_able_to_add_a_publisher_for_a_specific_event()
         {
             extensions.UseTopology<EndpointOrientedTopology>()
-                .RegisterPublisherForType("publisherName", typeof(MyType));
+                .RegisterPublisher(typeof(MyType), "publisherName");
 
             var publishers = settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
 
@@ -37,7 +37,7 @@
         public void Should_be_able_to_add_a_publisher_for_the_events_contained_in_an_assembly()
         {
             extensions.UseTopology<EndpointOrientedTopology>()
-                .RegisterPublisherForAssembly("publisherName", Assembly.GetExecutingAssembly());
+                .RegisterPublisher(Assembly.GetExecutingAssembly(), "publisherName");
 
             var publishers = settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
 
@@ -50,8 +50,8 @@
         {
 //            var topologySettings = extensions.UseTopology<ForwardingTopology>();
 
-//            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisherForType("publisherName", typeof(MyType)));
-//            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisherForAssembly("publisherName", Assembly.GetExecutingAssembly()));
+//            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisher("publisherName", typeof(MyType)));
+//            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisher("publisherName", Assembly.GetExecutingAssembly()));
         }
 
         class MyType

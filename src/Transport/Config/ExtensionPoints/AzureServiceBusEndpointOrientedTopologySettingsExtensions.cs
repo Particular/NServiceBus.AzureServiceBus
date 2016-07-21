@@ -10,13 +10,13 @@
 
     public static class AzureServiceBusEndpointOrientedTopologySettingsExtensions
     {
-        public static AzureServiceBusTopologySettings<EndpointOrientedTopology> RegisterPublisherForType(this AzureServiceBusTopologySettings<EndpointOrientedTopology> topologySettings, string publisherName, Type type)
+        public static AzureServiceBusTopologySettings<EndpointOrientedTopology> RegisterPublisher(this AzureServiceBusTopologySettings<EndpointOrientedTopology> topologySettings, Type type, string publisherName)
         {
             AddScannerForPublisher(topologySettings.GetSettings(), publisherName, new SingleTypeScanner(type));
             return topologySettings;
         }
 
-        public static AzureServiceBusTopologySettings<EndpointOrientedTopology> RegisterPublisherForAssembly(this AzureServiceBusTopologySettings<EndpointOrientedTopology> topologySettings, string publisherName, Assembly assembly)
+        public static AzureServiceBusTopologySettings<EndpointOrientedTopology> RegisterPublisher(this AzureServiceBusTopologySettings<EndpointOrientedTopology> topologySettings, Assembly assembly, string publisherName)
         {
             AddScannerForPublisher(topologySettings.GetSettings(), publisherName, new AssemblyTypesScanner(assembly));
             return topologySettings;
