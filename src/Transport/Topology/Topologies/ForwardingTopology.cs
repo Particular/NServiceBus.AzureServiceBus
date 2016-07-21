@@ -8,7 +8,7 @@ namespace NServiceBus.AzureServiceBus
     using Routing;
     using Topology.MetaModel;
     using Settings;
-    using Transports;
+    using Transport;
 
     public class ForwardingTopology : ITopology
     {
@@ -101,7 +101,7 @@ namespace NServiceBus.AzureServiceBus
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
         {
             var individualization = container.Resolve<IIndividualizationStrategy>();
-            return new EndpointInstance(individualization.Individualize(instance.Endpoint.ToString()), instance.Discriminator, instance.Properties);
+            return new EndpointInstance(individualization.Individualize(instance.Endpoint), instance.Discriminator, instance.Properties);
         }
 
         public Func<ICreateQueues> GetQueueCreatorFactory()

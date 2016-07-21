@@ -10,7 +10,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using AzureServiceBus.Topology.MetaModel;
     using DeliveryConstraints;
     using Settings;
-    using NServiceBus.Transports;
+    using Transport;
     using NUnit.Framework;
 
     [TestFixture]

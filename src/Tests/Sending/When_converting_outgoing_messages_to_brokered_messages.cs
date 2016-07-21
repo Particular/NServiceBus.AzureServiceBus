@@ -9,7 +9,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using DelayedDelivery;
     using DeliveryConstraints;
     using Settings;
-    using NServiceBus.Transports;
+    using Transport;
     using NUnit.Framework;
 
     [TestFixture]

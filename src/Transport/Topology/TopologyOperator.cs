@@ -5,6 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Logging;
+    using Transport;
 
     class TopologyOperator : IOperateTopology, IDisposable
     {
@@ -14,6 +15,7 @@ namespace NServiceBus.AzureServiceBus
 
         Func<IncomingMessageDetails, ReceiveContext, Task> onMessage;
         Func<Exception, Task> onError;
+        Func<ErrorContext, Task<ErrorHandleResult>> onProcessingFailure;
 
         ConcurrentDictionary<EntityInfo, INotifyIncomingMessages> notifiers = new ConcurrentDictionary<EntityInfo, INotifyIncomingMessages>();
 
@@ -22,6 +24,7 @@ namespace NServiceBus.AzureServiceBus
         ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
 
         int maxConcurrency;
+        
 
         public TopologyOperator(ITransportPartsContainer container)
         {
@@ -81,6 +84,11 @@ namespace NServiceBus.AzureServiceBus
             onError = func;
         }
 
+        public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func)
+        {
+            onProcessingFailure = func;
+        }
+
         void StartNotifiersFor(IEnumerable<EntityInfo> entities)
         {
             foreach (var entity in entities)
@@ -91,7 +99,7 @@ namespace NServiceBus.AzureServiceBus
                 var notifier = notifiers.GetOrAdd(entity, e =>
                 {
                     var n = CreateNotifier(entity.Type);
-                    n.Initialize(e, onMessage, onError, maxConcurrency);
+                    n.Initialize(e, onMessage, onError, onProcessingFailure, maxConcurrency);
                     return n;
                 });
 

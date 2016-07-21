@@ -8,10 +8,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
     using Receiving;
     using TestUtils;
     using AzureServiceBus;
-    using NServiceBus.Transports;
-    using Routing;
     using Settings;
     using NUnit.Framework;
+    using Transport;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -258,7 +257,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            settings.SetDefault<EndpointName>(new EndpointName(enpointname));
+            settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
             extensions.NamespacePartitioning().AddNamespace("namespace", AzureServiceBusConnectionString.Value);
 
             var topology = new EndpointOrientedTopology(container);

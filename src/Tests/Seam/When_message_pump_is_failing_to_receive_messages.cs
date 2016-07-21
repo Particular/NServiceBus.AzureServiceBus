@@ -8,7 +8,7 @@
     using System.Threading.Tasks;
     using AzureServiceBus;
     using Settings;
-    using NServiceBus.Transports;
+    using Transport;
     using NUnit.Framework;
 
     [TestFixture]
@@ -44,7 +44,7 @@
                 return TaskEx.Completed;
             });
 
-            await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+            await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.Start(new PushRuntimeSettings(1));
 
             await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new MemoryStream()), new FakeReceiveContext());
@@ -129,6 +129,11 @@
             public void OnError(Func<Exception, Task> func)
             {
                 onError = func;
+            }
+
+            public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func)
+            {
+                throw new NotImplementedException();
             }
         }
 

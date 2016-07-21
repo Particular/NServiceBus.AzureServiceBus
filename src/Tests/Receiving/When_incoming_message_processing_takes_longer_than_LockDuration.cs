@@ -70,7 +70,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                         await Task.Delay(TimeSpan.FromSeconds(30));
                         completed.Set();
                     }
-                }, null, 10);
+                }, null, null, 10);
 
 
             var sw = new Stopwatch();

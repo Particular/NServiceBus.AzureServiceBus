@@ -9,7 +9,7 @@
 //    using NServiceBus.DeliveryConstraints;
 //    using NServiceBus.Routing;
 //    using NServiceBus.Settings;
-//    using NServiceBus.Transports;
+//    using Transport;
 //    using NUnit.Framework;
 //
 //    [TestFixture]

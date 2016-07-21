@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -10,6 +11,8 @@ namespace NServiceBus.AzureServiceBus
     using Logging;
     using Azure.Transports.WindowsAzureServiceBus;
     using Settings;
+    using Transport;
+    using Transports;
     using Utils;
 
     class MessageReceiverNotifier : INotifyIncomingMessages
@@ -30,6 +33,7 @@ namespace NServiceBus.AzureServiceBus
         CancellationTokenSource batchedCompletionCts;
         Task batchedCompletionTask;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
+        Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
 
         public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
@@ -43,12 +47,13 @@ namespace NServiceBus.AzureServiceBus
         public bool IsRunning { get; private set; }
         public int RefCount { get; set; }
 
-        public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
+        public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
         {
             receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
             incomingCallback = callback;
             this.errorCallback = errorCallback;
+            this.processingFailureCallback = processingFailureCallback;
             this.entity = entity;
 
             fullPath = entity.Path;
@@ -96,7 +101,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
             }
-
+            
             Func<BrokeredMessage, Task> callback = message =>
             {
                 var processTask = ProcessMessageAsync(message);
@@ -161,6 +166,25 @@ namespace NServiceBus.AzureServiceBus
             try
             {
                 incomingMessage = brokeredMessageConverter.Convert(message);
+                // Handle previously failed message with TransportTransactionMode = SendsAtomicWithReceive
+                if (message.Properties.ContainsKey(BrokeredMessageHeaders.ExceptionMessage) && !string.IsNullOrWhiteSpace(message.Properties[BrokeredMessageHeaders.ExceptionMessage].ToString()))
+                {
+                    // serialize and deserialize whole exception and not only the message.
+                    var exceptionMessage = message.Properties[BrokeredMessageHeaders.ExceptionMessage].ToString();
+                    var exception = new Exception(exceptionMessage);
+
+                    var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.BodyStream, new TransportTransaction(), message.DeliveryCount);
+                    var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
+                    if (result == ErrorHandleResult.RetryRequired)
+                    {
+                        var newHeader = new Dictionary<string, object> { { BrokeredMessageHeaders.ExceptionMessage, string.Empty } };
+                        await AbandonInternal(message, newHeader).ConfigureAwait(false);
+                    }
+                    else if (result == ErrorHandleResult.Handled)
+                        locksTokensToComplete.Push(message.LockToken);
+
+                    return;
+                }
             }
             catch (UnsupportedBrokeredMessageBodyTypeException exception)
             {
@@ -188,7 +212,27 @@ namespace NServiceBus.AzureServiceBus
             }
             catch (Exception exception)
             {
-                await AbandonAsync(message, exception).ConfigureAwait(false);
+                if (settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue))
+                {
+                    var newHeader = new Dictionary<string, object> { { BrokeredMessageHeaders.ExceptionMessage, exception.Message } };
+                    await AbandonInternal(message, newHeader).ConfigureAwait(false);
+                    return;
+                }
+
+                var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.BodyStream, new TransportTransaction(), message.DeliveryCount);
+
+                try
+                {
+                    var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
+                    if (result == ErrorHandleResult.RetryRequired)
+                        await AbandonAsync(message, exception).ConfigureAwait(false);
+                    else if (result == ErrorHandleResult.Handled && context.ReceiveMode == ReceiveMode.PeekLock)
+                        locksTokensToComplete.Push(message.LockToken);
+                }
+                catch (Exception onErrorException)
+                {
+                    await AbandonAsync(message, onErrorException).ConfigureAwait(false);
+                }
             }
         }
 
@@ -209,7 +253,7 @@ namespace NServiceBus.AzureServiceBus
         async Task AbandonAsync(BrokeredMessage message, Exception exception)
         {
             logger.Info($"Exceptions occurred OnComplete, exception: {exception}");
-
+            
             await AbandonInternal(message).ConfigureAwait(false);
 
             if (errorCallback != null && exception != null)
@@ -218,7 +262,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task AbandonInternal(BrokeredMessage message)
+        async Task AbandonInternal(BrokeredMessage message, IDictionary<string, object> propertiesToModify=null)
         {
             if (receiveMode == ReceiveMode.ReceiveAndDelete) return;
 
@@ -226,7 +270,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 logger.InfoFormat("Abandoning brokered message {0}", message.MessageId);
 
-                await message.SafeAbandonAsync().ConfigureAwait(false);
+                await message.SafeAbandonAsync(propertiesToModify).ConfigureAwait(false);
 
                 suppressScope.Complete();
             }

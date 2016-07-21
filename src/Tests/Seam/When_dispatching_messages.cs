@@ -11,8 +11,8 @@
     using Extensibility;
     using Microsoft.ServiceBus.Messaging;
     using Settings;
-    using NServiceBus.Transports;
     using NUnit.Framework;
+    using Transport;
 
     [TestFixture]
     [Category("AzureServiceBus")]

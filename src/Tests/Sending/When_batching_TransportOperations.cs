@@ -8,7 +8,7 @@
     using DeliveryConstraints;
     using Routing;
     using Settings;
-    using NServiceBus.Transports;
+    using Transport;
     using NUnit.Framework;
 
     [TestFixture]
