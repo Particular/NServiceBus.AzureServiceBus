@@ -71,13 +71,16 @@
 
         protected async Task StartPump(Func<MessageContext, Task> onMessage, Func<ErrorContext, Task<ErrorHandleResult>> onError, TransportTransactionMode transactionMode, Action<string, Exception> onCriticalError = null)
         {
+            if (transactionMode == TransportTransactionMode.TransactionScope)
+                Assert.Ignore($"Only relevant for transports supporting {transactionMode} or higher");
+
             InputQueueName = GetTestName() + transactionMode;
             ErrorQueueName = $"{InputQueueName}.error";
 
             var queueBindings = new QueueBindings();
             queueBindings.BindReceiving(InputQueueName);
             queueBindings.BindSending(ErrorQueueName);
-
+            
             transportSettings.Set("NServiceBus.Routing.EndpointName", InputQueueName);
             transportSettings.Set<QueueBindings>(queueBindings);
             transportSettings.Set("AzureServiceBus.Connectivity.SendViaReceiveQueue", transactionMode == TransportTransactionMode.SendsAtomicWithReceive);
