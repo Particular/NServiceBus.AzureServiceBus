@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
     using System.Reflection;
     using System.Threading.Tasks;
     using AzureServiceBus;
@@ -47,7 +46,7 @@
             await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.Start(new PushRuntimeSettings(1));
 
-            await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new MemoryStream()), new BrokeredMessageReceiveContext());
+            await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new byte[0]), new BrokeredMessageReceiveContext());
             var exceptionThrownByMessagePump = new Exception("kaboom");
             await fakeTopologyOperator.onError(exceptionThrownByMessagePump);
 
