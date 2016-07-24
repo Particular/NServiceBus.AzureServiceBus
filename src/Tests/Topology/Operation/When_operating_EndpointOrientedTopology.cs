@@ -7,6 +7,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
     using Receiving;
     using TestUtils;
     using AzureServiceBus;
+    using NServiceBus.Transports;
     using Routing;
     using Settings;
     using NUnit.Framework;
@@ -525,7 +526,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var topologyCreator = (ICreateTopology) container.Resolve(typeof(TopologyCreator));
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
-            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate());
+            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
             return sectionManager;
         }
     }

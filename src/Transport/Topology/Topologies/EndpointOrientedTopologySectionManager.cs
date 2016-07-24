@@ -37,7 +37,7 @@ namespace NServiceBus.AzureServiceBus
             };
         }
 
-        public TopologySection DetermineResourcesToCreate()
+        public TopologySection DetermineResourcesToCreate(QueueBindings queueBindings)
         {
             // computes the topologySectionManager
 
@@ -52,32 +52,27 @@ namespace NServiceBus.AzureServiceBus
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
             var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
-            var topics =
-                namespaces.Select(n => new EntityInfo {Path = topicPath, Type = EntityType.Topic, Namespace = n})
-                    .ToArray();
+            var topics = namespaces.Select(n => new EntityInfo {Path = topicPath, Type = EntityType.Topic, Namespace = n}).ToArray();
             entities.AddRange(topics);
 
-            if (settings.HasExplicitValue<QueueBindings>())
+            foreach (var n in namespaces)
             {
-                var queueBindings = settings.Get<QueueBindings>();
-                foreach (var n in namespaces)
+                entities.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
                 {
-                    entities.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
-                    {
-                        Path = addressingLogic.Apply(p, EntityType.Queue).Name,
-                        Type = EntityType.Queue,
-                        Namespace = n
-                    }));
+                    Path = addressingLogic.Apply(p, EntityType.Queue).Name,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                }));
 
-                    // assumed errorq and auditq are in here
-                    entities.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
-                    {
-                        Path = addressingLogic.Apply(p, EntityType.Queue).Name,
-                        Type = EntityType.Queue,
-                        Namespace = n
-                    }));
-                }
+                // assumed errorq and auditq are in here
+                entities.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
+                {
+                    Path = addressingLogic.Apply(p, EntityType.Queue).Name,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                }));
             }
+
 
             return new TopologySection()
             {

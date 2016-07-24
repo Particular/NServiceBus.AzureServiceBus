@@ -125,7 +125,7 @@
             throw new NotImplementedException();
         }
 
-        public TopologySection DetermineResourcesToCreate()
+        public TopologySection DetermineResourcesToCreate(QueueBindings queueBindings)
         {
             throw new NotImplementedException();
         }

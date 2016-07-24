@@ -354,7 +354,7 @@ namespace NServiceBus.AzureServiceBus
     {
         NServiceBus.AzureServiceBus.TopologySection DeterminePublishDestination(System.Type eventType);
         NServiceBus.AzureServiceBus.TopologySection DetermineReceiveResources(string inputQueue);
-        NServiceBus.AzureServiceBus.TopologySection DetermineResourcesToCreate();
+        NServiceBus.AzureServiceBus.TopologySection DetermineResourcesToCreate(NServiceBus.Transports.QueueBindings queueBindings);
         NServiceBus.AzureServiceBus.TopologySection DetermineResourcesToSubscribeTo(System.Type eventType);
         NServiceBus.AzureServiceBus.TopologySection DetermineResourcesToUnsubscribeFrom(System.Type eventtype);
         NServiceBus.AzureServiceBus.TopologySection DetermineSendDestination(string destination);

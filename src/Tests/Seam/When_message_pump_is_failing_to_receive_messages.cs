@@ -66,7 +66,7 @@
                 return new TopologySection();
             }
 
-            public TopologySection DetermineResourcesToCreate()
+            public TopologySection DetermineResourcesToCreate(QueueBindings queueBindings)
             {
                 return new TopologySection();
             }
