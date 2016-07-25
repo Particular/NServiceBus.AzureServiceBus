@@ -3,6 +3,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
     using System;
     using System.Linq;
     using AzureServiceBus;
+    using NServiceBus.Transports;
     using Routing;
     using Settings;
     using NUnit.Framework;
@@ -31,7 +32,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
-            var definition = sectionManager.DetermineResourcesToCreate();
+            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring);
@@ -55,7 +56,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
-            var definition = sectionManager.DetermineResourcesToCreate();
+            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == Connectionstring));
         }
@@ -78,7 +79,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
-            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(), "Was expected to fail: " + reasonToFail);
+            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings()), "Was expected to fail: " + reasonToFail);
         }
 
         [Test]
@@ -98,7 +99,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
-            var definition = sectionManager.DetermineResourcesToCreate();
+            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring && ei.Path.StartsWith("bundle-"));
 
@@ -124,7 +125,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
-            sectionManager.DetermineResourcesToCreate();
+            sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
 
@@ -149,7 +150,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
-            sectionManager.DetermineResourcesToCreate();
+            sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
 
@@ -172,7 +173,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
-            sectionManager.DetermineResourcesToCreate();
+            sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
 

@@ -3,6 +3,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
     using System;
     using System.Linq;
     using AzureServiceBus;
+    using NServiceBus.Transports;
     using Routing;
     using Settings;
     using NUnit.Framework;
@@ -70,7 +71,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
-            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(), "Was expected to fail: " + reasonToFail);
+            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings()), "Was expected to fail: " + reasonToFail);
         }
 
 
@@ -100,7 +101,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
             var sectionManager = container.Resolve<ITopologySectionManager>();
 
-            var definition = sectionManager.DetermineResourcesToCreate();
+            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
             return definition;
         }
     }

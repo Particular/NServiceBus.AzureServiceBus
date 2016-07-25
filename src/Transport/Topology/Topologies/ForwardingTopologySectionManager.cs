@@ -40,42 +40,43 @@ namespace NServiceBus.AzureServiceBus
             };
         }
 
-        public TopologySection DetermineResourcesToCreate()
+        public TopologySection DetermineResourcesToCreate(QueueBindings queueBindings)
         {
             var endpointName = settings.EndpointName();
 
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
+            var partitioningStrategy = (INamespacePartitioningStrategy) container.Resolve(typeof(INamespacePartitioningStrategy));
+            var addressingLogic = (AddressingLogic) container.Resolve(typeof(AddressingLogic));
 
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
             var inputQueuePath = addressingLogic.Apply(endpointName.ToString(), EntityType.Queue).Name;
-            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
+            var inputQueues = namespaces.Select(n => new EntityInfo
+            {
+                Path = inputQueuePath,
+                Type = EntityType.Queue,
+                Namespace = n
+            }).ToList();
 
             if (!topics.Any())
             {
                 BuildTopicBundles(namespaces, addressingLogic);
             }
 
-            if (settings.HasExplicitValue<QueueBindings>())
+            foreach (var n in namespaces)
             {
-                var queueBindings = settings.Get<QueueBindings>();
-                foreach (var n in namespaces)
+                inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
                 {
-                    inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
-                    {
-                        Path = addressingLogic.Apply(p, EntityType.Queue).Name,
-                        Type = EntityType.Queue,
-                        Namespace = n
-                    }));
+                    Path = addressingLogic.Apply(p, EntityType.Queue).Name,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                }));
 
-                    inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
-                    {
-                        Path = addressingLogic.Apply(p, EntityType.Queue).Name,
-                        Type = EntityType.Queue,
-                        Namespace = n
-                    }));
-                }
+                inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
+                {
+                    Path = addressingLogic.Apply(p, EntityType.Queue).Name,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                }));
             }
 
             var entities = inputQueues.Concat(topics).ToArray();

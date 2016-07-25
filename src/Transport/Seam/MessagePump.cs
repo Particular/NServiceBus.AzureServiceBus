@@ -30,7 +30,7 @@ namespace NServiceBus.AzureServiceBus
 
             if (pushSettings.PurgeOnStartup)
             {
-                throw new InvalidOperationException("Azure Service Bus transport doesn't support PurgeOnStartup behaviour");
+                throw new InvalidOperationException("Azure Service Bus transport doesn't support PurgeOnStartup behavior");
             }
 
             inputQueue = pushSettings.InputQueue;
