@@ -11,7 +11,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
     public class When_configuring_custom_brokered_message_to_incoming_message_converter
     {
         [Test]
-        public void Default_value_should_e_configured()
+        public void Default_value_should_be_configured()
         {
             var settings = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settings);
