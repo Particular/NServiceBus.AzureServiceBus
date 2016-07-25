@@ -693,7 +693,11 @@ namespace NServiceBus
         public static void SendViaReceiveQueue(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, bool sendViaReceiveQueue) { }
         public static NServiceBus.AzureServiceBusSubscriptionSettings Subscriptions(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusTopicSettings Topics(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static void UseBrokeredMessageToIncomingMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
+            where T : NServiceBus.AzureServiceBus.IConvertBrokeredMessagesToIncomingMessages { }
         public static void UseNamespaceNamesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static void UseOutgoingMessageToBrokeredMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
+            where T : NServiceBus.AzureServiceBus.IConvertOutgoingMessagesToBrokeredMessages { }
         public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
             where T : NServiceBus.AzureServiceBus.ITopology, new () { }
         public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, System.Func<T> factory)

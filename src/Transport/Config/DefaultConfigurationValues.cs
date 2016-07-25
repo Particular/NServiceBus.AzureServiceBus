@@ -17,7 +17,14 @@
             ApplyDefaultValuesForSubscriptions(settings);
             ApplyDefaultValuesForRules(settings);
             ApplyDefaultValuesForSerialization(settings);
+            ApplyDefaultValuesForBrokeredMessageConventions(settings);
             return settings;
+        }
+
+        void ApplyDefaultValuesForBrokeredMessageConventions(SettingsHolder settings)
+        {
+            settings.SetDefault(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter, typeof(DefaultBrokeredMessagesToIncomingMessagesConverter));
+            settings.SetDefault(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter, typeof(DefaultBatchedOperationsToBrokeredMessagesConverter));
         }
 
         void ApplyDefaultValuesForSerialization(SettingsHolder settings)

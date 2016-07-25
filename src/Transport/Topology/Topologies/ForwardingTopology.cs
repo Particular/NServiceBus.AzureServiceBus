@@ -64,8 +64,11 @@ namespace NServiceBus.AzureServiceBus
             container.RegisterSingleton<DefaultConnectionStringToNamespaceNameMapper>();
             container.RegisterSingleton(settings.Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings));
 
-            container.Register<DefaultBrokeredMessagesToIncomingMessagesConverter>();
-            container.Register<DefaultBatchedOperationsToBrokeredMessagesConverter>();
+            var brokeredMessagesToIncomingMessagesConverterType = settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter);
+            container.Register(brokeredMessagesToIncomingMessagesConverterType);
+            var batchedOperationsToBrokeredMessagesConverterType = settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter);
+            container.Register(batchedOperationsToBrokeredMessagesConverterType);
+
             container.Register<TopologyCreator>();
             container.Register<Batcher>();
 
