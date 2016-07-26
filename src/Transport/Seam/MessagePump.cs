@@ -47,7 +47,7 @@ namespace NServiceBus.AzureServiceBus
                 context.Set(receiveContext);
 
                 //todo, figure out what the TransportTransaction parameter is about
-                return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, new NoTransaction(), tokenSource, context));
+                return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.Body, new NoTransaction(), tokenSource, context));
             });
 
             return TaskEx.Completed;

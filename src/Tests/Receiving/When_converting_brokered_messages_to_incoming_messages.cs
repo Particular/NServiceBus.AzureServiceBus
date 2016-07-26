@@ -140,8 +140,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             var incomingMessage = converter.Convert(brokeredMessage);
 
-            var sr = new StreamReader(incomingMessage.BodyStream);
-            var body = sr.ReadToEnd();
+            var body = Encoding.UTF8.GetString(incomingMessage.Body);
 
             Assert.AreEqual(body, "Whatever");
         }
@@ -167,8 +166,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             var incomingMessage = converter.Convert(brokeredMessage);
 
-            var sr = new StreamReader(incomingMessage.BodyStream);
-            var body = sr.ReadToEnd();
+            var body = Encoding.UTF8.GetString(incomingMessage.Body);
 
             Assert.AreEqual("Whatever", body);
         }
@@ -187,8 +185,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             var incomingMessage = converter.Convert(brokeredMessage);
 
-            var sr = new StreamReader(incomingMessage.BodyStream);
-            var body = sr.ReadToEnd();
+            var body = Encoding.UTF8.GetString(incomingMessage.Body);
 
             Assert.AreEqual("Whatever", body);
         }
