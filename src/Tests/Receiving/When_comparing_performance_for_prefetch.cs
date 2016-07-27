@@ -21,6 +21,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         [Test]
         public async Task Can_receive_messages_with_prefetch_fast()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
@@ -84,7 +85,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var sw = new Stopwatch();
             sw.Start();
             notifier.Start();
-            await completed.WaitOne();
+            await completed.WaitAsync(cts.Token).IgnoreCancellation();
             sw.Stop();
 
             await notifier.Stop();

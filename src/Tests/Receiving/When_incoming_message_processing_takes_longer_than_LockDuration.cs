@@ -19,6 +19,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         [Test]
         public async Task AutoRenewTimout_will_extend_lock_for_processing_to_finish()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
@@ -75,7 +76,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var sw = new Stopwatch();
             sw.Start();
             notifier.Start();
-            await completed.WaitOne();
+            await completed.WaitAsync(cts.Token).IgnoreCancellation();
             await Task.Delay(TimeSpan.FromSeconds(10));
             sw.Stop();
 
