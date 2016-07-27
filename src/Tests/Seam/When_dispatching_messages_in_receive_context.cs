@@ -57,12 +57,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await pump.Init(async context =>
             {
+                // normally the core would do that
+                context.Context.Set(context.TransportTransaction);
+
                 received = true;
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-                var ctx = context.Context.Get<ReceiveContext>();
+                var ctx = context.TransportTransaction.Get<ReceiveContext>();
                 ctx.OnComplete.Add(() =>
                 {
                     completed.Set();
@@ -141,12 +144,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await pump.Init(async context =>
             {
+                // normally the core would do that
+                context.Context.Set(context.TransportTransaction);
+
                 received = true;
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-                var ctx = context.Context.Get<ReceiveContext>();
+                var ctx = context.TransportTransaction.Get<ReceiveContext>();
                 ctx.OnComplete.Add(async () =>
                 {
                     await Task.Delay(1); // makes sure the compiler creates the statemachine that handles exception propagation
@@ -186,7 +192,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             Assert.AreEqual(1, queue.MessageCount, "'sales' was expected to have 1 message, but it didn't");
         }
 
-
         [Test]
         public async Task Should_dispatch_message_in_receive_context_via_receive_queue()
         {
@@ -225,12 +230,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await pump.Init(async context =>
             {
+                // normally the core would do that
+                context.Context.Set(context.TransportTransaction);
+
                 received = true;
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-                var ctx = context.Context.Get<ReceiveContext>();
+                var ctx = context.TransportTransaction.Get<ReceiveContext>();
                 ctx.OnComplete.Add(() =>
                 {
                     completed.Set();
@@ -315,12 +323,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await pump.Init(async context =>
             {
+                // normally the core would do that
+                context.Context.Set(context.TransportTransaction);
+
                 received = true;
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-                var ctx = context.Context.Get<ReceiveContext>();
+                var ctx = context.TransportTransaction.Get<ReceiveContext>();
                 ctx.OnComplete.Add(async () =>
                 {
                     await Task.Delay(1); // makes sure the compiler creates the statemachine that handles exception propagation
@@ -419,10 +430,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await pump.Init(async context =>
             {
+                // normally the core would do that
+                context.Context.Set(context.TransportTransaction);
+
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-                var ctx = context.Context.Get<ReceiveContext>();
+                var ctx = context.TransportTransaction.Get<ReceiveContext>();
                 ctx.OnComplete.Add(async () =>
                 {
                     await Task.Delay(1); // makes sure the compiler creates the statemachine that handles exception propagation

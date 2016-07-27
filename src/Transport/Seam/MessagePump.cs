@@ -42,12 +42,10 @@ namespace NServiceBus.AzureServiceBus
 
                 circuitBreaker.Success();
 
-                var context = new ContextBag();
+                var transportTransaction = new TransportTransaction();
+                transportTransaction.Set(receiveContext);
 
-                context.Set(receiveContext);
-
-                //todo, figure out what the TransportTransaction parameter is about
-                return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, new NoTransaction(), tokenSource, context));
+                return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, transportTransaction, tokenSource, new ContextBag()));
             });
 
             return TaskEx.Completed;
@@ -83,6 +81,4 @@ namespace NServiceBus.AzureServiceBus
             // Injected
         }
     }
-
-    class NoTransaction : TransportTransaction { }
 }
