@@ -3,15 +3,12 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
     using Extensibility;
+    using Microsoft.ServiceBus.Messaging;
     using Transports;
 
     class Dispatcher : IDispatchMessages
     {
-        IRouteOutgoingBatches routeOutgoingBatches;
-        IBatcher batcher;
-
         public Dispatcher(IRouteOutgoingBatches routeOutgoingBatches, IBatcher batcher)
         {
             this.routeOutgoingBatches = routeOutgoingBatches;
@@ -20,11 +17,10 @@ namespace NServiceBus.AzureServiceBus
 
         public Task Dispatch(TransportOperations operations, ContextBag context)
         {
-            ReceiveContext receiveContext;
             var outgoingBatches = batcher.ToBatches(operations);
 
-            context.TryGet(out receiveContext);
-            if (receiveContext == null) // not in a receive context, so send out immediately
+            ReceiveContext receiveContext;
+            if (!TryGetReceiveContext(context, out receiveContext)) // not in a receive context, so send out immediately
             {
                 return routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext: null);
             }
@@ -56,6 +52,21 @@ namespace NServiceBus.AzureServiceBus
             receiveContext.OnComplete.Add(() => routeOutgoingBatches.RouteBatches(toBeDispatchedOnComplete, receiveContext));
             return routeOutgoingBatches.RouteBatches(toBeDispatchedImmediately, receiveContext);
         }
-    }
 
+        static bool TryGetReceiveContext(ContextBag context, out ReceiveContext receiveContext)
+        {
+            TransportTransaction transportTransaction;
+
+            if (!context.TryGet(out transportTransaction))
+            {
+                receiveContext = null;
+                return false;
+            }
+
+            return transportTransaction.TryGet(out receiveContext);
+        }
+
+        IRouteOutgoingBatches routeOutgoingBatches;
+        IBatcher batcher;
+    }
 }
