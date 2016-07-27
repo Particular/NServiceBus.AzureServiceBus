@@ -1,9 +1,6 @@
 namespace NServiceBus.AzureServiceBus
 {
-    using System;
-    using System.Collections.Generic;
     using System.Threading;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Holds on to the the receive metadata
@@ -12,7 +9,11 @@ namespace NServiceBus.AzureServiceBus
     /// </summary>
     public abstract class ReceiveContext
     {
-        public IList<Func<Task>> OnComplete { get; set; }
-        public CancellationToken CancellationToken { get; set; }
+        protected ReceiveContext()
+        {
+            CancellationToken = CancellationToken.None;
+        }
+
+        public CancellationToken CancellationToken { get; internal set; }
     }
 }
