@@ -1,6 +1,7 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Tests;
@@ -19,6 +20,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public async Task Pushes_received_message_into_pipeline()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             await TestUtility.Delete("sales");
 
             var settings = new SettingsHolder();
@@ -61,7 +64,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage());
 
-            await completed.WaitOne(); // Task.WhenAny(completed.WaitOne(), error.WaitOne());
+            await completed.WaitAsync(cts.Token).IgnoreCancellation(); // Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
             // validate
             Assert.IsTrue(received);

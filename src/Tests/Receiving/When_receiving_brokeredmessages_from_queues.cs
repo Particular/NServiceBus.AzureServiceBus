@@ -1,6 +1,7 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
@@ -15,6 +16,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         [Test]
         public async Task Can_receive_a_brokered_message()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
@@ -62,13 +64,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                 return TaskEx.Completed;
             }, options);
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+            await Task.WhenAny(completed.WaitAsync(cts.Token).IgnoreCancellation(), error.WaitAsync(cts.Token).IgnoreCancellation());
 
             // validate
             Assert.IsTrue(received);
             Assert.IsNull(ex);
 
-            //cleanup 
+            //cleanup
             await receiver.CloseAsync();
             await namespaceManager.DeleteQueue("myqueue");
         }

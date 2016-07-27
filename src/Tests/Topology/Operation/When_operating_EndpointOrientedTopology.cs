@@ -1,6 +1,7 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Tests;
@@ -19,6 +20,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
         [Test]
         public async Task Receives_incoming_messages_from_endpoint_queue()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales");
 
@@ -61,7 +64,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+            await Task.WhenAny(completed.WaitAsync(cts.Token).IgnoreCancellation(), error.WaitAsync(cts.Token).IgnoreCancellation());
 
             // validate
             Assert.IsTrue(received);
@@ -73,6 +76,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
         [Test]
         public async Task Calls_completion_callbacks_before_completing()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales");
 
@@ -125,7 +130,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+            await Task.WhenAny(completed.WaitAsync(cts.Token).IgnoreCancellation(), error.WaitAsync(cts.Token));
 
             // validate
             Assert.IsTrue(completeCalled);
@@ -138,6 +143,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
         [Test]
         public async Task Does_not_call_completion_when_error_during_processing()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales");
 
@@ -188,7 +195,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+            await Task.WhenAny(completed.WaitAsync(cts.Token).IgnoreCancellation(), error.WaitAsync(cts.Token).IgnoreCancellation());
 
             // validate
             Assert.IsTrue(received);
@@ -200,6 +207,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
         [Test]
         public async Task Calls_on_error_when_error_during_processing()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales");
 
@@ -250,7 +259,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+            await Task.WhenAny(completed.WaitAsync(cts.Token).IgnoreCancellation(), error.WaitAsync(cts.Token).IgnoreCancellation());
 
             // validate
             Assert.IsTrue(received);
@@ -262,6 +271,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
         [Test]
         public async Task Calls_on_error_when_error_during_completion()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales");
 
@@ -313,7 +324,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+            await Task.WhenAny(completed.WaitAsync(cts.Token).IgnoreCancellation(), error.WaitAsync(cts.Token).IgnoreCancellation());
 
             // validate
             Assert.IsTrue(received);
@@ -326,6 +337,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
         [Test]
         public async Task Completes_incoming_message_when_successfully_received()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales");
 
@@ -368,7 +381,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+            await Task.WhenAny(completed.WaitAsync(cts.Token).IgnoreCancellation(), error.WaitAsync(cts.Token).IgnoreCancellation());
 
             // validate
             Assert.IsTrue(received);
@@ -387,6 +400,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
         [Test]
         public async Task Aborts_incoming_message_when_error_during_processing()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales");
 
@@ -427,7 +442,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+            await Task.WhenAny(completed.WaitAsync(cts.Token).IgnoreCancellation(), error.WaitAsync(cts.Token).IgnoreCancellation());
 
             // validate
             Assert.IsTrue(received);
@@ -446,6 +461,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
         [Test]
         public async Task Aborts_incoming_message_when_error_during_completion()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales");
 
@@ -494,7 +511,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+            await Task.WhenAny(completed.WaitAsync(cts.Token).IgnoreCancellation(), error.WaitAsync(cts.Token).IgnoreCancellation());
 
             // validate
             Assert.IsTrue(received);

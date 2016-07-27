@@ -4,6 +4,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Tests;
@@ -23,6 +24,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public async Task Should_dispatch_message_in_receive_context()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // cleanup
             await TestUtility.Delete("sales", "myqueue");
 
@@ -83,7 +85,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage {MessageId = "id-incoming"});
 
-            await completed.WaitOne();
+            await completed.WaitAsync(cts.Token).IgnoreCancellation();
 
             await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
@@ -101,6 +103,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public async Task Will_not_rollback_dispatch_message_in_receive_context_when_exception_occurs_on_completion_receive_only_mode()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales", "myqueue");
 
@@ -167,7 +171,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage());
 
-            await errored.WaitOne();
+            await errored.WaitAsync(cts.Token).IgnoreCancellation();
 
             await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
@@ -190,6 +194,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public async Task Should_dispatch_message_in_receive_context_via_receive_queue()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales", "myqueue");
 
@@ -255,7 +261,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 MessageId = "id-init"
             });
 
-            await completed.WaitOne();
+            await completed.WaitAsync(cts.Token).IgnoreCancellation();
 
             await Task.Delay(TimeSpan.FromSeconds(5)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
@@ -273,6 +279,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public async Task Should_rollback_dispatch_message_in_receive_context_via_receive_queue_when_exception_occurs_on_completion()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // cleanup
             await TestUtility.Delete("sales", "myqueue");
 
@@ -343,7 +350,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage());
 
-            await errored.WaitOne();
+            await errored.WaitAsync(cts.Token).IgnoreCancellation();
 
             await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
@@ -365,6 +372,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public async Task Should_retry_after_rollback_in_less_then_thirty_seconds_when_using_via_queue()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
             // cleanup
             await TestUtility.Delete("sales", "myqueue");
 
@@ -445,7 +454,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage());
 
-            await retried.WaitOne();
+            await retried.WaitAsync(cts.Token).IgnoreCancellation();
 
             await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 

@@ -1,54 +1,74 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Threading;
     using System.Threading.Tasks;
 
+    [DebuggerDisplay("IsSet = {signaled}")]
     class AsyncAutoResetEvent
     {
-        Queue<TaskCompletionSource<object>> completionSources = new Queue<TaskCompletionSource<object>>();
-        bool signaled;
-
         public AsyncAutoResetEvent(bool signaled)
         {
             this.signaled = signaled;
         }
 
-        public Task WaitOne()
+        public Task WaitAsync()
         {
+            return WaitAsync(CancellationToken.None);
+        }
+
+        public Task WaitAsync(CancellationToken cancellationToken)
+        {
+            Task ret;
             lock (completionSources)
             {
-                var tcs = new TaskCompletionSource<object>();
-                if (completionSources.Count > 0 || !signaled)
+                if (signaled)
                 {
-                    completionSources.Enqueue(tcs);
+                    signaled = false;
+                    ret = completedTask;
                 }
                 else
                 {
-                    tcs.SetResult(null);
-                    signaled = false;
+                    var tcs = new TaskCompletionSource<object>();
+                    var registration = cancellationToken.Register(state =>
+                    {
+                        var t = (TaskCompletionSource<object>) state;
+                        t.TrySetCanceled();
+                    }, tcs);
+                    completionSources.Enqueue(Tuple.Create(tcs, registration));
+                    ret = tcs.Task;
                 }
-                return tcs.Task;
             }
+
+            return ret;
         }
 
         public void Set()
         {
-            TaskCompletionSource<object> toSet = null;
+            Tuple<TaskCompletionSource<object>, CancellationTokenRegistration> toSet = null;
             lock (completionSources)
             {
-                if (completionSources.Count > 0)
-                {
-                    toSet = completionSources.Dequeue();
-                }
-                else
+                if (completionSources.Count == 0)
                 {
                     signaled = true;
                 }
+                else
+                {
+                    toSet = completionSources.Dequeue();
+                }
             }
+
             if (toSet != null)
             {
-                toSet.SetResult(null);
+                toSet.Item1.TrySetResult(null);
+                toSet.Item2.Dispose();
             }
         }
+
+        Queue<Tuple<TaskCompletionSource<object>, CancellationTokenRegistration>> completionSources = new Queue<Tuple<TaskCompletionSource<object>, CancellationTokenRegistration>>();
+        bool signaled;
+        static Task completedTask = Task.FromResult(0);
     }
 }
