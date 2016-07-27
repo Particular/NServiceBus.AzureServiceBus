@@ -2,7 +2,6 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -78,7 +77,7 @@ namespace NServiceBus.AzureServiceBus
             //- Exceptions raised during the time that your code is processing the BrokeredMessage
             //- It is raised when the receive process successfully completes. (Does not seem to be the case)
 
-            if (!stopping) //- It is raised when the underlying connection closes because of our close operation 
+            if (!stopping) //- It is raised when the underlying connection closes because of our close operation
             {
                 logger.InfoFormat("OptionsOnExceptionReceived invoked, action: {0}, exception: {1}", exceptionReceivedEventArgs.Action, exceptionReceivedEventArgs.Exception);
 
@@ -169,13 +168,7 @@ namespace NServiceBus.AzureServiceBus
                 return;
             }
 
-            var context = new BrokeredMessageReceiveContext
-            {
-                IncomingBrokeredMessage = message,
-                Entity = entity,
-                ReceiveMode = internalReceiver.Mode,
-                OnComplete = new List<Func<Task>>()
-            };
+            var context = new BrokeredMessageReceiveContext(message, entity, internalReceiver.Mode);
 
             try
             {
@@ -187,7 +180,6 @@ namespace NServiceBus.AzureServiceBus
                 }
                 else
                 {
-                    await InvokeCompletionCallbacksAsync(context).ConfigureAwait(false);
                     if (context.ReceiveMode == ReceiveMode.PeekLock)
                     {
                         locksTokensToComplete.Push(message.LockToken);
@@ -197,17 +189,6 @@ namespace NServiceBus.AzureServiceBus
             catch (Exception exception)
             {
                 await AbandonAsync(message, exception).ConfigureAwait(false);
-            }
-        }
-
-        async Task InvokeCompletionCallbacksAsync(BrokeredMessageReceiveContext context)
-        {
-            // send via receive queue only works when wrapped in a scope
-            var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
-            using (var scope = useTx ? new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled) : null)
-            {
-                await Task.WhenAll(context.OnComplete.Select(toComplete => toComplete()).ToList()).ConfigureAwait(false);
-                scope?.Complete();
             }
         }
 

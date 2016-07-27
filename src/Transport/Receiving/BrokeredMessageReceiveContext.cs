@@ -4,12 +4,18 @@ namespace NServiceBus.AzureServiceBus
 
     public class BrokeredMessageReceiveContext : ReceiveContext
     {
-        public BrokeredMessage IncomingBrokeredMessage { get; set; }
+        public BrokeredMessageReceiveContext(BrokeredMessage message, EntityInfo entity, ReceiveMode receiveMode)
+        {
+            IncomingBrokeredMessage = message;
+            Entity = entity;
+            ReceiveMode = receiveMode;
+        }
 
-        public EntityInfo Entity { get; set; }
+        public BrokeredMessage IncomingBrokeredMessage { get; }
+
+        public EntityInfo Entity { get; }
 
         // Dispatcher needs to compare this with requested consistency guarantees, cannot do default (postponed) dispatch if there is no completion step (ReceiveAndDelete)
-        public ReceiveMode ReceiveMode { get; set; }
-
+        public ReceiveMode ReceiveMode { get; }
     }
 }
