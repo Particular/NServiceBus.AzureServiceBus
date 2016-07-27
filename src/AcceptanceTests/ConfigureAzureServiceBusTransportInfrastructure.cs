@@ -15,9 +15,21 @@ class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfra
         settings.Set<Conventions>(new Conventions());
         //settings.Set("NServiceBus.Routing.EndpointName", "onmessagethrowsafterdelayedretryreceiveonly");
 
-        var endpointOrientedTopology = new EndpointOrientedTopology();
+        var topologyName = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology", EnvironmentVariableTarget.User);
+        topologyName = topologyName ?? Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
+
         //endpointOrientedTopology.Initialize(settings);
-        settings.Set<ITopology>(endpointOrientedTopology);
+        if (topologyName == nameof(ForwardingTopology))
+        {
+            var topology = Activator.CreateInstance<ForwardingTopology>();
+            settings.Set<ITopology>(topology);
+        }
+        else
+        {
+            var topology = Activator.CreateInstance<EndpointOrientedTopology>();
+            settings.Set<ITopology>(topology);
+
+        }
 
         var transport = new AzureServiceBusTransport();
         return transport.Initialize(settings, connectionString);

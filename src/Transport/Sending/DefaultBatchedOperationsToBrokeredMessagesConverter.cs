@@ -154,7 +154,11 @@ namespace NServiceBus.AzureServiceBus
         {
             foreach (var header in outgoingMessage.Headers)
             {
-                brokeredMessage.Properties[header.Key] = header.Value;
+                // if a message that previously failed processing is actively sent again (f.e. SLR) then the header should be removed as retry counter is reset
+                if (header.Key != BrokeredMessageHeaders.ExceptionMessage)
+                {
+                    brokeredMessage.Properties[header.Key] = header.Value;
+                }
             }
         }
 

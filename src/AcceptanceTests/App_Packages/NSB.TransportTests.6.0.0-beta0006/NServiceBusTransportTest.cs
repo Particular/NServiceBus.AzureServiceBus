@@ -83,8 +83,8 @@
             
             transportSettings.Set("NServiceBus.Routing.EndpointName", InputQueueName);
             transportSettings.Set<QueueBindings>(queueBindings);
-            transportSettings.Set("AzureServiceBus.Connectivity.SendViaReceiveQueue", transactionMode == TransportTransactionMode.SendsAtomicWithReceive);
-            transportSettings.Set<TransportTransactionMode>(transactionMode);
+          /*  transportSettings.Set("AzureServiceBus.Connectivity.SendViaReceiveQueue", transactionMode == TransportTransactionMode.SendsAtomicWithReceive);
+            transportSettings.Set<TransportTransactionMode>(transactionMode);*/
             //transportSettings.Set<ReceiveMode>(ReceiveMode.PeekLock);
 
             InitializeEnvironment();
