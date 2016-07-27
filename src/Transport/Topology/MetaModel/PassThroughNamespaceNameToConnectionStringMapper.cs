@@ -4,7 +4,7 @@ namespace NServiceBus.AzureServiceBus.Topology.MetaModel
     {
         public EntityAddress Map(EntityAddress value)
         {
-            return new EntityAddress(value);
+            return value;
         }
     }
 }

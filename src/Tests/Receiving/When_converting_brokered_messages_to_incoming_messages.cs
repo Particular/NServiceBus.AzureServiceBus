@@ -4,11 +4,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using System.IO;
     using System.Linq;
     using System.Text;
-    using Microsoft.ServiceBus.Messaging;
     using AzureServiceBus;
     using AzureServiceBus.Topology.MetaModel;
-    using Settings;
+    using Microsoft.ServiceBus.Messaging;
     using NUnit.Framework;
+    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -20,7 +20,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MyQueue"));
 
             var brokeredMessage = new BrokeredMessage
             {
@@ -38,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MyQueue"));
 
             var brokeredMessage = new BrokeredMessage();
             brokeredMessage.Properties.Add("my-test-prop", "myvalue");
@@ -56,7 +56,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MappedMyQueue"));
 
-            var brokeredMessage = new BrokeredMessage(new byte[] { })
+            var brokeredMessage = new BrokeredMessage(new byte[]
+            {
+            })
             {
                 ReplyTo = "MyQueue"
             };
@@ -75,7 +77,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("OtherQueue", "MappedOtherQueue"));
 
-            var brokeredMessage = new BrokeredMessage(new byte[] { })
+            var brokeredMessage = new BrokeredMessage(new byte[]
+            {
+            })
             {
                 ReplyTo = "MyQueue"
             };
@@ -93,9 +97,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("",""));
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MyQueue"));
 
-            var brokeredMessage = new BrokeredMessage(new byte[] {})
+            var brokeredMessage = new BrokeredMessage(new byte[]
+            {
+            })
             {
                 CorrelationId = "SomeId"
             };
@@ -113,10 +119,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MyQueue"));
 
             var timespan = TimeSpan.FromHours(1);
-            var brokeredMessage = new BrokeredMessage(new byte[] { })
+            var brokeredMessage = new BrokeredMessage(new byte[]
+            {
+            })
             {
                 TimeToLive = timespan
             };
@@ -133,7 +141,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MyQueue"));
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var brokeredMessage = new BrokeredMessage(bytes);
@@ -154,7 +162,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MyQueue"));
 
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
@@ -179,7 +187,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MyQueue"));
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var brokeredMessage = new BrokeredMessage(bytes);
@@ -199,7 +207,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MyQueue"));
 
             var brokeredMessage = new BrokeredMessage("non-default-type");
 
@@ -212,7 +220,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MyQueue"));
 
             var brokeredMessage = new BrokeredMessage("non-default-type");
             brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "unknown";
@@ -230,7 +238,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var brokeredMessage = new BrokeredMessage(bytes);
             brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "wcf/byte-array";
 
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("", ""));
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper("MyQueue", "MyQueue"));
 
             var incomingMessageDetails = converter.Convert(brokeredMessage);
 
@@ -239,13 +247,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
         class FakeMapper : ICanMapConnectionStringToNamespaceName
         {
-            string input;
-            string output;
-
             public FakeMapper(string input, string output)
             {
-                this.input = input;
-                this.output = output;
+                this.input = new EntityAddress(input);
+                this.output = new EntityAddress(output);
             }
 
             public EntityAddress Map(EntityAddress value)
@@ -257,6 +262,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
                 return output;
             }
+
+            EntityAddress input;
+            EntityAddress output;
         }
     }
 }

@@ -91,8 +91,9 @@ namespace NServiceBus.AzureServiceBus
                     }
                 }
 
-                outgoingMessage.Headers[Headers.ReplyToAddress] = replyTo;
-                brokeredMessage.ReplyTo = replyTo;
+                var replyToAsString = replyTo.ToString();
+                outgoingMessage.Headers[Headers.ReplyToAddress] = replyToAsString;
+                brokeredMessage.ReplyTo = replyToAsString;
             }
         }
 
