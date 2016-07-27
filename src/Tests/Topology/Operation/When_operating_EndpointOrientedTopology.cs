@@ -1,533 +1,533 @@
-namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
-{
-    using System;
-    using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
-    using Tests;
-    using Receiving;
-    using TestUtils;
-    using AzureServiceBus;
-    using NServiceBus.Transports;
-    using Routing;
-    using Settings;
-    using NUnit.Framework;
-
-    [TestFixture]
-    [Category("AzureServiceBus")]
-    public class When_operating_EndpointOrientedTopology
-    {
-        [Test]
-        public async Task Receives_incoming_messages_from_endpoint_queue()
-        {
-            // cleanup
-            await TestUtility.Delete("sales");
+//namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
+//{
+//    using System;
+//    using System.Threading.Tasks;
+//    using Microsoft.ServiceBus.Messaging;
+//    using Tests;
+//    using Receiving;
+//    using TestUtils;
+//    using AzureServiceBus;
+//    using NServiceBus.Transports;
+//    using Routing;
+//    using Settings;
+//    using NUnit.Framework;
+
+//    [TestFixture]
+//    [Category("AzureServiceBus")]
+//    public class When_operating_EndpointOrientedTopology
+//    {
+//        [Test]
+//        public async Task Receives_incoming_messages_from_endpoint_queue()
+//        {
+//            // cleanup
+//            await TestUtility.Delete("sales");
 
-            // setting up the environment
-            var container = new TransportPartsContainer();
+//            // setting up the environment
+//            var container = new TransportPartsContainer();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+//            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
-            // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+//            // setup the operator
+//            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+//            var completed = new AsyncAutoResetEvent(false);
+//            var error = new AsyncAutoResetEvent(false);
 
-            var received = false;
-            Exception ex = null;
+//            var received = false;
+//            Exception ex = null;
 
-            topologyOperator.OnIncomingMessage((message, context) =>
-            {
-                received = true;
+//            topologyOperator.OnIncomingMessage((message, context) =>
+//            {
+//                received = true;
 
-                completed.Set();
+//                completed.Set();
 
-                return TaskEx.Completed;
-            });
-            topologyOperator.OnError(exception =>
-            {
-                ex = exception;
+//                return TaskEx.Completed;
+//            });
+//            topologyOperator.OnError(exception =>
+//            {
+//                ex = exception;
 
-                error.Set();
+//                error.Set();
 
-                return TaskEx.Completed;
-            });
+//                return TaskEx.Completed;
+//            });
 
-            // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+//            // execute
+//            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
-            // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, "namespace");
-            await sender.Send(new BrokeredMessage());
+//            // send message to queue
+//            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+//            var sender = await senderFactory.Create("sales", null, "namespace");
+//            await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+//            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
-            // validate
-            Assert.IsTrue(received);
-            Assert.IsNull(ex);
+//            // validate
+//            Assert.IsTrue(received);
+//            Assert.IsNull(ex);
 
-            await topologyOperator.Stop();
-        }
+//            await topologyOperator.Stop();
+//        }
 
-        [Test]
-        public async Task Calls_completion_callbacks_before_completing()
-        {
-            // cleanup
-            await TestUtility.Delete("sales");
+//        [Test]
+//        public async Task Calls_completion_callbacks_before_completing()
+//        {
+//            // cleanup
+//            await TestUtility.Delete("sales");
 
-            // setting up the environment
-            var container = new TransportPartsContainer();
+//            // setting up the environment
+//            var container = new TransportPartsContainer();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+//            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
-            // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+//            // setup the operator
+//            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+//            var completed = new AsyncAutoResetEvent(false);
+//            var error = new AsyncAutoResetEvent(false);
 
-            var received = false;
-            var completeCalled = false;
-            Exception ex = null;
+//            var received = false;
+//            var completeCalled = false;
+//            Exception ex = null;
 
-            topologyOperator.OnIncomingMessage((message, context) =>
-            {
-                received = true;
+//            topologyOperator.OnIncomingMessage((message, context) =>
+//            {
+//                received = true;
 
-                var ctx = (BrokeredMessageReceiveContext) context;
+//                var ctx = (BrokeredMessageReceiveContext) context;
 
-                ctx.OnComplete.Add(() =>
-                {
-                    completeCalled = true;
+//                ctx.OnComplete.Add(() =>
+//                {
+//                    completeCalled = true;
 
-                    completed.Set();
+//                    completed.Set();
 
-                    return TaskEx.Completed;
-                });
+//                    return TaskEx.Completed;
+//                });
 
-                return TaskEx.Completed;
-            });
-            topologyOperator.OnError(exception =>
-            {
-                ex = exception;
+//                return TaskEx.Completed;
+//            });
+//            topologyOperator.OnError(exception =>
+//            {
+//                ex = exception;
 
-                error.Set();
+//                error.Set();
 
-                return TaskEx.Completed;
-            });
+//                return TaskEx.Completed;
+//            });
 
-            // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+//            // execute
+//            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
-            // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, "namespace");
-            await sender.Send(new BrokeredMessage());
+//            // send message to queue
+//            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+//            var sender = await senderFactory.Create("sales", null, "namespace");
+//            await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+//            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
-            // validate
-            Assert.IsTrue(completeCalled);
-            Assert.IsTrue(received);
-            Assert.IsNull(ex);
+//            // validate
+//            Assert.IsTrue(completeCalled);
+//            Assert.IsTrue(received);
+//            Assert.IsNull(ex);
 
-            await topologyOperator.Stop();
-        }
+//            await topologyOperator.Stop();
+//        }
 
-        [Test]
-        public async Task Does_not_call_completion_when_error_during_processing()
-        {
-            // cleanup
-            await TestUtility.Delete("sales");
+//        [Test]
+//        public async Task Does_not_call_completion_when_error_during_processing()
+//        {
+//            // cleanup
+//            await TestUtility.Delete("sales");
 
-            // setting up the environment
-            var container = new TransportPartsContainer();
+//            // setting up the environment
+//            var container = new TransportPartsContainer();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+//            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
-            // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+//            // setup the operator
+//            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+//            var completed = new AsyncAutoResetEvent(false);
+//            var error = new AsyncAutoResetEvent(false);
 
-            var received = false;
-            var completeCalled = false;
+//            var received = false;
+//            var completeCalled = false;
 
-            topologyOperator.OnIncomingMessage(async (message, context) =>
-            {
-                received = true;
+//            topologyOperator.OnIncomingMessage(async (message, context) =>
+//            {
+//                received = true;
 
-                var ctx = (BrokeredMessageReceiveContext)context;
+//                var ctx = (BrokeredMessageReceiveContext)context;
 
-                ctx.OnComplete.Add(() =>
-                {
-                    completeCalled = true;
+//                ctx.OnComplete.Add(() =>
+//                {
+//                    completeCalled = true;
 
-                    completed.Set();
+//                    completed.Set();
 
-                    return TaskEx.Completed;
-                });
+//                    return TaskEx.Completed;
+//                });
 
-                await Task.Delay(1).ConfigureAwait(false);
-                throw new Exception("Something went wrong");
-            });
-            topologyOperator.OnError(exception =>
-            {
-                error.Set();
+//                await Task.Delay(1).ConfigureAwait(false);
+//                throw new Exception("Something went wrong");
+//            });
+//            topologyOperator.OnError(exception =>
+//            {
+//                error.Set();
 
-                return TaskEx.Completed;
-            });
+//                return TaskEx.Completed;
+//            });
 
-            // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+//            // execute
+//            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
-            // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, "namespace");
-            await sender.Send(new BrokeredMessage());
+//            // send message to queue
+//            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+//            var sender = await senderFactory.Create("sales", null, "namespace");
+//            await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+//            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
-            // validate
-            Assert.IsTrue(received);
-            Assert.IsFalse(completeCalled);
+//            // validate
+//            Assert.IsTrue(received);
+//            Assert.IsFalse(completeCalled);
 
-            await topologyOperator.Stop();
-        }
+//            await topologyOperator.Stop();
+//        }
 
-        [Test]
-        public async Task Calls_on_error_when_error_during_processing()
-        {
-            // cleanup
-            await TestUtility.Delete("sales");
+//        [Test]
+//        public async Task Calls_on_error_when_error_during_processing()
+//        {
+//            // cleanup
+//            await TestUtility.Delete("sales");
 
-            // setting up the environment
-            var container = new TransportPartsContainer();
+//            // setting up the environment
+//            var container = new TransportPartsContainer();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+//            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
-            // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+//            // setup the operator
+//            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+//            var completed = new AsyncAutoResetEvent(false);
+//            var error = new AsyncAutoResetEvent(false);
 
-            var received = false;
-            var errorOccured = false;
+//            var received = false;
+//            var errorOccured = false;
 
-            topologyOperator.OnIncomingMessage(async (message, context) =>
-            {
-                received = true;
+//            topologyOperator.OnIncomingMessage(async (message, context) =>
+//            {
+//                received = true;
 
-                var ctx = (BrokeredMessageReceiveContext)context;
+//                var ctx = (BrokeredMessageReceiveContext)context;
 
-                ctx.OnComplete.Add(() =>
-                {
-                    completed.Set();
+//                ctx.OnComplete.Add(() =>
+//                {
+//                    completed.Set();
 
-                    return TaskEx.Completed;
-                });
+//                    return TaskEx.Completed;
+//                });
 
-                await Task.Delay(1).ConfigureAwait(false);
-                throw new Exception("Something went wrong");
-            });
-            topologyOperator.OnError(exception =>
-            {
-                errorOccured = true;
+//                await Task.Delay(1).ConfigureAwait(false);
+//                throw new Exception("Something went wrong");
+//            });
+//            topologyOperator.OnError(exception =>
+//            {
+//                errorOccured = true;
 
-                error.Set();
+//                error.Set();
 
-                return TaskEx.Completed;
-            });
+//                return TaskEx.Completed;
+//            });
 
-            // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+//            // execute
+//            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
-            // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, "namespace");
-            await sender.Send(new BrokeredMessage());
+//            // send message to queue
+//            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+//            var sender = await senderFactory.Create("sales", null, "namespace");
+//            await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+//            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
-            // validate
-            Assert.IsTrue(received);
-            Assert.IsTrue(errorOccured);
+//            // validate
+//            Assert.IsTrue(received);
+//            Assert.IsTrue(errorOccured);
 
-            await topologyOperator.Stop();
-        }
+//            await topologyOperator.Stop();
+//        }
 
-        [Test]
-        public async Task Calls_on_error_when_error_during_completion()
-        {
-            // cleanup
-            await TestUtility.Delete("sales");
+//        [Test]
+//        public async Task Calls_on_error_when_error_during_completion()
+//        {
+//            // cleanup
+//            await TestUtility.Delete("sales");
 
-            // setting up the environment
-            var container = new TransportPartsContainer();
+//            // setting up the environment
+//            var container = new TransportPartsContainer();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+//            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
-            // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+//            // setup the operator
+//            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+//            var completed = new AsyncAutoResetEvent(false);
+//            var error = new AsyncAutoResetEvent(false);
 
-            var received = false;
-            Exception ex = null;
-            var errorOccured = false;
+//            var received = false;
+//            Exception ex = null;
+//            var errorOccured = false;
 
-            topologyOperator.OnIncomingMessage((message, context) =>
-            {
-                received = true;
+//            topologyOperator.OnIncomingMessage((message, context) =>
+//            {
+//                received = true;
 
-                var ctx = (BrokeredMessageReceiveContext)context;
+//                var ctx = (BrokeredMessageReceiveContext)context;
 
-                ctx.OnComplete.Add(async () =>
-                {
-                    await Task.Delay(1).ConfigureAwait(false);
-                    throw new Exception("Something went wrong");
-                });
+//                ctx.OnComplete.Add(async () =>
+//                {
+//                    await Task.Delay(1).ConfigureAwait(false);
+//                    throw new Exception("Something went wrong");
+//                });
 
-                return TaskEx.Completed;
-            });
-            topologyOperator.OnError(exception =>
-            {
-                errorOccured = true;
+//                return TaskEx.Completed;
+//            });
+//            topologyOperator.OnError(exception =>
+//            {
+//                errorOccured = true;
 
-                ex = exception;
+//                ex = exception;
 
-                error.Set();
+//                error.Set();
 
-                return TaskEx.Completed;
-            });
+//                return TaskEx.Completed;
+//            });
 
-            // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+//            // execute
+//            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
-            // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, "namespace");
-            await sender.Send(new BrokeredMessage());
+//            // send message to queue
+//            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+//            var sender = await senderFactory.Create("sales", null, "namespace");
+//            await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+//            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
-            // validate
-            Assert.IsTrue(received);
-            Assert.IsTrue(errorOccured);
-            Assert.AreEqual("Something went wrong", ex.Message);
+//            // validate
+//            Assert.IsTrue(received);
+//            Assert.IsTrue(errorOccured);
+//            Assert.AreEqual("Something went wrong", ex.Message);
 
-            await topologyOperator.Stop();
-        }
+//            await topologyOperator.Stop();
+//        }
 
-        [Test]
-        public async Task Completes_incoming_message_when_successfully_received()
-        {
-            // cleanup
-            await TestUtility.Delete("sales");
+//        [Test]
+//        public async Task Completes_incoming_message_when_successfully_received()
+//        {
+//            // cleanup
+//            await TestUtility.Delete("sales");
 
-            // setting up the environment
-            var container = new TransportPartsContainer();
+//            // setting up the environment
+//            var container = new TransportPartsContainer();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+//            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
-            // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+//            // setup the operator
+//            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+//            var completed = new AsyncAutoResetEvent(false);
+//            var error = new AsyncAutoResetEvent(false);
 
-            var received = false;
-            Exception ex = null;
+//            var received = false;
+//            Exception ex = null;
 
-            topologyOperator.OnIncomingMessage((message, context) =>
-            {
-                received = true;
+//            topologyOperator.OnIncomingMessage((message, context) =>
+//            {
+//                received = true;
 
-                completed.Set();
+//                completed.Set();
 
-                return TaskEx.Completed;
-            });
-            topologyOperator.OnError(exception =>
-            {
-                ex = exception;
+//                return TaskEx.Completed;
+//            });
+//            topologyOperator.OnError(exception =>
+//            {
+//                ex = exception;
 
-                error.Set();
+//                error.Set();
 
-                return TaskEx.Completed;
-            });
+//                return TaskEx.Completed;
+//            });
 
-            // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+//            // execute
+//            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
-            // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, "namespace");
-            await sender.Send(new BrokeredMessage());
+//            // send message to queue
+//            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+//            var sender = await senderFactory.Create("sales", null, "namespace");
+//            await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+//            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
-            // validate
-            Assert.IsTrue(received);
-            Assert.IsNull(ex);
+//            // validate
+//            Assert.IsTrue(received);
+//            Assert.IsNull(ex);
 
-            await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
+//            await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
 
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var namespaceManager = namespaceLifeCycle.Get("namespace");
-            var queueDescription = await namespaceManager.GetQueue("sales");
-            Assert.AreEqual(0, queueDescription.MessageCount);
+//            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+//            var namespaceManager = namespaceLifeCycle.Get("namespace");
+//            var queueDescription = await namespaceManager.GetQueue("sales");
+//            Assert.AreEqual(0, queueDescription.MessageCount);
 
-            await topologyOperator.Stop();
-        }
+//            await topologyOperator.Stop();
+//        }
 
-        [Test]
-        public async Task Aborts_incoming_message_when_error_during_processing()
-        {
-            // cleanup
-            await TestUtility.Delete("sales");
+//        [Test]
+//        public async Task Aborts_incoming_message_when_error_during_processing()
+//        {
+//            // cleanup
+//            await TestUtility.Delete("sales");
 
-            // setting up the environment
-            var container = new TransportPartsContainer();
+//            // setting up the environment
+//            var container = new TransportPartsContainer();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+//            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
-            // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+//            // setup the operator
+//            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+//            var completed = new AsyncAutoResetEvent(false);
+//            var error = new AsyncAutoResetEvent(false);
 
-            var received = false;
-            var errorOccured = false;
+//            var received = false;
+//            var errorOccured = false;
 
-            topologyOperator.OnIncomingMessage(async (message, context) =>
-            {
-                received = true;
-                await Task.Delay(1).ConfigureAwait(false);
-                throw new Exception("Something went wrong");
-            });
-            topologyOperator.OnError(exception =>
-            {
-                errorOccured = true;
+//            topologyOperator.OnIncomingMessage(async (message, context) =>
+//            {
+//                received = true;
+//                await Task.Delay(1).ConfigureAwait(false);
+//                throw new Exception("Something went wrong");
+//            });
+//            topologyOperator.OnError(exception =>
+//            {
+//                errorOccured = true;
 
-                error.Set();
+//                error.Set();
 
-                return TaskEx.Completed;
-            });
+//                return TaskEx.Completed;
+//            });
 
-            // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+//            // execute
+//            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
-            // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, "namespace");
-            await sender.Send(new BrokeredMessage());
+//            // send message to queue
+//            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+//            var sender = await senderFactory.Create("sales", null, "namespace");
+//            await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+//            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
-            // validate
-            Assert.IsTrue(received);
-            Assert.IsTrue(errorOccured);
+//            // validate
+//            Assert.IsTrue(received);
+//            Assert.IsTrue(errorOccured);
 
-            await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
+//            await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
 
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var namespaceManager = namespaceLifeCycle.Get("namespace");
-            var queueDescription = await namespaceManager.GetQueue("sales");
-            Assert.AreEqual(1, queueDescription.MessageCount);
+//            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+//            var namespaceManager = namespaceLifeCycle.Get("namespace");
+//            var queueDescription = await namespaceManager.GetQueue("sales");
+//            Assert.AreEqual(1, queueDescription.MessageCount);
 
-            await topologyOperator.Stop();
-        }
+//            await topologyOperator.Stop();
+//        }
 
-        [Test]
-        public async Task Aborts_incoming_message_when_error_during_completion()
-        {
-            // cleanup
-            await TestUtility.Delete("sales");
+//        [Test]
+//        public async Task Aborts_incoming_message_when_error_during_completion()
+//        {
+//            // cleanup
+//            await TestUtility.Delete("sales");
 
-            // setting up the environment
-            var container = new TransportPartsContainer();
+//            // setting up the environment
+//            var container = new TransportPartsContainer();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+//            var topology = await SetupEndpointOrientedTopology(container, "sales");
 
-            // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+//            // setup the operator
+//            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+//            var completed = new AsyncAutoResetEvent(false);
+//            var error = new AsyncAutoResetEvent(false);
 
-            var received = false;
-            var errorOccured = false;
+//            var received = false;
+//            var errorOccured = false;
 
-            topologyOperator.OnIncomingMessage((message, context) =>
-            {
-                received = true;
+//            topologyOperator.OnIncomingMessage((message, context) =>
+//            {
+//                received = true;
 
-                var ctx = (BrokeredMessageReceiveContext)context;
+//                var ctx = (BrokeredMessageReceiveContext)context;
 
-                ctx.OnComplete.Add(async () =>
-                {
-                    await Task.Delay(1).ConfigureAwait(false);
-                    throw new Exception("Something went wrong");
-                });
+//                ctx.OnComplete.Add(async () =>
+//                {
+//                    await Task.Delay(1).ConfigureAwait(false);
+//                    throw new Exception("Something went wrong");
+//                });
 
-                return TaskEx.Completed;
-            });
-            topologyOperator.OnError(exception =>
-            {
-                errorOccured = true;
+//                return TaskEx.Completed;
+//            });
+//            topologyOperator.OnError(exception =>
+//            {
+//                errorOccured = true;
 
-                error.Set();
+//                error.Set();
 
-                return TaskEx.Completed;
-            });
+//                return TaskEx.Completed;
+//            });
 
-            // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+//            // execute
+//            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
-            // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-            var sender = await senderFactory.Create("sales", null, "namespace");
-            await sender.Send(new BrokeredMessage());
+//            // send message to queue
+//            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+//            var sender = await senderFactory.Create("sales", null, "namespace");
+//            await sender.Send(new BrokeredMessage());
 
-            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
+//            await Task.WhenAny(completed.WaitOne(), error.WaitOne());
 
-            // validate
-            Assert.IsTrue(received);
-            Assert.IsTrue(errorOccured);
+//            // validate
+//            Assert.IsTrue(received);
+//            Assert.IsTrue(errorOccured);
 
-            await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
+//            await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
 
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var namespaceManager = namespaceLifeCycle.Get("namespace");
-            var queueDescription = await namespaceManager.GetQueue("sales");
-            Assert.AreEqual(1, queueDescription.MessageCount);
+//            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+//            var namespaceManager = namespaceLifeCycle.Get("namespace");
+//            var queueDescription = await namespaceManager.GetQueue("sales");
+//            Assert.AreEqual(1, queueDescription.MessageCount);
 
-            await topologyOperator.Stop();
-        }
+//            await topologyOperator.Stop();
+//        }
 
-        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
-        {
-            var settings = new SettingsHolder();
-            settings.Set<Conventions>(new Conventions());
-            container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            settings.SetDefault<EndpointName>(new EndpointName(enpointname));
-            extensions.NamespacePartitioning().AddNamespace("namespace", AzureServiceBusConnectionString.Value);
+//        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
+//        {
+//            var settings = new SettingsHolder();
+//            settings.Set<Conventions>(new Conventions());
+//            container.Register(typeof(SettingsHolder), () => settings);
+//            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+//            settings.SetDefault<EndpointName>(new EndpointName(enpointname));
+//            extensions.NamespacePartitioning().AddNamespace("namespace", AzureServiceBusConnectionString.Value);
 
-            var topology = new EndpointOrientedTopology(container);
-            topology.Initialize(settings);
+//            var topology = new EndpointOrientedTopology(container);
+//            topology.Initialize(settings);
 
-            // create the topologySectionManager
-            var topologyCreator = (ICreateTopology) container.Resolve(typeof(TopologyCreator));
+//            // create the topologySectionManager
+//            var topologyCreator = (ICreateTopology) container.Resolve(typeof(TopologyCreator));
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
-            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
-            return sectionManager;
-        }
-    }
-}
+//            var sectionManager = container.Resolve<ITopologySectionManager>();
+//            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
+//            return sectionManager;
+//        }
+//    }
+//}
