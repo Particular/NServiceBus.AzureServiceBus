@@ -108,10 +108,10 @@ namespace NServiceBus.AzureServiceBus
     }
     public class BrokeredMessageReceiveContext : NServiceBus.AzureServiceBus.ReceiveContext
     {
-        public BrokeredMessageReceiveContext() { }
-        public NServiceBus.AzureServiceBus.EntityInfo Entity { get; set; }
-        public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; set; }
-        public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; set; }
+        public BrokeredMessageReceiveContext(Microsoft.ServiceBus.Messaging.BrokeredMessage message, NServiceBus.AzureServiceBus.EntityInfo entity, Microsoft.ServiceBus.Messaging.ReceiveMode receiveMode) { }
+        public NServiceBus.AzureServiceBus.EntityInfo Entity { get; }
+        public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; }
+        public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; }
     }
     public class EndpointOrientedTopology : NServiceBus.AzureServiceBus.ITopology
     {
@@ -422,8 +422,7 @@ namespace NServiceBus.AzureServiceBus
     public abstract class ReceiveContext
     {
         protected ReceiveContext() { }
-        public System.Threading.CancellationToken CancellationToken { get; set; }
-        public System.Collections.Generic.IList<System.Func<System.Threading.Tasks.Task>> OnComplete { get; set; }
+        public System.Threading.CancellationToken CancellationToken { get; }
     }
     public class RoutingOptions
     {

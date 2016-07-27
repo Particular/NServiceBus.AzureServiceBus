@@ -7,7 +7,6 @@
     using System.Reflection;
     using System.Threading.Tasks;
     using AzureServiceBus;
-    using Microsoft.ServiceBus.Messaging;
     using Settings;
     using NServiceBus.Transports;
     using NUnit.Framework;
