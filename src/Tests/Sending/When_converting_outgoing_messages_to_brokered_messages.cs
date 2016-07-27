@@ -298,13 +298,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
 
-            Assert.That(brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize], Is.GreaterThan(0)); 
+            Assert.That(brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize], Is.GreaterThan(0));
         }
 
         class FakeMapper : ICanMapNamespaceNameToConnectionString
         {
-            string input;
-            string output;
+            EntityAddress input;
+            EntityAddress output;
 
             public FakeMapper()
                 : this ("input", "output")
@@ -313,8 +313,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             public FakeMapper(string input, string output)
             {
-                this.input = input;
-                this.output = output;
+                this.input = new EntityAddress(input);
+                this.output = new EntityAddress(output);
             }
 
             public EntityAddress Map(EntityAddress value)

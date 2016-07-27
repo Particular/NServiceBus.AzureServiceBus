@@ -1,42 +1,84 @@
 ﻿namespace NServiceBus.AzureServiceBus.Topology.MetaModel
 {
     using System;
-    using System.Linq;
 
-    class EntityAddress
+    struct EntityAddress : IEquatable<EntityAddress>
     {
-        string value;
-
-        public string Name => value.Split('@').First();
-        public string Suffix => value.Contains('@') ? value.Split('@').Last() : string.Empty;
-        public bool HasConnectionString
+        public bool Equals(EntityAddress other)
         {
-            get
+            return string.Equals(Name, other.Name) && string.Equals(Suffix, other.Suffix);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is EntityAddress && Equals((EntityAddress) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
             {
-                ConnectionString connectionString;
-                return ConnectionString.TryParse(Suffix, out connectionString);
+                return ((Name?.GetHashCode() ?? 0)*397) ^ (Suffix?.GetHashCode() ?? 0);
             }
         }
-        public bool HasSuffix => !string.IsNullOrWhiteSpace(Suffix);
 
-        public EntityAddress(string name, string suffix) : this(name + "@" + suffix) { }
+        public static bool operator ==(EntityAddress left, EntityAddress right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(EntityAddress left, EntityAddress right)
+        {
+            return !left.Equals(right);
+        }
+
+        public EntityAddress(string name, string suffix)
+        {
+            Name = name;
+            Suffix = suffix;
+
+            HasSuffix = !string.IsNullOrWhiteSpace(Suffix);
+            ConnectionString connectionString;
+            HasConnectionString = ConnectionString.TryParse(Suffix, out connectionString);
+        }
 
         public EntityAddress(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException("Entity address value can't be empty", nameof(value));
 
-            this.value = value;
+            var splitByAt = value.Split(seperators);
+
+            if (splitByAt.Length == 1)
+            {
+                Name = splitByAt[0];
+                Suffix = string.Empty;
+            }
+            else
+            {
+                Name = splitByAt[0];
+                Suffix = splitByAt[splitByAt.Length - 1];
+            }
+
+            HasSuffix = !string.IsNullOrWhiteSpace(Suffix);
+            ConnectionString connectionString;
+            HasConnectionString = ConnectionString.TryParse(Suffix, out connectionString);
         }
 
-        public static implicit operator EntityAddress(string value)
+        public string Name { get; }
+        public string Suffix { get; }
+        public bool HasConnectionString { get; }
+        public bool HasSuffix { get; }
+
+        public override string ToString()
         {
-            return new EntityAddress(value);
+            return HasSuffix ? $"{Name}@{Suffix}" : Name;
         }
 
-        public static implicit operator string(EntityAddress address)
+        static char[] seperators =
         {
-            return address.value;
-        }
+            '@'
+        };
     }
 }

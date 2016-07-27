@@ -28,24 +28,24 @@
         [Test]
         public void Should_return_same_value_if_does_not_contain_namespace_name()
         {
-            var mappedValue = mapper.Map("queuename");
+            var mappedValue = mapper.Map(new EntityAddress("queuename"));
 
-            StringAssert.AreEqualIgnoringCase("queuename", mappedValue);
+            StringAssert.AreEqualIgnoringCase("queuename", mappedValue.ToString());
         }
 
         [Test]
         public void Should_throw_if_namespace_name_has_not_been_mapped()
         {
-            var exception = Assert.Throws<InvalidOperationException>(() => mapper.Map("queuename@myNamespaceName"));
+            var exception = Assert.Throws<InvalidOperationException>(() => mapper.Map(new EntityAddress("queuename@myNamespaceName")));
             StringAssert.Contains("myNamespaceName", exception.Message);
         }
 
         [Test]
         public void Should_return_mapped_value_with_right_connection_string()
         {
-            var mappedValue = mapper.Map("queuename@namespace1");
+            var mappedValue = mapper.Map(new EntityAddress("queuename@namespace1"));
 
-            StringAssert.AreEqualIgnoringCase("queuename@Endpoint=sb://namespace1.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", mappedValue);
+            StringAssert.AreEqualIgnoringCase("queuename@Endpoint=sb://namespace1.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", mappedValue.ToString());
         }
     }
 }

@@ -16,11 +16,11 @@
         public EntityAddress Apply(string value, EntityType entityType)
         {
             var address = new EntityAddress(value);
-           
+
             var path = composition.GetEntityPath(address.Name, entityType);
             path = sanitizationStrategy.Sanitize(path, entityType);
             return new EntityAddress(path, address.Suffix);
         }
     }
-    
+
 }

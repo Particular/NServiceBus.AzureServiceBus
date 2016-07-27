@@ -67,7 +67,7 @@ namespace NServiceBus.AzureServiceBus
 
             if (!string.IsNullOrWhiteSpace(replyToHeaderValue))
             {
-                headers[Headers.ReplyToAddress] = mapper.Map(replyToHeaderValue);
+                headers[Headers.ReplyToAddress] = mapper.Map(new EntityAddress(replyToHeaderValue)).ToString();
             }
 
             if (!string.IsNullOrWhiteSpace(brokeredMessage.CorrelationId) && !headers.ContainsKey(Headers.CorrelationId))
