@@ -171,19 +171,19 @@ namespace NServiceBus.AzureServiceBus
                 {
                     // serialize and deserialize whole exception and not only the message.
                     var exceptionMessage = message.Properties[BrokeredMessageHeaders.ExceptionMessage].ToString();
+                    // wrong needs to be improved
                     var exception = new Exception(exceptionMessage);
 
-                    var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.BodyStream, new TransportTransaction(), message.DeliveryCount);
+                    //report the delivery count by -1 because it was abandoned after exception instead of error context invoked immediately
+                    var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.BodyStream, new TransportTransaction(), message.DeliveryCount - 1);
                     var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
-                    if (result == ErrorHandleResult.RetryRequired)
-                    {
-                        var newHeader = new Dictionary<string, object> { { BrokeredMessageHeaders.ExceptionMessage, string.Empty } };
-                        await AbandonInternal(message, newHeader).ConfigureAwait(false);
-                    }
-                    else if (result == ErrorHandleResult.Handled)
-                        locksTokensToComplete.Push(message.LockToken);
 
-                    return;
+                    if (result == ErrorHandleResult.Handled)
+                    {
+                        locksTokensToComplete.Push(message.LockToken);
+                        return;
+                    }
+
                 }
             }
             catch (UnsupportedBrokeredMessageBodyTypeException exception)
