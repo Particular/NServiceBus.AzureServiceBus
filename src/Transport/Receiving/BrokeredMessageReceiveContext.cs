@@ -17,5 +17,10 @@ namespace NServiceBus.AzureServiceBus
 
         // Dispatcher needs to compare this with requested consistency guarantees, cannot do default (postponed) dispatch if there is no completion step (ReceiveAndDelete)
         public ReceiveMode ReceiveMode { get; }
+
+        // while recovering, send via must be avoided as it will be rolled back
+        public bool Recovering { get; set; }
+
+
     }
 }

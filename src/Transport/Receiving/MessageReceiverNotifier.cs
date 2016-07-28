@@ -3,6 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -166,24 +167,11 @@ namespace NServiceBus.AzureServiceBus
             try
             {
                 incomingMessage = brokeredMessageConverter.Convert(message);
-                // Handle previously failed message with TransportTransactionMode = SendsAtomicWithReceive
-                if (message.Properties.ContainsKey(BrokeredMessageHeaders.ExceptionMessage) && !string.IsNullOrWhiteSpace(message.Properties[BrokeredMessageHeaders.ExceptionMessage].ToString()))
+                // Messages that have been handled by recovery, but abandoned to clear via queue can now be safely completed
+                if (message.Properties.ContainsKey(BrokeredMessageHeaders.Recovery))
                 {
-                    // serialize and deserialize whole exception and not only the message.
-                    var exceptionMessage = message.Properties[BrokeredMessageHeaders.ExceptionMessage].ToString();
-                    // wrong needs to be improved
-                    var exception = new Exception(exceptionMessage);
-
-                    //report the delivery count by -1 because it was abandoned after exception instead of error context invoked immediately
-                    var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.BodyStream, new TransportTransaction(), message.DeliveryCount - 1);
-                    var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
-
-                    if (result == ErrorHandleResult.Handled)
-                    {
-                        locksTokensToComplete.Push(message.LockToken);
-                        return;
-                    }
-
+                    locksTokensToComplete.Push(message.LockToken);
+                    return; // do not invoke the pipeline
                 }
             }
             catch (UnsupportedBrokeredMessageBodyTypeException exception)
@@ -212,22 +200,28 @@ namespace NServiceBus.AzureServiceBus
             }
             catch (Exception exception)
             {
-                if (settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue))
-                {
-                    var newHeader = new Dictionary<string, object> { { BrokeredMessageHeaders.ExceptionMessage, exception.Message } };
-                    await AbandonInternal(message, newHeader).ConfigureAwait(false);
-                    return;
-                }
-
-                var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.BodyStream, new TransportTransaction(), message.DeliveryCount);
+                var transportTransaction = new TransportTransaction();
+                context.Recovering = true;
+                transportTransaction.Set(context);
+                incomingMessage.BodyStream.Seek(0, SeekOrigin.Begin);
+                var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.BodyStream, transportTransaction, message.DeliveryCount);
 
                 try
                 {
                     var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
                     if (result == ErrorHandleResult.RetryRequired)
+                    {
                         await AbandonAsync(message, exception).ConfigureAwait(false);
+                    }
+                    else if (settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue))
+                    {
+                        var recoveryHeader = new Dictionary<string, object> { { BrokeredMessageHeaders.Recovery, "Message failed " + message.DeliveryCount + " times and was handled by the nservicebus recovery infrastructure. Safe to remove it." } };
+                        await AbandonInternal(message, recoveryHeader).ConfigureAwait(false);
+                    }
                     else if (result == ErrorHandleResult.Handled && context.ReceiveMode == ReceiveMode.PeekLock)
+                    {
                         locksTokensToComplete.Push(message.LockToken);
+                    }
                 }
                 catch (Exception onErrorException)
                 {
@@ -303,5 +297,4 @@ namespace NServiceBus.AzureServiceBus
             IsRunning = false;
         }
     }
-
 }
