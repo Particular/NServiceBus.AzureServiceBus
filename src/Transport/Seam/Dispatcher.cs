@@ -55,15 +55,15 @@ namespace NServiceBus.AzureServiceBus
         async Task DispatchAccordingToIsolationLevel(IList<Batch> outgoingBatches, BrokeredMessageReceiveContext receiveContext)
         {
             var batchesWithIsolatedDispatchConsistency = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Isolated);
-            var batchesWithDefaultConsistency = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Default);
+            var batchesWithDefaultConsistency = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Default).ToList();
 
             await routeOutgoingBatches.RouteBatches(batchesWithIsolatedDispatchConsistency, receiveContext).ConfigureAwait(false);
             await DispatchWithTransactionScopeIfRequired(batchesWithDefaultConsistency, receiveContext).ConfigureAwait(false);
         }
 
-        async Task DispatchWithTransactionScopeIfRequired(IEnumerable<Batch> toBeDispatchedOnComplete, BrokeredMessageReceiveContext context)
+        async Task DispatchWithTransactionScopeIfRequired(IList<Batch> toBeDispatchedOnComplete, BrokeredMessageReceiveContext context)
         {
-            if (context.CancellationToken.IsCancellationRequested)
+            if (context.CancellationToken.IsCancellationRequested || !toBeDispatchedOnComplete.Any())
                 return;
 
             // send via receive queue only works when wrapped in a scope
