@@ -85,6 +85,10 @@ namespace NServiceBus.AzureServiceBus
         {
             var sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
             var context = receiveContext as BrokeredMessageReceiveContext;
+            if (context?.Recovering == true) // avoid send via when recovering
+            {
+                sendVia = false;
+            }
             return new RoutingOptions
             {
                 SendVia = sendVia,
