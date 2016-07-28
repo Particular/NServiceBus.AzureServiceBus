@@ -1,494 +1,296 @@
-//namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
-//{
-//    using System;
-//    using System.Collections.Generic;
-//    using System.Linq;
-//    using System.Text;
-//    using System.Threading.Tasks;
-//    using Microsoft.ServiceBus.Messaging;
-//    using Tests;
-//    using Receiving;
-//    using TestUtils;
-//    using AzureServiceBus;
-//    using DeliveryConstraints;
-//    using Routing;
-//    using Settings;
-//    using NServiceBus.Transports;
-//    using NUnit.Framework;
-
-//    [TestFixture]
-//    [Category("AzureServiceBus")]
-//    public class When_dispatching_messages_in_receive_context
-//    {
-//        [Test]
-//        public async Task Should_dispatch_message_in_receive_context()
-//        {
-//            // cleanup
-//            await TestUtility.Delete("sales", "myqueue");
-
-//            var completed = new AsyncAutoResetEvent(false);
-
-//            // setting up the environment
-//            var container = new TransportPartsContainer();
-//            var settings = new SettingsHolder();
-
-//            // setup a basic topologySectionManager for testing
-//            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
-//            settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
-
-//            // setup the receive side of things
-//            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
-//            var pump = new MessagePump(topology, topologyOperator);
-
-//            // setup the dispatching side of things
-//            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
-
-//            // create the destination queue
-//            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-//            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
-//            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
-//            await creator.Create("myqueue", namespaceManager);
-
-//            // setup the test
-//            var received = false;
-
-//            // Dummy CriticalError
-//            var criticalError = new CriticalError(ctx => TaskEx.Completed);
-
-//            await pump.Init(async context =>
-//            {
-//                // normally the core would do that
-//                context.Context.Set(context.TransportTransaction);
-
-//                received = true;
-
-//                var bytes = Encoding.UTF8.GetBytes("Whatever");
-//                var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-
-//                var ctx = context.TransportTransaction.Get<ReceiveContext>();
-//                ctx.OnComplete.Add(() =>
-//                {
-//                    completed.Set();
-//                    return TaskEx.Completed;
-//                });
-
-//                var transportOperations = new TransportOperations( new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
+namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.ServiceBus.Messaging;
+    using Tests;
+    using Receiving;
+    using TestUtils;
+    using AzureServiceBus;
+    using DeliveryConstraints;
+    using Routing;
+    using Settings;
+    using NServiceBus.Transports;
+    using NUnit.Framework;
+
+    [TestFixture]
+    [Category("AzureServiceBus")]
+    public class When_dispatching_messages_in_receive_context
+    {
+        [Test]
+        public async Task Should_dispatch_message_in_receive_context()
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
+            // cleanup
+            await TestUtility.Delete("sales", "myqueue");
+
+            var completed = new AsyncAutoResetEvent(false);
+
+            // setting up the environment
+            var container = new TransportPartsContainer();
+            var settings = new SettingsHolder();
+
+            // setup a basic topologySectionManager for testing
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
+            settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
+
+            // setup the receive side of things
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var pump = new MessagePump(topology, topologyOperator);
+
+            // setup the dispatching side of things
+            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
+
+            // create the destination queue
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
+            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
+            await creator.Create("myqueue", namespaceManager);
+
+            // setup the test
+            var received = false;
 
-//                await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
+            // Dummy CriticalError
+            var criticalError = new CriticalError(ctx => TaskEx.Completed);
 
-//            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+            await pump.Init(async context =>
+            {
+                // normally the core would do that
+                context.Context.Set(context.TransportTransaction);
+
+                received = true;
+
+                var bytes = Encoding.UTF8.GetBytes("Whatever");
+                var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-//            // start the pump
-//            pump.Start(new PushRuntimeSettings(1));
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
 
-//            // send message to local queue
-//            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
-//            var sender = await senderFactory.Create("sales", null, "namespaceName");
-//            await sender.Send(new BrokeredMessage {MessageId = "id-incoming"});
+                await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
 
-//            await completed.WaitOne();
+                completed.Set();
+            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
-//            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
+            // start the pump
+            pump.Start(new PushRuntimeSettings(1));
 
-//            // validate
-//            Assert.IsTrue(received);
+            // send message to local queue
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var sender = await senderFactory.Create("sales", null, "namespaceName");
+            await sender.Send(new BrokeredMessage { MessageId = "id-incoming" });
+            
+            await completed.WaitAsync(cts.Token);
 
-//            // check destination queue for dispatched message
-//            var queue = await namespaceManager.GetQueue("myqueue");
-//            Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
+            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
-//            // cleanup
-//            await pump.Stop();
-//        }
+            // validate
+            Assert.IsTrue(received);
 
-//        [Test]
-//        public async Task Will_not_rollback_dispatch_message_in_receive_context_when_exception_occurs_on_completion_receive_only_mode()
-//        {
-//            // cleanup
-//            await TestUtility.Delete("sales", "myqueue");
+            // check destination queue for dispatched message
+            var queue = await namespaceManager.GetQueue("myqueue");
+            Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
 
-//            var errored = new AsyncAutoResetEvent(false);
+            // cleanup
+            await pump.Stop();
+        }
 
-//            // setting up the environment
-//            var container = new TransportPartsContainer();
-//            var settings = new SettingsHolder();
+        [Test]
+        public async Task Should_dispatch_message_in_receive_context_via_receive_queue()
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
 
-//            // setup a basic topologySectionManager for testing
-//            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
+            // cleanup
+            await TestUtility.Delete("sales", "myqueue");
 
-//            // setup the receive side of things
-//            var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
-//            var pump = new MessagePump(topology, topologyOperator);
+            var completed = new AsyncAutoResetEvent(false);
 
-//            // setup the dispatching side of things
-//            var dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
+            // setting up the environment
+            var container = new TransportPartsContainer();
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.SendViaReceiveQueue(true);
 
-//            // create the destination queue
-//            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-//            var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
-//            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
-//            await creator.Create("myqueue", namespaceManager);
+            // setup a basic topologySectionManager for testing
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
-//            // setup the test
-//            var received = false;
+            // setup the receive side of things
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var pump = new MessagePump(topology, topologyOperator);
 
-//            pump.OnError(exception =>
-//            {
-//                errored.Set();
+            // setup the dispatching side of things
+            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
 
-//                return TaskEx.Completed;
-//            });
+            // create the destination queue
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
+            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
+            await creator.Create("myqueue", namespaceManager);
 
-//            // Dummy CriticalError
-//            var criticalError = new CriticalError(ctx => TaskEx.Completed);
+            // setup the test
+            var received = false;
 
-//            await pump.Init(async context =>
-//            {
-//                // normally the core would do that
-//                context.Context.Set(context.TransportTransaction);
+            // Dummy CriticalError
+            var criticalError = new CriticalError(ctx => TaskEx.Completed);
 
-//                received = true;
+            await pump.Init(async context =>
+            {
+                // normally the core would do that
+                context.Context.Set(context.TransportTransaction);
 
-//                var bytes = Encoding.UTF8.GetBytes("Whatever");
-//                var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
+                received = true;
 
-//                var ctx = context.TransportTransaction.Get<ReceiveContext>();
-//                ctx.OnComplete.Add(async () =>
-//                {
-//                    await Task.Delay(1); // makes sure the compiler creates the statemachine that handles exception propagation
+                var bytes = Encoding.UTF8.GetBytes("Whatever");
+                var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-//                    throw new Exception("Something bad happens on complete");
-//                });
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
 
-//                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue") , DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
-//                await dispatcher.Dispatch(transportOperations, context.Context);
+                await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
 
-//            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+                completed.Set();
+            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
 
-//            // start the pump
-//            pump.Start(new PushRuntimeSettings(1));
+            // start the pump
+            pump.Start(new PushRuntimeSettings(1));
 
-//            // send message to local queue
-//            var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
-//            var sender = await senderFactory.Create("sales", null, "namespaceName");
-//            await sender.Send(new BrokeredMessage());
+            // send message to local queue
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var sender = await senderFactory.Create("sales", null, "namespaceName");
+            await sender.Send(new BrokeredMessage
+            {
+                MessageId = "id-init"
+            });
 
-//            await errored.WaitOne();
+            await completed.WaitAsync(cts.Token);
 
-//            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
-//            // stop the pump so retries don't keep going
-//            await pump.Stop();
+            await Task.Delay(TimeSpan.FromSeconds(5)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
-//            // validate
-//            Assert.IsTrue(received);
+            // validate
+            Assert.IsTrue(received);
 
-//            // check destination queue that message has indeed been dispatched
-//            var queue = await namespaceManager.GetQueue("myqueue");
-//            Assert.GreaterOrEqual(queue.MessageCount, 0, $"'myqueue' was expected to have no messages, but it did ({queue.MessageCount})");
+            // check destination queue for dispatched message
+            var queue = await namespaceManager.GetQueue("myqueue");
+            var count = queue.MessageCount;
+            Assert.IsTrue(count == 1, "'myqueue' was expected to have 1 message, but it had " + count + " instead");
 
-//            // check origin queue that source message is still there
-//            queue = await namespaceManager.GetQueue("sales");
-//            Assert.AreEqual(1, queue.MessageCount, "'sales' was expected to have 1 message, but it didn't");
-//        }
+            await pump.Stop();
+        }
 
-//        [Test]
-//        public async Task Should_dispatch_message_in_receive_context_via_receive_queue()
-//        {
-//            // cleanup
-//            await TestUtility.Delete("sales", "myqueue");
+        [Test]
+        public async Task Should_retry_after_rollback_in_less_then_thirty_seconds_when_using_via_queue()
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
 
-//            var completed = new AsyncAutoResetEvent(false);
+            // cleanup
+            await TestUtility.Delete("sales", "myqueue");
 
-//            // setting up the environment
-//            var container = new TransportPartsContainer();
-//            var settings = new SettingsHolder();
-//            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-//            extensions.SendViaReceiveQueue(true);
+            var retried = new AsyncAutoResetEvent(false);
+            var invocationCount = 0;
+            var firstTime = DateTime.MinValue;
+            var secondTime = DateTime.MaxValue;
 
-//            // setup a basic topologySectionManager for testing
-//            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
+            // setting up the environment
+            var container = new TransportPartsContainer();
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.SendViaReceiveQueue(true);
 
-//            // setup the receive side of things
-//            var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
-//            var pump = new MessagePump(topology, topologyOperator);
+            // setup a basic topologySectionManager for testing
+            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
-//            // setup the dispatching side of things
-//            var dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
+            // setup the receive side of things
+            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var pump = new MessagePump(topology, topologyOperator);
 
-//            // create the destination queue
-//            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-//            var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
-//            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
-//            await creator.Create("myqueue", namespaceManager);
+            // setup the dispatching side of things
+            var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
 
-//            // setup the test
-//            var received = false;
+            // create the destination queue
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
+            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
+            await creator.Create("myqueue", namespaceManager);
 
-//            // Dummy CriticalError
-//            var criticalError = new CriticalError(ctx => TaskEx.Completed);
+            // setup the test
+            pump.OnError(exception =>
+            {
+                invocationCount++;
 
-//            await pump.Init(async context =>
-//            {
-//                // normally the core would do that
-//                context.Context.Set(context.TransportTransaction);
+                if (invocationCount == 1)
+                {
+                    firstTime = DateTime.Now;
+                }
 
-//                received = true;
+                if (invocationCount == 2)
+                {
+                    secondTime = DateTime.Now;
+                    retried.Set();
+                }
 
-//                var bytes = Encoding.UTF8.GetBytes("Whatever");
-//                var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
+                return TaskEx.Completed;
+            });
 
-//                var ctx = context.TransportTransaction.Get<ReceiveContext>();
-//                ctx.OnComplete.Add(() =>
-//                {
-//                    completed.Set();
-//                    return TaskEx.Completed;
-//                });
+            // Dummy CriticalError
+            var criticalError = new CriticalError(ctx => TaskEx.Completed);
 
-//                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()) );
+            await pump.Init(async context =>
+            {
+                // normally the core would do that
+                context.Context.Set(context.TransportTransaction);
 
-//                await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
+                var bytes = Encoding.UTF8.GetBytes("Whatever");
+                var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-//                // TODO: TransportTransactionMode will need to change with topology
-//            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
 
-//            // start the pump
-//            pump.Start(new PushRuntimeSettings(1));
+                await dispatcher.Dispatch(transportOperations, context.Context);
 
-//            // send message to local queue
-//            var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
-//            var sender = await senderFactory.Create("sales", null, "namespaceName");
-//            await sender.Send(new BrokeredMessage
-//            {
-//                MessageId = "id-init"
-//            });
+                throw new Exception("Something bad happens");
 
-//            await completed.WaitOne();
+            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
 
-//            await Task.Delay(TimeSpan.FromSeconds(5)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
+            // start the pump
+            pump.Start(new PushRuntimeSettings(1));
 
-//            // validate
-//            Assert.IsTrue(received);
+            // send message to local queue
+            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var sender = await senderFactory.Create("sales", null, "namespaceName");
+            await sender.Send(new BrokeredMessage());
 
-//            // check destination queue for dispatched message
-//            var queue = await namespaceManager.GetQueue("myqueue");
-//            var count = queue.MessageCount;
-//            Assert.IsTrue(count == 1, "'myqueue' was expected to have 1 message, but it had " + count + " instead");
+            await Task.WhenAny(retried.WaitAsync(cts.Token).IgnoreCancellation());
 
-//            await pump.Stop();
-//        }
+            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
-//        [Test]
-//        public async Task Should_rollback_dispatch_message_in_receive_context_via_receive_queue_when_exception_occurs_on_completion()
-//        {
-//            // cleanup
-//            await TestUtility.Delete("sales", "myqueue");
+            // stop the pump so retries don't keep going
+            await pump.Stop();
 
-//            var errored = new AsyncAutoResetEvent(false);
+            // validate
+            var elapsed = secondTime - firstTime;
+            Console.WriteLine("elapsed" + elapsed.TotalSeconds);
+            Assert.IsTrue(elapsed < TimeSpan.FromSeconds(29)); // 29 instead of 30 to accommodate for a little clock drift
+        }
 
-//            // setting up the environment
-//            var container = new TransportPartsContainer();
-//            var settings = new SettingsHolder();
-//            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-//            extensions.SendViaReceiveQueue(true);
+        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname, SettingsHolder settings)
+        {
+            container.Register(typeof(SettingsHolder), () => settings);
+            settings.SetDefault<EndpointName>(new EndpointName(enpointname));
+            settings.Set<Conventions>(new Conventions());
 
-//            // setup a basic topologySectionManager for testing
-//            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
-//            // setup the receive side of things
-//            var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
-//            var pump = new MessagePump(topology, topologyOperator);
+            var topology = new EndpointOrientedTopology(container);
+            topology.Initialize(settings);
 
-//            // setup the dispatching side of things
-//            var dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
-
-//            // create the destination queue
-//            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-//            var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
-//            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
-//            await creator.Create("myqueue", namespaceManager);
-
-//            // setup the test
-//            var received = false;
-
-//            pump.OnError(exception =>
-//            {
-//                errored.Set();
-
-//                return TaskEx.Completed;
-//            });
-
-//            // Dummy CriticalError
-//            var criticalError = new CriticalError(ctx => TaskEx.Completed);
-
-//            await pump.Init(async context =>
-//            {
-//                // normally the core would do that
-//                context.Context.Set(context.TransportTransaction);
-
-//                received = true;
-
-//                var bytes = Encoding.UTF8.GetBytes("Whatever");
-//                var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-
-//                var ctx = context.TransportTransaction.Get<ReceiveContext>();
-//                ctx.OnComplete.Add(async () =>
-//                {
-//                    await Task.Delay(1); // makes sure the compiler creates the statemachine that handles exception propagation
-
-//                    throw new Exception("Something bad happens on complete");
-//                });
-
-//                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue") , DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()) );
-
-//                await dispatcher.Dispatch(transportOperations, context.Context);
-
-//                // TODO: TransportTransactionMode will need to change with topology
-//            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
-
-//            // start the pump
-//            pump.Start(new PushRuntimeSettings(1));
-
-//            // send message to local queue
-//            var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
-//            var sender = await senderFactory.Create("sales", null, "namespaceName");
-//            await sender.Send(new BrokeredMessage());
-
-//            await errored.WaitOne();
-
-//            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
-
-//            // stop the pump so retries don't keep going
-//            await pump.Stop();
-
-//            // validate
-//            Assert.IsTrue(received);
-
-//            // check destination queue that message has not been dispatched
-//            var queue = await namespaceManager.GetQueue("myqueue");
-//            Assert.AreEqual(0, queue.MessageCount, $"'myqueue' was expected to have no messages, but it did ({queue.MessageCount})");
-
-//            // check origin queue that source message is still there
-//            queue = await namespaceManager.GetQueue("sales");
-//            Assert.AreEqual(1, queue.MessageCount, "'sales' was expected to have 1 message, but it didn't");
-//        }
-
-//        [Test]
-//        public async Task Should_retry_after_rollback_in_less_then_thirty_seconds_when_using_via_queue()
-//        {
-//            // cleanup
-//            await TestUtility.Delete("sales", "myqueue");
-
-//            var retried = new AsyncAutoResetEvent(false);
-//            var invocationCount = 0;
-//            var firstTime = DateTime.MinValue;
-//            var secondTime = DateTime.MaxValue;
-
-//            // setting up the environment
-//            var container = new TransportPartsContainer();
-//            var settings = new SettingsHolder();
-//            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-//            extensions.SendViaReceiveQueue(true);
-
-//            // setup a basic topologySectionManager for testing
-//            var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
-
-//            // setup the receive side of things
-//            var topologyOperator = (IOperateTopology) container.Resolve(typeof(TopologyOperator));
-//            var pump = new MessagePump(topology, topologyOperator);
-
-//            // setup the dispatching side of things
-//            var dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
-
-//            // create the destination queue
-//            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-//            var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
-//            var namespaceManager = namespaceLifeCycle.Get("namespaceName");
-//            await creator.Create("myqueue", namespaceManager);
-
-//            // setup the test
-//            pump.OnError(exception =>
-//            {
-//                invocationCount++;
-
-//                if (invocationCount == 1)
-//                {
-//                    firstTime = DateTime.Now;
-//                }
-
-//                if (invocationCount == 2)
-//                {
-//                    secondTime = DateTime.Now;
-//                    retried.Set();
-//                }
-
-//                return TaskEx.Completed;
-//            });
-
-//            // Dummy CriticalError
-//            var criticalError = new CriticalError(ctx => TaskEx.Completed);
-
-//            await pump.Init(async context =>
-//            {
-//                // normally the core would do that
-//                context.Context.Set(context.TransportTransaction);
-
-//                var bytes = Encoding.UTF8.GetBytes("Whatever");
-//                var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-
-//                var ctx = context.TransportTransaction.Get<ReceiveContext>();
-//                ctx.OnComplete.Add(async () =>
-//                {
-//                    await Task.Delay(1); // makes sure the compiler creates the statemachine that handles exception propagation
-
-//                    throw new Exception("Something bad happens on complete");
-//                });
-
-//                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()) );
-
-//                await dispatcher.Dispatch(transportOperations, context.Context);
-
-//                // TODO: TransportTransactionMode will need to change with topology
-//            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
-
-//            // start the pump
-//            pump.Start(new PushRuntimeSettings(1));
-
-//            // send message to local queue
-//            var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
-//            var sender = await senderFactory.Create("sales", null, "namespaceName");
-//            await sender.Send(new BrokeredMessage());
-
-//            await retried.WaitOne();
-
-//            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
-
-//            // stop the pump so retries don't keep going
-//            await pump.Stop();
-
-//            // validate
-//            var elapsed = secondTime - firstTime;
-//            Console.WriteLine("elapsed" + elapsed.TotalSeconds);
-//            Assert.IsTrue(elapsed < TimeSpan.FromSeconds(29)); // 29 instead of 30 to accommodate for a little clock drift
-//        }
-
-//        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname, SettingsHolder settings)
-//        {
-//            container.Register(typeof(SettingsHolder), () => settings);
-//            settings.SetDefault<EndpointName>(new EndpointName(enpointname));
-//            settings.Set<Conventions>(new Conventions());
-
-//            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-//            extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
-
-//            var topology = new EndpointOrientedTopology(container);
-//            topology.Initialize(settings);
-
-//            // create the topologySectionManager
-//            var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
-//            var sectionManager = container.Resolve<ITopologySectionManager>();
-//            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
-//            return sectionManager;
-//        }
-//    }
-//}
+            // create the topologySectionManager
+            var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
+            var sectionManager = container.Resolve<ITopologySectionManager>();
+            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
+            return sectionManager;
+        }
+    }
+}
