@@ -66,17 +66,8 @@ namespace NServiceBus.AzureServiceBus
             if (context.CancellationToken.IsCancellationRequested || !toBeDispatchedOnComplete.Any())
                 return;
 
-            try
-            {
-                var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
-                if (useTx) Transaction.Current = context.Transaction;
-
-                await routeOutgoingBatches.RouteBatches(toBeDispatchedOnComplete, context).ConfigureAwait(false);
-            }
-            finally
-            {
-                Transaction.Current = null;
-            }
+            await routeOutgoingBatches.RouteBatches(toBeDispatchedOnComplete, context).ConfigureAwait(false);
+            
             
         }
 

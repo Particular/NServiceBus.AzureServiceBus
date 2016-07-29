@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using System.Transactions;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
 
@@ -27,9 +28,17 @@ namespace NServiceBus.AzureServiceBus
           return sender.SendAsync(message);
         }
 
-        public Task SendBatch(IEnumerable<BrokeredMessage> messages)
+        public Task SendBatch(IEnumerable<BrokeredMessage> messages, CommittableTransaction transaction)
         {
-            return sender.SendBatchAsync(messages);
+            try
+            {
+                Transaction.Current = transaction;
+                return sender.SendBatchAsync(messages);
+            }
+            finally
+            {
+                Transaction.Current = null;
+            }
         }
 
         public Task CloseAsync()

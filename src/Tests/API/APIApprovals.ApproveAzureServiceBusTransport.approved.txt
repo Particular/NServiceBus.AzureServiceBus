@@ -113,7 +113,6 @@ namespace NServiceBus.AzureServiceBus
         public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; }
         public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; }
         public bool Recovering { get; set; }
-        public System.Transactions.CommittableTransaction Transaction { get; set; }
     }
     public class EndpointOrientedTopology : NServiceBus.AzureServiceBus.ITopology
     {
@@ -263,7 +262,7 @@ namespace NServiceBus.AzureServiceBus
     public interface IMessageSender : NServiceBus.AzureServiceBus.IClientEntity
     {
         System.Threading.Tasks.Task Send(Microsoft.ServiceBus.Messaging.BrokeredMessage message);
-        System.Threading.Tasks.Task SendBatch(System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> messages);
+        System.Threading.Tasks.Task SendBatch(System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> messages, System.Transactions.CommittableTransaction transaction);
     }
     public interface IMessagingFactory : NServiceBus.AzureServiceBus.IClientEntity
     {
@@ -426,6 +425,7 @@ namespace NServiceBus.AzureServiceBus
     {
         protected ReceiveContext() { }
         public System.Threading.CancellationToken CancellationToken { get; }
+        public System.Transactions.CommittableTransaction Transaction { get; set; }
     }
     public class RoutingOptions
     {
