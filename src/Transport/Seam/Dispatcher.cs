@@ -3,17 +3,14 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using System.Transactions;
     using Extensibility;
     using Microsoft.ServiceBus.Messaging;
-    using Settings;
     using Transport;
 
     class Dispatcher : IDispatchMessages
     {
-        public Dispatcher(ReadOnlySettings settings, IRouteOutgoingBatches routeOutgoingBatches, IBatcher batcher)
+        public Dispatcher(IRouteOutgoingBatches routeOutgoingBatches, IBatcher batcher)
         {
-            this.settings = settings;
             this.routeOutgoingBatches = routeOutgoingBatches;
             this.batcher = batcher;
         }
@@ -85,6 +82,5 @@ namespace NServiceBus.AzureServiceBus
 
         IRouteOutgoingBatches routeOutgoingBatches;
         IBatcher batcher;
-        ReadOnlySettings settings;
     }
 }

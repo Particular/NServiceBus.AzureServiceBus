@@ -1,6 +1,5 @@
 namespace NServiceBus.AzureServiceBus
 {
-    using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
 
     public class BrokeredMessageReceiveContext : ReceiveContext

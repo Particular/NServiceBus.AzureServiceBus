@@ -45,7 +45,7 @@
             await creator.Create("myqueue2", namespaceManager);
 
             // perform the test
-            var dispatcher = new Dispatcher(settings, router, new FakeBatcher());
+            var dispatcher = new Dispatcher(router, new FakeBatcher());
             await dispatcher.Dispatch(new TransportOperations(), new TransportTransaction(), new ContextBag());
 
             //validate
@@ -81,7 +81,7 @@
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var dispatcher = new Dispatcher(settings, router, new FakeBatcher());
+            var dispatcher = new Dispatcher(router, new FakeBatcher());
 
             // validate
             Assert.ThrowsAsync<MessagingEntityNotFoundException>(async () => await dispatcher.Dispatch(new TransportOperations(), new TransportTransaction(), new ContextBag()));
