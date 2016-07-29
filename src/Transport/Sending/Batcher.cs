@@ -3,7 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using Settings;
-    using Transports;
+    using Transport;
 
     class Batcher : IBatcher
     {

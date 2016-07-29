@@ -7,7 +7,7 @@ namespace NServiceBus.AzureServiceBus
     using Extensibility;
     using Microsoft.ServiceBus.Messaging;
     using Settings;
-    using Transports;
+    using Transport;
 
     class Dispatcher : IDispatchMessages
     {
@@ -18,12 +18,12 @@ namespace NServiceBus.AzureServiceBus
             this.batcher = batcher;
         }
 
-        public Task Dispatch(TransportOperations operations, ContextBag context)
+        public Task Dispatch(TransportOperations operations, TransportTransaction transportTransaction, ContextBag context)
         {
             var outgoingBatches = batcher.ToBatches(operations);
 
             ReceiveContext receiveContext;
-            if (!TryGetReceiveContext(context, out receiveContext)) // not in a receive context, so send out immediately
+            if (!TryGetReceiveContext(transportTransaction, out receiveContext)) // not in a receive context, so send out immediately
             {
                 return routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext: null);
             }
@@ -75,11 +75,10 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        static bool TryGetReceiveContext(ContextBag context, out ReceiveContext receiveContext)
+        static bool TryGetReceiveContext(TransportTransaction transportTransaction, out ReceiveContext receiveContext)
         {
-            TransportTransaction transportTransaction;
 
-            if (!context.TryGet(out transportTransaction))
+            if (transportTransaction == null)
             {
                 receiveContext = null;
                 return false;

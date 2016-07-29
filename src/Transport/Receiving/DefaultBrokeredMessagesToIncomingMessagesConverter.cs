@@ -36,13 +36,13 @@ namespace NServiceBus.AzureServiceBus
             var transportEncodingWasSpecified = brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding);
             var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : GetDefaultTransportEncoding();
 
-            Stream rawBody;
+            byte[] body;
             switch (transportEncodingToUse)
             {
                 case "wcf/byte-array":
                     try
                     {
-                        rawBody = new MemoryStream(brokeredMessage.GetBody<byte[]>() ?? EmptyBody);
+                        body = brokeredMessage.GetBody<byte[]>() ?? EmptyBody;
                     }
                     catch (Exception e)
                     {
@@ -51,12 +51,10 @@ namespace NServiceBus.AzureServiceBus
                     }
                     break;
                 case "application/octect-stream":
-                    rawBody = new MemoryStream();
-                    using (var body = brokeredMessage.GetBody<Stream>())
-                    {
-                        body.CopyTo(rawBody);
-                        rawBody.Position = 0;
-                    }
+                    var bodyStream = brokeredMessage.GetBody<Stream>();
+                    body = new byte[bodyStream.Length];
+                    // TODO : This could be async
+                    bodyStream.Read(body, 0, (int)bodyStream.Length);
                     break;
                 default:
                     throw new UnsupportedBrokeredMessageBodyTypeException("Unsupported brokered message body type configured");
@@ -80,7 +78,7 @@ namespace NServiceBus.AzureServiceBus
                 headers[Headers.TimeToBeReceived] = brokeredMessage.TimeToLive.ToString("c", CultureInfo.InvariantCulture);
             }
 
-            return new IncomingMessageDetails(brokeredMessage.MessageId, headers, rawBody);
+            return new IncomingMessageDetails(brokeredMessage.MessageId, headers, body);
         }
 
         string GetDefaultTransportEncoding()

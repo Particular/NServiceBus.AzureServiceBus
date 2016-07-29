@@ -1,7 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System.Threading.Tasks;
-    using Transports;
+    using Transport;
 
     class TransportResourcesCreator : ICreateQueues
     {

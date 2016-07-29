@@ -4,7 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using Routing;
     using Settings;
-    using Transports;
+    using Transport;
 
     public interface ITopology
     {

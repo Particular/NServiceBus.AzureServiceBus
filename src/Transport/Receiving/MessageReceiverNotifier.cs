@@ -13,7 +13,6 @@ namespace NServiceBus.AzureServiceBus
     using Azure.Transports.WindowsAzureServiceBus;
     using Settings;
     using Transport;
-    using Transports;
     using Utils;
 
     class MessageReceiverNotifier : INotifyIncomingMessages
@@ -203,8 +202,7 @@ namespace NServiceBus.AzureServiceBus
                 var transportTransaction = new TransportTransaction();
                 context.Recovering = true;
                 transportTransaction.Set(context);
-                incomingMessage.BodyStream.Seek(0, SeekOrigin.Begin);
-                var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.BodyStream, transportTransaction, message.DeliveryCount);
+                var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
 
                 try
                 {

@@ -5,7 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using Addressing;
-    using Transports;
+    using Transport;
     using Settings;
 
     class EndpointOrientedTopologySectionManager : ITopologySectionManager

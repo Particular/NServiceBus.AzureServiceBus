@@ -6,11 +6,11 @@
     using AzureServiceBus;
     using Serialization;
     using Settings;
-    using Transports;
+    using Transport;
 
     public class AzureServiceBusTransport : TransportDefinition
     {
-        protected override TransportInfrastructure Initialize(SettingsHolder settings, string connectionString)
+        public override TransportInfrastructure Initialize(SettingsHolder settings, string connectionString)
         {
             // override core default serialization
             settings.SetDefault<SerializationDefinition>(new JsonSerializer());
