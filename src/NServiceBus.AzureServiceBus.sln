@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBus", "Transport\NServiceBus.AzureServiceBus.csproj", "{607C3F29-58D4-4EEC-BFFB-668976CBB5B8}"
 EndProject
@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NugetPackageDefinition", "N
 	ProjectSection(SolutionItems) = preProject
 		..\packaging\nuget\nservicebus.azureservicebus.nuspec = ..\packaging\nuget\nservicebus.azureservicebus.nuspec
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBus.TransportTests", "TransportTests\NServiceBus.AzureServiceBus.TransportTests.csproj", "{0F5092A6-06C2-4AED-B7A5-29D7AD43222F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,10 @@ Global
 		{0A5B4346-3C24-4192-B47C-B35706954907}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A5B4346-3C24-4192-B47C-B35706954907}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A5B4346-3C24-4192-B47C-B35706954907}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F5092A6-06C2-4AED-B7A5-29D7AD43222F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F5092A6-06C2-4AED-B7A5-29D7AD43222F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F5092A6-06C2-4AED-B7A5-29D7AD43222F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F5092A6-06C2-4AED-B7A5-29D7AD43222F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

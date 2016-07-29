@@ -28,7 +28,7 @@ namespace NServiceBus.AzureServiceBus
         string fullPath;
         EntityInfo entity;
         bool stopping;
-        ConcurrentStack<Guid> locksTokensToComplete;
+        ConcurrentStack<Tuple<Guid, CommittableTransaction>> locksTokensToComplete;
         CancellationTokenSource batchedCompletionCts;
         Task batchedCompletionTask;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
@@ -39,7 +39,7 @@ namespace NServiceBus.AzureServiceBus
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.settings = settings;
-            locksTokensToComplete = new ConcurrentStack<Guid>();
+            locksTokensToComplete = new ConcurrentStack<Tuple<Guid, CommittableTransaction>>();
             batchedCompletionCts = new CancellationTokenSource();
         }
 
@@ -125,7 +125,7 @@ namespace NServiceBus.AzureServiceBus
             batchedCompletionTask = Task.Run(async () =>
             {
                 int count;
-                var buffer = new Guid[5000];
+                var buffer = new Tuple<Guid, CommittableTransaction>[5000];
 
                 while (!batchedCompletionCts.Token.IsCancellationRequested)
                 {
@@ -136,7 +136,17 @@ namespace NServiceBus.AzureServiceBus
                     }
 
                     count = locksTokensToComplete.TryPopRange(buffer);
-                    await internalReceiver.SafeCompleteBatchAsync(buffer.Take(count)).ConfigureAwait(false);
+                    var tocomplete = buffer.Take(count).ToList();
+                    var tokens = tocomplete.Select(t => t.Item1);
+                    var txs = tocomplete.Select(t => t.Item2);
+                    await internalReceiver.SafeCompleteBatchAsync(tokens).ConfigureAwait(false);
+                    foreach (var tx in txs)
+                    {
+                        if (tx?.TransactionInformation.Status == TransactionStatus.Active)
+                        {
+                            tx.Commit();
+                        }
+                    }
                     Array.Clear(buffer, 0, buffer.Length);
                 }
 
@@ -147,7 +157,15 @@ namespace NServiceBus.AzureServiceBus
                 }
 
                 count = locksTokensToComplete.TryPopRange(buffer);
-                await internalReceiver.SafeCompleteBatchAsync(buffer.Take(count)).ConfigureAwait(false);
+                var remainingtocomplete = buffer.Take(count).ToList();
+                var remainingtokens = remainingtocomplete.Select(t => t.Item1);
+                var remainingtxs = remainingtocomplete.Select(t => t.Item2);
+                await internalReceiver.SafeCompleteBatchAsync(remainingtokens).ConfigureAwait(false);
+                foreach (var tx in remainingtxs)
+                {
+                    if (tx.TransactionInformation.Status == TransactionStatus.Active)
+                        tx.Commit();
+                }
                 Array.Clear(buffer, 0, buffer.Length);
 
             }, CancellationToken.None);
@@ -168,7 +186,10 @@ namespace NServiceBus.AzureServiceBus
                 // Messages that have been handled by recovery, but abandoned to clear via queue can now be safely completed
                 if (message.Properties.ContainsKey(BrokeredMessageHeaders.Recovery))
                 {
-                    locksTokensToComplete.Push(message.LockToken);
+                    locksTokensToComplete.Push(new Tuple<Guid, CommittableTransaction>(
+                             message.LockToken,
+                             null
+                        ));
                     return; // do not invoke the pipeline
                 }
             }
@@ -182,6 +203,14 @@ namespace NServiceBus.AzureServiceBus
 
             try
             {
+
+                var tx = new CommittableTransaction(new TransactionOptions
+                {
+                    IsolationLevel = IsolationLevel.Serializable
+                });
+                context.Transaction = tx;
+
+
                 await incomingCallback(incomingMessage, context).ConfigureAwait(false);
 
                 if (context.CancellationToken.IsCancellationRequested)
@@ -192,13 +221,18 @@ namespace NServiceBus.AzureServiceBus
                 {
                     if (context.ReceiveMode == ReceiveMode.PeekLock)
                     {
-                        locksTokensToComplete.Push(message.LockToken);
+                        locksTokensToComplete.Push(new Tuple<Guid, CommittableTransaction>(
+                             message.LockToken,
+                             context.Transaction
+                        ));
+                        context.Transaction.Commit();// push into the list later
                     }
                 }
             }
             catch (Exception exception)
             {
                 var transportTransaction = new TransportTransaction();
+                context.Transaction.Rollback(exception);
                 context.Recovering = true;
                 transportTransaction.Set(context);
                 var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
@@ -217,7 +251,10 @@ namespace NServiceBus.AzureServiceBus
                     }
                     else if (result == ErrorHandleResult.Handled && context.ReceiveMode == ReceiveMode.PeekLock)
                     {
-                        locksTokensToComplete.Push(message.LockToken);
+                        locksTokensToComplete.Push(new Tuple<Guid, CommittableTransaction>(
+                             message.LockToken,
+                             context.Transaction
+                        ));
                     }
                 }
                 catch (Exception onErrorException)
