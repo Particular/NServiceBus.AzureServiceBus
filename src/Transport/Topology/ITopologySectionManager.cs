@@ -1,7 +1,7 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
-    using Transports;
+    using Transport;
 
     public interface ITopologySectionManager
     {

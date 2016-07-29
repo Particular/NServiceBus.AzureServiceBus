@@ -69,12 +69,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>().ToList()));
 
-                await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
+                await dispatcher.Dispatch(transportOperations, new TransportTransaction(), context.Context); // makes sure the context propagates
 
                 completed.Set();
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+            }, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -147,12 +147,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>().ToList()));
 
-                await dispatcher.Dispatch(transportOperations, context.Context); // makes sure the context propagates
+                await dispatcher.Dispatch(transportOperations, new TransportTransaction(), context.Context); // makes sure the context propagates
 
                 completed.Set();
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+            }, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
             
             // start the pump
             pump.Start(new PushRuntimeSettings(1));
@@ -245,13 +245,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
                 var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
-                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>()));
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>().ToList()));
 
-                await dispatcher.Dispatch(transportOperations, context.Context);
+                await dispatcher.Dispatch(transportOperations, new TransportTransaction(), context.Context);
 
                 throw new Exception("Something bad happens");
 
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+            }, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
 
 
             // start the pump

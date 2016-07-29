@@ -47,7 +47,7 @@
             await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.Start(new PushRuntimeSettings(1));
 
-            await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new MemoryStream()), new FakeReceiveContext());
+            await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new byte[0]), new FakeReceiveContext());
             var exceptionThrownByMessagePump = new Exception("kaboom");
             await fakeTopologyOperator.onError(exceptionThrownByMessagePump);
 
