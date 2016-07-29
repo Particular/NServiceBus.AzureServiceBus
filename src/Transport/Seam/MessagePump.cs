@@ -3,7 +3,6 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Transactions;
     using Extensibility;
     using Logging;
     using Transport;
