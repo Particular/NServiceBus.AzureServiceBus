@@ -336,8 +336,7 @@ namespace NServiceBus.AzureServiceBus
     }
     public interface IRouteOutgoingBatches
     {
-        System.Threading.Tasks.Task RouteBatch(NServiceBus.AzureServiceBus.Batch batch, NServiceBus.AzureServiceBus.ReceiveContext receiveContext);
-        System.Threading.Tasks.Task RouteBatches(System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.Batch> outgoingBatches, NServiceBus.AzureServiceBus.ReceiveContext receiveContext);
+        System.Threading.Tasks.Task RouteBatches(System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.Batch> outgoingBatches, NServiceBus.AzureServiceBus.ReceiveContext receiveContext, NServiceBus.Transport.DispatchConsistency consistency);
     }
     public interface ITopology
     {
