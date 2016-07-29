@@ -47,7 +47,7 @@
             await pump.Init(context => TaskEx.Completed, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.Start(new PushRuntimeSettings(1));
 
-            await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new MemoryStream()), new BrokeredMessageReceiveContext());
+            await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new MemoryStream()), new FakeReceiveContext());
             var exceptionThrownByMessagePump = new Exception("kaboom");
             await fakeTopologyOperator.onError(exceptionThrownByMessagePump);
 
@@ -57,6 +57,10 @@
             Assert.IsTrue(criticalErrorWasRaised, "Expected critical error to be raised, but it wasn't");
             Assert.AreEqual(exceptionThrownByMessagePump, exceptionReceivedByCircuitBreaker, "Exception circuit breaker got should be the same as the one raised by message pump");
             Assert.That(stopwatch.ElapsedMilliseconds, Is.GreaterThanOrEqualTo(TimeSpan.FromSeconds(30).TotalMilliseconds));
+        }
+
+        class FakeReceiveContext : ReceiveContext
+        {
         }
 
         class FakeTopology : ITopologySectionManager

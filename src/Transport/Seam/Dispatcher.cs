@@ -3,14 +3,17 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Transactions;
     using Extensibility;
     using Microsoft.ServiceBus.Messaging;
+    using Settings;
     using Transports;
 
     class Dispatcher : IDispatchMessages
     {
-        public Dispatcher(IRouteOutgoingBatches routeOutgoingBatches, IBatcher batcher)
+        public Dispatcher(ReadOnlySettings settings, IRouteOutgoingBatches routeOutgoingBatches, IBatcher batcher)
         {
+            this.settings = settings;
             this.routeOutgoingBatches = routeOutgoingBatches;
             this.batcher = batcher;
         }
@@ -46,11 +49,30 @@ namespace NServiceBus.AzureServiceBus
             // default behavior is to postpone sends until complete (and potentially complete them as a single tx if possible)
             // but some messages may need to go out immediately
 
-            var toBeDispatchedImmediately = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Isolated);
-            var toBeDispatchedOnComplete = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Default);
+            return DispatchAccordingToIsolationLevel(outgoingBatches, receiveContext);
+        }
 
-            receiveContext.OnComplete.Add(() => routeOutgoingBatches.RouteBatches(toBeDispatchedOnComplete, receiveContext));
-            return routeOutgoingBatches.RouteBatches(toBeDispatchedImmediately, receiveContext);
+        async Task DispatchAccordingToIsolationLevel(IList<Batch> outgoingBatches, BrokeredMessageReceiveContext receiveContext)
+        {
+            var batchesWithIsolatedDispatchConsistency = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Isolated);
+            var batchesWithDefaultConsistency = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Default).ToList();
+
+            await routeOutgoingBatches.RouteBatches(batchesWithIsolatedDispatchConsistency, receiveContext).ConfigureAwait(false);
+            await DispatchWithTransactionScopeIfRequired(batchesWithDefaultConsistency, receiveContext).ConfigureAwait(false);
+        }
+
+        async Task DispatchWithTransactionScopeIfRequired(IList<Batch> toBeDispatchedOnComplete, BrokeredMessageReceiveContext context)
+        {
+            if (context.CancellationToken.IsCancellationRequested || !toBeDispatchedOnComplete.Any())
+                return;
+
+            // send via receive queue only works when wrapped in a scope
+            var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+            using (var scope = useTx ? new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled) : null)
+            {
+                await routeOutgoingBatches.RouteBatches(toBeDispatchedOnComplete, context).ConfigureAwait(false);
+                scope?.Complete();
+            }
         }
 
         static bool TryGetReceiveContext(ContextBag context, out ReceiveContext receiveContext)
@@ -68,5 +90,6 @@ namespace NServiceBus.AzureServiceBus
 
         IRouteOutgoingBatches routeOutgoingBatches;
         IBatcher batcher;
+        ReadOnlySettings settings;
     }
 }
