@@ -9,6 +9,7 @@ namespace NServiceBus.AzureServiceBus
     using Azure.Transports.WindowsAzureServiceBus;
     using Logging;
     using Settings;
+    using Transport;
 
     class DefaultOutgoingBatchRouter : IRouteOutgoingBatches
     {
@@ -34,17 +35,17 @@ namespace NServiceBus.AzureServiceBus
             maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes);
         }
 
-        public Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContext context)
+        public Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContext context, DispatchConsistency consistency)
         {
             var pendingBatches = new List<Task>();
             foreach (var batch in outgoingBatches)
             {
-                pendingBatches.Add(RouteBatch(batch, context));
+                pendingBatches.Add(RouteBatch(batch, context, consistency));
             }
             return Task.WhenAll(pendingBatches);
         }
 
-        public Task RouteBatch(Batch batch, ReceiveContext context)
+        public Task RouteBatch(Batch batch, ReceiveContext context, DispatchConsistency consistency)
         {
             var outgoingBatches = batch.Operations;
 
@@ -76,7 +77,7 @@ namespace NServiceBus.AzureServiceBus
 
                     var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
 
-                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, context));
+                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, context, consistency));
                 }
             }
             return Task.WhenAll(pendingSends);
@@ -114,11 +115,11 @@ namespace NServiceBus.AzureServiceBus
             return null;
         }
 
-        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend, ReceiveContext context)
+        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend, ReceiveContext context, DispatchConsistency consistency)
         {
             try
             {
-                await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend, context).ConfigureAwait(false);
+                await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend, context, consistency).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -138,7 +139,7 @@ namespace NServiceBus.AzureServiceBus
                         var clones = messagesToSend.Select(x => x.Clone()).ToList();
                         try
                         {
-                            await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones, context).ConfigureAwait(false);
+                            await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones, context, consistency).ConfigureAwait(false);
                             logger.Info("Successfully dispatched a batch with the following message IDs: " + string.Join(", ", clones.Select(x => x.MessageId) + " to fallback namespace"));
                             fallBackSucceeded = true;
                             break;
@@ -154,14 +155,14 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend, ReceiveContext context)
+        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend, ReceiveContext context, DispatchConsistency consistency)
         {
             var chunk = new List<BrokeredMessage>();
             long batchSize = 0;
             var chunkNumber = 1;
 
             CommittableTransaction tx = null;
-            var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+            var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue) && consistency != DispatchConsistency.Isolated;
             if (useTx) tx = context?.Transaction;
 
             foreach (var message in messagesToSend)

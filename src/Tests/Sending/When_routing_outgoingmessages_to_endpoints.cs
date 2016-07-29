@@ -72,7 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             // perform the test
-            await router.RouteBatch(batch, null);
+            await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -143,7 +143,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             // perform the test
-            await router.RouteBatch(batch, null);
+            await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -213,7 +213,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             // perform the test
-            await router.RouteBatch(batch, null);
+            await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -279,7 +279,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             // perform the test
-            Assert.That(async () => await router.RouteBatch(batch, null), Throws.Exception.TypeOf<MessageTooLargeException>());
+            Assert.That(async () => await router.RouteBatch(batch, null, DispatchConsistency.Default), Throws.Exception.TypeOf<MessageTooLargeException>());
 
             //cleanup
             await namespaceManager.DeleteQueue("myqueue");
@@ -343,7 +343,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             // perform the test
-            await router.RouteBatch(batch, null);
+            await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             // validate
             Assert.True(oversizedHandler.Invoked);
@@ -410,7 +410,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             // perform the test
-            await router.RouteBatch(batch, null);
+            await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             //validate
             var queue = await fallbackNamespaceManager.GetQueue("myqueue");
@@ -484,7 +484,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             // perform the test
-            await router.RouteBatch(batch, null);
+            await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             // validate
             Assert.True(oversizedHandler.InvocationCount == 1);
@@ -555,7 +555,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             // perform the test
-            Assert.That(async () => await router.RouteBatch(batch, null), Throws.Exception.TypeOf<MessageTooLargeException>());
+            Assert.That(async () => await router.RouteBatch(batch, null, DispatchConsistency.Default), Throws.Exception.TypeOf<MessageTooLargeException>());
             Assert.True(oversizedHandler.InvocationCount == 1);
 
             //cleanup
