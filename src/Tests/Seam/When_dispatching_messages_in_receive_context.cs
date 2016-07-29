@@ -86,6 +86,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             
             await completed.WaitAsync(cts.Token);
 
+            await Task.Delay(TimeSpan.FromSeconds(3)); // allow message count to update on queue
+
             // validate
             Assert.IsTrue(received);
 
@@ -165,8 +167,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await completed.WaitAsync(cts.Token);
 
-
-            await Task.Delay(TimeSpan.FromSeconds(5)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
+            await Task.Delay(TimeSpan.FromSeconds(3)); // allow message count to update on queue
 
             // validate
             Assert.IsTrue(received);
@@ -261,8 +262,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await sender.Send(new BrokeredMessage());
 
             await Task.WhenAny(retried.WaitAsync(cts.Token).IgnoreCancellation());
-
-            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // stop the pump so retries don't keep going
             await pump.Stop();
