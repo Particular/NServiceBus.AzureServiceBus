@@ -113,6 +113,7 @@ namespace NServiceBus.AzureServiceBus
         public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; }
         public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; }
         public bool Recovering { get; set; }
+        public System.Transactions.CommittableTransaction Transaction { get; set; }
     }
     public class EndpointOrientedTopology : NServiceBus.AzureServiceBus.ITopology
     {
