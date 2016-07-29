@@ -37,7 +37,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // setup a basic topologySectionManager for testing
             var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
-            settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.SendViaReceiveQueue(true);
 
             // setup the receive side of things
             var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
@@ -84,8 +85,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await sender.Send(new BrokeredMessage { MessageId = "id-incoming" });
             
             await completed.WaitAsync(cts.Token);
-
-            await Task.Delay(TimeSpan.FromSeconds(3)); //the OnCompleted callbacks are called right before the batch is completed, so give it a second to do that
 
             // validate
             Assert.IsTrue(received);
