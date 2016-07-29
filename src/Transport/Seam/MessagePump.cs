@@ -3,6 +3,7 @@ namespace NServiceBus.AzureServiceBus
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Transactions;
     using Extensibility;
     using Logging;
     using Transport;
@@ -35,17 +36,18 @@ namespace NServiceBus.AzureServiceBus
 
             inputQueue = pushSettings.InputQueue;
 
-            topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
+            topologyOperator.OnIncomingMessage( (incoming, receiveContext) =>
             {
                 var tokenSource = new CancellationTokenSource();
                 receiveContext.CancellationToken = tokenSource.Token;
 
                 circuitBreaker.Success();
-
+               
                 var transportTransaction = new TransportTransaction();
                 transportTransaction.Set(receiveContext);
 
                 return messagePump(new MessageContext(incoming.MessageId, incoming.Headers, incoming.Body, transportTransaction, tokenSource, new ContextBag()));
+                
             });
 
             topologyOperator.OnProcessingFailure(onError);
