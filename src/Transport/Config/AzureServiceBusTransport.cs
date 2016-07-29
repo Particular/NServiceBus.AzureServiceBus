@@ -13,7 +13,8 @@
         public override TransportInfrastructure Initialize(SettingsHolder settings, string connectionString)
         {
             // override core default serialization
-            settings.SetDefault<SerializationDefinition>(new JsonSerializer());
+            settings.SetDefault(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new JsonSerializer(), new SettingsHolder()));
+            
 
             var topology = GetConfiguredTopology(settings);
             topology.Initialize(settings);
