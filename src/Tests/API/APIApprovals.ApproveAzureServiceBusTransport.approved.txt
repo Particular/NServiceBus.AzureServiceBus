@@ -112,6 +112,7 @@ namespace NServiceBus.AzureServiceBus
         public NServiceBus.AzureServiceBus.EntityInfo Entity { get; }
         public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; }
         public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; }
+        public bool Recovering { get; set; }
     }
     public class EndpointOrientedTopology : NServiceBus.AzureServiceBus.ITopology
     {
@@ -294,8 +295,8 @@ namespace NServiceBus.AzureServiceBus
     }
     public class IncomingMessageDetails
     {
-        public IncomingMessageDetails(string messageId, System.Collections.Generic.Dictionary<string, string> headers, System.IO.Stream bodyStream) { }
-        public System.IO.Stream BodyStream { get; }
+        public IncomingMessageDetails(string messageId, System.Collections.Generic.Dictionary<string, string> headers, byte[] body) { }
+        public byte[] Body { get; }
         public System.Collections.Generic.Dictionary<string, string> Headers { get; }
         public string MessageId { get; }
     }
