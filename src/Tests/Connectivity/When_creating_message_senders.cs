@@ -3,6 +3,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using System.Transactions;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
@@ -119,7 +120,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 throw new NotImplementedException();
             }
 
-            public Task SendBatch(IEnumerable<BrokeredMessage> messages)
+            public Task SendBatch(IEnumerable<BrokeredMessage> messages, CommittableTransaction transaction)
             {
                 throw new NotImplementedException();
             }

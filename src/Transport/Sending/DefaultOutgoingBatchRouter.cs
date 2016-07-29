@@ -4,6 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
     using Azure.Transports.WindowsAzureServiceBus;
     using Logging;
@@ -75,7 +76,7 @@ namespace NServiceBus.AzureServiceBus
 
                     var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
 
-                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages));
+                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, context));
                 }
             }
             return Task.WhenAll(pendingSends);
@@ -113,11 +114,11 @@ namespace NServiceBus.AzureServiceBus
             return null;
         }
 
-        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend)
+        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend, ReceiveContext context)
         {
             try
             {
-                await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend).ConfigureAwait(false);
+                await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend, context).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -137,7 +138,7 @@ namespace NServiceBus.AzureServiceBus
                         var clones = messagesToSend.Select(x => x.Clone()).ToList();
                         try
                         {
-                            await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones).ConfigureAwait(false);
+                            await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones, context).ConfigureAwait(false);
                             logger.Info("Successfully dispatched a batch with the following message IDs: " + string.Join(", ", clones.Select(x => x.MessageId) + " to fallback namespace"));
                             fallBackSucceeded = true;
                             break;
@@ -153,11 +154,15 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend)
+        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend, ReceiveContext context)
         {
             var chunk = new List<BrokeredMessage>();
             long batchSize = 0;
             var chunkNumber = 1;
+
+            CommittableTransaction tx = null;
+            var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+            if (useTx) tx = context?.Transaction;
 
             foreach (var message in messagesToSend)
             {
@@ -174,7 +179,7 @@ namespace NServiceBus.AzureServiceBus
                     {
                         logger.Debug($"Routing batched messages, chunk #{chunkNumber++}.");
                         var currentChunk = chunk;
-                        await messageSender.RetryOnThrottleAsync(s => s.SendBatch(currentChunk), s => s.SendBatch(currentChunk.Select(x => x.Clone())), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                        await messageSender.RetryOnThrottleAsync(s => s.SendBatch(currentChunk, tx), s => s.SendBatch(currentChunk.Select(x => x.Clone()), tx), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
                     }
 
                     chunk = new List<BrokeredMessage> { message };
@@ -190,7 +195,7 @@ namespace NServiceBus.AzureServiceBus
             if (chunk.Any())
             {
                 logger.Debug($"Routing batched messages, chunk #{chunkNumber}.");
-                await messageSender.RetryOnThrottleAsync(s => s.SendBatch(chunk), s => s.SendBatch(chunk.Select(x => x.Clone())), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                await messageSender.RetryOnThrottleAsync(s => s.SendBatch(chunk, tx), s => s.SendBatch(chunk.Select(x => x.Clone()), tx), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
             }
         }
 

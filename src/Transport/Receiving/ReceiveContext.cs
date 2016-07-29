@@ -1,6 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System.Threading;
+    using System.Transactions;
 
     /// <summary>
     /// Holds on to the the receive metadata
@@ -15,5 +16,8 @@ namespace NServiceBus.AzureServiceBus
         }
 
         public CancellationToken CancellationToken { get; internal set; }
+
+
+        public CommittableTransaction Transaction { get; set; }
     }
 }
