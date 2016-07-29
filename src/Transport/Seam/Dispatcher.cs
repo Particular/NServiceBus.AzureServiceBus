@@ -66,7 +66,6 @@ namespace NServiceBus.AzureServiceBus
             if (context.CancellationToken.IsCancellationRequested || !toBeDispatchedOnComplete.Any())
                 return;
 
-            var existing = Transaction.Current;
             try
             {
                 var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
@@ -76,7 +75,7 @@ namespace NServiceBus.AzureServiceBus
             }
             finally
             {
-                Transaction.Current = existing;
+                Transaction.Current = null;
             }
             
         }
