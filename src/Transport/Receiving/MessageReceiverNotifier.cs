@@ -216,6 +216,7 @@ namespace NServiceBus.AzureServiceBus
                 if (context.CancellationToken.IsCancellationRequested)
                 {
                     await AbandonAsyncOnCancellation(message).ConfigureAwait(false);
+                    context.Transaction.Rollback();
                 }
                 else
                 {
@@ -225,7 +226,6 @@ namespace NServiceBus.AzureServiceBus
                              message.LockToken,
                              context.Transaction
                         ));
-                        context.Transaction.Commit();// push into the list later
                     }
                 }
             }
