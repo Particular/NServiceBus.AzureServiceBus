@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
     using System.Reflection;
     using System.Threading.Tasks;
     using AzureServiceBus;
@@ -133,7 +132,7 @@
 
             public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func)
             {
-                throw new NotImplementedException();
+                
             }
         }
 
