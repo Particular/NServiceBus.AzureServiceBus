@@ -89,7 +89,7 @@ namespace NServiceBus.AzureServiceBus
         {
             var sendVia = false;
             var context = receiveContext as BrokeredMessageReceiveContext;
-            if (context?.Recovering == false) // avoid send via when recovering
+            if (context?.Recovering == false) // avoid send via when recovering to prevent error message from rolling back
             {
                 sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
                 sendVia &= consistency != DispatchConsistency.Isolated;
