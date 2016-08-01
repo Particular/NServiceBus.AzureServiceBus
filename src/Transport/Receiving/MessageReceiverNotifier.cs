@@ -242,6 +242,7 @@ namespace NServiceBus.AzureServiceBus
                     if (context.CompletionCanBeBatched)
                     {
                         locksTokensToComplete.Push(message.LockToken);
+                        context.Transaction.Dispose();
                     }
                     else
                     {
