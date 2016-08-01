@@ -16,7 +16,7 @@
     public class When_receiving_a_message_with_unknown_transport_encoding : NServiceBusAcceptanceTest
     {
         [Test]
-        public async Task Should_receive_the_message()
+        public async Task Should_deadletter_message()
         {
             var context = await Scenario.Define<Context>()
                     .WithEndpoint<Sender>(b => b.When((bus, ctx) =>
@@ -27,21 +27,25 @@
 
                         return bus.Send(new MyMessage { Id = ctx.OriginalMessageId }, sendOptions);
                     }))
-                    .WithEndpoint<Receiver>()
-                    .Done(ctx =>
+                    .WithEndpoint<Receiver>(b => b.When((bus, ctx) =>
                     {
-                        var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString"))); // get connection string from test env
-                        var factory = MessagingFactory.CreateAsync(namespaceManager.Address, namespaceManager.Settings.TokenProvider).GetAwaiter().GetResult();
-                        var queueClient = factory.CreateQueueClient(Conventions.EndpointNamingConvention(typeof(Receiver)) + "/$DeadLetterQueue", ReceiveMode.ReceiveAndDelete); // queue name from the test name
-                        var message = queueClient.ReceiveAsync().GetAwaiter().GetResult();
-                        var receivedMessageIdMatchesTheOriginal = message.Properties["NServiceBus.MessageId"].ToString() == ctx.OriginalMessageId;
-                        var testRunIdMatchesTheCurrectTestRun = message.Properties["$AcceptanceTesting.TestRunId"] as string == ctx.TestRunId.ToString();
-                        var deliveredOnceOnly = message.DeliveryCount == 1;
-                        ctx.MessageWasMovedToDlq = receivedMessageIdMatchesTheOriginal && testRunIdMatchesTheCurrectTestRun && deliveredOnceOnly;
-
-                        return ctx.MessageWasMovedToDlq;
-                    })
-                    .Run(new RunSettings() {TestExecutionTimeout = TimeSpan.FromMinutes(2)});
+                        // can't apply a message spy pattern here since message will be always poisonous
+                        return Task.Run(async () =>
+                        {
+                            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+                            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(connectionString));
+                            var factory = MessagingFactory.CreateAsync(namespaceManager.Address, namespaceManager.Settings.TokenProvider).GetAwaiter().GetResult();
+                            var dlqPath = Conventions.EndpointNamingConvention(typeof(Receiver)) + "/$DeadLetterQueue";
+                            var receiver = await factory.CreateMessageReceiverAsync(dlqPath, ReceiveMode.ReceiveAndDelete); 
+                            var message = await receiver.ReceiveAsync();
+                            var receivedMessageIdMatchesTheOriginal = message.Properties["NServiceBus.MessageId"].ToString() == ctx.OriginalMessageId;
+                            var testRunIdMatchesTheCurrectTestRun = message.Properties["$AcceptanceTesting.TestRunId"].ToString() == ctx.TestRunId.ToString();
+                            var deliveredOnceOnly = message.DeliveryCount == 1;
+                            ctx.MessageWasMovedToDlq = receivedMessageIdMatchesTheOriginal && testRunIdMatchesTheCurrectTestRun && deliveredOnceOnly;
+                        });
+                    }))
+                    .Done(ctx => ctx.MessageWasMovedToDlq)
+                    .Run(new RunSettings { TestExecutionTimeout = TimeSpan.FromMinutes(2) });
 
             Assert.False(context.WasCalled, "The message handler should not be called");
             Assert.True(context.MessageWasMovedToDlq, "Message should be in DLQ");
