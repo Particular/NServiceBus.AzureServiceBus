@@ -78,7 +78,7 @@ namespace NServiceBus.AzureServiceBus
 
                     var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
 
-                    context.CompletionCanBeBatched &= !useTransaction;
+                    if(context != null) context.CompletionCanBeBatched &= !useTransaction;
                     pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, context, useTransaction));
                 }
             }
