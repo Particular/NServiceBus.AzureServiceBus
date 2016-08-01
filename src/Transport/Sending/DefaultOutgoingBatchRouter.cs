@@ -40,12 +40,12 @@ namespace NServiceBus.AzureServiceBus
             var pendingBatches = new List<Task>();
             foreach (var batch in outgoingBatches)
             {
-                pendingBatches.Add(RouteBatch(batch, context, consistency));
+                pendingBatches.Add(RouteBatch(batch, context as BrokeredMessageReceiveContext, consistency));
             }
             return Task.WhenAll(pendingBatches);
         }
 
-        public Task RouteBatch(Batch batch, ReceiveContext context, DispatchConsistency consistency)
+        public Task RouteBatch(Batch batch, BrokeredMessageReceiveContext context, DispatchConsistency consistency)
         {
             var outgoingBatches = batch.Operations;
 
@@ -55,7 +55,7 @@ namespace NServiceBus.AzureServiceBus
 
             foreach (var entity in batch.Destinations.Entities)
             {
-                var routingOptions = GetRoutingOptions(context);
+                var routingOptions = GetRoutingOptions(context, consistency);
 
                 if (!string.IsNullOrEmpty(routingOptions.ViaEntityPath))
                 {
@@ -72,24 +72,27 @@ namespace NServiceBus.AzureServiceBus
                 foreach (var ns in activeNamespaces)
                 {
                     // only use via if the destination and via namespace are the same
-                    var via = ns.ConnectionString == routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
+                    var via = routingOptions.SendVia && ns.ConnectionString ==  routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
+                    var useTransaction = via != null;
                     var messageSender = senders.Get(entity.Path, via, ns.Name);
 
                     var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
 
-                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, context, consistency));
+                    context.CompletionCanBeBatched &= !useTransaction;
+                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, context, useTransaction));
                 }
             }
             return Task.WhenAll(pendingSends);
         }
 
-        RoutingOptions GetRoutingOptions(ReceiveContext receiveContext)
+        RoutingOptions GetRoutingOptions(ReceiveContext receiveContext, DispatchConsistency consistency)
         {
-            var sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+            var sendVia = false;
             var context = receiveContext as BrokeredMessageReceiveContext;
-            if (context?.Recovering == true) // avoid send via when recovering
+            if (context?.Recovering == false) // avoid send via when recovering
             {
-                sendVia = false;
+                sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+                sendVia &= consistency != DispatchConsistency.Isolated;
             }
             return new RoutingOptions
             {
@@ -115,11 +118,11 @@ namespace NServiceBus.AzureServiceBus
             return null;
         }
 
-        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend, ReceiveContext context, DispatchConsistency consistency)
+        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend, ReceiveContext context, bool useTransaction)
         {
             try
             {
-                await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend, context, consistency).ConfigureAwait(false);
+                await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend, context, useTransaction).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -139,7 +142,7 @@ namespace NServiceBus.AzureServiceBus
                         var clones = messagesToSend.Select(x => x.Clone()).ToList();
                         try
                         {
-                            await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones, context, consistency).ConfigureAwait(false);
+                            await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones, context, useTransaction).ConfigureAwait(false);
                             logger.Info("Successfully dispatched a batch with the following message IDs: " + string.Join(", ", clones.Select(x => x.MessageId) + " to fallback namespace"));
                             fallBackSucceeded = true;
                             break;
@@ -155,15 +158,14 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend, ReceiveContext context, DispatchConsistency consistency)
+        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend, ReceiveContext context, bool useTransaction)
         {
             var chunk = new List<BrokeredMessage>();
             long batchSize = 0;
             var chunkNumber = 1;
 
             CommittableTransaction tx = null;
-            var useTx = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue) && consistency != DispatchConsistency.Isolated;
-            if (useTx) tx = context?.Transaction;
+            if (useTransaction) tx = context?.Transaction;
 
             foreach (var message in messagesToSend)
             {
