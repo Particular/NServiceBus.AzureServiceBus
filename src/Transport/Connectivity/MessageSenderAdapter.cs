@@ -28,12 +28,12 @@ namespace NServiceBus.AzureServiceBus
           return sender.SendAsync(message);
         }
 
-        public Task SendBatch(IEnumerable<BrokeredMessage> messages, CommittableTransaction transaction)
+        public async Task SendBatch(IEnumerable<BrokeredMessage> messages, CommittableTransaction transaction)
         {
             try
             {
                 Transaction.Current = transaction;
-                return sender.SendBatchAsync(messages);
+                await sender.SendBatchAsync(messages).ConfigureAwait(false);
             }
             finally
             {
