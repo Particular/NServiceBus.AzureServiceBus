@@ -9,6 +9,7 @@ namespace NServiceBus.AzureServiceBus
             IncomingBrokeredMessage = message;
             Entity = entity;
             ReceiveMode = receiveMode;
+            CompletionCanBeBatched = true;
         }
 
         public BrokeredMessage IncomingBrokeredMessage { get; }
@@ -20,5 +21,7 @@ namespace NServiceBus.AzureServiceBus
 
         // while recovering, send via must be avoided as it will be rolled back
         public bool Recovering { get; set; }
+
+        public bool CompletionCanBeBatched { get; set; }
     }
 }
