@@ -33,7 +33,9 @@ namespace NServiceBus.AzureServiceBus
             try
             {
                 Transaction.Current = transaction;
-                await sender.SendBatchAsync(messages).ConfigureAwait(false);
+                var task = sender.SendBatchAsync(messages);
+                Transaction.Current = null;
+                await task.ConfigureAwait(false);
             }
             finally
             {
