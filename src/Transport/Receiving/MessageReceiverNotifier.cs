@@ -258,8 +258,8 @@ namespace NServiceBus.AzureServiceBus
                             Transaction.Current = context.Transaction;
                             var t = context.IncomingBrokeredMessage.CompleteAsync();
                             Transaction.Current = null;
-                            context.Transaction.Commit();
                             await t.ConfigureAwait(false);
+                            context.Transaction.Commit();
                         }
                         finally
                         {
