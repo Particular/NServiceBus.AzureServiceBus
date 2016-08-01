@@ -200,6 +200,8 @@ namespace NServiceBus.AzureServiceBus
             {
                 var transportTransaction = new TransportTransaction();
                 context.Transaction.Rollback(exception);
+                context.Transaction.Dispose();
+                context.Transaction = null;
                 context.Recovering = true;
                 transportTransaction.Set(context);
                 var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
@@ -234,6 +236,8 @@ namespace NServiceBus.AzureServiceBus
             {
                 await AbandonAsyncOnCancellation(message).ConfigureAwait(false);
                 context.Transaction.Rollback();
+                context.Transaction.Dispose();
+                context.Transaction = null;
             }
             else
             {
@@ -243,14 +247,26 @@ namespace NServiceBus.AzureServiceBus
                     {
                         locksTokensToComplete.Push(message.LockToken);
                         context.Transaction.Dispose();
+                        context.Transaction = null;
                     }
                     else
                     {
-                        using (var scope = new TransactionScope(context.Transaction, TransactionScopeAsyncFlowOption.Enabled))
+                        //using (var scope = new TransactionScope(context.Transaction, TransactionScopeAsyncFlowOption.Enabled))
+                        //{
+                        try
                         {
+                            Transaction.Current = context.Transaction;
                             await context.IncomingBrokeredMessage.CompleteAsync().ConfigureAwait(false);
-                            scope.Complete();
+                            context.Transaction.Commit();
                         }
+                        finally
+                        {
+                            Transaction.Current = null;
+                            context.Transaction = null;
+                        }
+                        
+                        //    scope.Complete();
+                        //}
                     }
                 }
             }

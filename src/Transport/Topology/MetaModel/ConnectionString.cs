@@ -61,8 +61,9 @@
         {
             try
             {
-                connectionString = new ConnectionString(value);
-                return true;
+                var result = Regex.IsMatch(value, Pattern, RegexOptions.IgnoreCase);
+                connectionString = result ?  new ConnectionString(value) : null;
+                return result;
             }
             catch (ArgumentException)
             {

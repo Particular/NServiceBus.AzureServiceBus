@@ -118,7 +118,7 @@ namespace NServiceBus.AzureServiceBus
             return null;
         }
 
-        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend, ReceiveContext context, bool useTransaction)
+        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend, BrokeredMessageReceiveContext context, bool useTransaction)
         {
             try
             {
@@ -126,6 +126,7 @@ namespace NServiceBus.AzureServiceBus
             }
             catch (Exception exception)
             {
+                
                 // ASB team promissed to fix the issue with MessagingEntityNotFoundException (missing entity path) - verify that
                 var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", messagesToSend.Select(x => x.MessageId));
                 logger.Error(message, exception);
@@ -142,7 +143,7 @@ namespace NServiceBus.AzureServiceBus
                         var clones = messagesToSend.Select(x => x.Clone()).ToList();
                         try
                         {
-                            await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones, context, useTransaction).ConfigureAwait(false);
+                            await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones, context, false).ConfigureAwait(false);
                             logger.Info("Successfully dispatched a batch with the following message IDs: " + string.Join(", ", clones.Select(x => x.MessageId) + " to fallback namespace"));
                             fallBackSucceeded = true;
                             break;
