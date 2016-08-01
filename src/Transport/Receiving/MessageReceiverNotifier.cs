@@ -228,8 +228,8 @@ namespace NServiceBus.AzureServiceBus
             if (context.CancellationToken.IsCancellationRequested)
             {
                 await AbandonAsyncOnCancellation(message).ConfigureAwait(false);
-                context.Transaction.Rollback();
-                context.Transaction.Dispose();
+                context.Transaction?.Rollback();
+                context.Transaction?.Dispose();
                 context.Transaction = null;
             }
             else
@@ -239,7 +239,7 @@ namespace NServiceBus.AzureServiceBus
                     if (context.CompletionCanBeBatched)
                     {
                         locksTokensToComplete.Push(message.LockToken);
-                        context.Transaction.Dispose();
+                        context.Transaction?.Dispose();
                         context.Transaction = null;
                     }
                     else
