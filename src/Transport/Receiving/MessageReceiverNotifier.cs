@@ -167,12 +167,6 @@ namespace NServiceBus.AzureServiceBus
             try
             {
                 incomingMessage = brokeredMessageConverter.Convert(message);
-                // Messages that have been handled by recovery, but abandoned to clear via queue can now be safely completed
-                if (message.Properties.ContainsKey(BrokeredMessageHeaders.Recovery))
-                {
-                    locksTokensToComplete.Push(message.LockToken);
-                    return; // do not invoke the pipeline
-                }
             }
             catch (UnsupportedBrokeredMessageBodyTypeException exception)
             {
@@ -213,12 +207,7 @@ namespace NServiceBus.AzureServiceBus
                     {
                         await AbandonAsync(message, exception).ConfigureAwait(false);
                     }
-                    else if (settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue))
-                    {
-                        var recoveryHeader = new Dictionary<string, object> { { BrokeredMessageHeaders.Recovery, "Message failed " + message.DeliveryCount + " times and was handled by the nservicebus recovery infrastructure. Safe to remove it." } };
-                        await AbandonInternal(message, recoveryHeader).ConfigureAwait(false);
-                    }
-                    else if (result == ErrorHandleResult.Handled)
+                    else 
                     {
                         await HandleCompletion(message, context).ConfigureAwait(false);
                     }
