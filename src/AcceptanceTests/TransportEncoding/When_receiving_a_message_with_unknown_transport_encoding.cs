@@ -5,6 +5,7 @@
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using AcceptanceTesting;
+    using AcceptanceTesting.Customization;
     using AcceptanceTesting.Support;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
@@ -31,7 +32,7 @@
                     {
                         var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString"))); // get connection string from test env
                         var factory = MessagingFactory.CreateAsync(namespaceManager.Address, namespaceManager.Settings.TokenProvider).GetAwaiter().GetResult();
-                        var queueClient = factory.CreateQueueClient("receivingamessagewithunknowntransportencoding.receiver/$DeadLetterQueue", ReceiveMode.ReceiveAndDelete); // queue name from the test name
+                        var queueClient = factory.CreateQueueClient(Conventions.EndpointNamingConvention(typeof(Receiver)) + "/$DeadLetterQueue", ReceiveMode.ReceiveAndDelete); // queue name from the test name
                         var message = queueClient.ReceiveAsync().GetAwaiter().GetResult();
                         var receivedMessageIdMatchesTheOriginal = message.Properties["NServiceBus.MessageId"].ToString() == ctx.OriginalMessageId;
                         var testRunIdMatchesTheCurrectTestRun = message.Properties["$AcceptanceTesting.TestRunId"] as string == ctx.TestRunId.ToString();
