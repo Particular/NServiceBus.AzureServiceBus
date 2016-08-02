@@ -121,7 +121,7 @@ namespace NServiceBus.AzureServiceBus
         {
             try
             {
-                var scope = suppressTransaction ? null : new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
+                var scope = suppressTransaction ? new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled) : null;
                 using (scope)
                 {
                     await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend).ConfigureAwait(false);
