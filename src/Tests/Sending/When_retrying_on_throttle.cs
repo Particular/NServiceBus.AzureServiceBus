@@ -4,7 +4,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Threading.Tasks;
-    using System.Transactions;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using AzureServiceBus;
@@ -106,7 +105,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                 return TaskEx.Completed;
             }
 
-            public Task SendBatch(IEnumerable<BrokeredMessage> messages, CommittableTransaction transaction)
+            public Task SendBatch(IEnumerable<BrokeredMessage> messages)
             {
                 IsInvoked = true;
                 InvocationCount++;

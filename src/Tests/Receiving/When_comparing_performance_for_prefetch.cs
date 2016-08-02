@@ -62,7 +62,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                     batch.Add(new BrokeredMessage(Encoding.UTF8.GetBytes("Whatever" + counter)));
                     counter++;
                 }
-                tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatch(batch, null), s => s.SendBatch(batch.Select(x => x.Clone()), null), TimeSpan.FromSeconds(10), 5));
+                tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatch(batch), s => s.SendBatch(batch.Select(x => x.Clone())), TimeSpan.FromSeconds(10), 5));
             }
             await Task.WhenAll(tasks);
             var faulted = tasks.Count(task => task.IsFaulted);
