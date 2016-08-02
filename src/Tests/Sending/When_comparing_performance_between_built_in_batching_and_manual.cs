@@ -121,7 +121,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                     counter++;
                 }
                 var sender = entityLifecycleManager.Get("myqueue", null, "namespace");
-                tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatch(batch, null), s => s.SendBatch(batch.Select(x => x.Clone()), null), TimeSpan.FromSeconds(10), 5));
+                tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatch(batch), s => s.SendBatch(batch.Select(x => x.Clone())), TimeSpan.FromSeconds(10), 5));
             }
             await Task.WhenAll(tasks);
 

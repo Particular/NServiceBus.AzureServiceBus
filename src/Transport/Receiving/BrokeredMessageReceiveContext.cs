@@ -1,6 +1,11 @@
 namespace NServiceBus.AzureServiceBus
 {
+    using System;
+    using System.Threading.Tasks;
+    using System.Transactions;
+    using Features;
     using Microsoft.ServiceBus.Messaging;
+    using Pipeline;
 
     public class BrokeredMessageReceiveContext : ReceiveContext
     {
@@ -9,7 +14,6 @@ namespace NServiceBus.AzureServiceBus
             IncomingBrokeredMessage = message;
             Entity = entity;
             ReceiveMode = receiveMode;
-            CompletionCanBeBatched = true;
         }
 
         public BrokeredMessage IncomingBrokeredMessage { get; }
@@ -22,6 +26,39 @@ namespace NServiceBus.AzureServiceBus
         // while recovering, send via must be avoided as it will be rolled back
         public bool Recovering { get; set; }
 
-        public bool CompletionCanBeBatched { get; set; }
+    }
+
+    class TransactionScopeSuppressBehavior : Behavior<IIncomingPhysicalMessageContext>
+    {
+        public override async Task Invoke(IIncomingPhysicalMessageContext context, Func<Task> next)
+        {
+            if (Transaction.Current != null) // todo: should be checked using send with atomic receive
+            {
+                using (var tx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    await next().ConfigureAwait(false);
+
+                    tx.Complete();
+                }
+            }
+        }
+
+        public class Registration : RegisterStep
+        {
+            public Registration() : base("HandlerTransactionScopeSuppressWrapper", typeof(TransactionScopeSuppressBehavior), "Makes sure that the handlers gets wrapped in a suppress transaction scope, preventing the ASB transaction scope from promoting")
+            {
+                InsertBefore("ExecuteUnitOfWork");
+            }
+        }
+    }
+
+    class TransactionScopeUnitOfWork : Feature
+    {
+        protected override void Setup(FeatureConfigurationContext context)
+        {
+            context.Container.ConfigureComponent(b => new TransactionScopeSuppressBehavior(), DependencyLifecycle.InstancePerCall);
+
+            context.Pipeline.Register(new TransactionScopeSuppressBehavior.Registration());
+        }
     }
 }
