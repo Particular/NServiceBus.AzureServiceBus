@@ -15,6 +15,8 @@
 
     public class When_receiving_a_message_with_unknown_transport_encoding : NServiceBusAcceptanceTest
     {
+        TimeSpan testExecutionTimeout = TimeSpan.FromMinutes(2);
+
         [Test]
         public async Task Should_deadletter_message()
         {
@@ -31,17 +33,20 @@
                     }))
                     .WithEndpoint<Receiver>()
                     .Done(ctx => ctx.MessageWasMovedToDlq)
-                    .Run(new RunSettings { TestExecutionTimeout = TimeSpan.FromMinutes(2) });
+                    .Run(new RunSettings { TestExecutionTimeout = testExecutionTimeout });
 
             // can't apply a message spy pattern here since message will be always poisonous
             var rawReceiveTask = Task.Run(async () =>
             {
+                // delay raw receive from the DLQ to allow endpoint (queue) creation
+                await Task.Delay(TimeSpan.FromSeconds(10));
+
                 var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
                 var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(connectionString));
                 var factory = MessagingFactory.CreateAsync(namespaceManager.Address, namespaceManager.Settings.TokenProvider).GetAwaiter().GetResult();
                 var dlqPath = Conventions.EndpointNamingConvention(typeof(Receiver)) + "/$DeadLetterQueue";
-                var receiver = await factory.CreateMessageReceiverAsync(dlqPath, ReceiveMode.ReceiveAndDelete);
-                var message = await receiver.ReceiveAsync();
+                var receiver = await factory.CreateMessageReceiverAsync(dlqPath, ReceiveMode.ReceiveAndDelete).ConfigureAwait(false);
+                var message = await receiver.ReceiveAsync(testExecutionTimeout).ConfigureAwait(false);
                 var receivedMessageIdMatchesTheOriginal = message.Properties["NServiceBus.MessageId"].ToString() == context.OriginalMessageId;
                 var testRunIdMatchesTheCurrectTestRun = message.Properties["$AcceptanceTesting.TestRunId"].ToString() == context.TestRunId.ToString();
                 var deliveredOnceOnly = message.DeliveryCount == 1;
