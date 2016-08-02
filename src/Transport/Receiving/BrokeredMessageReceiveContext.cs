@@ -52,8 +52,13 @@ namespace NServiceBus.AzureServiceBus
         }
     }
 
-    class TransactionScopeUnitOfWork : Feature
+    class TransactionScopeSuppress : Feature
     {
+        public TransactionScopeSuppress()
+        {
+            EnableByDefault();
+        }
+
         protected override void Setup(FeatureConfigurationContext context)
         {
             context.Container.ConfigureComponent(b => new TransactionScopeSuppressBehavior(), DependencyLifecycle.InstancePerCall);
