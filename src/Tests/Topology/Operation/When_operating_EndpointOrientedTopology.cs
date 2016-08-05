@@ -3,6 +3,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Tests;
     using Receiving;

@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using NServiceBus;
-using NServiceBus.AzureServiceBus;
 using NServiceBus.Settings;
+using NServiceBus.Transport.AzureServiceBus;
 using NServiceBus.TransportTests;
 
 class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfrastructure

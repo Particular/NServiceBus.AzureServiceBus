@@ -3,10 +3,10 @@
     using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using AzureServiceBus;
     using Serialization;
     using Settings;
     using Transport;
+    using Transport.AzureServiceBus;
 
     public class AzureServiceBusTransport : TransportDefinition
     {

@@ -6,6 +6,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
     using Microsoft.ServiceBus.Messaging;
     using NUnit.Framework;
     using Settings;
+    using Transport.AzureServiceBus;
 
     [TestFixture]
     [Category("AzureServiceBus")]

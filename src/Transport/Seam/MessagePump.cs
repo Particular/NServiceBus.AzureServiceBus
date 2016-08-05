@@ -5,6 +5,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Threading.Tasks;
     using Extensibility;
     using Logging;
+    using NServiceBus.AzureServiceBus;
     using Transport;
 
     class MessagePump : IPushMessages, IDisposable

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AzureServiceBus;
     using Tests;
     using Transport.AzureServiceBus;
     using DeliveryConstraints;

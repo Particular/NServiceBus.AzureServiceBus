@@ -3,7 +3,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System;
     using Microsoft.ServiceBus;
     using Settings;
-    using Topology.MetaModel;
 
     class NamespaceManagerCreator : ICreateNamespaceManagers
     {

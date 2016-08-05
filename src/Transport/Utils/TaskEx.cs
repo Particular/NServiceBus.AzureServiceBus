@@ -1,4 +1,4 @@
-﻿namespace NServiceBus.Transport.AzureServiceBus
+﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Threading.Tasks;

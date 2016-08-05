@@ -3,8 +3,8 @@
     using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using Topology.MetaModel;
     using Settings;
+    using Transport.AzureServiceBus;
 
     class DefaultConfigurationValues
     {

@@ -4,9 +4,11 @@ namespace NServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using Routing;
     using Settings;
     using Transport;
+    using Transport.AzureServiceBus;
 
     public class ForwardingTopology : ITopology
     {

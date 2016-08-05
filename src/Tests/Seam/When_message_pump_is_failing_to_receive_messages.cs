@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Reflection;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using Transport.AzureServiceBus;
     using Settings;
     using Transport;

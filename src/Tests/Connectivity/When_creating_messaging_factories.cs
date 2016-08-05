@@ -1,5 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 {
+    using AzureServiceBus;
     using TestUtils;
     using Transport.AzureServiceBus;
     using Settings;

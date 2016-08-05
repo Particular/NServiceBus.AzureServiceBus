@@ -4,6 +4,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using System.IO;
     using System.Linq;
     using System.Text;
+    using AzureServiceBus;
     using Transport.AzureServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NUnit.Framework;

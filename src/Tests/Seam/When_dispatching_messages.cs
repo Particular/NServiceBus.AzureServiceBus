@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using Tests;
     using TestUtils;
     using Transport.AzureServiceBus;

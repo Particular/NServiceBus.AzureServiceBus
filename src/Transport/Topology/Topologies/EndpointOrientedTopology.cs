@@ -2,6 +2,7 @@ namespace NServiceBus
 {
     using System;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using Routing;
     using Settings;
     using Transport;

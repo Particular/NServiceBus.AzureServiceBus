@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using FakeItEasy;
     using Microsoft.ServiceBus.Messaging;
     using Transport.AzureServiceBus;
