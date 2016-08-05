@@ -176,26 +176,24 @@ namespace NServiceBus.AzureServiceBus
 
             var context = new BrokeredMessageReceiveContext(message, entity, internalReceiver.Mode);
 
+            var transportTransactionMode = settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : TransportTransactionMode.SendsAtomicWithReceive;
+            var wrapInScope = transportTransactionMode == TransportTransactionMode.SendsAtomicWithReceive;
+            var completionCanBeBatched = !wrapInScope;
             try
             {
-                // create a transaction to which the message sender can attach
-                // any outbound sends that travel via the transfer queue
-                var tx = new CommittableTransaction(new TransactionOptions
+                var scope = wrapInScope ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled) : null;
                 {
-                    IsolationLevel = IsolationLevel.Serializable
-                });
-                context.Transaction = tx;
+                    using (scope)
+                    {
+                        await incomingCallback(incomingMessage, context).ConfigureAwait(false);
 
-                await incomingCallback(incomingMessage, context).ConfigureAwait(false);
-
-                await HandleCompletion(message, context).ConfigureAwait(false);
+                        await HandleCompletion(message, context, completionCanBeBatched).ConfigureAwait(false);
+                        scope?.Complete();
+                    }
+                }
             }
             catch (Exception exception)
             {
-                // rollback any outbound message that are pending on the transfer queue
-                context.Transaction.Rollback(exception);
-                context.Transaction.Dispose();
-                context.Transaction = null;
                 // and go into recovery mode so that no new messages are added to the transfer queue
                 context.Recovering = true;
 
@@ -213,7 +211,7 @@ namespace NServiceBus.AzureServiceBus
                     }
                     else 
                     {
-                        await HandleCompletion(message, context).ConfigureAwait(false);
+                        await HandleCompletion(message, context, completionCanBeBatched).ConfigureAwait(false);
                     }
                 }
                 catch (Exception onErrorException)
@@ -223,52 +221,23 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContext context)
+        async Task HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContext context, bool canbeBatched)
         {
             if (context.CancellationToken.IsCancellationRequested)
             {
                 await AbandonAsyncOnCancellation(message).ConfigureAwait(false);
-                context.Transaction?.Rollback();
-                context.Transaction?.Dispose();
-                context.Transaction = null;
             }
             else
             {
                 if (receiveMode == ReceiveMode.PeekLock)
                 {
-                    if (context.CompletionCanBeBatched)
+                    if (canbeBatched)
                     {
                         locksTokensToComplete.Push(message.LockToken);
-                        context.Transaction?.Dispose();
-                        context.Transaction = null;
                     }
                     else
                     {
-                        //using scope seems to undo pending operations, which would result in no messages sent out when committing the transaction
-                        //using (var scope = new TransactionScope(context.Transaction, TransactionScopeAsyncFlowOption.Enabled))
-                        //{
-                        try
-                        {
-                            // as Transaction.Current is static, there is a high risk of transferring the
-                            // state into other threads that use Transaction.Current
-                            Transaction.Current = context.Transaction;
-                            // the AsyncResult created inside the ASB sdk copies over the references from Transaction.Current
-                            var t = context.IncomingBrokeredMessage.CompleteAsync();
-                            // now we can get rid of it again
-                            Transaction.Current = null;
-                            // and await the result
-                            await t.ConfigureAwait(false);
-                            // then we can commit the tx
-                            context.Transaction.Commit();
-                        }
-                        finally
-                        {
-                            Transaction.Current = null;
-                            context.Transaction = null;
-                        }
-                        
-                        //    scope.Complete();
-                        //}
+                        await context.IncomingBrokeredMessage.CompleteAsync().ConfigureAwait(false);
                     }
                 }
             }

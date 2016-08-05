@@ -109,7 +109,6 @@ namespace NServiceBus.AzureServiceBus
     public class BrokeredMessageReceiveContext : NServiceBus.AzureServiceBus.ReceiveContext
     {
         public BrokeredMessageReceiveContext(Microsoft.ServiceBus.Messaging.BrokeredMessage message, NServiceBus.AzureServiceBus.EntityInfo entity, Microsoft.ServiceBus.Messaging.ReceiveMode receiveMode) { }
-        public bool CompletionCanBeBatched { get; set; }
         public NServiceBus.AzureServiceBus.EntityInfo Entity { get; }
         public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; }
         public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; }
@@ -263,7 +262,7 @@ namespace NServiceBus.AzureServiceBus
     public interface IMessageSender : NServiceBus.AzureServiceBus.IClientEntity
     {
         System.Threading.Tasks.Task Send(Microsoft.ServiceBus.Messaging.BrokeredMessage message);
-        System.Threading.Tasks.Task SendBatch(System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> messages, System.Transactions.CommittableTransaction transaction);
+        System.Threading.Tasks.Task SendBatch(System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> messages);
     }
     public interface IMessagingFactory : NServiceBus.AzureServiceBus.IClientEntity
     {

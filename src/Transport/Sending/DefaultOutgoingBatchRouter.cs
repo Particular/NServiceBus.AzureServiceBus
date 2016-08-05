@@ -73,13 +73,12 @@ namespace NServiceBus.AzureServiceBus
                 {
                     // only use via if the destination and via namespace are the same
                     var via = routingOptions.SendVia && ns.ConnectionString ==  routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
-                    var useTransaction = via != null;
+                    var suppressTransaction = via == null;
                     var messageSender = senders.Get(entity.Path, via, ns.Name);
 
                     var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
 
-                    if(context != null) context.CompletionCanBeBatched &= !useTransaction;
-                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, context, useTransaction));
+                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, suppressTransaction));
                 }
             }
             return Task.WhenAll(pendingSends);
@@ -118,11 +117,16 @@ namespace NServiceBus.AzureServiceBus
             return null;
         }
 
-        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend, BrokeredMessageReceiveContext context, bool useTransaction)
+        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend,bool suppressTransaction)
         {
             try
             {
-                await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend, context, useTransaction).ConfigureAwait(false);
+                var scope = suppressTransaction ? new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled) : null;
+                using (scope)
+                {
+                    await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend).ConfigureAwait(false);
+                    scope?.Complete();
+                }
             }
             catch (Exception exception)
             {
@@ -143,7 +147,11 @@ namespace NServiceBus.AzureServiceBus
                         var clones = messagesToSend.Select(x => x.Clone()).ToList();
                         try
                         {
-                            await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones, context, false).ConfigureAwait(false);
+                            using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
+                            {
+                                await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones).ConfigureAwait(false);
+                                scope.Complete();
+                            }
                             logger.Info("Successfully dispatched a batch with the following message IDs: " + string.Join(", ", clones.Select(x => x.MessageId) + " to fallback namespace"));
                             fallBackSucceeded = true;
                             break;
@@ -159,14 +167,11 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend, ReceiveContext context, bool useTransaction)
+        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend)
         {
             var chunk = new List<BrokeredMessage>();
             long batchSize = 0;
             var chunkNumber = 1;
-
-            CommittableTransaction tx = null;
-            if (useTransaction) tx = context?.Transaction;
 
             foreach (var message in messagesToSend)
             {
@@ -183,7 +188,7 @@ namespace NServiceBus.AzureServiceBus
                     {
                         logger.Debug($"Routing batched messages, chunk #{chunkNumber++}.");
                         var currentChunk = chunk;
-                        await messageSender.RetryOnThrottleAsync(s => s.SendBatch(currentChunk, tx), s => s.SendBatch(currentChunk.Select(x => x.Clone()), tx), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                        await messageSender.RetryOnThrottleAsync(s => s.SendBatch(currentChunk), s => s.SendBatch(currentChunk.Select(x => x.Clone())), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
                     }
 
                     chunk = new List<BrokeredMessage> { message };
@@ -199,7 +204,7 @@ namespace NServiceBus.AzureServiceBus
             if (chunk.Any())
             {
                 logger.Debug($"Routing batched messages, chunk #{chunkNumber}.");
-                await messageSender.RetryOnThrottleAsync(s => s.SendBatch(chunk, tx), s => s.SendBatch(chunk.Select(x => x.Clone()), tx), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
+                await messageSender.RetryOnThrottleAsync(s => s.SendBatch(chunk), s => s.SendBatch(chunk.Select(x => x.Clone())), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
             }
         }
 
