@@ -1,7 +1,7 @@
 namespace NServiceBus.AzureServiceBus
 {
     using System.Collections.Generic;
-    using Transports;
+    using Transport;
 
     public class Batch
     {

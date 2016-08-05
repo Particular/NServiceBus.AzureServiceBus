@@ -8,7 +8,7 @@ namespace NServiceBus.AzureServiceBus
     using Topology.MetaModel;
     using DelayedDelivery;
     using Settings;
-    using Transports;
+    using Transport;
 
     class DefaultBatchedOperationsToBrokeredMessagesConverter : IConvertOutgoingMessagesToBrokeredMessages
     {
@@ -154,7 +154,11 @@ namespace NServiceBus.AzureServiceBus
         {
             foreach (var header in outgoingMessage.Headers)
             {
-                brokeredMessage.Properties[header.Key] = header.Value;
+                // if a message that previously failed processing is actively sent again (f.e. SLR) then the header should be removed as retry counter is reset
+                if (header.Key != BrokeredMessageHeaders.Recovery)
+                {
+                    brokeredMessage.Properties[header.Key] = header.Value;
+                }
             }
         }
 

@@ -11,8 +11,8 @@
     using Extensibility;
     using Microsoft.ServiceBus.Messaging;
     using Settings;
-    using NServiceBus.Transports;
     using NUnit.Framework;
+    using Transport;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -45,8 +45,8 @@
             await creator.Create("myqueue2", namespaceManager);
 
             // perform the test
-            var dispatcher = new Dispatcher(settings, router, new FakeBatcher());
-            await dispatcher.Dispatch(new TransportOperations(), new ContextBag());
+            var dispatcher = new Dispatcher(router, new FakeBatcher());
+            await dispatcher.Dispatch(new TransportOperations(), new TransportTransaction(), new ContextBag());
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
@@ -81,10 +81,10 @@
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var dispatcher = new Dispatcher(settings, router, new FakeBatcher());
+            var dispatcher = new Dispatcher(router, new FakeBatcher());
 
             // validate
-            Assert.ThrowsAsync<MessagingEntityNotFoundException>(async () => await dispatcher.Dispatch(new TransportOperations(), new ContextBag()));
+            Assert.ThrowsAsync<MessagingEntityNotFoundException>(async () => await dispatcher.Dispatch(new TransportOperations(), new TransportTransaction(), new ContextBag()));
         }
 
 

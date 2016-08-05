@@ -4,7 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Text;
     using DeliveryConstraints;
-    using Transports;
+    using Transport;
 
     public class BatchedOperation
     {

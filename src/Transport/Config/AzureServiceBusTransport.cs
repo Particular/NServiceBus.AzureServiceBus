@@ -6,14 +6,15 @@
     using AzureServiceBus;
     using Serialization;
     using Settings;
-    using Transports;
+    using Transport;
 
     public class AzureServiceBusTransport : TransportDefinition
     {
-        protected override TransportInfrastructure Initialize(SettingsHolder settings, string connectionString)
+        public override TransportInfrastructure Initialize(SettingsHolder settings, string connectionString)
         {
             // override core default serialization
-            settings.SetDefault<SerializationDefinition>(new JsonSerializer());
+            settings.SetDefault(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new JsonSerializer(), new SettingsHolder()));
+            
 
             var topology = GetConfiguredTopology(settings);
             topology.Initialize(settings);

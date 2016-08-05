@@ -5,13 +5,13 @@ namespace NServiceBus.AzureServiceBus
     using System.Threading.Tasks;
     using Extensibility;
     using Logging;
-    using Transports;
+    using Transport;
 
     class MessagePump : IPushMessages, IDisposable
     {
         ITopologySectionManager topologySectionManager;
         IOperateTopology topologyOperator;
-        Func<PushContext, Task> messagePump;
+        Func<MessageContext, Task> messagePump;
         RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
         string inputQueue;
@@ -22,7 +22,7 @@ namespace NServiceBus.AzureServiceBus
             this.topologyOperator = topologyOperator;
         }
 
-        public Task Init(Func<PushContext, Task> pump, CriticalError criticalError, PushSettings pushSettings)
+        public Task Init(Func<MessageContext, Task> pump, Func<ErrorContext, Task<ErrorHandleResult>> onError, CriticalError criticalError, PushSettings pushSettings)
         {
             messagePump = pump;
             var name = $"MessagePump on the queue `{pushSettings.InputQueue}`";
@@ -35,18 +35,21 @@ namespace NServiceBus.AzureServiceBus
 
             inputQueue = pushSettings.InputQueue;
 
-            topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
+            topologyOperator.OnIncomingMessage( (incoming, receiveContext) =>
             {
                 var tokenSource = new CancellationTokenSource();
                 receiveContext.CancellationToken = tokenSource.Token;
 
                 circuitBreaker.Success();
-
+               
                 var transportTransaction = new TransportTransaction();
                 transportTransaction.Set(receiveContext);
 
-                return messagePump(new PushContext(incoming.MessageId, incoming.Headers, incoming.BodyStream, transportTransaction, tokenSource, new ContextBag()));
+                return messagePump(new MessageContext(incoming.MessageId, incoming.Headers, incoming.Body, transportTransaction, tokenSource, new ContextBag()));
+                
             });
+
+            topologyOperator.OnProcessingFailure(onError);
 
             return TaskEx.Completed;
         }

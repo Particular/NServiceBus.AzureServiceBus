@@ -161,6 +161,7 @@ namespace NServiceBus.AzureServiceBus
         internal static class Core
         {
             public const string CreateTopology = "Transport.CreateQueues";
+            public const string MainSerializerSettingsKey = "MainSerializer";
         }
 
         public static class Serialization

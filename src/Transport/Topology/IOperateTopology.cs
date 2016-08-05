@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Transport;
 
     /// <summary>
     /// Operational aspects of running on top of the topology
@@ -29,5 +30,7 @@
         void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func);
 
         void OnError(Func<Exception, Task> func);
+
+        void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> onError);
     }
 }

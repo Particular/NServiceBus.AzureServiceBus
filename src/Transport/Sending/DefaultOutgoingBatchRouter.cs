@@ -4,10 +4,12 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
     using Azure.Transports.WindowsAzureServiceBus;
     using Logging;
     using Settings;
+    using Transport;
 
     class DefaultOutgoingBatchRouter : IRouteOutgoingBatches
     {
@@ -33,17 +35,17 @@ namespace NServiceBus.AzureServiceBus
             maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes);
         }
 
-        public Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContext context)
+        public Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContext context, DispatchConsistency consistency)
         {
             var pendingBatches = new List<Task>();
             foreach (var batch in outgoingBatches)
             {
-                pendingBatches.Add(RouteBatch(batch, context));
+                pendingBatches.Add(RouteBatch(batch, context as BrokeredMessageReceiveContext, consistency));
             }
             return Task.WhenAll(pendingBatches);
         }
 
-        public Task RouteBatch(Batch batch, ReceiveContext context)
+        public Task RouteBatch(Batch batch, BrokeredMessageReceiveContext context, DispatchConsistency consistency)
         {
             var outgoingBatches = batch.Operations;
 
@@ -53,7 +55,7 @@ namespace NServiceBus.AzureServiceBus
 
             foreach (var entity in batch.Destinations.Entities)
             {
-                var routingOptions = GetRoutingOptions(context);
+                var routingOptions = GetRoutingOptions(context, consistency);
 
                 if (!string.IsNullOrEmpty(routingOptions.ViaEntityPath))
                 {
@@ -70,21 +72,27 @@ namespace NServiceBus.AzureServiceBus
                 foreach (var ns in activeNamespaces)
                 {
                     // only use via if the destination and via namespace are the same
-                    var via = ns.ConnectionString == routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
+                    var via = routingOptions.SendVia && ns.ConnectionString ==  routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
+                    var suppressTransaction = via == null;
                     var messageSender = senders.Get(entity.Path, via, ns.Name);
 
                     var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
 
-                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages));
+                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, suppressTransaction));
                 }
             }
             return Task.WhenAll(pendingSends);
         }
 
-        RoutingOptions GetRoutingOptions(ReceiveContext receiveContext)
+        RoutingOptions GetRoutingOptions(ReceiveContext receiveContext, DispatchConsistency consistency)
         {
-            var sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+            var sendVia = false;
             var context = receiveContext as BrokeredMessageReceiveContext;
+            if (context?.Recovering == false) // avoid send via when recovering to prevent error message from rolling back
+            {
+                sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+                sendVia &= consistency != DispatchConsistency.Isolated;
+            }
             return new RoutingOptions
             {
                 SendVia = sendVia,
@@ -109,14 +117,20 @@ namespace NServiceBus.AzureServiceBus
             return null;
         }
 
-        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend)
+        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend,bool suppressTransaction)
         {
             try
             {
-                await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend).ConfigureAwait(false);
+                var scope = suppressTransaction ? new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled) : null;
+                using (scope)
+                {
+                    await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend).ConfigureAwait(false);
+                    scope?.Complete();
+                }
             }
             catch (Exception exception)
             {
+                
                 // ASB team promissed to fix the issue with MessagingEntityNotFoundException (missing entity path) - verify that
                 var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", messagesToSend.Select(x => x.MessageId));
                 logger.Error(message, exception);
@@ -133,7 +147,11 @@ namespace NServiceBus.AzureServiceBus
                         var clones = messagesToSend.Select(x => x.Clone()).ToList();
                         try
                         {
-                            await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones).ConfigureAwait(false);
+                            using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
+                            {
+                                await RouteBatchWithEnforcedBatchSizeAsync(fallback, clones).ConfigureAwait(false);
+                                scope.Complete();
+                            }
                             logger.Info("Successfully dispatched a batch with the following message IDs: " + string.Join(", ", clones.Select(x => x.MessageId) + " to fallback namespace"));
                             fallBackSucceeded = true;
                             break;

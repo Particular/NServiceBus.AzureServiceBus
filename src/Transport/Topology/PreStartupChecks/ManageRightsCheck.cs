@@ -4,7 +4,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
     using Settings;
-    using Transports;
+    using Transport;
 
     class ManageRightsCheck
     {

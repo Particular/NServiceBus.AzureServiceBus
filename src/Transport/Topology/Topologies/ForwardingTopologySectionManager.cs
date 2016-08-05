@@ -5,7 +5,7 @@ namespace NServiceBus.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using Addressing;
-    using Transports;
+    using Transport;
     using Settings;
 
     class ForwardingTopologySectionManager : ITopologySectionManager
@@ -49,7 +49,7 @@ namespace NServiceBus.AzureServiceBus
 
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
-            var inputQueuePath = addressingLogic.Apply(endpointName.ToString(), EntityType.Queue).Name;
+            var inputQueuePath = addressingLogic.Apply(endpointName, EntityType.Queue).Name;
             var inputQueues = namespaces.Select(n => new EntityInfo
             {
                 Path = inputQueuePath,
@@ -196,8 +196,8 @@ namespace NServiceBus.AzureServiceBus
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
             var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
 
-            var sanitizedInputQueuePath = addressingLogic.Apply(endpointName.ToString(), EntityType.Queue).Name;
-            var sanitizedSubscriptionPath = addressingLogic.Apply(endpointName.ToString(), EntityType.Subscription).Name;
+            var sanitizedInputQueuePath = addressingLogic.Apply(endpointName, EntityType.Queue).Name;
+            var sanitizedSubscriptionPath = addressingLogic.Apply(endpointName, EntityType.Subscription).Name;
             // rule name needs to be 1) based on event full name 2) unique 3) deterministic
             var ruleName = addressingLogic.Apply(eventType.FullName, EntityType.Rule).Name;
 

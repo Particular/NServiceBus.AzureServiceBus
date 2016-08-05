@@ -2,6 +2,7 @@ namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace NServiceBus.AzureServiceBus
     using Logging;
     using Azure.Transports.WindowsAzureServiceBus;
     using Settings;
+    using Transport;
     using Utils;
 
     class MessageReceiverNotifier : INotifyIncomingMessages
@@ -30,6 +32,7 @@ namespace NServiceBus.AzureServiceBus
         CancellationTokenSource batchedCompletionCts;
         Task batchedCompletionTask;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
+        Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
 
         public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
@@ -43,12 +46,13 @@ namespace NServiceBus.AzureServiceBus
         public bool IsRunning { get; private set; }
         public int RefCount { get; set; }
 
-        public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, int maximumConcurrency)
+        public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
         {
             receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
             incomingCallback = callback;
             this.errorCallback = errorCallback;
+            this.processingFailureCallback = processingFailureCallback;
             this.entity = entity;
 
             fullPath = entity.Path;
@@ -96,7 +100,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
             }
-
+            
             Func<BrokeredMessage, Task> callback = message =>
             {
                 var processTask = ProcessMessageAsync(message);
@@ -132,7 +136,8 @@ namespace NServiceBus.AzureServiceBus
                     }
 
                     count = locksTokensToComplete.TryPopRange(buffer);
-                    await internalReceiver.SafeCompleteBatchAsync(buffer.Take(count)).ConfigureAwait(false);
+                    var tocomplete = buffer.Take(count).ToList();
+                    await internalReceiver.SafeCompleteBatchAsync(tocomplete).ConfigureAwait(false);
                     Array.Clear(buffer, 0, buffer.Length);
                 }
 
@@ -143,7 +148,8 @@ namespace NServiceBus.AzureServiceBus
                 }
 
                 count = locksTokensToComplete.TryPopRange(buffer);
-                await internalReceiver.SafeCompleteBatchAsync(buffer.Take(count)).ConfigureAwait(false);
+                var remainingtocomplete = buffer.Take(count).ToList();
+                await internalReceiver.SafeCompleteBatchAsync(remainingtocomplete).ConfigureAwait(false);
                 Array.Clear(buffer, 0, buffer.Length);
 
             }, CancellationToken.None);
@@ -170,25 +176,70 @@ namespace NServiceBus.AzureServiceBus
 
             var context = new BrokeredMessageReceiveContext(message, entity, internalReceiver.Mode);
 
+            var transportTransactionMode = settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : TransportTransactionMode.SendsAtomicWithReceive;
+            var wrapInScope = transportTransactionMode == TransportTransactionMode.SendsAtomicWithReceive;
+            var completionCanBeBatched = !wrapInScope;
             try
             {
-                await incomingCallback(incomingMessage, context).ConfigureAwait(false);
-
-                if (context.CancellationToken.IsCancellationRequested)
+                var scope = wrapInScope ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled) : null;
                 {
-                    await AbandonAsyncOnCancellation(message).ConfigureAwait(false);
-                }
-                else
-                {
-                    if (context.ReceiveMode == ReceiveMode.PeekLock)
+                    using (scope)
                     {
-                        locksTokensToComplete.Push(message.LockToken);
+                        await incomingCallback(incomingMessage, context).ConfigureAwait(false);
+
+                        await HandleCompletion(message, context, completionCanBeBatched).ConfigureAwait(false);
+                        scope?.Complete();
                     }
                 }
             }
             catch (Exception exception)
             {
-                await AbandonAsync(message, exception).ConfigureAwait(false);
+                // and go into recovery mode so that no new messages are added to the transfer queue
+                context.Recovering = true;
+
+                // pass the context into the error pipeline
+                var transportTransaction = new TransportTransaction();
+                transportTransaction.Set(context);
+                var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
+
+                try
+                {
+                    var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
+                    if (result == ErrorHandleResult.RetryRequired)
+                    {
+                        await AbandonAsync(message, exception).ConfigureAwait(false);
+                    }
+                    else 
+                    {
+                        await HandleCompletion(message, context, completionCanBeBatched).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception onErrorException)
+                {
+                    await AbandonAsync(message, onErrorException).ConfigureAwait(false);
+                }
+            }
+        }
+
+        async Task HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContext context, bool canbeBatched)
+        {
+            if (context.CancellationToken.IsCancellationRequested)
+            {
+                await AbandonAsyncOnCancellation(message).ConfigureAwait(false);
+            }
+            else
+            {
+                if (receiveMode == ReceiveMode.PeekLock)
+                {
+                    if (canbeBatched)
+                    {
+                        locksTokensToComplete.Push(message.LockToken);
+                    }
+                    else
+                    {
+                        await context.IncomingBrokeredMessage.CompleteAsync().ConfigureAwait(false);
+                    }
+                }
             }
         }
 
@@ -209,7 +260,7 @@ namespace NServiceBus.AzureServiceBus
         async Task AbandonAsync(BrokeredMessage message, Exception exception)
         {
             logger.Info($"Exceptions occurred OnComplete, exception: {exception}");
-
+            
             await AbandonInternal(message).ConfigureAwait(false);
 
             if (errorCallback != null && exception != null)
@@ -218,7 +269,7 @@ namespace NServiceBus.AzureServiceBus
             }
         }
 
-        async Task AbandonInternal(BrokeredMessage message)
+        async Task AbandonInternal(BrokeredMessage message, IDictionary<string, object> propertiesToModify=null)
         {
             if (receiveMode == ReceiveMode.ReceiveAndDelete) return;
 
@@ -226,7 +277,7 @@ namespace NServiceBus.AzureServiceBus
             {
                 logger.InfoFormat("Abandoning brokered message {0}", message.MessageId);
 
-                await message.SafeAbandonAsync().ConfigureAwait(false);
+                await message.SafeAbandonAsync(propertiesToModify).ConfigureAwait(false);
 
                 suppressScope.Complete();
             }
@@ -259,5 +310,4 @@ namespace NServiceBus.AzureServiceBus
             IsRunning = false;
         }
     }
-
 }

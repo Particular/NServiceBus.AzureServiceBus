@@ -8,9 +8,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using Receiving;
     using TestUtils;
     using AzureServiceBus;
-    using Routing;
     using Settings;
-    using NServiceBus.Transports;
+    using Transport;
     using NUnit.Framework;
 
     [TestFixture]
@@ -54,7 +53,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 return TaskEx.Completed;
 
-            }, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+            }, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
             // execute
             pump.Start(new PushRuntimeSettings(1));
@@ -80,7 +79,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            settings.SetDefault<EndpointName>(new EndpointName(enpointname));
+            settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
             var topology = new EndpointOrientedTopology(container);

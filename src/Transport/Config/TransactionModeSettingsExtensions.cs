@@ -14,7 +14,7 @@
 
             if (namespaces.Count == 1 && sendVia)
                 return TransportTransactionMode.SendsAtomicWithReceive;
-
+            
             return receiveMode == ReceiveMode.PeekLock ? TransportTransactionMode.ReceiveOnly : TransportTransactionMode.None;
         }
     }
