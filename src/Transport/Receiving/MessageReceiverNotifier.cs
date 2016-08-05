@@ -176,7 +176,7 @@ namespace NServiceBus.AzureServiceBus
 
             var context = new BrokeredMessageReceiveContext(message, entity, internalReceiver.Mode);
 
-            var transportTransactionMode = settings.Get<TransportTransactionMode>();
+            var transportTransactionMode = settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : TransportTransactionMode.SendsAtomicWithReceive;
             var wrapInScope = transportTransactionMode == TransportTransactionMode.SendsAtomicWithReceive;
             var completionCanBeBatched = !wrapInScope;
             try
