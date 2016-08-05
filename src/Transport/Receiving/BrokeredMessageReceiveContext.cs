@@ -32,7 +32,7 @@ namespace NServiceBus.AzureServiceBus
     {
         public override async Task Invoke(IIncomingPhysicalMessageContext context, Func<Task> next)
         {
-            if (Transaction.Current != null) // todo: should be checked using send with atomic receive
+            if (Transaction.Current != null)
             {
                 using (var tx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                 {
@@ -40,6 +40,10 @@ namespace NServiceBus.AzureServiceBus
 
                     tx.Complete();
                 }
+            }
+            else
+            {
+                await next().ConfigureAwait(false);
             }
         }
 
