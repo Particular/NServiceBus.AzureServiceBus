@@ -3,11 +3,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Tests;
     using Receiving;
     using TestUtils;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using Settings;
     using Transport;
     using NUnit.Framework;

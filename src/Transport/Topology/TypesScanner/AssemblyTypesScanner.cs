@@ -1,4 +1,4 @@
-﻿namespace NServiceBus.AzureServiceBus.TypesScanner
+﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Collections.Generic;

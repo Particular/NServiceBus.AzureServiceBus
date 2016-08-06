@@ -3,9 +3,8 @@ namespace NServiceBus
     using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using AzureServiceBus;
-    using AzureServiceBus.Topology.MetaModel;
     using Configuration.AdvanceExtensibility;
+    using Transport.AzureServiceBus;
 
     public static class AzureServiceBusTransportExtensions
     {

@@ -3,10 +3,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
 

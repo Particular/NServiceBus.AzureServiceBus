@@ -1,7 +1,5 @@
-﻿namespace NServiceBus.AzureServiceBus.Addressing
+﻿namespace NServiceBus.Transport.AzureServiceBus
 {
-    using Topology.MetaModel;
-
     class AddressingLogic
     {
         readonly ICompositionStrategy composition;

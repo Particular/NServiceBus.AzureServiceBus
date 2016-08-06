@@ -1,6 +1,5 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualization
 {
-    using AzureServiceBus.Addressing;
     using NUnit.Framework;
 
     [TestFixture]

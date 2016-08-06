@@ -1,7 +1,7 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Utils
 {
     using System.Threading.Tasks;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]

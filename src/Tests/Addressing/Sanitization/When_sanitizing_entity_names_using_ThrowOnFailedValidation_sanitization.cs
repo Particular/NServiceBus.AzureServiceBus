@@ -2,7 +2,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
 {
     using System;
     using AzureServiceBus;
-    using AzureServiceBus.Addressing;
     using NUnit.Framework;
     using Settings;
 

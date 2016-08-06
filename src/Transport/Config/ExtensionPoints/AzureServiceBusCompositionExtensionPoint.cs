@@ -1,7 +1,7 @@
 ﻿namespace NServiceBus
 {
-    using AzureServiceBus.Addressing;
     using Configuration.AdvanceExtensibility;
+    using Transport.AzureServiceBus;
     using Settings;
 
     public class AzureServiceBusCompositionExtensionPoint<T> : ExposeSettings where T : ICompositionStrategy

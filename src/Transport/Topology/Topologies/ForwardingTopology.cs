@@ -1,14 +1,14 @@
-namespace NServiceBus.AzureServiceBus
+namespace NServiceBus
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Addressing;
+    using AzureServiceBus;
     using Routing;
-    using Topology.MetaModel;
     using Settings;
     using Transport;
+    using Transport.AzureServiceBus;
 
     public class ForwardingTopology : ITopology
     {

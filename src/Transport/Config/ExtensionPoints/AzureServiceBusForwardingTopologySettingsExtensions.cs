@@ -1,7 +1,7 @@
 ﻿namespace NServiceBus
 {
-    using AzureServiceBus;
     using Configuration.AdvanceExtensibility;
+    using Transport.AzureServiceBus;
 
     public static class AzureServiceBusForwardingTopologySettingsExtensions
     {

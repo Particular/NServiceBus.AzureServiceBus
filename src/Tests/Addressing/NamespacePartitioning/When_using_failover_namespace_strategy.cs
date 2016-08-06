@@ -2,10 +2,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
 {
     using System.Configuration;
     using System.Linq;
-    using AzureServiceBus;
-    using AzureServiceBus.Addressing;
     using Settings;
     using NUnit.Framework;
+    using Transport.AzureServiceBus;
 
     [TestFixture]
     [Category("AzureServiceBus")]

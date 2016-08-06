@@ -1,10 +1,9 @@
-﻿namespace NServiceBus.AzureServiceBus
+﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using TypesScanner;
     using Settings;
 
     class PublishersConfiguration

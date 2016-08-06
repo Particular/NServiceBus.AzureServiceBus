@@ -4,10 +4,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
-    using AzureServiceBus;
-    using AzureServiceBus.Topology.MetaModel;
+    using Transport.AzureServiceBus;
     using DeliveryConstraints;
     using Settings;
     using Transport;

@@ -1,7 +1,8 @@
-namespace NServiceBus.AzureServiceBus.Addressing
+namespace NServiceBus
 {
     using System;
     using Settings;
+    using Transport.AzureServiceBus;
 
     public class DiscriminatorBasedIndividualization : IIndividualizationStrategy
     {

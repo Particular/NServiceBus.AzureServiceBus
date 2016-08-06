@@ -1,9 +1,10 @@
-﻿namespace NServiceBus.AzureServiceBus
+﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Logging;
+    using NServiceBus.AzureServiceBus;
 
     class RepeatedFailuresOverTimeCircuitBreaker : IDisposable
     {

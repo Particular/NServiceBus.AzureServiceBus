@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBus
+namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
@@ -9,11 +9,9 @@ namespace NServiceBus.AzureServiceBus
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
-    using Azure.Transports.WindowsAzureServiceBus;
     using Settings;
     using Transport;
-    using Utils;
-
+    
     class MessageReceiverNotifier : INotifyIncomingMessages
     {
         IManageMessageReceiverLifeCycle clientEntities;

@@ -1,10 +1,9 @@
-namespace NServiceBus.AzureServiceBus
+namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using Addressing;
     using Transport;
     using Settings;
 

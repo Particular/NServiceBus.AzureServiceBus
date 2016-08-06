@@ -1,9 +1,8 @@
 ﻿namespace NServiceBus
 {
     using System;
-    using AzureServiceBus;
-    using AzureServiceBus.Addressing;
     using Configuration.AdvanceExtensibility;
+    using Transport.AzureServiceBus;
 
     public static class AzureServiceBusHierarchyCompositionSettingsExtensions
     {

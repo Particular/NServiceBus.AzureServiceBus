@@ -1,8 +1,8 @@
 ﻿namespace NServiceBus
 {
-    using AzureServiceBus.Addressing;
     using Configuration.AdvanceExtensibility;
     using Settings;
+    using Transport.AzureServiceBus;
 
     public class AzureServiceBusIndividualizationExtensionPoint<T> : ExposeSettings where T : IIndividualizationStrategy
     {

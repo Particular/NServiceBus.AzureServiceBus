@@ -2,7 +2,7 @@
 {
     using System;
     using AzureServiceBus;
-    using AzureServiceBus.Topology.MetaModel;
+    using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
 

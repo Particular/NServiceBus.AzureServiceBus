@@ -1,10 +1,9 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
 {
     using System;
-    using AzureServiceBus;
-    using AzureServiceBus.Addressing;
     using NUnit.Framework;
     using Settings;
+    using Transport.AzureServiceBus;
 
     [TestFixture]
     [Category("AzureServiceBus")]

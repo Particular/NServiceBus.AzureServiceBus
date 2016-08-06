@@ -1,7 +1,6 @@
-﻿namespace NServiceBus
+﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using Microsoft.ServiceBus.Messaging;
-    using AzureServiceBus;
     using Settings;
 
     static class TransactionModeSettingsExtensions

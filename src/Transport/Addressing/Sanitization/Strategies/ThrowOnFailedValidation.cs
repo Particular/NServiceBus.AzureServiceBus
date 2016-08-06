@@ -1,8 +1,9 @@
-namespace NServiceBus.AzureServiceBus.Addressing
+namespace NServiceBus
 {
     using System;
     using System.Text.RegularExpressions;
     using Settings;
+    using Transport.AzureServiceBus;
 
     public class ThrowOnFailedValidation : ISanitizationStrategy
     {

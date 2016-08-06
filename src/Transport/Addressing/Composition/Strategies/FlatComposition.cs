@@ -1,5 +1,7 @@
-namespace NServiceBus.AzureServiceBus.Addressing
+namespace NServiceBus
 {
+    using Transport.AzureServiceBus;
+
     public class FlatComposition : ICompositionStrategy
     {
         public string GetEntityPath(string entityname, EntityType entityType)

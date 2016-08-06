@@ -4,9 +4,9 @@
     using System.Threading;
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using AzureServiceBus;
     using Configuration.AdvanceExtensibility;
     using Settings;
     using NUnit.Framework;

@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBus.Topology.MetaModel
+namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Linq;

@@ -1,9 +1,10 @@
-namespace NServiceBus.AzureServiceBus.Addressing
+namespace NServiceBus
 {
     using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
     using Settings;
+    using Transport.AzureServiceBus;
 
     public class SingleNamespacePartitioning : INamespacePartitioningStrategy
     {

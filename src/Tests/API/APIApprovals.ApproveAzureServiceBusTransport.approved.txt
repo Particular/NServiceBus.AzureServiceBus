@@ -1,510 +1,8 @@
-﻿namespace NServiceBus.AzureServiceBus.Addressing
-{
-    
-    public class CoreIndividualization : NServiceBus.AzureServiceBus.Addressing.IIndividualizationStrategy
-    {
-        public CoreIndividualization() { }
-        public string Individualize(string endpointName) { }
-    }
-    public class DiscriminatorBasedIndividualization : NServiceBus.AzureServiceBus.Addressing.IIndividualizationStrategy
-    {
-        public DiscriminatorBasedIndividualization(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public string Individualize(string endpointName) { }
-    }
-    public enum FailOverMode
-    {
-        Primary = 0,
-        Secondary = 1,
-    }
-    public class FailOverNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
-    {
-        public FailOverNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public NServiceBus.AzureServiceBus.Addressing.FailOverMode Mode { get; set; }
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.FailOverNamespacePartitioning.<GetNamespaces>d__6))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
-    }
-    public class FlatComposition : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
-    {
-        public FlatComposition() { }
-        public string GetEntityPath(string entityname, NServiceBus.AzureServiceBus.EntityType entityType) { }
-    }
-    public class HierarchyComposition : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
-    {
-        public HierarchyComposition(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public string GetEntityPath(string entityname, NServiceBus.AzureServiceBus.EntityType entityType) { }
-    }
-    public interface ICompositionStrategy
-    {
-        string GetEntityPath(string entityname, NServiceBus.AzureServiceBus.EntityType entityType);
-    }
-    public interface IIndividualizationStrategy
-    {
-        string Individualize(string endpointName);
-    }
-    public interface INamespacePartitioningStrategy
-    {
-        System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent);
-    }
-    public interface ISanitizationStrategy
-    {
-        string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType);
-    }
-    public enum PartitioningIntent
-    {
-        Receiving = 0,
-        Sending = 1,
-        Creating = 2,
-    }
-    public class RoundRobinNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
-    {
-        public RoundRobinNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.RoundRobinNamespacePartitioning.<GetNamespaces>d__2))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
-    }
-    public class SingleNamespacePartitioning : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy
-    {
-        public SingleNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.AzureServiceBus.Addressing.SingleNamespacePartitioning.<GetNamespaces>d__2))]
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.AzureServiceBus.Addressing.PartitioningIntent partitioningIntent) { }
-    }
-    public class ThrowOnFailedValidation : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
-    {
-        public ThrowOnFailedValidation(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
-    }
-    public class ValidateAndHashIfNeeded : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
-    {
-        public ValidateAndHashIfNeeded(NServiceBus.Settings.ReadOnlySettings settings) { }
-        public string Sanitize(string entityPathOrName, NServiceBus.AzureServiceBus.EntityType entityType) { }
-    }
-    public class ValidationResult
-    {
-        public ValidationResult() { }
-        public bool CharactersAreValid { get; }
-        public string CharactersError { get; set; }
-        public bool IsValid { get; }
-        public string LengthError { get; set; }
-        public bool LengthIsValid { get; }
-        public void AddErrorForInvalidCharacters(string error) { }
-        public void AddErrorForInvalidLenth(string error) { }
-    }
-}
-namespace NServiceBus.AzureServiceBus
-{
-    
-    public class Batch
-    {
-        public Batch() { }
-        public NServiceBus.AzureServiceBus.TopologySection Destinations { get; set; }
-        public System.Collections.Generic.IList<NServiceBus.AzureServiceBus.BatchedOperation> Operations { get; set; }
-        public NServiceBus.Transport.DispatchConsistency RequiredDispatchConsistency { get; set; }
-    }
-    public class BatchedOperation
-    {
-        public BatchedOperation(int messageSizePaddingPercentage = 0) { }
-        public System.Collections.Generic.IEnumerable<NServiceBus.DeliveryConstraints.DeliveryConstraint> DeliveryConstraints { get; set; }
-        public NServiceBus.Transport.OutgoingMessage Message { get; set; }
-        public long GetEstimatedSize() { }
-    }
-    public class BrokeredMessageReceiveContext : NServiceBus.AzureServiceBus.ReceiveContext
-    {
-        public BrokeredMessageReceiveContext(Microsoft.ServiceBus.Messaging.BrokeredMessage message, NServiceBus.AzureServiceBus.EntityInfo entity, Microsoft.ServiceBus.Messaging.ReceiveMode receiveMode) { }
-        public NServiceBus.AzureServiceBus.EntityInfo Entity { get; }
-        public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; }
-        public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; }
-        public bool Recovering { get; set; }
-    }
-    public class EndpointOrientedTopology : NServiceBus.AzureServiceBus.ITopology
-    {
-        public EndpointOrientedTopology() { }
-        public bool HasNativePubSubSupport { get; }
-        public bool HasSupportForCentralizedPubSub { get; }
-        public NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance) { }
-        public System.Func<NServiceBus.Transport.IDispatchMessages> GetDispatcherFactory() { }
-        public System.Func<NServiceBus.Transport.IPushMessages> GetMessagePumpFactory() { }
-        public NServiceBus.Transport.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
-        public System.Func<NServiceBus.Transport.ICreateQueues> GetQueueCreatorFactory() { }
-        public System.Func<NServiceBus.Transport.IManageSubscriptions> GetSubscriptionManagerFactory() { }
-        public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
-        public System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks() { }
-    }
-    public class EntityInfo
-    {
-        public EntityInfo() { }
-        public NServiceBus.AzureServiceBus.RuntimeNamespaceInfo Namespace { get; set; }
-        public string Path { get; set; }
-        public System.Collections.Generic.IList<NServiceBus.AzureServiceBus.EntityRelationShipInfo> RelationShips { get; }
-        public bool ShouldBeListenedTo { get; set; }
-        public NServiceBus.AzureServiceBus.EntityType Type { get; set; }
-        protected bool Equals(NServiceBus.AzureServiceBus.EntityInfo other) { }
-        public override bool Equals(object obj) { }
-        public override int GetHashCode() { }
-    }
-    public class EntityRelationShipInfo
-    {
-        public EntityRelationShipInfo() { }
-        public NServiceBus.AzureServiceBus.EntityInfo Source { get; set; }
-        public NServiceBus.AzureServiceBus.EntityInfo Target { get; set; }
-        public NServiceBus.AzureServiceBus.EntityRelationShipType Type { get; set; }
-    }
-    public enum EntityRelationShipType
-    {
-        Forward = 0,
-        Subscription = 1,
-    }
-    public enum EntityType
-    {
-        Queue = 0,
-        Topic = 1,
-        Subscription = 2,
-        Rule = 3,
-    }
-    public class ForwardingTopology : NServiceBus.AzureServiceBus.ITopology
-    {
-        public ForwardingTopology() { }
-        public bool HasNativePubSubSupport { get; }
-        public bool HasSupportForCentralizedPubSub { get; }
-        public NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance) { }
-        public System.Func<NServiceBus.Transport.IDispatchMessages> GetDispatcherFactory() { }
-        public System.Func<NServiceBus.Transport.IPushMessages> GetMessagePumpFactory() { }
-        public NServiceBus.Transport.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
-        public System.Func<NServiceBus.Transport.ICreateQueues> GetQueueCreatorFactory() { }
-        public System.Func<NServiceBus.Transport.IManageSubscriptions> GetSubscriptionManagerFactory() { }
-        public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
-        public async System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks() { }
-    }
-    public interface IBatcher
-    {
-        System.Collections.Generic.IList<NServiceBus.AzureServiceBus.Batch> ToBatches(NServiceBus.Transport.TransportOperations operations);
-    }
-    public interface IBrokerSideSubscriptionFilter
-    {
-        string Serialize();
-    }
-    public interface IClientEntity
-    {
-        bool IsClosed { get; }
-        Microsoft.ServiceBus.RetryPolicy RetryPolicy { get; set; }
-    }
-    public interface IClientSideSubscriptionFilter
-    {
-        bool Execute(object message);
-    }
-    public interface IConvertBrokeredMessagesToIncomingMessages
-    {
-        NServiceBus.AzureServiceBus.IncomingMessageDetails Convert(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage);
-    }
-    public interface IConvertOutgoingMessagesToBrokeredMessages
-    {
-        System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> Convert(System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.BatchedOperation> outgoingOperations, NServiceBus.AzureServiceBus.RoutingOptions routingOptions);
-    }
-    public interface ICreateAzureServiceBusQueues
-    {
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> Create(string queuePath, NServiceBus.AzureServiceBus.INamespaceManager namespaceManager);
-    }
-    public interface ICreateAzureServiceBusSubscriptions
-    {
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> Create(string topicPath, string subscriptionName, NServiceBus.AzureServiceBus.SubscriptionMetadata metadata, string sqlFilter, NServiceBus.AzureServiceBus.INamespaceManager namespaceManager, string forwardTo);
-    }
-    public interface ICreateAzureServiceBusTopics
-    {
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> Create(string topicPath, NServiceBus.AzureServiceBus.INamespaceManager namespaceManager);
-    }
-    public interface ICreateMessageReceivers
-    {
-        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageReceiver> Create(string entitypath, string namespaceName);
-    }
-    public interface ICreateMessageSenders
-    {
-        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName);
-    }
-    public interface ICreateMessagingFactories
-    {
-        NServiceBus.AzureServiceBus.IMessagingFactory Create(string namespaceName);
-    }
-    public interface ICreateNamespaceManagers
-    {
-        NServiceBus.AzureServiceBus.INamespaceManager Create(string namespaceName);
-    }
-    public interface ICreateTopology
-    {
-        System.Threading.Tasks.Task Create(NServiceBus.AzureServiceBus.TopologySection topology);
-    }
-    public interface IHandleOversizedBrokeredMessages
-    {
-        System.Threading.Tasks.Task Handle(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage);
-    }
-    public interface IManageMessageReceiverLifeCycle
-    {
-        NServiceBus.AzureServiceBus.IMessageReceiver Get(string entitypath, string namespaceName);
-    }
-    public interface IManageMessageSenderLifeCycle
-    {
-        NServiceBus.AzureServiceBus.IMessageSender Get(string entitypath, string viaEntityPath, string namespaceName);
-    }
-    public interface IManageMessagingFactoryLifeCycle
-    {
-        System.Threading.Tasks.Task CloseAll();
-        NServiceBus.AzureServiceBus.IMessagingFactory Get(string namespaceName);
-    }
-    public interface IManageNamespaceManagerLifeCycle
-    {
-        NServiceBus.AzureServiceBus.INamespaceManager Get(string namespaceName);
-    }
-    public interface IMessageReceiver : NServiceBus.AzureServiceBus.IClientEntity
-    {
-        Microsoft.ServiceBus.Messaging.ReceiveMode Mode { get; }
-        int PrefetchCount { get; set; }
-        System.Threading.Tasks.Task CloseAsync();
-        System.Threading.Tasks.Task CompleteBatchAsync(System.Collections.Generic.IEnumerable<System.Guid> lockTokens);
-        void OnMessage(System.Func<Microsoft.ServiceBus.Messaging.BrokeredMessage, System.Threading.Tasks.Task> callback, Microsoft.ServiceBus.Messaging.OnMessageOptions options);
-    }
-    public interface IMessageSender : NServiceBus.AzureServiceBus.IClientEntity
-    {
-        System.Threading.Tasks.Task Send(Microsoft.ServiceBus.Messaging.BrokeredMessage message);
-        System.Threading.Tasks.Task SendBatch(System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> messages);
-    }
-    public interface IMessagingFactory : NServiceBus.AzureServiceBus.IClientEntity
-    {
-        System.Threading.Tasks.Task CloseAsync();
-        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageReceiver> CreateMessageReceiver(string entitypath, Microsoft.ServiceBus.Messaging.ReceiveMode receiveMode);
-        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageSender> CreateMessageSender(string entitypath);
-        System.Threading.Tasks.Task<NServiceBus.AzureServiceBus.IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath);
-    }
-    public interface INamespaceManager
-    {
-        System.Uri Address { get; }
-        Microsoft.ServiceBus.NamespaceManagerSettings Settings { get; }
-        System.Threading.Tasks.Task<bool> CanManageEntities();
-        System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description);
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter);
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription);
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription);
-        System.Threading.Tasks.Task DeleteQueue(string path);
-        System.Threading.Tasks.Task DeleteTopic(string path);
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> GetQueue(string path);
-        System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.RuleDescription>> GetRules(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription);
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName);
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> GetTopic(string path);
-        System.Threading.Tasks.Task<bool> QueueExists(string path);
-        System.Threading.Tasks.Task<bool> SubscriptionExists(string topicPath, string subscriptionName);
-        System.Threading.Tasks.Task<bool> TopicExists(string path);
-        System.Threading.Tasks.Task UpdateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description);
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> UpdateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription);
-        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> UpdateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription);
-    }
-    public class IncomingMessageDetails
-    {
-        public IncomingMessageDetails(string messageId, System.Collections.Generic.Dictionary<string, string> headers, byte[] body) { }
-        public byte[] Body { get; }
-        public System.Collections.Generic.Dictionary<string, string> Headers { get; }
-        public string MessageId { get; }
-    }
-    public interface INotifyIncomingMessages
-    {
-        bool IsRunning { get; }
-        int RefCount { get; set; }
-        void Initialize(NServiceBus.AzureServiceBus.EntityInfo entity, System.Func<NServiceBus.AzureServiceBus.IncomingMessageDetails, NServiceBus.AzureServiceBus.ReceiveContext, System.Threading.Tasks.Task> callback, System.Func<System.Exception, System.Threading.Tasks.Task> errorCallback, System.Func<NServiceBus.Transport.ErrorContext, System.Threading.Tasks.Task<NServiceBus.Transport.ErrorHandleResult>> processingFailureCallback, int maximumConcurrency);
-        void Start();
-        System.Threading.Tasks.Task Stop();
-    }
-    public interface IOperateTopology
-    {
-        void OnError(System.Func<System.Exception, System.Threading.Tasks.Task> func);
-        void OnIncomingMessage(System.Func<NServiceBus.AzureServiceBus.IncomingMessageDetails, NServiceBus.AzureServiceBus.ReceiveContext, System.Threading.Tasks.Task> func);
-        void OnProcessingFailure(System.Func<NServiceBus.Transport.ErrorContext, System.Threading.Tasks.Task<NServiceBus.Transport.ErrorHandleResult>> onError);
-        void Start(NServiceBus.AzureServiceBus.TopologySection topology, int maximumConcurrency);
-        void Start(System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.EntityInfo> subscriptions);
-        System.Threading.Tasks.Task Stop();
-        System.Threading.Tasks.Task Stop(System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.EntityInfo> subscriptions);
-    }
-    public interface IRegisterTransportParts
-    {
-        void Register<T>();
-        void Register(System.Type t);
-        void Register<T>(System.Func<object> func);
-        void Register(System.Type t, System.Func<object> func);
-        void RegisterSingleton<T>();
-        void RegisterSingleton(System.Type t);
-    }
-    public interface IResolveTransportParts
-    {
-        object Resolve(System.Type typeToBuild);
-        T Resolve<T>();
-        System.Collections.Generic.IEnumerable<T> ResolveAll<T>();
-        System.Collections.Generic.IEnumerable<object> ResolveAll(System.Type typeToBuild);
-    }
-    public interface IRouteOutgoingBatches
-    {
-        System.Threading.Tasks.Task RouteBatches(System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.Batch> outgoingBatches, NServiceBus.AzureServiceBus.ReceiveContext receiveContext, NServiceBus.Transport.DispatchConsistency consistency);
-    }
-    public interface ITopology
-    {
-        bool HasNativePubSubSupport { get; }
-        bool HasSupportForCentralizedPubSub { get; }
-        NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance);
-        System.Func<NServiceBus.Transport.IDispatchMessages> GetDispatcherFactory();
-        System.Func<NServiceBus.Transport.IPushMessages> GetMessagePumpFactory();
-        NServiceBus.Transport.OutboundRoutingPolicy GetOutboundRoutingPolicy();
-        System.Func<NServiceBus.Transport.ICreateQueues> GetQueueCreatorFactory();
-        System.Func<NServiceBus.Transport.IManageSubscriptions> GetSubscriptionManagerFactory();
-        void Initialize(NServiceBus.Settings.SettingsHolder settings);
-        System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks();
-    }
-    public interface ITopologySectionManager
-    {
-        NServiceBus.AzureServiceBus.TopologySection DeterminePublishDestination(System.Type eventType);
-        NServiceBus.AzureServiceBus.TopologySection DetermineReceiveResources(string inputQueue);
-        NServiceBus.AzureServiceBus.TopologySection DetermineResourcesToCreate(NServiceBus.Transport.QueueBindings queueBindings);
-        NServiceBus.AzureServiceBus.TopologySection DetermineResourcesToSubscribeTo(System.Type eventType);
-        NServiceBus.AzureServiceBus.TopologySection DetermineResourcesToUnsubscribeFrom(System.Type eventtype);
-        NServiceBus.AzureServiceBus.TopologySection DetermineSendDestination(string destination);
-    }
-    public interface ITransportPartsContainer : NServiceBus.AzureServiceBus.IRegisterTransportParts, NServiceBus.AzureServiceBus.IResolveTransportParts { }
-    public class MessageTooLargeException : System.Exception
-    {
-        public MessageTooLargeException() { }
-        public MessageTooLargeException(string message) { }
-        public MessageTooLargeException(string message, System.Exception inner) { }
-        protected MessageTooLargeException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
-    }
-    public class NamespaceConfigurations : System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.NamespaceInfo>, System.Collections.IEnumerable
-    {
-        public NamespaceConfigurations() { }
-        public int Count { get; }
-        public void Add(string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose) { }
-        public string GetConnectionString(string name) { }
-        public System.Collections.Generic.IEnumerator<NServiceBus.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
-    }
-    public class NamespaceInfo : System.IEquatable<NServiceBus.AzureServiceBus.NamespaceInfo>
-    {
-        public NamespaceInfo(string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose = 1) { }
-        public NServiceBus.AzureServiceBus.Topology.MetaModel.ConnectionString ConnectionString { get; }
-        public string Name { get; }
-        public NServiceBus.AzureServiceBus.NamespacePurpose Purpose { get; }
-        public bool Equals(NServiceBus.AzureServiceBus.NamespaceInfo other) { }
-        public override bool Equals(object obj) { }
-        public override int GetHashCode() { }
-    }
-    public class NamespaceManagerAdapter : NServiceBus.AzureServiceBus.INamespaceManager
-    {
-        public NamespaceManagerAdapter(Microsoft.ServiceBus.NamespaceManager manager) { }
-        public System.Uri Address { get; }
-        public Microsoft.ServiceBus.NamespaceManagerSettings Settings { get; }
-        public async System.Threading.Tasks.Task<bool> CanManageEntities() { }
-        public System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description) { }
-        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter) { }
-        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription) { }
-        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription) { }
-        public System.Threading.Tasks.Task DeleteQueue(string path) { }
-        public System.Threading.Tasks.Task DeleteSubscriptionAsync(string topicPath, string subscriptionName) { }
-        public System.Threading.Tasks.Task DeleteTopic(string path) { }
-        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> GetQueue(string path) { }
-        public System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.RuleDescription>> GetRules(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription) { }
-        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName) { }
-        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> GetTopic(string path) { }
-        public System.Threading.Tasks.Task<bool> QueueExists(string path) { }
-        public System.Threading.Tasks.Task<bool> SubscriptionExists(string topicPath, string subscriptionName) { }
-        public System.Threading.Tasks.Task<bool> TopicExists(string path) { }
-        public System.Threading.Tasks.Task UpdateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description) { }
-        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> UpdateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription) { }
-        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> UpdateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription) { }
-    }
-    public enum NamespaceMode
-    {
-        Active = 0,
-        Passive = 1,
-    }
-    public enum NamespacePurpose
-    {
-        Routing = 0,
-        Partitioning = 1,
-    }
-    public abstract class ReceiveContext
-    {
-        protected ReceiveContext() { }
-        public System.Threading.CancellationToken CancellationToken { get; }
-        public System.Transactions.CommittableTransaction Transaction { get; set; }
-    }
-    public class RoutingOptions
-    {
-        public RoutingOptions() { }
-        public bool SendVia { get; set; }
-        public string ViaConnectionString { get; set; }
-        public string ViaEntityPath { get; set; }
-        public string ViaPartitionKey { get; set; }
-    }
-    public class RuntimeNamespaceInfo : System.IEquatable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo>
-    {
-        public RuntimeNamespaceInfo(string name, string connectionString, NServiceBus.AzureServiceBus.NamespacePurpose purpose = 1, NServiceBus.AzureServiceBus.NamespaceMode mode = 0) { }
-        public string ConnectionString { get; }
-        public NServiceBus.AzureServiceBus.NamespaceMode Mode { get; }
-        public string Name { get; }
-        public bool Equals(NServiceBus.AzureServiceBus.RuntimeNamespaceInfo other) { }
-        public override bool Equals(object obj) { }
-        public override int GetHashCode() { }
-    }
-    public class SubscriptionInfo : NServiceBus.AzureServiceBus.EntityInfo
-    {
-        public SubscriptionInfo() { }
-        public NServiceBus.AzureServiceBus.IBrokerSideSubscriptionFilter BrokerSideFilter { get; set; }
-        public NServiceBus.AzureServiceBus.IClientSideSubscriptionFilter ClientSideFilter { get; set; }
-        public NServiceBus.AzureServiceBus.SubscriptionMetadata Metadata { get; set; }
-    }
-    public class SubscriptionMetadata
-    {
-        public SubscriptionMetadata() { }
-        public string Description { get; set; }
-        public string SubscriptionNameBasedOnEventWithNamespace { get; set; }
-    }
-    public enum SupportedBrokeredMessageBodyTypes
-    {
-        ByteArray = 0,
-        Stream = 1,
-    }
-    public class ThrowOnOversizedBrokeredMessages : NServiceBus.AzureServiceBus.IHandleOversizedBrokeredMessages
-    {
-        public ThrowOnOversizedBrokeredMessages() { }
-        public System.Threading.Tasks.Task Handle(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage) { }
-    }
-    public class TopologySection
-    {
-        public TopologySection() { }
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.EntityInfo> Entities { get; set; }
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.RuntimeNamespaceInfo> Namespaces { get; set; }
-        public System.Collections.Generic.IEnumerable<NServiceBus.AzureServiceBus.EntityRelationShipInfo> Relationships { get; set; }
-    }
-    public class UnsupportedBrokeredMessageBodyTypeException : System.Exception
-    {
-        public UnsupportedBrokeredMessageBodyTypeException() { }
-        public UnsupportedBrokeredMessageBodyTypeException(string message) { }
-        public UnsupportedBrokeredMessageBodyTypeException(string message, System.Exception innerException) { }
-        protected UnsupportedBrokeredMessageBodyTypeException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
-    }
-}
-namespace NServiceBus.AzureServiceBus.Topology.MetaModel
-{
-    
-    public class ConnectionString : System.IEquatable<NServiceBus.AzureServiceBus.Topology.MetaModel.ConnectionString>
-    {
-        public static readonly string Sample;
-        public ConnectionString(string value) { }
-        public string NamespaceName { get; }
-        public string SharedAccessPolicyName { get; }
-        public string SharedAccessPolicyValue { get; }
-        public bool Equals(NServiceBus.AzureServiceBus.Topology.MetaModel.ConnectionString other) { }
-        public override bool Equals(object obj) { }
-        public override int GetHashCode() { }
-        public static bool IsConnectionString(string value) { }
-        public override string ToString() { }
-        public static bool TryParse(string value, out NServiceBus.AzureServiceBus.Topology.MetaModel.ConnectionString connectionString) { }
-    }
-}
-namespace NServiceBus
+﻿namespace NServiceBus
 {
     
     public class AzureServiceBusCompositionExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-        where T : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy
+        where T : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
     {
         public AzureServiceBusCompositionExtensionPoint(NServiceBus.Settings.SettingsHolder settings) { }
     }
@@ -512,28 +10,28 @@ namespace NServiceBus
     {
         public AzureServiceBusCompositionSettings(NServiceBus.Settings.SettingsHolder settings) { }
         public NServiceBus.AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>()
-            where T : NServiceBus.AzureServiceBus.Addressing.ICompositionStrategy { }
+            where T : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy { }
     }
     public class static AzureServiceBusDiscriminatorBasedIndividualizationSettingsExtensions
     {
-        public static NServiceBus.AzureServiceBusIndividualizationExtensionPoint<NServiceBus.AzureServiceBus.Addressing.DiscriminatorBasedIndividualization> DiscriminatorGenerator(this NServiceBus.AzureServiceBusIndividualizationExtensionPoint<NServiceBus.AzureServiceBus.Addressing.DiscriminatorBasedIndividualization> individualizationStrategy, System.Func<string, string> discriminatorGenerator) { }
+        public static NServiceBus.AzureServiceBusIndividualizationExtensionPoint<NServiceBus.DiscriminatorBasedIndividualization> DiscriminatorGenerator(this NServiceBus.AzureServiceBusIndividualizationExtensionPoint<NServiceBus.DiscriminatorBasedIndividualization> individualizationStrategy, System.Func<string, string> discriminatorGenerator) { }
     }
     public class static AzureServiceBusEndpointOrientedTopologySettingsExtensions
     {
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> topologySettings, System.Type type, string publisherName) { }
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.EndpointOrientedTopology> topologySettings, System.Reflection.Assembly assembly, string publisherName) { }
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> topologySettings, System.Type type, string publisherName) { }
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> topologySettings, System.Reflection.Assembly assembly, string publisherName) { }
     }
     public class static AzureServiceBusForwardingTopologySettingsExtensions
     {
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> BundlePrefix(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> topologySettings, string prefix) { }
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.AzureServiceBus.ForwardingTopology> topologySettings, int number) { }
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> BundlePrefix(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> topologySettings, string prefix) { }
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> topologySettings, int number) { }
     }
     public class static AzureServiceBusHierarchyCompositionSettingsExtensions
     {
-        public static NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.AzureServiceBus.Addressing.HierarchyComposition> PathGenerator(this NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.AzureServiceBus.Addressing.HierarchyComposition> composition, System.Func<string, string> pathGenerator) { }
+        public static NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.HierarchyComposition> PathGenerator(this NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.HierarchyComposition> composition, System.Func<string, string> pathGenerator) { }
     }
     public class AzureServiceBusIndividualizationExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-        where T : NServiceBus.AzureServiceBus.Addressing.IIndividualizationStrategy
+        where T : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy
     {
         public AzureServiceBusIndividualizationExtensionPoint(NServiceBus.Settings.SettingsHolder settings) { }
     }
@@ -541,7 +39,7 @@ namespace NServiceBus
     {
         public AzureServiceBusIndividualizationSettings(NServiceBus.Settings.SettingsHolder settings) { }
         public NServiceBus.AzureServiceBusIndividualizationExtensionPoint<T> UseStrategy<T>()
-            where T : NServiceBus.AzureServiceBus.Addressing.IIndividualizationStrategy { }
+            where T : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy { }
     }
     public class AzureServiceBusMessageReceiverSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
@@ -558,7 +56,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusMessageSenderSettings MaximuMessageSizeInKilobytes(int sizeInKilobytes) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings MessageSizePaddingPercentage(int percentage) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings OversizedBrokeredMessageHandler<T>(T instance)
-            where T : NServiceBus.AzureServiceBus.IHandleOversizedBrokeredMessages { }
+            where T : NServiceBus.Transport.AzureServiceBus.IHandleOversizedBrokeredMessages { }
         public NServiceBus.AzureServiceBusMessageSenderSettings RetryAttemptsOnThrottle(int count) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings RetryPolicy(Microsoft.ServiceBus.RetryPolicy retryPolicy) { }
     }
@@ -582,7 +80,7 @@ namespace NServiceBus
         public AzureServiceBusNamespacePartitioningSettings(NServiceBus.Settings.SettingsHolder settings) { }
         public void AddNamespace(string name, string connectionString) { }
         public NServiceBus.AzureServiceBusNamespacePartitioningSettings UseStrategy<T>()
-            where T : NServiceBus.AzureServiceBus.Addressing.INamespacePartitioningStrategy { }
+            where T : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy { }
     }
     public class AzureServiceBusNamespaceRoutingSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
@@ -610,18 +108,18 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings SupportOrdering(bool supported) { }
     }
     public class AzureServiceBusSanitizationExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-        where T : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy
+        where T : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy
     {
         public AzureServiceBusSanitizationExtensionPoint(NServiceBus.Settings.SettingsHolder settings) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> Hash(System.Func<string, string> hash) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> QueuePathSanitization(System.Func<string, string> queuePathSanitizer) { }
-        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> QueuePathValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> queuePathValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> QueuePathValidation(System.Func<string, NServiceBus.Transport.AzureServiceBus.ValidationResult> queuePathValidator) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> RuleNameSanitization(System.Func<string, string> ruleNameSanitizer) { }
-        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> RuleNameValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> ruleNameValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> RuleNameValidation(System.Func<string, NServiceBus.Transport.AzureServiceBus.ValidationResult> ruleNameValidator) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> SubscriptionNameSanitization(System.Func<string, string> subscriptionNameSanitizer) { }
-        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> SubscriptionNameValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> subscriptionNameValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> SubscriptionNameValidation(System.Func<string, NServiceBus.Transport.AzureServiceBus.ValidationResult> subscriptionNameValidator) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> TopicPathSanitization(System.Func<string, string> topicPathSanitizer) { }
-        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> TopicPathValidation(System.Func<string, NServiceBus.AzureServiceBus.Addressing.ValidationResult> topicPathValidator) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> TopicPathValidation(System.Func<string, NServiceBus.Transport.AzureServiceBus.ValidationResult> topicPathValidator) { }
     }
     public class AzureServiceBusSanitizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
@@ -629,7 +127,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusSanitizationSettings UseQueuePathMaximumLength(int queuePathMaximumLength) { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseRulePathMaximumLength(int rulePathMaximumLength) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>()
-            where T : NServiceBus.AzureServiceBus.Addressing.ISanitizationStrategy { }
+            where T : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseSubscriptionPathMaximumLength(int subscriptionPathMaximumLength) { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseTopicPathMaximumLength(int topicPathMaximumLength) { }
     }
@@ -664,7 +162,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusTopicSettings SupportOrdering(bool supported) { }
     }
     public class AzureServiceBusTopologySettings<T> : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport>
-        where T : NServiceBus.AzureServiceBus.ITopology
+        where T : NServiceBus.Transport.AzureServiceBus.ITopology
     {
         public AzureServiceBusTopologySettings(NServiceBus.Settings.SettingsHolder settings) { }
     }
@@ -677,7 +175,7 @@ namespace NServiceBus
     }
     public class static AzureServiceBusTransportExtensions
     {
-        public static void BrokeredMessageBodyType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, NServiceBus.AzureServiceBus.SupportedBrokeredMessageBodyTypes type) { }
+        public static void BrokeredMessageBodyType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, NServiceBus.Transport.AzureServiceBus.SupportedBrokeredMessageBodyTypes type) { }
         public static NServiceBus.AzureServiceBusCompositionSettings Composition(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void ConnectivityMode(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, Microsoft.ServiceBus.ConnectivityMode connectivityMode) { }
         public static void DefaultNamespaceName(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, string name) { }
@@ -695,16 +193,90 @@ namespace NServiceBus
         public static NServiceBus.AzureServiceBusSubscriptionSettings Subscriptions(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusTopicSettings Topics(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void UseBrokeredMessageToIncomingMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
-            where T : NServiceBus.AzureServiceBus.IConvertBrokeredMessagesToIncomingMessages { }
+            where T : NServiceBus.Transport.AzureServiceBus.IConvertBrokeredMessagesToIncomingMessages { }
         public static void UseNamespaceNamesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void UseOutgoingMessageToBrokeredMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
-            where T : NServiceBus.AzureServiceBus.IConvertOutgoingMessagesToBrokeredMessages { }
+            where T : NServiceBus.Transport.AzureServiceBus.IConvertOutgoingMessagesToBrokeredMessages { }
         public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
-            where T : NServiceBus.AzureServiceBus.ITopology, new () { }
+            where T : NServiceBus.Transport.AzureServiceBus.ITopology, new () { }
         public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, System.Func<T> factory)
-            where T : NServiceBus.AzureServiceBus.ITopology { }
+            where T : NServiceBus.Transport.AzureServiceBus.ITopology { }
         public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, T topology)
-            where T : NServiceBus.AzureServiceBus.ITopology { }
+            where T : NServiceBus.Transport.AzureServiceBus.ITopology { }
+    }
+    public class CoreIndividualization : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy
+    {
+        public CoreIndividualization() { }
+        public string Individualize(string endpointName) { }
+    }
+    public class DiscriminatorBasedIndividualization : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy
+    {
+        public DiscriminatorBasedIndividualization(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public string Individualize(string endpointName) { }
+    }
+    public class EndpointOrientedTopology : NServiceBus.Transport.AzureServiceBus.ITopology
+    {
+        public EndpointOrientedTopology() { }
+        public bool HasNativePubSubSupport { get; }
+        public bool HasSupportForCentralizedPubSub { get; }
+        public NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance) { }
+        public System.Func<NServiceBus.Transport.IDispatchMessages> GetDispatcherFactory() { }
+        public System.Func<NServiceBus.Transport.IPushMessages> GetMessagePumpFactory() { }
+        public NServiceBus.Transport.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
+        public System.Func<NServiceBus.Transport.ICreateQueues> GetQueueCreatorFactory() { }
+        public System.Func<NServiceBus.Transport.IManageSubscriptions> GetSubscriptionManagerFactory() { }
+        public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
+        public System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks() { }
+    }
+    public enum EntityType
+    {
+        Queue = 0,
+        Topic = 1,
+        Subscription = 2,
+        Rule = 3,
+    }
+    public class FailOverNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
+    {
+        public FailOverNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public NServiceBus.Transport.AzureServiceBus.FailOverMode Mode { get; set; }
+        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.FailOverNamespacePartitioning.<GetNamespaces>d__6))]
+        public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent) { }
+    }
+    public class FlatComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
+    {
+        public FlatComposition() { }
+        public string GetEntityPath(string entityname, NServiceBus.EntityType entityType) { }
+    }
+    public class ForwardingTopology : NServiceBus.Transport.AzureServiceBus.ITopology
+    {
+        public ForwardingTopology() { }
+        public bool HasNativePubSubSupport { get; }
+        public bool HasSupportForCentralizedPubSub { get; }
+        public NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance) { }
+        public System.Func<NServiceBus.Transport.IDispatchMessages> GetDispatcherFactory() { }
+        public System.Func<NServiceBus.Transport.IPushMessages> GetMessagePumpFactory() { }
+        public NServiceBus.Transport.OutboundRoutingPolicy GetOutboundRoutingPolicy() { }
+        public System.Func<NServiceBus.Transport.ICreateQueues> GetQueueCreatorFactory() { }
+        public System.Func<NServiceBus.Transport.IManageSubscriptions> GetSubscriptionManagerFactory() { }
+        public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
+        public async System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks() { }
+    }
+    public class HierarchyComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
+    {
+        public HierarchyComposition(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public string GetEntityPath(string entityname, NServiceBus.EntityType entityType) { }
+    }
+    public class RoundRobinNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
+    {
+        public RoundRobinNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
+        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.RoundRobinNamespacePartitioning.<GetNamespaces>d__2))]
+        public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent) { }
+    }
+    public class SingleNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
+    {
+        public SingleNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
+        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.SingleNamespacePartitioning.<GetNamespaces>d__2))]
+        public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent) { }
     }
     public class SizeInMegabytes
     {
@@ -715,6 +287,16 @@ namespace NServiceBus
         public static NServiceBus.SizeInMegabytes Size5120;
         public static NServiceBus.SizeInMegabytes Create(long sizeInMegabytes) { }
     }
+    public class ThrowOnFailedValidation : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy
+    {
+        public ThrowOnFailedValidation(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType) { }
+    }
+    public class ValidateAndHashIfNeeded : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy
+    {
+        public ValidateAndHashIfNeeded(NServiceBus.Settings.ReadOnlySettings settings) { }
+        public string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType) { }
+    }
 }
 namespace NServiceBus.Config
 {
@@ -723,5 +305,415 @@ namespace NServiceBus.Config
     public class AzureServiceBusQueueConfig : System.Configuration.ConfigurationSection
     {
         public AzureServiceBusQueueConfig() { }
+    }
+}
+namespace NServiceBus.Transport.AzureServiceBus
+{
+    
+    public class Batch
+    {
+        public Batch() { }
+        public NServiceBus.Transport.AzureServiceBus.TopologySection Destinations { get; set; }
+        public System.Collections.Generic.IList<NServiceBus.Transport.AzureServiceBus.BatchedOperation> Operations { get; set; }
+        public NServiceBus.Transport.DispatchConsistency RequiredDispatchConsistency { get; set; }
+    }
+    public class BatchedOperation
+    {
+        public BatchedOperation(int messageSizePaddingPercentage = 0) { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.DeliveryConstraints.DeliveryConstraint> DeliveryConstraints { get; set; }
+        public NServiceBus.Transport.OutgoingMessage Message { get; set; }
+        public long GetEstimatedSize() { }
+    }
+    public class BrokeredMessageReceiveContext : NServiceBus.Transport.AzureServiceBus.ReceiveContext
+    {
+        public BrokeredMessageReceiveContext(Microsoft.ServiceBus.Messaging.BrokeredMessage message, NServiceBus.Transport.AzureServiceBus.EntityInfo entity, Microsoft.ServiceBus.Messaging.ReceiveMode receiveMode) { }
+        public NServiceBus.Transport.AzureServiceBus.EntityInfo Entity { get; }
+        public Microsoft.ServiceBus.Messaging.BrokeredMessage IncomingBrokeredMessage { get; }
+        public Microsoft.ServiceBus.Messaging.ReceiveMode ReceiveMode { get; }
+        public bool Recovering { get; set; }
+    }
+    public class ConnectionString : System.IEquatable<NServiceBus.Transport.AzureServiceBus.ConnectionString>
+    {
+        public static readonly string Sample;
+        public ConnectionString(string value) { }
+        public string NamespaceName { get; }
+        public string SharedAccessPolicyName { get; }
+        public string SharedAccessPolicyValue { get; }
+        public bool Equals(NServiceBus.Transport.AzureServiceBus.ConnectionString other) { }
+        public override bool Equals(object obj) { }
+        public override int GetHashCode() { }
+        public static bool IsConnectionString(string value) { }
+        public override string ToString() { }
+        public static bool TryParse(string value, out NServiceBus.Transport.AzureServiceBus.ConnectionString connectionString) { }
+    }
+    public class EntityInfo
+    {
+        public EntityInfo() { }
+        public NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo Namespace { get; set; }
+        public string Path { get; set; }
+        public System.Collections.Generic.IList<NServiceBus.Transport.AzureServiceBus.EntityRelationShipInfo> RelationShips { get; }
+        public bool ShouldBeListenedTo { get; set; }
+        public NServiceBus.EntityType Type { get; set; }
+        protected bool Equals(NServiceBus.Transport.AzureServiceBus.EntityInfo other) { }
+        public override bool Equals(object obj) { }
+        public override int GetHashCode() { }
+    }
+    public class EntityRelationShipInfo
+    {
+        public EntityRelationShipInfo() { }
+        public NServiceBus.Transport.AzureServiceBus.EntityInfo Source { get; set; }
+        public NServiceBus.Transport.AzureServiceBus.EntityInfo Target { get; set; }
+        public NServiceBus.Transport.AzureServiceBus.EntityRelationShipType Type { get; set; }
+    }
+    public enum EntityRelationShipType
+    {
+        Forward = 0,
+        Subscription = 1,
+    }
+    public enum FailOverMode
+    {
+        Primary = 0,
+        Secondary = 1,
+    }
+    public interface IBatcher
+    {
+        System.Collections.Generic.IList<NServiceBus.Transport.AzureServiceBus.Batch> ToBatches(NServiceBus.Transport.TransportOperations operations);
+    }
+    public interface IBrokerSideSubscriptionFilter
+    {
+        string Serialize();
+    }
+    public interface IClientEntity
+    {
+        bool IsClosed { get; }
+        Microsoft.ServiceBus.RetryPolicy RetryPolicy { get; set; }
+    }
+    public interface IClientSideSubscriptionFilter
+    {
+        bool Execute(object message);
+    }
+    public interface ICompositionStrategy
+    {
+        string GetEntityPath(string entityname, NServiceBus.EntityType entityType);
+    }
+    public interface IConvertBrokeredMessagesToIncomingMessages
+    {
+        NServiceBus.Transport.AzureServiceBus.IncomingMessageDetails Convert(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage);
+    }
+    public interface IConvertOutgoingMessagesToBrokeredMessages
+    {
+        System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> Convert(System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.BatchedOperation> outgoingOperations, NServiceBus.Transport.AzureServiceBus.RoutingOptions routingOptions);
+    }
+    public interface ICreateAzureServiceBusQueues
+    {
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> Create(string queuePath, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager);
+    }
+    public interface ICreateAzureServiceBusSubscriptions
+    {
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> Create(string topicPath, string subscriptionName, NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata metadata, string sqlFilter, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager, string forwardTo);
+    }
+    public interface ICreateAzureServiceBusTopics
+    {
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> Create(string topicPath, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager);
+    }
+    public interface ICreateMessageReceivers
+    {
+        System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageReceiver> Create(string entitypath, string namespaceName);
+    }
+    public interface ICreateMessageSenders
+    {
+        System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName);
+    }
+    public interface ICreateMessagingFactories
+    {
+        NServiceBus.Transport.AzureServiceBus.IMessagingFactory Create(string namespaceName);
+    }
+    public interface ICreateNamespaceManagers
+    {
+        NServiceBus.Transport.AzureServiceBus.INamespaceManager Create(string namespaceName);
+    }
+    public interface ICreateTopology
+    {
+        System.Threading.Tasks.Task Create(NServiceBus.Transport.AzureServiceBus.TopologySection topology);
+    }
+    public interface IHandleOversizedBrokeredMessages
+    {
+        System.Threading.Tasks.Task Handle(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage);
+    }
+    public interface IIndividualizationStrategy
+    {
+        string Individualize(string endpointName);
+    }
+    public interface IManageMessageReceiverLifeCycle
+    {
+        NServiceBus.Transport.AzureServiceBus.IMessageReceiver Get(string entitypath, string namespaceName);
+    }
+    public interface IManageMessageSenderLifeCycle
+    {
+        NServiceBus.Transport.AzureServiceBus.IMessageSender Get(string entitypath, string viaEntityPath, string namespaceName);
+    }
+    public interface IManageMessagingFactoryLifeCycle
+    {
+        System.Threading.Tasks.Task CloseAll();
+        NServiceBus.Transport.AzureServiceBus.IMessagingFactory Get(string namespaceName);
+    }
+    public interface IManageNamespaceManagerLifeCycle
+    {
+        NServiceBus.Transport.AzureServiceBus.INamespaceManager Get(string namespaceName);
+    }
+    public interface IMessageReceiver : NServiceBus.Transport.AzureServiceBus.IClientEntity
+    {
+        Microsoft.ServiceBus.Messaging.ReceiveMode Mode { get; }
+        int PrefetchCount { get; set; }
+        System.Threading.Tasks.Task CloseAsync();
+        System.Threading.Tasks.Task CompleteBatchAsync(System.Collections.Generic.IEnumerable<System.Guid> lockTokens);
+        void OnMessage(System.Func<Microsoft.ServiceBus.Messaging.BrokeredMessage, System.Threading.Tasks.Task> callback, Microsoft.ServiceBus.Messaging.OnMessageOptions options);
+    }
+    public interface IMessageSender : NServiceBus.Transport.AzureServiceBus.IClientEntity
+    {
+        System.Threading.Tasks.Task Send(Microsoft.ServiceBus.Messaging.BrokeredMessage message);
+        System.Threading.Tasks.Task SendBatch(System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> messages);
+    }
+    public interface IMessagingFactory : NServiceBus.Transport.AzureServiceBus.IClientEntity
+    {
+        System.Threading.Tasks.Task CloseAsync();
+        System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageReceiver> CreateMessageReceiver(string entitypath, Microsoft.ServiceBus.Messaging.ReceiveMode receiveMode);
+        System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageSender> CreateMessageSender(string entitypath);
+        System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath);
+    }
+    public interface INamespaceManager
+    {
+        System.Uri Address { get; }
+        Microsoft.ServiceBus.NamespaceManagerSettings Settings { get; }
+        System.Threading.Tasks.Task<bool> CanManageEntities();
+        System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description);
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter);
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription);
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription);
+        System.Threading.Tasks.Task DeleteQueue(string path);
+        System.Threading.Tasks.Task DeleteTopic(string path);
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> GetQueue(string path);
+        System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.RuleDescription>> GetRules(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription);
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName);
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> GetTopic(string path);
+        System.Threading.Tasks.Task<bool> QueueExists(string path);
+        System.Threading.Tasks.Task<bool> SubscriptionExists(string topicPath, string subscriptionName);
+        System.Threading.Tasks.Task<bool> TopicExists(string path);
+        System.Threading.Tasks.Task UpdateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description);
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> UpdateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription);
+        System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> UpdateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription);
+    }
+    public interface INamespacePartitioningStrategy
+    {
+        System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent);
+    }
+    public class IncomingMessageDetails
+    {
+        public IncomingMessageDetails(string messageId, System.Collections.Generic.Dictionary<string, string> headers, byte[] body) { }
+        public byte[] Body { get; }
+        public System.Collections.Generic.Dictionary<string, string> Headers { get; }
+        public string MessageId { get; }
+    }
+    public interface INotifyIncomingMessages
+    {
+        bool IsRunning { get; }
+        int RefCount { get; set; }
+        void Initialize(NServiceBus.Transport.AzureServiceBus.EntityInfo entity, System.Func<NServiceBus.Transport.AzureServiceBus.IncomingMessageDetails, NServiceBus.Transport.AzureServiceBus.ReceiveContext, System.Threading.Tasks.Task> callback, System.Func<System.Exception, System.Threading.Tasks.Task> errorCallback, System.Func<NServiceBus.Transport.ErrorContext, System.Threading.Tasks.Task<NServiceBus.Transport.ErrorHandleResult>> processingFailureCallback, int maximumConcurrency);
+        void Start();
+        System.Threading.Tasks.Task Stop();
+    }
+    public interface IOperateTopology
+    {
+        void OnError(System.Func<System.Exception, System.Threading.Tasks.Task> func);
+        void OnIncomingMessage(System.Func<NServiceBus.Transport.AzureServiceBus.IncomingMessageDetails, NServiceBus.Transport.AzureServiceBus.ReceiveContext, System.Threading.Tasks.Task> func);
+        void OnProcessingFailure(System.Func<NServiceBus.Transport.ErrorContext, System.Threading.Tasks.Task<NServiceBus.Transport.ErrorHandleResult>> onError);
+        void Start(NServiceBus.Transport.AzureServiceBus.TopologySection topology, int maximumConcurrency);
+        void Start(System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.EntityInfo> subscriptions);
+        System.Threading.Tasks.Task Stop();
+        System.Threading.Tasks.Task Stop(System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.EntityInfo> subscriptions);
+    }
+    public interface IRegisterTransportParts
+    {
+        void Register<T>();
+        void Register(System.Type t);
+        void Register<T>(System.Func<object> func);
+        void Register(System.Type t, System.Func<object> func);
+        void RegisterSingleton<T>();
+        void RegisterSingleton(System.Type t);
+    }
+    public interface IResolveTransportParts
+    {
+        object Resolve(System.Type typeToBuild);
+        T Resolve<T>();
+        System.Collections.Generic.IEnumerable<T> ResolveAll<T>();
+        System.Collections.Generic.IEnumerable<object> ResolveAll(System.Type typeToBuild);
+    }
+    public interface IRouteOutgoingBatches
+    {
+        System.Threading.Tasks.Task RouteBatches(System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.Batch> outgoingBatches, NServiceBus.Transport.AzureServiceBus.ReceiveContext receiveContext, NServiceBus.Transport.DispatchConsistency consistency);
+    }
+    public interface ISanitizationStrategy
+    {
+        string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType);
+    }
+    public interface ITopology
+    {
+        bool HasNativePubSubSupport { get; }
+        bool HasSupportForCentralizedPubSub { get; }
+        NServiceBus.Routing.EndpointInstance BindToLocalEndpoint(NServiceBus.Routing.EndpointInstance instance);
+        System.Func<NServiceBus.Transport.IDispatchMessages> GetDispatcherFactory();
+        System.Func<NServiceBus.Transport.IPushMessages> GetMessagePumpFactory();
+        NServiceBus.Transport.OutboundRoutingPolicy GetOutboundRoutingPolicy();
+        System.Func<NServiceBus.Transport.ICreateQueues> GetQueueCreatorFactory();
+        System.Func<NServiceBus.Transport.IManageSubscriptions> GetSubscriptionManagerFactory();
+        void Initialize(NServiceBus.Settings.SettingsHolder settings);
+        System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks();
+    }
+    public interface ITopologySectionManager
+    {
+        NServiceBus.Transport.AzureServiceBus.TopologySection DeterminePublishDestination(System.Type eventType);
+        NServiceBus.Transport.AzureServiceBus.TopologySection DetermineReceiveResources(string inputQueue);
+        NServiceBus.Transport.AzureServiceBus.TopologySection DetermineResourcesToCreate(NServiceBus.Transport.QueueBindings queueBindings);
+        NServiceBus.Transport.AzureServiceBus.TopologySection DetermineResourcesToSubscribeTo(System.Type eventType);
+        NServiceBus.Transport.AzureServiceBus.TopologySection DetermineResourcesToUnsubscribeFrom(System.Type eventtype);
+        NServiceBus.Transport.AzureServiceBus.TopologySection DetermineSendDestination(string destination);
+    }
+    public interface ITransportPartsContainer : NServiceBus.Transport.AzureServiceBus.IRegisterTransportParts, NServiceBus.Transport.AzureServiceBus.IResolveTransportParts { }
+    public class MessageTooLargeException : System.Exception
+    {
+        public MessageTooLargeException() { }
+        public MessageTooLargeException(string message) { }
+        public MessageTooLargeException(string message, System.Exception inner) { }
+        protected MessageTooLargeException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+    }
+    public class NamespaceConfigurations : System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.NamespaceInfo>, System.Collections.IEnumerable
+    {
+        public NamespaceConfigurations() { }
+        public int Count { get; }
+        public void Add(string name, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose) { }
+        public string GetConnectionString(string name) { }
+        public System.Collections.Generic.IEnumerator<NServiceBus.Transport.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
+    }
+    public class NamespaceInfo : System.IEquatable<NServiceBus.Transport.AzureServiceBus.NamespaceInfo>
+    {
+        public NamespaceInfo(string name, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose = 1) { }
+        public NServiceBus.Transport.AzureServiceBus.ConnectionString ConnectionString { get; }
+        public string Name { get; }
+        public NServiceBus.Transport.AzureServiceBus.NamespacePurpose Purpose { get; }
+        public bool Equals(NServiceBus.Transport.AzureServiceBus.NamespaceInfo other) { }
+        public override bool Equals(object obj) { }
+        public override int GetHashCode() { }
+    }
+    public class NamespaceManagerAdapter : NServiceBus.Transport.AzureServiceBus.INamespaceManager
+    {
+        public NamespaceManagerAdapter(Microsoft.ServiceBus.NamespaceManager manager) { }
+        public System.Uri Address { get; }
+        public Microsoft.ServiceBus.NamespaceManagerSettings Settings { get; }
+        public async System.Threading.Tasks.Task<bool> CanManageEntities() { }
+        public System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description) { }
+        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter) { }
+        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription) { }
+        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription) { }
+        public System.Threading.Tasks.Task DeleteQueue(string path) { }
+        public System.Threading.Tasks.Task DeleteSubscriptionAsync(string topicPath, string subscriptionName) { }
+        public System.Threading.Tasks.Task DeleteTopic(string path) { }
+        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> GetQueue(string path) { }
+        public System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.RuleDescription>> GetRules(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription) { }
+        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName) { }
+        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> GetTopic(string path) { }
+        public System.Threading.Tasks.Task<bool> QueueExists(string path) { }
+        public System.Threading.Tasks.Task<bool> SubscriptionExists(string topicPath, string subscriptionName) { }
+        public System.Threading.Tasks.Task<bool> TopicExists(string path) { }
+        public System.Threading.Tasks.Task UpdateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description) { }
+        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> UpdateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription) { }
+        public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> UpdateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription) { }
+    }
+    public enum NamespaceMode
+    {
+        Active = 0,
+        Passive = 1,
+    }
+    public enum NamespacePurpose
+    {
+        Routing = 0,
+        Partitioning = 1,
+    }
+    public enum PartitioningIntent
+    {
+        Receiving = 0,
+        Sending = 1,
+        Creating = 2,
+    }
+    public abstract class ReceiveContext
+    {
+        protected ReceiveContext() { }
+        public System.Threading.CancellationToken CancellationToken { get; }
+        public System.Transactions.CommittableTransaction Transaction { get; set; }
+    }
+    public class RoutingOptions
+    {
+        public RoutingOptions() { }
+        public bool SendVia { get; set; }
+        public string ViaConnectionString { get; set; }
+        public string ViaEntityPath { get; set; }
+        public string ViaPartitionKey { get; set; }
+    }
+    public class RuntimeNamespaceInfo : System.IEquatable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo>
+    {
+        public RuntimeNamespaceInfo(string name, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose = 1, NServiceBus.Transport.AzureServiceBus.NamespaceMode mode = 0) { }
+        public string ConnectionString { get; }
+        public NServiceBus.Transport.AzureServiceBus.NamespaceMode Mode { get; }
+        public string Name { get; }
+        public bool Equals(NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo other) { }
+        public override bool Equals(object obj) { }
+        public override int GetHashCode() { }
+    }
+    public class SubscriptionInfo : NServiceBus.Transport.AzureServiceBus.EntityInfo
+    {
+        public SubscriptionInfo() { }
+        public NServiceBus.Transport.AzureServiceBus.IBrokerSideSubscriptionFilter BrokerSideFilter { get; set; }
+        public NServiceBus.Transport.AzureServiceBus.IClientSideSubscriptionFilter ClientSideFilter { get; set; }
+        public NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata Metadata { get; set; }
+    }
+    public class SubscriptionMetadata
+    {
+        public SubscriptionMetadata() { }
+        public string Description { get; set; }
+        public string SubscriptionNameBasedOnEventWithNamespace { get; set; }
+    }
+    public enum SupportedBrokeredMessageBodyTypes
+    {
+        ByteArray = 0,
+        Stream = 1,
+    }
+    public class ThrowOnOversizedBrokeredMessages : NServiceBus.Transport.AzureServiceBus.IHandleOversizedBrokeredMessages
+    {
+        public ThrowOnOversizedBrokeredMessages() { }
+        public System.Threading.Tasks.Task Handle(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage) { }
+    }
+    public class TopologySection
+    {
+        public TopologySection() { }
+        public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.EntityInfo> Entities { get; set; }
+        public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> Namespaces { get; set; }
+        public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.EntityRelationShipInfo> Relationships { get; set; }
+    }
+    public class UnsupportedBrokeredMessageBodyTypeException : System.Exception
+    {
+        public UnsupportedBrokeredMessageBodyTypeException() { }
+        public UnsupportedBrokeredMessageBodyTypeException(string message) { }
+        public UnsupportedBrokeredMessageBodyTypeException(string message, System.Exception innerException) { }
+        protected UnsupportedBrokeredMessageBodyTypeException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+    }
+    public class ValidationResult
+    {
+        public ValidationResult() { }
+        public bool CharactersAreValid { get; }
+        public string CharactersError { get; set; }
+        public bool IsValid { get; }
+        public string LengthError { get; set; }
+        public bool LengthIsValid { get; }
+        public void AddErrorForInvalidCharacters(string error) { }
+        public void AddErrorForInvalidLenth(string error) { }
     }
 }

@@ -2,7 +2,7 @@
 {
     using System;
     using System.Linq;
-    using AzureServiceBus;
+    using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
 

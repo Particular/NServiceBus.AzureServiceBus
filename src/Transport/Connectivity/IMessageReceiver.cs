@@ -1,5 +1,5 @@
-namespace NServiceBus.AzureServiceBus
-{
+namespace NServiceBus.Transport.AzureServiceBus
+{ 
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;

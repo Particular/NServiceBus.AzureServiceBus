@@ -3,9 +3,9 @@
     using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using AzureServiceBus;
     using Configuration.AdvanceExtensibility;
     using Settings;
+    using Transport.AzureServiceBus;
 
     public class AzureServiceBusMessagingFactoriesSettings : ExposeSettings
     {

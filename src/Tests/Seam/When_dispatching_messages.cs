@@ -3,10 +3,10 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using Tests;
     using TestUtils;
-    using AzureServiceBus;
-    using AzureServiceBus.Topology.MetaModel;
+    using Transport.AzureServiceBus;
     using DeliveryConstraints;
     using Extensibility;
     using Microsoft.ServiceBus.Messaging;

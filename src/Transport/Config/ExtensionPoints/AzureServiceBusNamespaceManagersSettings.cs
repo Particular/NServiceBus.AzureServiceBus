@@ -1,10 +1,10 @@
 ﻿namespace NServiceBus
 {
     using System;
-    using AzureServiceBus;
     using Configuration.AdvanceExtensibility;
     using Microsoft.ServiceBus;
     using Settings;
+    using Transport.AzureServiceBus;
 
     public class AzureServiceBusNamespaceManagersSettings : ExposeSettings
     {

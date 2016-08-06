@@ -1,5 +1,5 @@
-namespace NServiceBus.AzureServiceBus
-{
+namespace NServiceBus.Transport.AzureServiceBus
+{ 
     public class RoutingOptions
     {
         public bool SendVia { get; set; }

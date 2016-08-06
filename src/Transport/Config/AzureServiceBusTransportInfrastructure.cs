@@ -1,8 +1,8 @@
-﻿namespace NServiceBus
+﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Collections.Generic;
-    using AzureServiceBus;
+    
     using DelayedDelivery;
     using Performance.TimeToBeReceived;
     using Routing;
