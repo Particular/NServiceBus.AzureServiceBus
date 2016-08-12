@@ -69,7 +69,8 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisher(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.DerivedEvent), "SubscribingToBaseAndDerivedPolymorphicEventsWithForwardingTopology.Publisher")
                 .RegisterPublisher(typeof(When_publishing_to_scaled_out_subscribers_on_multicast_transports.MyEvent), "PublishingToScaledOutSubscribersOnMulticastTransports.Publisher")
                 .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent1), "MultiSubscribingToAPolymorphicEventOnMulticastTransports.Publisher1")
-                .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent2), "MultiSubscribingToAPolymorphicEventOnMulticastTransports.Publisher2");
+                .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent2), "MultiSubscribingToAPolymorphicEventOnMulticastTransports.Publisher2")
+                .RegisterPublisher(typeof(When_publishing_an_interface_with_unobtrusive.MyEvent), "PublishingAnInterfaceWithUnobtrusive.Publisher");
         }
 
         transportConfig.Sanitization()

@@ -9,7 +9,7 @@
 
     public class When_sending_to_non_durable_endpoint : NServiceBusAcceptanceTest
     {
-        [Test]
+        [Test, Ignore("ASB does not support express messages")]
         public Task Should_receive_the_message()
         {
             return Scenario.Define<Context>()
