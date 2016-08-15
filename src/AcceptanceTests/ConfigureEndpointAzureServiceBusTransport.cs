@@ -52,7 +52,7 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisher(typeof(When_publishing_an_interface.MyEvent), NameForPublisher<When_publishing_an_interface.Publisher>())
                 .RegisterPublisher(typeof(When_publishing_using_root_type.EventMessage), NameForPublisher<When_publishing_using_root_type.Publisher>())
                 .RegisterPublisher(typeof(When_publishing_with_only_local_messagehandlers.EventHandledByLocalEndpoint), NameForPublisher<When_publishing_with_only_local_messagehandlers.CentralizedStoragePublisher>())
-                .RegisterPublisher(typeof(When_subscribing_to_a_polymorphic_event.MyEvent), NameForPublisher<When_subscribing_to_a_polymorphic_event.MyEvent>())
+                .RegisterPublisher(typeof(When_subscribing_to_a_polymorphic_event.MyEvent), NameForPublisher<When_subscribing_to_a_polymorphic_event.Publisher>())
                 .RegisterPublisher(typeof(When_starting_an_endpoint_with_a_saga.MyEvent), NameForPublisher<When_starting_an_endpoint_with_a_saga.Subscriber>())
                 .RegisterPublisher(typeof(When_starting_an_endpoint_with_a_saga.MyEventBase), NameForPublisher<When_starting_an_endpoint_with_a_saga.Subscriber>())
                 .RegisterPublisher(typeof(When_publishing_command_bestpractices_disabled.MyCommand), NameForPublisher<When_publishing_command_bestpractices_disabled.Endpoint>())
