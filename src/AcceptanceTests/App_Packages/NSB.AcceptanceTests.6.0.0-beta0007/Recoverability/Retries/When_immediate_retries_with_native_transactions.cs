@@ -10,7 +10,7 @@
 
     public class When_immediate_retries_with_native_transactions : NServiceBusAcceptanceTest
     {
-        [Test Ignore("TestContext.NumberOfTimesInvoked is increased for both immediate and delayed retries, so with immediage count 5 and delayed count 3, total number of invocations is (5+1)*(3+1)=24")]
+        [Test, Ignore("TestContext.NumberOfTimesInvoked is increased for both immediate and delayed retries, so with immediage count 5 and delayed count 3, total number of invocations is (5+1)*(3+1)=24")]
         public Task Should_do_the_configured_number_of_retries_with_native_transactions()
         {
             return Scenario.Define<Context>(c => { c.Id = Guid.NewGuid(); })
