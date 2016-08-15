@@ -12,5 +12,6 @@ The following team is responsible for this repository: @Particular/azure-service
 
 ## Running the tests
 
-* Create a ServiceBus namespace, needs to be at least a standard tier namespace in order to support Topics
-* Create a environment variable `AzureServiceBus.ConnectionString` and set it to the connection string for the namespace
+* Create 2 new ServiceBus namespaces, needs to be at least a standard tier namespace in order to support Topics. One will be used for fallback tests to name them accordingly. Eg. `andreasohlund-dev` + `andreasohlund-fallback` or similar
+* Create a environment variable `AzureServiceBus.ConnectionString` and set it to the connection string for the main namespace
+* * Create a environment variable `AzureServiceBus.ConnectionString.Fallback` and set it to the connection string for the fallback namespace
