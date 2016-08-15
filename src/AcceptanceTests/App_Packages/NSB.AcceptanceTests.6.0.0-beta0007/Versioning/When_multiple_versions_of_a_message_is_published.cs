@@ -57,20 +57,22 @@
         {
             public V2Publisher()
             {
-                EndpointSetup<DefaultPublisher>(b => b.OnEndpointSubscribed<Context>((s, context) =>
+                EndpointSetup<DefaultPublisher>(b =>
                 {
                     b.UseSerialization<XmlSerializer>();
+                    b.OnEndpointSubscribed<Context>((s, context) =>
+                        {
+                            if (s.SubscriberReturnAddress.Contains("V1Subscriber"))
+                            {
+                                context.V1Subscribed = true;
+                            }
 
-                    if (s.SubscriberReturnAddress.Contains("V1Subscriber"))
-                    {
-                        context.V1Subscribed = true;
-                    }
-
-                    if (s.SubscriberReturnAddress.Contains("V2Subscriber"))
-                    {
-                        context.V2Subscribed = true;
-                    }
-                }));
+                            if (s.SubscriberReturnAddress.Contains("V2Subscriber"))
+                            {
+                                context.V2Subscribed = true;
+                            }
+                        });
+                });
             }
         }
 
