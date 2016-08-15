@@ -59,6 +59,8 @@
             {
                 EndpointSetup<DefaultPublisher>(b => b.OnEndpointSubscribed<Context>((s, context) =>
                 {
+                    b.UseSerialization<XmlSerializer>();
+
                     if (s.SubscriberReturnAddress.Contains("V1Subscriber"))
                     {
                         context.V1Subscribed = true;
@@ -76,7 +78,11 @@
         {
             public V1Subscriber()
             {
-                EndpointSetup<DefaultServer>(b => b.DisableFeature<AutoSubscribe>())
+                EndpointSetup<DefaultServer>(b =>
+                {
+                    b.UseSerialization<XmlSerializer>();
+                    b.DisableFeature<AutoSubscribe>();
+                })
                     .ExcludeType<V2Event>()
                     .AddMapping<V1Event>(typeof(V2Publisher));
             }
@@ -97,7 +103,11 @@
         {
             public V2Subscriber()
             {
-                EndpointSetup<DefaultServer>(b => b.DisableFeature<AutoSubscribe>())
+                EndpointSetup<DefaultServer>(b =>
+                {
+                    b.UseSerialization<XmlSerializer>();
+                    b.DisableFeature<AutoSubscribe>();
+                })
                     .AddMapping<V2Event>(typeof(V2Publisher));
             }
 
