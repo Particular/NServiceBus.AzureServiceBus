@@ -33,7 +33,7 @@ namespace NServiceBus.AcceptanceTests.Routing.AutomaticSubscriptions
             public List<Type> EventsSubscribedTo { get; }
         }
 
-        class Subscriber : EndpointConfigurationBuilder
+        public class Subscriber : EndpointConfigurationBuilder
         {
             public Subscriber()
             {
