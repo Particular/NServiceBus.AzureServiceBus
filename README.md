@@ -13,4 +13,4 @@ The following team is responsible for this repository: @Particular/azure-service
 ## Running the tests
 
 * Create a ServiceBus namespace, needs to be at least a standard tier namespace in order to support Topics
-* Create a environment variable `X` and set it to the connection string for the namespace
+* Create a environment variable `AzureServiceBus.ConnectionString` and set it to the connection string for the namespace
