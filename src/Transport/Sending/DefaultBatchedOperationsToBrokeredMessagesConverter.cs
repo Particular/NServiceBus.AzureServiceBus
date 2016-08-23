@@ -12,12 +12,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     class DefaultBatchedOperationsToBrokeredMessagesConverter : IConvertOutgoingMessagesToBrokeredMessages
     {
         ReadOnlySettings settings;
-        ICanMapNamespaceNameToConnectionString mapper;
 
-        public DefaultBatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings, ICanMapNamespaceNameToConnectionString mapper)
+        public DefaultBatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings)
         {
             this.settings = settings;
-            this.mapper = mapper;
         }
 
         public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperation> outgoingMessages, RoutingOptions routingOptions)
@@ -71,6 +69,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
                     var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
+                    var useNames = settings.Get<bool>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings);
                     var selected = namespaces.FirstOrDefault(ns => ns.Name == defaultName);
                     if (selected == null)
                     {
@@ -79,7 +78,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                     if (selected != null)
                     {
-                        if (mapper is DefaultNamespaceNameToConnectionStringMapper)
+                        if (useNames)
                         {
                             replyTo = new EntityAddress(replyTo.Name, selected.ConnectionString);
                         }

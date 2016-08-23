@@ -133,14 +133,11 @@
     <Compile Include="Topology\TypesScanner\SingleTypeScanner.cs" />
     <Compile Include="Topology\MetaModel\ConnectionString.cs" />
     <Compile Include="Topology\MetaModel\DefaultConnectionStringToNamespaceNameMapper.cs" />
-    <Compile Include="Topology\MetaModel\DefaultNamespaceNameToConnectionStringMapper.cs" />
     <Compile Include="Topology\MetaModel\EntityAddress.cs" />
     <Compile Include="Topology\MetaModel\ForwardingTopologySubscriptionMetadata.cs" />
     <Compile Include="Topology\MetaModel\ICanMapConnectionStringToNamespaceName.cs" />
-    <Compile Include="Topology\MetaModel\ICanMapNamespaceNameToConnectionString.cs" />
     <Compile Include="Topology\MetaModel\NamespaceInfo.cs" />
     <Compile Include="Topology\MetaModel\NamespaceConfigurations.cs" />
-    <Compile Include="Topology\MetaModel\PassThroughNamespaceNameToConnectionStringMapper.cs" />
     <Compile Include="Topology\MetaModel\SubscriptionMetadata.cs" />
     <Compile Include="Topology\PreStartupChecks\ManageRightsCheck.cs" />
     <Compile Include="Topology\PublishersConfiguration.cs" />

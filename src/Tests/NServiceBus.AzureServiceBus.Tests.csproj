@@ -122,7 +122,6 @@
     <Compile Include="Configuration\When_configuring_subscriptions.cs" />
     <Compile Include="Configuration\When_configuring_topics.cs" />
     <Compile Include="Configuration\When_configuring_serialization.cs" />
-    <Compile Include="Configuration\When_configuring_use_logical_namespace_name.cs" />
     <Compile Include="Configuration\When_configuring_sanitization.cs" />
     <Compile Include="Configuration\When_creating_sizeinmegabytes.cs" />
     <Compile Include="Configuration\When_using_default_configuration.cs" />
@@ -168,7 +167,6 @@
     <Compile Include="Topology\MetaModel\When_configuring_entity_address.cs" />
     <Compile Include="Topology\MetaModel\When_configuring_namespace_configurations.cs" />
     <Compile Include="Topology\MetaModel\When_configuring_namespace_info.cs" />
-    <Compile Include="Topology\MetaModel\When_mapping_namespace_name_to_connection_string.cs" />
     <Compile Include="Topology\MetaModel\When_mapping_connection_string_to_namespace_name.cs" />
     <Compile Include="Topology\MetaModel\When_parsing_string_to_connection_string.cs" />
     <Compile Include="Topology\MetaModel\When_SqlSubscriptionFilter_is_serializing_an_event.cs" />

@@ -125,7 +125,7 @@ namespace NServiceBus
         public static void UseNamespaceNamesInsteadOfConnectionStrings(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings, typeof(PassThroughNamespaceNameToConnectionStringMapper));
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings, true);
         }
 
         /// <summary>
