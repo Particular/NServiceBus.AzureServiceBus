@@ -2,6 +2,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     public interface IManageNamespaceManagerLifeCycle
     {
-        INamespaceManager Get(string namespaceName);
+        INamespaceManager Get(string namespaceAlias);
     }
 }

@@ -242,7 +242,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             CollectionAssert.DoesNotContain(incomingMessageDetails.Headers, BrokeredMessageHeaders.TransportEncoding, $"Headers should not contain `{BrokeredMessageHeaders.TransportEncoding}`, but it was found.");
         }
 
-        class FakeMapper : ICanMapConnectionStringToNamespaceName
+        class FakeMapper : ICanMapConnectionStringToNamespaceAlias
         {
             public FakeMapper(string input, string output)
             {

@@ -4,15 +4,15 @@
     
     public class NamespaceInfo : IEquatable<NamespaceInfo>
     {
-        public string Name { get; }
+        public string Alias { get; }
         public ConnectionString ConnectionString { get; }
         public NamespacePurpose Purpose { get; }
 
-        public NamespaceInfo(string name, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
+        public NamespaceInfo(string alias, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(alias))
             {
-                throw new ArgumentException("Namespace name can't be null or empty", nameof(name));
+                throw new ArgumentException("Namespace alias can't be null or empty", nameof(alias));
             }
 
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -20,7 +20,7 @@
                 throw new ArgumentException("Namespace connection string can't be null or empty", nameof(connectionString));
             }
 
-            Name = name;
+            Alias = alias;
             ConnectionString = new ConnectionString(connectionString);
             Purpose = purpose;
         }
@@ -28,7 +28,7 @@
         public bool Equals(NamespaceInfo other)
         {
             return other != null
-                   && Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase)
+                   && Alias.Equals(other.Alias, StringComparison.OrdinalIgnoreCase)
                    && ConnectionString.Equals(other.ConnectionString);
         }
 
@@ -40,7 +40,7 @@
 
         public override int GetHashCode()
         {
-            var name = Name.ToLower();
+            var name = Alias.ToLower();
             return string.Concat(name, "#", ConnectionString).GetHashCode();
         }
     }

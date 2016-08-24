@@ -155,7 +155,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await namespaceManager.DeleteQueue("myqueue");
         }
 
-        class PassThroughMapper : ICanMapConnectionStringToNamespaceName
+        class PassThroughMapper : ICanMapConnectionStringToNamespaceAlias
         {
             public EntityAddress Map(EntityAddress value)
             {

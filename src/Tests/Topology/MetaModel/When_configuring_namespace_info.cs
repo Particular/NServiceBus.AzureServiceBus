@@ -11,24 +11,24 @@
         [Test]
         [TestCase("name", "name")]
         [TestCase("name", "Name")]
-        public void Two_namespaces_should_be_equal_if_name_and_connection_string_are_case_insensitive_equal(string name1, string name2)
+        public void Two_namespaces_should_be_equal_if_alias_and_connection_string_are_case_insensitive_equal(string alias1, string alias2)
         {
-            var namespace1 = new NamespaceInfo(name1, ConnectionStringValue.Sample);
-            var namespace2 = new NamespaceInfo(name2, ConnectionStringValue.Sample);
+            var namespaceInfo1 = new NamespaceInfo(alias1, ConnectionStringValue.Sample);
+            var namespaceInfo2 = new NamespaceInfo(alias2, ConnectionStringValue.Sample);
 
-            Assert.AreEqual(namespace1, namespace2);
+            Assert.AreEqual(namespaceInfo1, namespaceInfo2);
         }
 
         [Test]
         [TestCase("name", "name")]
         [TestCase("name", "Name")]
-        public void Two_namespaces_should_have_the_same_hash_code_if_name_and_connection_string_are_case_insensitive_equal(string name1, string name2)
+        public void Two_namespaces_should_have_the_same_hash_code_if_alias_and_connection_string_are_case_insensitive_equal(string alias1, string alias2)
         {
-            var namespace1 = new NamespaceInfo(name1, ConnectionStringValue.Sample);
-            var namespace2 = new NamespaceInfo(name2, ConnectionStringValue.Sample);
+            var namespaceInfo1 = new NamespaceInfo(alias1, ConnectionStringValue.Sample);
+            var namespaceInfo2 = new NamespaceInfo(alias2, ConnectionStringValue.Sample);
 
-            var hashCode1 = namespace1.GetHashCode();
-            var hashCode2 = namespace2.GetHashCode();
+            var hashCode1 = namespaceInfo1.GetHashCode();
+            var hashCode2 = namespaceInfo2.GetHashCode();
             Assert.AreEqual(hashCode1, hashCode2);
         }
     }

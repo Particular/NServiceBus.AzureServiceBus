@@ -7,21 +7,21 @@
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_mapping_connection_string_to_namespace_name
+    public class When_mapping_connection_string_to_namespace_alias
     {
-        DefaultConnectionStringToNamespaceNameMapper mapper;
+        DefaultConnectionStringToNamespaceAliasMapper mapper;
 
         [SetUp]
         public void SetUp()
         {
             var namespaceConfigurations = new NamespaceConfigurations();
-            namespaceConfigurations.Add("namespace1", "Endpoint=sb://namespace1.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning);
-            namespaceConfigurations.Add("namespace2", "Endpoint=sb://namespace2.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning);
-            namespaceConfigurations.Add("namespace3", "Endpoint=sb://namespace3.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning);
+            namespaceConfigurations.Add("alias1", "Endpoint=sb://namespace1.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning);
+            namespaceConfigurations.Add("alias2", "Endpoint=sb://namespace2.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning);
+            namespaceConfigurations.Add("alias3", "Endpoint=sb://namespace3.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning);
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaceConfigurations);
 
-            mapper = new DefaultConnectionStringToNamespaceNameMapper(settings);
+            mapper = new DefaultConnectionStringToNamespaceAliasMapper(settings);
         }
 
         [Test]
@@ -46,7 +46,7 @@
         {
             var mappedValue = mapper.Map(new EntityAddress("queuename@Endpoint=sb://namespace1.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret"));
 
-            StringAssert.AreEqualIgnoringCase("queuename@namespace1", mappedValue.ToString());
+            StringAssert.AreEqualIgnoringCase("queuename@alias1", mappedValue.ToString());
         }
     }
 }

@@ -92,7 +92,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             stopping = false;
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
 
-            internalReceiver = clientEntities.Get(fullPath, entity.Namespace.Name);
+            internalReceiver = clientEntities.Get(fullPath, entity.Namespace.Alias);
 
             if (internalReceiver == null)
             {

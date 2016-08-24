@@ -70,8 +70,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             public static class Addressing
             {
-                public const string UseNamespaceNamesInsteadOfConnectionStrings = "AzureServiceBus.Settings.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings";
-                public const string DefaultNamespaceName = "AzureServiceBus.Settings.Topology.Addressing.DefaultNamespaceName";
+                public const string UseNamespaceAliasesInsteadOfConnectionStrings = "AzureServiceBus.Settings.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings";
+                public const string DefaultNamespaceAlias = "AzureServiceBus.Settings.Topology.Addressing.DefaultNamespaceAlias";
                 public const string Namespaces = "AzureServiceBus.Settings.Topology.Addressing.Namespaces";
 
                 public static class Partitioning

@@ -35,8 +35,8 @@
         void ApplyDefaultValuesForAddressing(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, new NamespaceConfigurations());
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings, false);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName, "default");
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings, false);
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias, "default");
         }
 
         void ApplyDefaultsForConnectivity(SettingsHolder settings)

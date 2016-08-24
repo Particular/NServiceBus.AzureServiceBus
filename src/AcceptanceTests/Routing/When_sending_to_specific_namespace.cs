@@ -12,7 +12,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     public class When_using_multiple_namespaces : NServiceBusAcceptanceTest
     {
         [Test]
-        public async Task Should_support_request_reply_across_namespaces_using_names()
+        public async Task Should_support_request_reply_across_namespaces_using_aliases()
         {
             var runSettings = new RunSettings();
             runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
@@ -22,7 +22,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             {
                 var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
                 var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
-                extensions.UseNamespaceNamesInsteadOfConnectionStrings();
+                extensions.UseNamespaceAliasesInsteadOfConnectionStrings();
 
                 if (endpointName == "UsingMultipleNamespaces.EndpointInTargetNamespace")
                 {
@@ -132,10 +132,10 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             {
                 public Context Context { get; set; }
 
-                public async Task Handle(MyRequest message, IMessageHandlerContext context)
+                public Task Handle(MyRequest message, IMessageHandlerContext context)
                 {
                     Context.RequestReceived = true;
-                    await context.Reply(new MyResponse());
+                    return context.Reply(new MyResponse());
                 }
             }
         }

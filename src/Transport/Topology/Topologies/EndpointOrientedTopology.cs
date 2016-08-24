@@ -57,7 +57,7 @@ namespace NServiceBus
             container.RegisterSingleton<AzureServiceBusTopicCreator>();
             container.RegisterSingleton<AzureServiceBusSubscriptionCreatorV6>();
 
-            container.RegisterSingleton<DefaultConnectionStringToNamespaceNameMapper>();
+            container.RegisterSingleton<DefaultConnectionStringToNamespaceAliasMapper>();
 
             var brokeredMessagesToIncomingMessagesConverterType = settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter);
             container.Register(brokeredMessagesToIncomingMessagesConverterType);

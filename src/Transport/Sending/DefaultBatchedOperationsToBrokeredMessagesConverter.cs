@@ -68,9 +68,9 @@ namespace NServiceBus.Transport.AzureServiceBus
                 if (!replyTo.HasSuffix)
                 {
                     var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
-                    var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
-                    var useNames = settings.Get<bool>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings);
-                    var selected = namespaces.FirstOrDefault(ns => ns.Name == defaultName);
+                    var defaultAlias = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
+                    var useAliases = settings.Get<bool>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings);
+                    var selected = namespaces.FirstOrDefault(ns => ns.Alias == defaultAlias);
                     if (selected == null)
                     {
                         selected = namespaces.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);
@@ -78,13 +78,13 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                     if (selected != null)
                     {
-                        if (useNames)
+                        if (useAliases)
                         {
                             replyTo = new EntityAddress(replyTo.Name, selected.ConnectionString);
                         }
                         else
                         {
-                            replyTo = new EntityAddress(replyTo.Name, selected.Name);
+                            replyTo = new EntityAddress(replyTo.Name, selected.Alias);
                         }
                     }
                 }

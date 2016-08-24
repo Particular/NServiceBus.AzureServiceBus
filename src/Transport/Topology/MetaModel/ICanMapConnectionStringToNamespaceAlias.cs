@@ -1,6 +1,6 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
-    interface ICanMapConnectionStringToNamespaceName
+    interface ICanMapConnectionStringToNamespaceAlias
     {
         EntityAddress Map(EntityAddress value);
     }

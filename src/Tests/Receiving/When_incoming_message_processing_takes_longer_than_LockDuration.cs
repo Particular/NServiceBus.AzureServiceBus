@@ -89,7 +89,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await namespaceManager.DeleteQueue("autorenewtimeout");
         }
 
-        class PassThroughMapper : ICanMapConnectionStringToNamespaceName
+        class PassThroughMapper : ICanMapConnectionStringToNamespaceAlias
         {
             public EntityAddress Map(EntityAddress value)
             {

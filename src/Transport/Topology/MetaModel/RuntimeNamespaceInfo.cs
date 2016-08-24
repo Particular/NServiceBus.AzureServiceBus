@@ -4,15 +4,15 @@
 
     public class RuntimeNamespaceInfo : IEquatable<RuntimeNamespaceInfo>
     {
-        NamespaceInfo info;
+        readonly NamespaceInfo info;
 
-        public RuntimeNamespaceInfo(string name, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning, NamespaceMode mode = NamespaceMode.Active)
+        public RuntimeNamespaceInfo(string alias, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning, NamespaceMode mode = NamespaceMode.Active)
         {
-            info = new NamespaceInfo(name, connectionString, purpose);
+            info = new NamespaceInfo(alias, connectionString, purpose);
             Mode = mode;
         }
 
-        public string Name => info.Name;
+        public string Alias => info.Alias;
         public string ConnectionString => info.ConnectionString;
         public NamespaceMode Mode { get; }
 

@@ -228,7 +228,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
-
+            // TODO reply-to needs to be tested according to the WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings setting
             Assert.IsTrue(brokeredMessage.ReplyTo == "MyQueue"); // the mapper should be ignored, need to respect user's setting
         }
 

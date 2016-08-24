@@ -29,12 +29,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             foreach (var @namespace in namespaces)
             {
-                var namespaceManager = manageNamespaceManagerLifeCycle.Get(@namespace.Name);
+                var namespaceManager = manageNamespaceManagerLifeCycle.Get(@namespace.Alias);
                 var canManageEntities = await namespaceManager.CanManageEntities().ConfigureAwait(false);
 
                 if (!canManageEntities)
                 {
-                    namespacesWithoutManageRights.Add(@namespace.Name);
+                    namespacesWithoutManageRights.Add(@namespace.Alias);
                 }
             }
 
@@ -43,7 +43,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 return StartupCheckResult.Success;
             }
 
-            return StartupCheckResult.Failed($"Configured to create topology, but have no manage rights for the following namespace(s): {string.Join(", ", namespacesWithoutManageRights.Select(name => $"`{name}`"))}.");
+            return StartupCheckResult.Failed($"Configured to create topology, but have no manage rights for the following namespace(s): {string.Join(", ", namespacesWithoutManageRights.Select(alias => $"`{alias}`"))}.");
         }
     }
 }
