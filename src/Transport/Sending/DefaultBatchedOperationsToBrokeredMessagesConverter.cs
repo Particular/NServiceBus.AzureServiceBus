@@ -80,11 +80,11 @@ namespace NServiceBus.Transport.AzureServiceBus
                     {
                         if (useAliases)
                         {
-                            replyTo = new EntityAddress(replyTo.Name, selected.ConnectionString);
+                            replyTo = new EntityAddress(replyTo.Name, selected.Alias);
                         }
                         else
                         {
-                            replyTo = new EntityAddress(replyTo.Name, selected.Alias);
+                            replyTo = new EntityAddress(replyTo.Name, selected.ConnectionString);
                         }
                     }
                 }
