@@ -115,12 +115,12 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
-            var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
+            var defaultAlias = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
 
             var inputQueueAddress = addressingLogic.Apply(destination, EntityType.Queue);
 
             RuntimeNamespaceInfo[] namespaces = null;
-            if (inputQueueAddress.HasSuffix && inputQueueAddress.Suffix != defaultName) // sending to specific namespace
+            if (inputQueueAddress.HasSuffix && inputQueueAddress.Suffix != defaultAlias) // sending to specific namespace
             {
                 if (inputQueueAddress.HasConnectionString)
                 {
@@ -133,12 +133,12 @@ namespace NServiceBus.Transport.AzureServiceBus
                     NamespaceConfigurations configuredNamespaces;
                     if (settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out configuredNamespaces))
                     {
-                        var configured = configuredNamespaces.FirstOrDefault(n => n.Name == inputQueueAddress.Suffix);
+                        var configured = configuredNamespaces.FirstOrDefault(n => n.Alias == inputQueueAddress.Suffix);
                         if (configured != null)
                         {
                             namespaces = new[]
                             {
-                                new RuntimeNamespaceInfo(configured.Name, configured.ConnectionString, configured.Purpose, NamespaceMode.Active)
+                                new RuntimeNamespaceInfo(configured.Alias, configured.ConnectionString, configured.Purpose, NamespaceMode.Active)
                             };
                         }
                     }
@@ -151,7 +151,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             if (namespaces == null)
             {
-                throw new Exception($"Could not determine namespace for destination {destination}");
+                throw new Exception($"Could not determine namespace for destination `{destination}`.");
             }
             var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueueAddress.Name, Type = EntityType.Queue, Namespace = n }).ToArray();
 

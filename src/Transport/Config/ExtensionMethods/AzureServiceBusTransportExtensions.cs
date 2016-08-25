@@ -120,21 +120,21 @@ namespace NServiceBus
         }
 
         /// <summary>
-        /// Force usage of namespace names instead of raw connection strings.
+        /// Force usage of namespace aliases instead of raw connection strings.
         /// </summary>
-        public static void UseNamespaceNamesInsteadOfConnectionStrings(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        public static void UseNamespaceAliasesInsteadOfConnectionStrings(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceNamesInsteadOfConnectionStrings, true);
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings, true);
         }
 
         /// <summary>
-        /// Choose the name of the default namespace.
+        /// Override default namespace alias.
         /// </summary>
-        public static void DefaultNamespaceName(this TransportExtensions<AzureServiceBusTransport> transportExtensions, string name )
+        public static void DefaultNamespaceAlias(this TransportExtensions<AzureServiceBusTransport> transportExtensions, string alias)
         {
             var settings = transportExtensions.GetSettings();
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName, name);
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias, alias);
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var queueCreator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
                 foreach (var queue in queues)
                 {
-                    await queueCreator.Create(queue.Path, namespaces.Get(queue.Namespace.Name)).ConfigureAwait(false);
+                    await queueCreator.Create(queue.Path, namespaces.Get(queue.Namespace.Alias)).ConfigureAwait(false);
                 }
             }
 
@@ -34,7 +34,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var topicCreator = (ICreateAzureServiceBusTopics)container.Resolve(typeof(ICreateAzureServiceBusTopics));
                 foreach (var topic in topics)
                 {
-                    await topicCreator.Create(topic.Path, namespaces.Get(topic.Namespace.Name)).ConfigureAwait(false);
+                    await topicCreator.Create(topic.Path, namespaces.Get(topic.Namespace.Alias)).ConfigureAwait(false);
                 }
             }
 
@@ -47,7 +47,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     var forwardTo = subscription.RelationShips.FirstOrDefault(r => r.Type == EntityRelationShipType.Forward);
                     var sqlFilter = (subscription as SubscriptionInfo)?.BrokerSideFilter.Serialize();
                     var metadata = (subscription as SubscriptionInfo)?.Metadata ?? new SubscriptionMetadata();
-                    await subscriptionCreator.Create(topic.Target.Path, subscription.Path, metadata, sqlFilter, namespaces.Get(subscription.Namespace.Name), forwardTo?.Target.Path).ConfigureAwait(false);
+                    await subscriptionCreator.Create(topic.Target.Path, subscription.Path, metadata, sqlFilter, namespaces.Get(subscription.Namespace.Alias), forwardTo?.Target.Path).ConfigureAwait(false);
                 }
             }
         }

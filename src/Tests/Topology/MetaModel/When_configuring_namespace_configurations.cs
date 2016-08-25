@@ -22,10 +22,10 @@
         [TestCase("")]
         [TestCase(" ")]
         [TestCase(null)]
-        public void Should_throws_an_exception_if_name_is_not_valid(string name)
+        public void Should_throws_an_exception_if_alias_is_not_valid(string alias)
         {
-            var exception = Assert.Throws<ArgumentException>(() => namespaces.Add(name, ConnectionStringValue.Sample, NamespacePurpose.Partitioning));
-            Assert.AreEqual("name", exception.ParamName);
+            var exception = Assert.Throws<ArgumentException>(() => namespaces.Add(alias, ConnectionStringValue.Sample, NamespacePurpose.Partitioning));
+            Assert.AreEqual("alias", exception.ParamName);
         }
 
         [Test]
@@ -34,24 +34,24 @@
         [TestCase(null)]
         public void Should_throws_an_exception_if_connection_string_is_not_valid(string connectionString)
         {
-            var exception = Assert.Throws<ArgumentException>(() => namespaces.Add("name", connectionString, NamespacePurpose.Partitioning));
+            var exception = Assert.Throws<ArgumentException>(() => namespaces.Add("alias", connectionString, NamespacePurpose.Partitioning));
             Assert.AreEqual("connectionString", exception.ParamName);
         }
 
         [Test]
         public void Should_add_definition_if_it_does_not_exist()
         {
-            namespaces.Add("name", ConnectionStringValue.Sample, NamespacePurpose.Partitioning);
-            var connectionString = namespaces.GetConnectionString("name");
+            namespaces.Add("alias", ConnectionStringValue.Sample, NamespacePurpose.Partitioning);
+            var connectionString = namespaces.GetConnectionString("alias");
 
             Assert.AreEqual(1, namespaces.Count);
             Assert.AreEqual(ConnectionStringValue.Sample, connectionString);
         }
 
         [Test]
-        [TestCase("name", "name")]
-        [TestCase("name", "Name")]
-        [TestCase("name", "NAME")]
+        [TestCase("alias", "alias")]
+        [TestCase("alias", "Alias")]
+        [TestCase("alias", "ALIAS")]
         public void Should_not_add_definition_if_namespace_name_already_exists_with_case_insensitive_check(string name1, string name2)
         {
             namespaces.Add(name1, ConnectionStringValue.Build("namespace1"), NamespacePurpose.Partitioning);
@@ -72,9 +72,9 @@
         [Test]
         public void Should_get_connection_string_by_namespace_name_with_a_case_insensitive_match()
         {
-            namespaces.Add("name", ConnectionStringValue.Sample, NamespacePurpose.Partitioning);
+            namespaces.Add("alias", ConnectionStringValue.Sample, NamespacePurpose.Partitioning);
 
-            var connectionString = namespaces.GetConnectionString("NaMe");
+            var connectionString = namespaces.GetConnectionString("AlIaS");
 
             StringAssert.AreEqualIgnoringCase(ConnectionStringValue.Sample, connectionString);
         }
@@ -82,7 +82,7 @@
         [Test]
         public void Should_throws_an_exception_if_namespace_name_has_not_been_registered()
         {
-            Assert.Throws<KeyNotFoundException>(() => namespaces.GetConnectionString("name"));
+            Assert.Throws<KeyNotFoundException>(() => namespaces.GetConnectionString("alias"));
         }
     }
 }

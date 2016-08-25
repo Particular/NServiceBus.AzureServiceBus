@@ -103,7 +103,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
-            var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceName);
+            var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
 
             var inputQueueAddress = addressingLogic.Apply(destination, EntityType.Queue);
 
@@ -121,12 +121,12 @@ namespace NServiceBus.Transport.AzureServiceBus
                     NamespaceConfigurations configuredNamespaces;
                     if (settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out configuredNamespaces))
                     {
-                        var configured = configuredNamespaces.FirstOrDefault(n => n.Name == inputQueueAddress.Suffix);
+                        var configured = configuredNamespaces.FirstOrDefault(n => n.Alias == inputQueueAddress.Suffix);
                         if (configured != null)
                         {
                             namespaces = new[]
                             {
-                                new RuntimeNamespaceInfo(configured.Name, configured.ConnectionString, configured.Purpose, NamespaceMode.Active)
+                                new RuntimeNamespaceInfo(configured.Alias, configured.ConnectionString, configured.Purpose, NamespaceMode.Active)
                             };
                         }
                     }

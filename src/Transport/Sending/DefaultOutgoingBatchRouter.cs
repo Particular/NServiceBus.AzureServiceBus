@@ -66,14 +66,14 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
 
                 // don't use via on fallback, not supported across namespaces
-                var fallbacks = passiveNamespaces.Select(ns => senders.Get(entity.Path, null, ns.Name)).ToList();
+                var fallbacks = passiveNamespaces.Select(ns => senders.Get(entity.Path, null, ns.Alias)).ToList();
 
                 foreach (var ns in activeNamespaces)
                 {
                     // only use via if the destination and via namespace are the same
                     var via = routingOptions.SendVia && ns.ConnectionString ==  routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
                     var suppressTransaction = via == null;
-                    var messageSender = senders.Get(entity.Path, via, ns.Name);
+                    var messageSender = senders.Get(entity.Path, via, ns.Alias);
 
                     var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
 

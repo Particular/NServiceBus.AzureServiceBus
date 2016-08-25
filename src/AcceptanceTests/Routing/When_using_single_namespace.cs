@@ -12,7 +12,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     public class When_using_single_namespace : NServiceBusAcceptanceTest
     {
         [Test]
-        public async Task Should_append_namespace_name_to_reply_address_when_using_names()
+        public async Task Should_append_namespace_alias_to_reply_address_when_using_aliases()
         {
             var runSettings = new RunSettings();
             runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
@@ -22,7 +22,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             {
                 var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
                 extensions.ConnectionString(connectionString);
-                extensions.UseNamespaceNamesInsteadOfConnectionStrings();
+                extensions.UseNamespaceAliasesInsteadOfConnectionStrings();
             };
 
             runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);
@@ -78,11 +78,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             {
                 public Context Context { get; set; }
 
-                public async Task Handle(MyRequest message, IMessageHandlerContext context)
+                public Task Handle(MyRequest message, IMessageHandlerContext context)
                 {
                     Context.RequestReceived = true;
                     Context.ReplyToContainsNamespaceName = context.ReplyToAddress.Contains("@default");
-                    await context.Reply(new MyResponse());
+                    return context.Reply(new MyResponse());
                 }
             }
         }

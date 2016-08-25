@@ -4,11 +4,11 @@
     using System.Linq;
     using Settings;
 
-    class DefaultConnectionStringToNamespaceNameMapper : ICanMapConnectionStringToNamespaceName
+    class DefaultConnectionStringToNamespaceAliasMapper : ICanMapConnectionStringToNamespaceAlias
     {
         ReadOnlySettings settings;
 
-        public DefaultConnectionStringToNamespaceNameMapper(ReadOnlySettings settings)
+        public DefaultConnectionStringToNamespaceAliasMapper(ReadOnlySettings settings)
         {
             this.settings = settings;
         }
@@ -25,12 +25,12 @@
             var namespaceInfo = namespaces.SingleOrDefault(x => x.ConnectionString == value.Suffix);
             if (namespaceInfo != null)
             {
-                return new EntityAddress($"{value.Name}@{namespaceInfo.Name}");
+                return new EntityAddress($"{value.Name}@{namespaceInfo.Alias}");
             }
 
             var namespaceName = new ConnectionString(value.Suffix).NamespaceName;
             throw new InvalidOperationException($"Connection string for {namespaceName} hasn't been configured. {Environment.NewLine}" +
-                                                "Use `AddNamespace` configuration API to map connection string to namespace name.");
+                                                "Use `AddNamespace` configuration API to map connection string to namespace alias.");
         }
     }
 }

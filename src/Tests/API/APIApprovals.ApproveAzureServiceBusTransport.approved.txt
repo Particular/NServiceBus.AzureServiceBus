@@ -178,7 +178,7 @@
         public static void BrokeredMessageBodyType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, NServiceBus.Transport.AzureServiceBus.SupportedBrokeredMessageBodyTypes type) { }
         public static NServiceBus.AzureServiceBusCompositionSettings Composition(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void ConnectivityMode(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, Microsoft.ServiceBus.ConnectivityMode connectivityMode) { }
-        public static void DefaultNamespaceName(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, string name) { }
+        public static void DefaultNamespaceAlias(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, string alias) { }
         public static NServiceBus.AzureServiceBusIndividualizationSettings Individualization(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusMessageReceiverSettings MessageReceivers(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusMessageSenderSettings MessageSenders(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
@@ -194,7 +194,7 @@
         public static NServiceBus.AzureServiceBusTopicSettings Topics(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void UseBrokeredMessageToIncomingMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
             where T : NServiceBus.Transport.AzureServiceBus.IConvertBrokeredMessagesToIncomingMessages { }
-        public static void UseNamespaceNamesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static void UseNamespaceAliasesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void UseOutgoingMessageToBrokeredMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
             where T : NServiceBus.Transport.AzureServiceBus.IConvertOutgoingMessagesToBrokeredMessages { }
         public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
@@ -334,7 +334,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
     public class ConnectionString : System.IEquatable<NServiceBus.Transport.AzureServiceBus.ConnectionString>
     {
-        public static readonly string Sample;
         public ConnectionString(string value) { }
         public string NamespaceName { get; }
         public string SharedAccessPolicyName { get; }
@@ -418,7 +417,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
     public interface ICreateMessageReceivers
     {
-        System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageReceiver> Create(string entitypath, string namespaceName);
+        System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageReceiver> Create(string entityPath, string namespaceAlias);
     }
     public interface ICreateMessageSenders
     {
@@ -446,7 +445,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
     public interface IManageMessageReceiverLifeCycle
     {
-        NServiceBus.Transport.AzureServiceBus.IMessageReceiver Get(string entitypath, string namespaceName);
+        NServiceBus.Transport.AzureServiceBus.IMessageReceiver Get(string entityPath, string namespaceAlias);
     }
     public interface IManageMessageSenderLifeCycle
     {
@@ -459,7 +458,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
     public interface IManageNamespaceManagerLifeCycle
     {
-        NServiceBus.Transport.AzureServiceBus.INamespaceManager Get(string namespaceName);
+        NServiceBus.Transport.AzureServiceBus.INamespaceManager Get(string namespaceAlias);
     }
     public interface IMessageReceiver : NServiceBus.Transport.AzureServiceBus.IClientEntity
     {
@@ -590,15 +589,15 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         public NamespaceConfigurations() { }
         public int Count { get; }
-        public void Add(string name, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose) { }
+        public void Add(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose) { }
         public string GetConnectionString(string name) { }
         public System.Collections.Generic.IEnumerator<NServiceBus.Transport.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
     }
     public class NamespaceInfo : System.IEquatable<NServiceBus.Transport.AzureServiceBus.NamespaceInfo>
     {
-        public NamespaceInfo(string name, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose = 1) { }
+        public NamespaceInfo(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose = 1) { }
+        public string Alias { get; }
         public NServiceBus.Transport.AzureServiceBus.ConnectionString ConnectionString { get; }
-        public string Name { get; }
         public NServiceBus.Transport.AzureServiceBus.NamespacePurpose Purpose { get; }
         public bool Equals(NServiceBus.Transport.AzureServiceBus.NamespaceInfo other) { }
         public override bool Equals(object obj) { }
@@ -660,10 +659,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
     public class RuntimeNamespaceInfo : System.IEquatable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo>
     {
-        public RuntimeNamespaceInfo(string name, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose = 1, NServiceBus.Transport.AzureServiceBus.NamespaceMode mode = 0) { }
+        public RuntimeNamespaceInfo(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose = 1, NServiceBus.Transport.AzureServiceBus.NamespaceMode mode = 0) { }
+        public string Alias { get; }
         public string ConnectionString { get; }
         public NServiceBus.Transport.AzureServiceBus.NamespaceMode Mode { get; }
-        public string Name { get; }
         public bool Equals(NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }

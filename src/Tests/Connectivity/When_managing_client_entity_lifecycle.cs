@@ -83,7 +83,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
             public int InvocationCount = 0;
 
-            public Task<IMessageReceiver> Create(string entitypath, string namespaceName)
+            public Task<IMessageReceiver> Create(string entityPath, string namespaceAlias)
             {
                 InvocationCount++;
                 return Task.FromResult<IMessageReceiver>(new InterceptedMessageReceiver());
