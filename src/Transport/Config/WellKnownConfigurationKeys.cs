@@ -123,6 +123,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             public const string NumberOfClientsPerEntity = "AzureServiceBus.Connectivity.NumberOfClientsPerEntity";
             public const string SendViaReceiveQueue = "AzureServiceBus.Connectivity.SendViaReceiveQueue";
             public const string ConnectivityMode = "AzureServiceBus.Connectivity.ConnectivityMode";
+            public const string TransportType = "AzureServiceBus.Connectivity.TransportType";
 
             public static class MessageReceivers
             {

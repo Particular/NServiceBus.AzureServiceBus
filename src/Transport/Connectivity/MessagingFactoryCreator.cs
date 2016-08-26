@@ -32,7 +32,8 @@ namespace NServiceBus.Transport.AzureServiceBus
                         NetMessagingTransportSettings =
                         {
                             BatchFlushInterval = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval)
-                        }
+                        },
+                        TransportType = settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType)
                     };
 
                     return s;

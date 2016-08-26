@@ -192,6 +192,7 @@
         public static void SendViaReceiveQueue(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, bool sendViaReceiveQueue) { }
         public static NServiceBus.AzureServiceBusSubscriptionSettings Subscriptions(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusTopicSettings Topics(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static void TransportType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, Microsoft.ServiceBus.Messaging.TransportType transportType) { }
         public static void UseBrokeredMessageToIncomingMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
             where T : NServiceBus.Transport.AzureServiceBus.IConvertBrokeredMessagesToIncomingMessages { }
         public static void UseNamespaceAliasesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
