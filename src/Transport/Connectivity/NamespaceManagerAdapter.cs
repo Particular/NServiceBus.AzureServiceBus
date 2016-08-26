@@ -23,7 +23,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             try
             {
-                await manager.CreateQueueAsync("nsbpermissioncheck").ConfigureAwait(false);
+                await manager.GetQueuesAsync("startswith(path, '$#_') eq true").ConfigureAwait(false);
 
                 return true;
             }
