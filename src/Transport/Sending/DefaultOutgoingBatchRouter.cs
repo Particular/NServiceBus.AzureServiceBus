@@ -90,6 +90,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             if (context?.Recovering == false) // avoid send via when recovering to prevent error message from rolling back
             {
                 sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+                sendVia &= settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType) == TransportType.NetMessaging;
                 sendVia &= consistency != DispatchConsistency.Isolated;
             }
             return new RoutingOptions
