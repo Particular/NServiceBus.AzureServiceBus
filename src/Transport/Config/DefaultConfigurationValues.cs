@@ -43,7 +43,7 @@
         {
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 5);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
-            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.ConnectivityMode, ConnectivityMode.Tcp);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.ConnectivityMode, ConnectivityMode.Https);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.TransportType, TransportType.Amqp);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, 5);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.PeekLock);
