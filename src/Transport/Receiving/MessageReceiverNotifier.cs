@@ -79,8 +79,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             if (!stopping) //- It is raised when the underlying connection closes because of our close operation
             {
-                var messagingException = (MessagingException)exceptionReceivedEventArgs.Exception;
-                if (messagingException.IsTransient)
+                var messagingException = exceptionReceivedEventArgs.Exception as MessagingException;
+                if (messagingException != null && messagingException.IsTransient)
                 {
                     logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
 
