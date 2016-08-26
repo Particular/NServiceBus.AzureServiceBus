@@ -23,8 +23,12 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             try
             {
-                await manager.GetQueuesAsync().ConfigureAwait(false);
+                await manager.CreateQueueAsync("nsbpermissioncheck").ConfigureAwait(false);
 
+                return true;
+            }
+            catch (MessagingEntityAlreadyExistsException)
+            {
                 return true;
             }
             catch (UnauthorizedAccessException)
