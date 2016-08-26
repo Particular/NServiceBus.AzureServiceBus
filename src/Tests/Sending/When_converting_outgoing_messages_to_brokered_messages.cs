@@ -210,7 +210,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         }
 
         [Test]
-        public void Should_set_replytoaddress()
+        public void Should_set_replyto_address()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
@@ -228,8 +228,39 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
-            // TODO reply-to needs to be tested according to the WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings setting
+            
             Assert.IsTrue(brokeredMessage.ReplyTo == "MyQueue"); // the mapper should be ignored, need to respect user's setting
+        }
+
+        [TestCase(true, "MyQueue@alias")]
+        [TestCase(false, "MyQueue@Endpoint=sb://name-x.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key")]
+        public void Should_set_replyto_address_with_respect_to_secured_connection_strings_setting(bool shouldSecureConnectionString, string expectedReplyToAddress)
+        {
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings, shouldSecureConnectionString);
+            var namespaces = new NamespaceConfigurations(new List<NamespaceInfo>
+            {
+                new NamespaceInfo("alias", "Endpoint=sb://name-x.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key")
+            });
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
+
+            var headers = new Dictionary<string, string>()
+            {
+                {Headers.ReplyToAddress, "MyQueue"}
+            };
+
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", headers, new byte[0]),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
+
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
+
+            Assert.That(brokeredMessage.ReplyTo, Is.EqualTo(expectedReplyToAddress));
         }
 
         [Test]
