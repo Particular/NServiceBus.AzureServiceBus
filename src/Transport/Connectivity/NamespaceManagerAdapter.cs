@@ -27,10 +27,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 return true;
             }
-            catch (MessagingEntityAlreadyExistsException)
-            {
-                return true;
-            }
             catch (UnauthorizedAccessException)
             {
                 return false;
