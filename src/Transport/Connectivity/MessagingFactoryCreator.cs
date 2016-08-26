@@ -33,7 +33,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         {
                             BatchFlushInterval = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval)
                         },
-                        TransportType = TransportType.Amqp
+                        TransportType = settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType)
                     };
 
                     return s;

@@ -86,6 +86,16 @@ namespace NServiceBus
             settings.Set(WellKnownConfigurationKeys.Connectivity.ConnectivityMode, connectivityMode);
         }
 
+        /// <summary>
+        /// Transport type used by Azure Service Bus.
+        /// <remarks>Default is TransportType.NetMessaging</remarks>
+        /// </summary>
+        public static void TransportType(this TransportExtensions<AzureServiceBusTransport> transportExtensions, TransportType transportType)
+        {
+            var settings = transportExtensions.GetSettings();
+            settings.Set(WellKnownConfigurationKeys.Connectivity.TransportType, transportType);
+        }
+
 
         /// <summary>
         /// Access to message receivers configuration.
