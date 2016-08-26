@@ -72,8 +72,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
-            // todo respond appropriately
-
             // according to blog posts, this method is invoked on
             //- Exceptions raised during the time that the message pump is waiting for messages to arrive on the service bus
             //- Exceptions raised during the time that your code is processing the BrokeredMessage
@@ -81,9 +79,19 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             if (!stopping) //- It is raised when the underlying connection closes because of our close operation
             {
-                logger.InfoFormat("OptionsOnExceptionReceived invoked, action: {0}, exception: {1}", exceptionReceivedEventArgs.Action, exceptionReceivedEventArgs.Exception);
+                var messagingException = exceptionReceivedEventArgs.Exception as MessagingException;
+                if (messagingException != null && messagingException.IsTransient)
+                {
+                    logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
 
-                errorCallback?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
+                    // TODO ideally we'd failover to another space if in a certain period of time there are too many transient errors
+                }
+                else
+                {
+                    logger.InfoFormat("OptionsOnExceptionReceived invoked, action: '{0}', non-transient exception: {1}", exceptionReceivedEventArgs.Action, exceptionReceivedEventArgs.Exception);
+
+                    errorCallback?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
+                }
             }
         }
 
