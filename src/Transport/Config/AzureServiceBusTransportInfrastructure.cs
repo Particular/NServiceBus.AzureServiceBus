@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.Text;
     using DelayedDelivery;
     using Performance.TimeToBeReceived;
     using Routing;
@@ -27,7 +27,19 @@
 
         public override string ToTransportAddress(LogicalAddress logicalAddress)
         {
-            return logicalAddress.ToString();
+            var queue = new StringBuilder(logicalAddress.EndpointInstance.Endpoint);
+
+            if (logicalAddress.EndpointInstance.Discriminator != null)
+            {
+                queue.Append("-" + logicalAddress.EndpointInstance.Discriminator);
+            }
+
+            if (logicalAddress.Qualifier != null)
+            {
+                queue.Append("." + logicalAddress.Qualifier);
+            }
+
+            return queue.ToString();
         }
 
         public override TransportReceiveInfrastructure ConfigureReceiveInfrastructure()
