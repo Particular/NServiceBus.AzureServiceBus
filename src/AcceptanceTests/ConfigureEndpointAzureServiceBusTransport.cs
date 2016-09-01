@@ -7,6 +7,7 @@ using NServiceBus.AcceptanceTests.ApiExtension;
 using NServiceBus.AcceptanceTests.BestPractices;
 using NServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AcceptanceTests.Routing.AutomaticSubscriptions;
+using NServiceBus.AcceptanceTests.Routing.NativePublishSubscribe;
 using NServiceBus.AcceptanceTests.Sagas;
 using NServiceBus.AcceptanceTests.Versioning;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
@@ -67,7 +68,8 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisher(typeof(When_extending_the_publish_api.MyEvent), NameForPublisher<When_extending_the_publish_api.Publisher>())
                 .RegisterPublisher(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.BaseEvent), NameForPublisher<When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.Publisher>())
                 .RegisterPublisher(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.DerivedEvent), NameForPublisher<When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.Publisher>())
-                .RegisterPublisher(typeof(When_publishing_an_interface_with_unobtrusive.MyEvent), NameForPublisher<When_publishing_an_interface_with_unobtrusive.Publisher>());
+                .RegisterPublisher(typeof(When_publishing_an_interface_with_unobtrusive.MyEvent), NameForPublisher<When_publishing_an_interface_with_unobtrusive.Publisher>())
+                .RegisterPublisher(typeof(When_publishing_to_scaled_out_subscribers.MyEvent), NameForPublisher<When_publishing_to_scaled_out_subscribers.Publisher>());
         }
 
         transportConfig.Sanitization()
