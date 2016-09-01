@@ -7,6 +7,7 @@ using NServiceBus.AcceptanceTests.ApiExtension;
 using NServiceBus.AcceptanceTests.BestPractices;
 using NServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AcceptanceTests.Routing.AutomaticSubscriptions;
+using NServiceBus.AcceptanceTests.Routing.NativePublishSubscribe;
 using NServiceBus.AcceptanceTests.Sagas;
 using NServiceBus.AcceptanceTests.Versioning;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
@@ -52,7 +53,6 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisher(typeof(When_publishing_an_interface.MyEvent), NameForPublisher<When_publishing_an_interface.Publisher>())
                 .RegisterPublisher(typeof(When_publishing_using_root_type.EventMessage), NameForPublisher<When_publishing_using_root_type.Publisher>())
                 .RegisterPublisher(typeof(When_publishing_with_only_local_messagehandlers.EventHandledByLocalEndpoint), NameForPublisher<When_publishing_with_only_local_messagehandlers.CentralizedStoragePublisher>())
-                .RegisterPublisher(typeof(When_subscribing_to_a_polymorphic_event.MyEvent), NameForPublisher<When_subscribing_to_a_polymorphic_event.Publisher>())
                 .RegisterPublisher(typeof(When_starting_an_endpoint_with_a_saga.MyEvent), NameForPublisher<When_starting_an_endpoint_with_a_saga.Subscriber>())
                 .RegisterPublisher(typeof(When_starting_an_endpoint_with_a_saga.MyEventBase), NameForPublisher<When_starting_an_endpoint_with_a_saga.Subscriber>())
                 .RegisterPublisher(typeof(When_publishing_command_bestpractices_disabled.MyCommand), NameForPublisher<When_publishing_command_bestpractices_disabled.Endpoint>())
@@ -68,10 +68,10 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisher(typeof(When_extending_the_publish_api.MyEvent), NameForPublisher<When_extending_the_publish_api.Publisher>())
                 .RegisterPublisher(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.BaseEvent), NameForPublisher<When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.Publisher>())
                 .RegisterPublisher(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.DerivedEvent), NameForPublisher<When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.Publisher>())
-                .RegisterPublisher(typeof(When_publishing_to_scaled_out_subscribers_on_multicast_transports.MyEvent), NameForPublisher<When_publishing_to_scaled_out_subscribers_on_multicast_transports.Publisher>())
-                .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent1), NameForPublisher<When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.Publisher1>())
-                .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.MyEvent2), NameForPublisher<When_multi_subscribing_to_a_polymorphic_event_on_multicast_transports.Publisher2>())
-                .RegisterPublisher(typeof(When_publishing_an_interface_with_unobtrusive.MyEvent), NameForPublisher<When_publishing_an_interface_with_unobtrusive.Publisher>());
+                .RegisterPublisher(typeof(When_publishing_an_interface_with_unobtrusive.MyEvent), NameForPublisher<When_publishing_an_interface_with_unobtrusive.Publisher>())
+                .RegisterPublisher(typeof(When_publishing_to_scaled_out_subscribers.MyEvent), NameForPublisher<When_publishing_to_scaled_out_subscribers.Publisher>())
+                .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent1), NameForPublisher<When_multi_subscribing_to_a_polymorphic_event.Publisher1>())
+                .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent2), NameForPublisher<When_multi_subscribing_to_a_polymorphic_event.Publisher2>());
         }
 
         transportConfig.Sanitization()
