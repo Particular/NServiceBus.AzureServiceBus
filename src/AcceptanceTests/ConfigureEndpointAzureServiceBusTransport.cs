@@ -69,7 +69,9 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisher(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.BaseEvent), NameForPublisher<When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.Publisher>())
                 .RegisterPublisher(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.DerivedEvent), NameForPublisher<When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.Publisher>())
                 .RegisterPublisher(typeof(When_publishing_an_interface_with_unobtrusive.MyEvent), NameForPublisher<When_publishing_an_interface_with_unobtrusive.Publisher>())
-                .RegisterPublisher(typeof(When_publishing_to_scaled_out_subscribers.MyEvent), NameForPublisher<When_publishing_to_scaled_out_subscribers.Publisher>());
+                .RegisterPublisher(typeof(When_publishing_to_scaled_out_subscribers.MyEvent), NameForPublisher<When_publishing_to_scaled_out_subscribers.Publisher>())
+                .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent1), NameForPublisher<When_multi_subscribing_to_a_polymorphic_event.Publisher1>())
+                .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent2), NameForPublisher<When_multi_subscribing_to_a_polymorphic_event.Publisher2>());
         }
 
         transportConfig.Sanitization()
