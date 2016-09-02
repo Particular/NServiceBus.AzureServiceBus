@@ -88,7 +88,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
                 else
                 {
-                    logger.InfoFormat("OptionsOnExceptionReceived invoked, action: '{0}', non-transient exception: {1}", exceptionReceivedEventArgs.Action, exceptionReceivedEventArgs.Exception);
+                    logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}', with non-transient exception.", exceptionReceivedEventArgs.Exception);
 
                     errorCallback?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
                 }
@@ -265,7 +265,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         async Task AbandonAsync(BrokeredMessage message, Exception exception)
         {
-            logger.Info($"Exceptions occurred OnComplete, exception: {exception}");
+            logger.Info("Exceptions occurred OnComplete", exception);
             
             await AbandonInternal(message).ConfigureAwait(false);
 
