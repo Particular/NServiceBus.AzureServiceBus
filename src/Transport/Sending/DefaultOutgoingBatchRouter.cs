@@ -158,7 +158,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         }
                         catch (Exception ex)
                         {
-                            logger.Error($"Failed to dispatch batch to fallback namespace: ${ex}");
+                            logger.Error("Failed to dispatch batch to fallback namespace.", ex);
                         }
                     }
                 }
