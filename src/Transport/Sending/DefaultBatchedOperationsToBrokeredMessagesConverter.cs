@@ -35,7 +35,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             ApplyCorrelationId(outgoingMessage, brokeredMessage);
 
-            SetReplyToAddress(outgoingMessage, brokeredMessage);
+            SetReplyToAddress(outgoingMessage, brokeredMessage, routingOptions.DestinationNamespace);
 
             SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(brokeredMessage, routingOptions);
 
@@ -59,7 +59,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        void SetReplyToAddress(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
+        void SetReplyToAddress(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage, RuntimeNamespaceInfo destinationNamespace)
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
@@ -67,10 +67,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 if (!replyTo.HasSuffix)
                 {
-                    var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+                    var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces).Where(n => n.Purpose == NamespacePurpose.Partitioning).ToList();
                     var defaultAlias = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
                     var useAliases = settings.Get<bool>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings);
-                    var selected = namespaces.FirstOrDefault(ns => ns.Alias == defaultAlias);
+                    var selected = namespaces.FirstOrDefault(ns => ns.Alias == destinationNamespace.Alias);
+                    if(selected == null) selected = namespaces.FirstOrDefault(ns => ns.Alias == defaultAlias);
                     if (selected == null)
                     {
                         selected = namespaces.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);

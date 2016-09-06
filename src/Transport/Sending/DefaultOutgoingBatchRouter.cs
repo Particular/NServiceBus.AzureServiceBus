@@ -44,7 +44,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return Task.WhenAll(pendingBatches);
         }
 
-        public Task RouteBatch(Batch batch, BrokeredMessageReceiveContext context, DispatchConsistency consistency)
+        internal Task RouteBatch(Batch batch, BrokeredMessageReceiveContext context, DispatchConsistency consistency)
         {
             var outgoingBatches = batch.Operations;
 
@@ -74,6 +74,9 @@ namespace NServiceBus.Transport.AzureServiceBus
                     var via = routingOptions.SendVia && ns.ConnectionString ==  routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
                     var suppressTransaction = via == null;
                     var messageSender = senders.Get(entity.Path, via, ns.Alias);
+
+                    routingOptions.DestinationEntityPath = entity.Path;
+                    routingOptions.DestinationNamespace = ns;
 
                     var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
 
