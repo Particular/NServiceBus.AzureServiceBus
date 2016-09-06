@@ -90,7 +90,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public TopologySection DeterminePublishDestination(Type eventType)
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
             var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
 
             if (!topics.Any())
@@ -108,7 +108,9 @@ namespace NServiceBus.Transport.AzureServiceBus
         IEnumerable<EntityInfo> SelectSingleRandomTopicFromBundle(List<EntityInfo> entityInfos)
         {
             var index = randomGenerator.Next(1, entityInfos.Count);
-            yield return entityInfos[index];
+            var selected = entityInfos[index];
+
+            return entityInfos.Where(i => i.Path == selected.Path);
         }
 
         public TopologySection DetermineSendDestination(string destination)
