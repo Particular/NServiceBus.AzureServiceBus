@@ -67,15 +67,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 if (!replyTo.HasSuffix)
                 {
-                    var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces).Where(n => n.Purpose == NamespacePurpose.Partitioning).ToList();
-                    var defaultAlias = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
                     var useAliases = settings.Get<bool>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings);
-                    var selected = namespaces.FirstOrDefault(ns => ns.Alias == destinationNamespace.Alias);
-                    if(selected == null) selected = namespaces.FirstOrDefault(ns => ns.Alias == defaultAlias);
-                    if (selected == null)
-                    {
-                        selected = namespaces.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);
-                    }
+
+                    var selected = SelectMostAppropriateReplyToNamespace(destinationNamespace);
 
                     if (selected != null)
                     {
@@ -94,6 +88,17 @@ namespace NServiceBus.Transport.AzureServiceBus
                 outgoingMessage.Headers[Headers.ReplyToAddress] = replyToAsString;
                 brokeredMessage.ReplyTo = replyToAsString;
             }
+        }
+
+        NamespaceInfo SelectMostAppropriateReplyToNamespace(RuntimeNamespaceInfo destinationNamespace)
+        {
+            var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces).Where(n => n.Purpose == NamespacePurpose.Partitioning).ToList();
+            var defaultAlias = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
+
+            var selected = destinationNamespace != null ? namespaces.FirstOrDefault(ns => ns.Alias == destinationNamespace.Alias) : null;
+            if (selected == null) selected = namespaces.FirstOrDefault(ns => ns.Alias == defaultAlias);
+            if (selected == null) selected = namespaces.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);
+            return selected;
         }
 
         void ApplyCorrelationId(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
