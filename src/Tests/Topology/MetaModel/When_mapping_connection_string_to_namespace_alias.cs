@@ -1,6 +1,5 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel
 {
-    using System;
     using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
