@@ -48,7 +48,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var outgoingBatches = batch.Operations;
 
-            var activeNamespaces = batch.Destinations.Namespaces.Where(n => n.Mode == NamespaceMode.Active).ToList();
             var passiveNamespaces = batch.Destinations.Namespaces.Where(n => n.Mode == NamespaceMode.Passive).ToList();
             var pendingSends = new List<Task>();
 
