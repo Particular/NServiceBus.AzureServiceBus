@@ -3,6 +3,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using AzureServiceBus;
     using Transport.AzureServiceBus;
@@ -259,6 +260,41 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             };
 
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());
+
+            Assert.That(brokeredMessage.ReplyTo, Is.EqualTo(expectedReplyToAddress));
+        }
+
+        [TestCase(true, "MyQueue@alias2")]
+        [TestCase(false, "MyQueue@Endpoint=sb://name-y.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key")]
+        public void Should_set_replyto_address_to_destination_if_multiple_available_with_respect_to_secured_connection_strings_setting(bool shouldSecureConnectionString, string expectedReplyToAddress)
+        {
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings, shouldSecureConnectionString);
+            var namespaces = new NamespaceConfigurations(new List<NamespaceInfo>
+            {
+                new NamespaceInfo("alias1", "Endpoint=sb://name-x.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key"),
+                new NamespaceInfo("alias2", "Endpoint=sb://name-y.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key")
+            });
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
+
+            var headers = new Dictionary<string, string>()
+            {
+                {Headers.ReplyToAddress, "MyQueue"}
+            };
+
+            var batchedOperation = new BatchedOperation
+            {
+                Message = new OutgoingMessage("SomeId", headers, new byte[0]),
+                DeliveryConstraints = new List<DeliveryConstraint>()
+            };
+
+            var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions()
+            {
+               DestinationNamespace = new RuntimeNamespaceInfo("alias2", "Endpoint=sb://name-y.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key")
+            });
 
             Assert.That(brokeredMessage.ReplyTo, Is.EqualTo(expectedReplyToAddress));
         }
