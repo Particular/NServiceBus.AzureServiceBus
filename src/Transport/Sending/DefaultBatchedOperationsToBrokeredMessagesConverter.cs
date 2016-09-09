@@ -23,7 +23,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return outgoingMessages.Select(x => Convert(x, routingOptions));
         }
 
-        public BrokeredMessage Convert(BatchedOperation outgoingOperation, RoutingOptions routingOptions)
+        internal BrokeredMessage Convert(BatchedOperation outgoingOperation, RoutingOptions routingOptions)
         {
             var outgoingMessage = outgoingOperation.Message;
             var brokeredMessage = CreateBrokeredMessage(outgoingMessage);
@@ -85,7 +85,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
 
                 var replyToAsString = replyTo.ToString();
-                outgoingMessage.Headers[Headers.ReplyToAddress] = replyToAsString;
                 brokeredMessage.ReplyTo = replyToAsString;
             }
         }
@@ -156,6 +155,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         static void CopyHeaders(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
+            brokeredMessage.Properties[Headers.ReplyToAddress] = brokeredMessage.ReplyTo;
+
             foreach (var header in outgoingMessage.Headers)
             {
                 // if a message that previously failed processing is actively sent again (f.e. SLR) then the header should be removed as retry counter is reset
