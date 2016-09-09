@@ -31,7 +31,7 @@
             }
 
             var namespaceName = new ConnectionString(value.Suffix).NamespaceName;
-            Logger.Warn($"Connection string for {namespaceName} hasn't been configured. {Environment.NewLine}, replying may not work properly" +
+            Logger.Warn($"Connection string for for namespace name '{namespaceName}' hasn't been configured. {Environment.NewLine}, replying may not work properly" +
                                                 "Use `AddNamespace` configuration API to map connection string to namespace alias.");
             return value;
         }
