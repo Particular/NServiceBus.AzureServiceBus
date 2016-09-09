@@ -3,7 +3,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Text;
     using AzureServiceBus;
     using Transport.AzureServiceBus;
