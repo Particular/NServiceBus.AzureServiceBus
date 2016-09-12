@@ -2,11 +2,13 @@
 {
     using System;
     using System.Linq;
+    using Logging;
     using Settings;
 
     class DefaultConnectionStringToNamespaceAliasMapper : ICanMapConnectionStringToNamespaceAlias
     {
         ReadOnlySettings settings;
+        static ILog Logger = LogManager.GetLogger<DefaultConnectionStringToNamespaceAliasMapper>();
 
         public DefaultConnectionStringToNamespaceAliasMapper(ReadOnlySettings settings)
         {
@@ -29,8 +31,9 @@
             }
 
             var namespaceName = new ConnectionString(value.Suffix).NamespaceName;
-            throw new InvalidOperationException($"Connection string for {namespaceName} hasn't been configured. {Environment.NewLine}" +
+            Logger.Warn($"Connection string for for namespace name '{namespaceName}' hasn't been configured. {Environment.NewLine}, replying may not work properly" +
                                                 "Use `AddNamespace` configuration API to map connection string to namespace alias.");
+            return value;
         }
     }
 }

@@ -653,6 +653,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     public class RoutingOptions
     {
         public RoutingOptions() { }
+        public string DestinationEntityPath { get; set; }
+        public NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo DestinationNamespace { get; set; }
         public bool SendVia { get; set; }
         public string ViaConnectionString { get; set; }
         public string ViaEntityPath { get; set; }

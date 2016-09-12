@@ -44,11 +44,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             return Task.WhenAll(pendingBatches);
         }
 
-        public Task RouteBatch(Batch batch, BrokeredMessageReceiveContext context, DispatchConsistency consistency)
+        internal Task RouteBatch(Batch batch, BrokeredMessageReceiveContext context, DispatchConsistency consistency)
         {
             var outgoingBatches = batch.Operations;
 
-            var activeNamespaces = batch.Destinations.Namespaces.Where(n => n.Mode == NamespaceMode.Active).ToList();
             var passiveNamespaces = batch.Destinations.Namespaces.Where(n => n.Mode == NamespaceMode.Passive).ToList();
             var pendingSends = new List<Task>();
 
@@ -66,19 +65,20 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
 
                 // don't use via on fallback, not supported across namespaces
-                var fallbacks = passiveNamespaces.Select(ns => senders.Get(entity.Path, null, ns.Alias)).ToList();
+                var fallbacks = passiveNamespaces.Select(n => senders.Get(entity.Path, null, n.Alias)).ToList();
 
-                foreach (var ns in activeNamespaces)
-                {
-                    // only use via if the destination and via namespace are the same
-                    var via = routingOptions.SendVia && ns.ConnectionString ==  routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
-                    var suppressTransaction = via == null;
-                    var messageSender = senders.Get(entity.Path, via, ns.Alias);
+                var ns = entity.Namespace;
+                // only use via if the destination and via namespace are the same
+                var via = routingOptions.SendVia && ns.ConnectionString ==  routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
+                var suppressTransaction = via == null;
+                var messageSender = senders.Get(entity.Path, via, ns.Alias);
 
-                    var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
+                routingOptions.DestinationEntityPath = entity.Path;
+                routingOptions.DestinationNamespace = ns;
 
-                    pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, suppressTransaction));
-                }
+                var brokeredMessages = outgoingMessageConverter.Convert(outgoingBatches, routingOptions).ToList();
+
+                pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, suppressTransaction));
             }
             return Task.WhenAll(pendingSends);
         }

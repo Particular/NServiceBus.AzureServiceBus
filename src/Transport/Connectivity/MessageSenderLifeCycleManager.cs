@@ -17,7 +17,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public IMessageSender Get(string entitypath, string viaEntityPath, string namespaceName)
         {
-            var buffer = MessageSenders.GetOrAdd(entitypath + viaEntityPath, s =>
+            var buffer = MessageSenders.GetOrAdd(entitypath + viaEntityPath + namespaceName, s =>
             {
                 var b = new CircularBuffer<EntityClientEntry>(numberOfSendersPerEntity);
                 for (var i = 0; i < numberOfSendersPerEntity; i++)

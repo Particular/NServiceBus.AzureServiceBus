@@ -1,6 +1,5 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.MetaModel
 {
-    using System;
     using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
@@ -32,13 +31,6 @@
             var mappedValue = mapper.Map(new EntityAddress(value));
 
             StringAssert.AreEqualIgnoringCase(value, mappedValue.ToString());
-        }
-
-        [Test]
-        public void Should_throw_if_connection_string_has_not_been_mapped()
-        {
-            var exception = Assert.Throws<InvalidOperationException>(() => mapper.Map(new EntityAddress("queuename@Endpoint=sb://myNamespaceName.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret")));
-            StringAssert.Contains("myNamespaceName", exception.Message);
         }
 
         [Test]
