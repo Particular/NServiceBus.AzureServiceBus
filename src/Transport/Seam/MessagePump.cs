@@ -29,9 +29,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var type = pump.Target.GetType();
             var identificationProperty = type.GetProperty("Id");
             var id = (string) identificationProperty?.GetValue(pump.Target);
-            //NServiceBus.MainPipelineExecutor;
-            //NServiceBus.SatellitePipelineExecutor;
-            if (id == "Main")
+            if (identificationProperty == null || id == "Main")
             {
                 topologyOperator = container.Resolve<IOperateTopology>();
             }

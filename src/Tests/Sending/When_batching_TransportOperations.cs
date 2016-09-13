@@ -152,7 +152,11 @@
 
         public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
         {
-            throw new NotImplementedException();
+            return new TopologySection
+            {
+                Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
+                Entities = new List<EntityInfo> { new EntityInfo() }
+            };
         }
 
         public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)

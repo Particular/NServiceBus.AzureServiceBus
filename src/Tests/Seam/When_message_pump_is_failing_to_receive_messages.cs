@@ -41,14 +41,13 @@
             criticalError.GetType().GetMethod("SetEndpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Invoke(criticalError, new[] { new FakeEndpoint() });
 
             var pump = new MessagePump(new FakeTopology(), container);
+            await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.OnError(exception =>
             {
                 // circuit breaker is armed now
                 stopwatch.Start();
                 return TaskEx.Completed;
             });
-
-            await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.Start(new PushRuntimeSettings(1));
 
             await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new byte[0]), new FakeReceiveContext());
@@ -71,7 +70,11 @@
         {
             public TopologySection DetermineReceiveResources(string inputQueue)
             {
-                return new TopologySection();
+                return new TopologySection
+                {
+                    Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
+                    Entities = new List<EntityInfo>()
+                };
             }
 
             public TopologySection DetermineResourcesToCreate(QueueBindings queueBindings)
@@ -137,7 +140,7 @@
 
             public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func)
             {
-                
+
             }
         }
 
