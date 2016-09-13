@@ -12,6 +12,7 @@ namespace NServiceBus
     {
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
+        IOperateTopology topologyOperator;
 
         public EndpointOrientedTopology() : this(new TransportPartsContainer()){ }
 
@@ -95,6 +96,8 @@ namespace NServiceBus
             var conventions = settings.Get<Conventions>();
             var publishersConfiguration = new PublishersConfiguration(new ConventionsAdapter(conventions), settings);
             container.Register<PublishersConfiguration>(() => publishersConfiguration);
+
+            topologyOperator = container.Resolve<IOperateTopology>();
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
@@ -110,9 +113,9 @@ namespace NServiceBus
 
         public Func<IPushMessages> GetMessagePumpFactory()
         {
-            return () =>
+            return () => 
             {
-                return container.Resolve<MessagePump>();
+                return new MessagePump(container.Resolve<ITopologySectionManager>(), topologyOperator);
             };
         }
 
@@ -123,7 +126,10 @@ namespace NServiceBus
 
         public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
         {
-            return () => container.Resolve<IManageSubscriptions>();
+            return () =>
+            {
+                return new SubscriptionManager(container.Resolve<ITopologySectionManager>(), topologyOperator, container.Resolve<ICreateTopology>());
+            };
         }
 
         public Task<StartupCheckResult> RunPreStartupChecks()
