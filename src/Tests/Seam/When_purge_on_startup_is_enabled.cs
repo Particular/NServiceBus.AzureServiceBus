@@ -13,7 +13,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public void Should_throw()
         {
-            var pump = new MessagePump(null, null);
+            var container = new TransportPartsContainer();
+            container.Register<TopologyOperator>();
+            var pump = new MessagePump(null, container);
             var criticalError = new CriticalError(ctx => TaskEx.Completed);
 
             const bool purgeOnStartup = true;
