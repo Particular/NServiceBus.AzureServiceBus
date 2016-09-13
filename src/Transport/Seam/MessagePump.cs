@@ -28,7 +28,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var type = pump.Target.GetType();
             var identificationProperty = type.GetProperty("Id");
-            var id = (string) identificationProperty.GetValue(pump.Target);
+            var id = (string) identificationProperty?.GetValue(pump.Target);
             //NServiceBus.MainPipelineExecutor;
             //NServiceBus.SatellitePipelineExecutor;
             if (id == "Main")

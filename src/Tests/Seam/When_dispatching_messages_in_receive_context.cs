@@ -287,6 +287,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
             var sectionManager = container.Resolve<ITopologySectionManager>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
+            container.RegisterSingleton<TopologyOperator>();
             return sectionManager;
         }
     }
