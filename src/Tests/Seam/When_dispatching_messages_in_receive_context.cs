@@ -42,8 +42,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             extensions.SendViaReceiveQueue(true);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
-            var pump = new MessagePump(topology, topologyOperator);
+            var pump = new MessagePump(topology, container);
 
             // setup the dispatching side of things
             var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
@@ -120,8 +119,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
-            var pump = new MessagePump(topology, topologyOperator);
+            var pump = new MessagePump(topology, container);
 
             // setup the dispatching side of things
             var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
@@ -204,8 +202,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
-            var pump = new MessagePump(topology, topologyOperator);
+            var pump = new MessagePump(topology, container);
 
             // setup the dispatching side of things
             var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));

@@ -75,7 +75,7 @@ namespace NServiceBus
             container.Register<IHandleOversizedBrokeredMessages>(() => oversizedMessageHandler);
 
             container.RegisterSingleton<DefaultOutgoingBatchRouter>();
-            container.Register<TopologyOperator>();
+            container.RegisterSingleton<TopologyOperator>();
             container.Register<MessageReceiverNotifier>();
             container.RegisterSingleton<SubscriptionManager>();
             container.RegisterSingleton<TransportResourcesCreator>();

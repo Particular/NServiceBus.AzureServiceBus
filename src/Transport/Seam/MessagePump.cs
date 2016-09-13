@@ -11,20 +11,36 @@ namespace NServiceBus.Transport.AzureServiceBus
     class MessagePump : IPushMessages, IDisposable
     {
         ITopologySectionManager topologySectionManager;
+        readonly ITransportPartsContainer container;
         IOperateTopology topologyOperator;
         Func<MessageContext, Task> messagePump;
         RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
         string inputQueue;
 
-        public MessagePump(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
+        public MessagePump(ITopologySectionManager topologySectionManager, ITransportPartsContainer container)
         {
             this.topologySectionManager = topologySectionManager;
-            this.topologyOperator = topologyOperator;
+            this.container = container;
         }
 
         public Task Init(Func<MessageContext, Task> pump, Func<ErrorContext, Task<ErrorHandleResult>> onError, CriticalError criticalError, PushSettings pushSettings)
         {
+            var type = pump.Target.GetType();
+            var identificationProperty = type.GetProperty("Id");
+            var id = (string) identificationProperty.GetValue(pump.Target);
+            //NServiceBus.MainPipelineExecutor;
+            //NServiceBus.SatellitePipelineExecutor;
+            if (id == "Main")
+            {
+                topologyOperator = container.Resolve<IOperateTopology>();
+            }
+            else
+            {
+                topologyOperator = new TopologyOperator(container);
+            }
+
+
             messagePump = pump;
             var name = $"MessagePump on the queue `{pushSettings.InputQueue}`";
             circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker(name, TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));

@@ -12,7 +12,6 @@ namespace NServiceBus
     {
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
-        IOperateTopology topologyOperator;
 
         public EndpointOrientedTopology() : this(new TransportPartsContainer()){ }
 
@@ -72,7 +71,7 @@ namespace NServiceBus
             container.Register<IHandleOversizedBrokeredMessages>(() => oversizedMessageHandler);
 
             container.RegisterSingleton<DefaultOutgoingBatchRouter>();
-            container.Register<TopologyOperator>();
+            container.RegisterSingleton<TopologyOperator>();
             container.Register<MessageReceiverNotifier>();
             container.RegisterSingleton<SubscriptionManager>();
             container.RegisterSingleton<TransportResourcesCreator>();
@@ -96,8 +95,6 @@ namespace NServiceBus
             var conventions = settings.Get<Conventions>();
             var publishersConfiguration = new PublishersConfiguration(new ConventionsAdapter(conventions), settings);
             container.Register<PublishersConfiguration>(() => publishersConfiguration);
-
-            topologyOperator = container.Resolve<IOperateTopology>();
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
@@ -113,10 +110,7 @@ namespace NServiceBus
 
         public Func<IPushMessages> GetMessagePumpFactory()
         {
-            return () => 
-            {
-                return new MessagePump(container.Resolve<ITopologySectionManager>(), topologyOperator);
-            };
+            return () => container.Resolve<MessagePump>();
         }
 
         public Func<IDispatchMessages> GetDispatcherFactory()
@@ -126,10 +120,7 @@ namespace NServiceBus
 
         public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
         {
-            return () =>
-            {
-                return new SubscriptionManager(container.Resolve<ITopologySectionManager>(), topologyOperator, container.Resolve<ICreateTopology>());
-            };
+            return () => container.Resolve<IManageSubscriptions>();
         }
 
         public Task<StartupCheckResult> RunPreStartupChecks()

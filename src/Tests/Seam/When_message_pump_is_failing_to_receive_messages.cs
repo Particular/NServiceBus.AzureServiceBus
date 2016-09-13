@@ -18,7 +18,11 @@
         [Test]
         public async Task Should_trigger_circuit_breaker()
         {
+            var container = new TransportPartsContainer();
+
             var fakeTopologyOperator = new FakeTopologyOperator();
+            container.Register<IOperateTopology>(() => fakeTopologyOperator);
+
             Exception exceptionReceivedByCircuitBreaker = null;
             var criticalErrorWasRaised = false;
             var stopwatch = new Stopwatch();
@@ -36,7 +40,7 @@
             });
             criticalError.GetType().GetMethod("SetEndpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Invoke(criticalError, new[] { new FakeEndpoint() });
 
-            var pump = new MessagePump(new FakeTopology(), fakeTopologyOperator);
+            var pump = new MessagePump(new FakeTopology(), container);
             pump.OnError(exception =>
             {
                 // circuit breaker is armed now
