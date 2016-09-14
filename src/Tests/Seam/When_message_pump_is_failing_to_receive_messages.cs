@@ -18,13 +18,18 @@
         [Test]
         public async Task Should_trigger_circuit_breaker()
         {
+            var container = new TransportPartsContainer();
+
             var fakeTopologyOperator = new FakeTopologyOperator();
-            Exception exceptionReceivedByCircuitBreaker = null;
-            var criticalErrorWasRaised = false;
-            var stopwatch = new Stopwatch();
+            container.Register<IOperateTopology>(() => fakeTopologyOperator);
 
             var settings = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settings);
+            container.Register<ReadOnlySettings>(() => settings);
+
+            Exception exceptionReceivedByCircuitBreaker = null;
+            var criticalErrorWasRaised = false;
+            var stopwatch = new Stopwatch();
 
             // setup critical error action to capture exception thrown by message pump
             var criticalError = new CriticalError(ctx =>
@@ -36,15 +41,14 @@
             });
             criticalError.GetType().GetMethod("SetEndpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Invoke(criticalError, new[] { new FakeEndpoint() });
 
-            var pump = new MessagePump(new FakeTopology(), fakeTopologyOperator);
+            var pump = new MessagePump(new FakeTopology(), container, settings);
+            await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.OnError(exception =>
             {
                 // circuit breaker is armed now
                 stopwatch.Start();
                 return TaskEx.Completed;
             });
-
-            await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.Start(new PushRuntimeSettings(1));
 
             await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new byte[0]), new FakeReceiveContext());
@@ -67,7 +71,11 @@
         {
             public TopologySection DetermineReceiveResources(string inputQueue)
             {
-                return new TopologySection();
+                return new TopologySection
+                {
+                    Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
+                    Entities = new List<EntityInfo>()
+                };
             }
 
             public TopologySection DetermineResourcesToCreate(QueueBindings queueBindings)
@@ -133,7 +141,7 @@
 
             public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func)
             {
-                
+
             }
         }
 

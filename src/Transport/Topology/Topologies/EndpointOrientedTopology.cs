@@ -110,10 +110,7 @@ namespace NServiceBus
 
         public Func<IPushMessages> GetMessagePumpFactory()
         {
-            return () =>
-            {
-                return container.Resolve<MessagePump>();
-            };
+            return () => container.Resolve<MessagePump>();
         }
 
         public Func<IDispatchMessages> GetDispatcherFactory()

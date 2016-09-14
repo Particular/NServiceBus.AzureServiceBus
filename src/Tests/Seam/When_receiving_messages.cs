@@ -33,9 +33,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
-
-            var pump = new MessagePump(topology, topologyOperator);
+            var pump = new MessagePump(topology, container, settings);
 
             var completed = new AsyncAutoResetEvent(false);
             //var error = new AsyncAutoResetEvent(false);
@@ -91,6 +89,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
             var sectionManager = container.Resolve<ITopologySectionManager>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
+            container.RegisterSingleton<TopologyOperator>();
             return sectionManager;
         }
     }

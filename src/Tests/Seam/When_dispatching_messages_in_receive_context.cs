@@ -42,8 +42,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             extensions.SendViaReceiveQueue(true);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
-            var pump = new MessagePump(topology, topologyOperator);
+            var pump = new MessagePump(topology, container, settings);
 
             // setup the dispatching side of things
             var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
@@ -120,8 +119,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
-            var pump = new MessagePump(topology, topologyOperator);
+            var pump = new MessagePump(topology, container, settings);
 
             // setup the dispatching side of things
             var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
@@ -204,8 +202,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupEndpointOrientedTopology(container, "sales", settings);
 
             // setup the receive side of things
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
-            var pump = new MessagePump(topology, topologyOperator);
+            var pump = new MessagePump(topology, container, settings);
 
             // setup the dispatching side of things
             var dispatcher = (IDispatchMessages)container.Resolve(typeof(IDispatchMessages));
@@ -215,6 +212,25 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var creator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
             var namespaceManager = namespaceLifeCycle.Get("namespaceName");
             await creator.Create("myqueue", namespaceManager);
+
+            // Dummy CriticalError
+            var criticalError = new CriticalError(ctx => TaskEx.Completed);
+
+            await pump.Init(async context =>
+            {
+                // normally the core would do that
+                context.Context.Set(context.TransportTransaction);
+
+                var bytes = Encoding.UTF8.GetBytes("Whatever");
+                var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
+
+                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>().ToList()));
+
+                await dispatcher.Dispatch(transportOperations, new TransportTransaction(), context.Context);
+
+                throw new Exception("Something bad happens");
+
+            }, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
 
             // setup the test
             pump.OnError(exception =>
@@ -235,24 +251,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 return TaskEx.Completed;
             });
 
-            // Dummy CriticalError
-            var criticalError = new CriticalError(ctx => TaskEx.Completed);
-
-            await pump.Init(async context =>
-            {
-                // normally the core would do that
-                context.Context.Set(context.TransportTransaction);
-
-                var bytes = Encoding.UTF8.GetBytes("Whatever");
-                var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
-
-                var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag("myqueue"), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>().ToList()));
-
-                await dispatcher.Dispatch(transportOperations, new TransportTransaction(), context.Context);
-
-                throw new Exception("Something bad happens");
-
-            }, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.SendsAtomicWithReceive));
 
 
             // start the pump
@@ -290,6 +288,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
             var sectionManager = container.Resolve<ITopologySectionManager>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
+            container.RegisterSingleton<TopologyOperator>();
             return sectionManager;
         }
     }

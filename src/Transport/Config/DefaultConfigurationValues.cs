@@ -4,6 +4,7 @@
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Settings;
+    using Topology.MetaModel;
     using Transport.AzureServiceBus;
 
     class DefaultConfigurationValues
@@ -18,7 +19,13 @@
             ApplyDefaultValuesForRules(settings);
             ApplyDefaultValuesForSerialization(settings);
             ApplyDefaultValuesForBrokeredMessageConventions(settings);
+            ApplyDefaultValuesForSatelliteTransportAddresses(settings);
             return settings;
+        }
+
+        static void ApplyDefaultValuesForSatelliteTransportAddresses(SettingsHolder settings)
+        {
+            settings.SetDefault<SatelliteTransportAddressCollection>(new SatelliteTransportAddressCollection());
         }
 
         void ApplyDefaultValuesForBrokeredMessageConventions(SettingsHolder settings)
@@ -88,7 +95,7 @@
         void ApplyDefaultValuesForTopics(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength, 260);
-          
+
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Topics.DefaultMessageTimeToLive, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow, TimeSpan.FromMilliseconds(600000));
@@ -105,7 +112,7 @@
         void ApplyDefaultValuesForSubscriptions(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength, 50);
-            
+
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.AutoDeleteOnIdle, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DefaultMessageTimeToLive, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.LockDuration, TimeSpan.FromMilliseconds(30000));

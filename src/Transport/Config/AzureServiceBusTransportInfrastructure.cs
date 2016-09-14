@@ -4,20 +4,21 @@
     using System.Collections.Generic;
     using System.Text;
     using DelayedDelivery;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using Performance.TimeToBeReceived;
     using Routing;
-    using Settings;
     using Transport;
 
     class AzureServiceBusTransportInfrastructure : TransportInfrastructure
     {
         ITopology topology;
-        SettingsHolder settings;
+        SatelliteTransportAddressCollection satelliteTransportAddresses;
 
-        public AzureServiceBusTransportInfrastructure(ITopology topology, SettingsHolder settings)
+        public AzureServiceBusTransportInfrastructure(ITopology topology, TransportTransactionMode supportedTransactionMode, SatelliteTransportAddressCollection satelliteTransportAddresses)
         {
             this.topology = topology;
-            this.settings = settings;
+            TransactionMode = supportedTransactionMode;
+            this.satelliteTransportAddresses = satelliteTransportAddresses;
         }
 
         public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
@@ -37,6 +38,9 @@
             if (logicalAddress.Qualifier != null)
             {
                 queue.Append("." + logicalAddress.Qualifier);
+
+                // satellite input queue, store it for message pump to be able to determine what pump is for satellites and what is the main pump
+                satelliteTransportAddresses.Add(queue.ToString());
             }
 
             return queue.ToString();
@@ -64,7 +68,7 @@
 
         public override IEnumerable<Type> DeliveryConstraints => new List<Type> { typeof(DelayDeliveryWith), typeof(DoNotDeliverBefore), typeof(DiscardIfNotReceivedBefore) };
 
-        public override TransportTransactionMode TransactionMode => settings.SupportedTransactionMode();
+        public override TransportTransactionMode TransactionMode { get; }
 
         public override OutboundRoutingPolicy OutboundRoutingPolicy => topology.GetOutboundRoutingPolicy();
     }

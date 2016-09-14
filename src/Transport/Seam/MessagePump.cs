@@ -6,25 +6,32 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Extensibility;
     using Logging;
     using NServiceBus.AzureServiceBus;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
+    using Settings;
     using Transport;
 
     class MessagePump : IPushMessages, IDisposable
     {
         ITopologySectionManager topologySectionManager;
+        readonly ITransportPartsContainer container;
         IOperateTopology topologyOperator;
         Func<MessageContext, Task> messagePump;
         RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
         string inputQueue;
+        SatelliteTransportAddressCollection satelliteTransportAddresses;
 
-        public MessagePump(ITopologySectionManager topologySectionManager, IOperateTopology topologyOperator)
+        public MessagePump(ITopologySectionManager topologySectionManager, ITransportPartsContainer container, ReadOnlySettings settings)
         {
             this.topologySectionManager = topologySectionManager;
-            this.topologyOperator = topologyOperator;
+            this.container = container;
+            satelliteTransportAddresses = settings.Get<SatelliteTransportAddressCollection>();
         }
 
         public Task Init(Func<MessageContext, Task> pump, Func<ErrorContext, Task<ErrorHandleResult>> onError, CriticalError criticalError, PushSettings pushSettings)
         {
+            topologyOperator = DetermineTopologyOperator(pushSettings.InputQueue);
+
             messagePump = pump;
             var name = $"MessagePump on the queue `{pushSettings.InputQueue}`";
             circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker(name, TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
@@ -36,23 +43,38 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             inputQueue = pushSettings.InputQueue;
 
-            topologyOperator.OnIncomingMessage( (incoming, receiveContext) =>
-            {
-                var tokenSource = new CancellationTokenSource();
-                receiveContext.CancellationToken = tokenSource.Token;
+            topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
+           {
+               var tokenSource = new CancellationTokenSource();
+               receiveContext.CancellationToken = tokenSource.Token;
 
-                circuitBreaker.Success();
-               
-                var transportTransaction = new TransportTransaction();
-                transportTransaction.Set(receiveContext);
+               circuitBreaker.Success();
 
-                return messagePump(new MessageContext(incoming.MessageId, incoming.Headers, incoming.Body, transportTransaction, tokenSource, new ContextBag()));
-                
-            });
+               var transportTransaction = new TransportTransaction();
+               transportTransaction.Set(receiveContext);
+
+               return messagePump(new MessageContext(incoming.MessageId, incoming.Headers, incoming.Body, transportTransaction, tokenSource, new ContextBag()));
+
+           });
 
             topologyOperator.OnProcessingFailure(onError);
 
             return TaskEx.Completed;
+        }
+
+        /// <summary>
+        /// Determine what topology operator to use.
+        /// For the main input queue, cache and re-use the same topology operator.
+        /// For satellite input queues, create a new topology operator.
+        /// </summary>
+        IOperateTopology DetermineTopologyOperator(string pushSettingsInputQueue)
+        {
+            if (satelliteTransportAddresses.Contains(pushSettingsInputQueue))
+            {
+                return new TopologyOperator(container);
+            }
+
+            return container.Resolve<IOperateTopology>();
         }
 
         // For internal testing purposes.
