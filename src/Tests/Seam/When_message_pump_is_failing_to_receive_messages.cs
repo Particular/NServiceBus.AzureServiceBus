@@ -23,12 +23,13 @@
             var fakeTopologyOperator = new FakeTopologyOperator();
             container.Register<IOperateTopology>(() => fakeTopologyOperator);
 
+            var settings = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settings);
+            container.Register<ReadOnlySettings>(() => settings);
+
             Exception exceptionReceivedByCircuitBreaker = null;
             var criticalErrorWasRaised = false;
             var stopwatch = new Stopwatch();
-
-            var settings = new SettingsHolder();
-            new DefaultConfigurationValues().Apply(settings);
 
             // setup critical error action to capture exception thrown by message pump
             var criticalError = new CriticalError(ctx =>

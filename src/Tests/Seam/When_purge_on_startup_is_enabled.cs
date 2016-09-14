@@ -5,6 +5,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using Transport.AzureServiceBus;
     using Transport;
     using NUnit.Framework;
+    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -15,6 +16,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         {
             var container = new TransportPartsContainer();
             container.Register<TopologyOperator>();
+            var settings = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settings);
+            container.Register<ReadOnlySettings>(() => settings);
+
             var pump = new MessagePump(null, container);
             var criticalError = new CriticalError(ctx => TaskEx.Completed);
 
