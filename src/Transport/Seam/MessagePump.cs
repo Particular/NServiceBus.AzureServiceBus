@@ -21,17 +21,17 @@ namespace NServiceBus.Transport.AzureServiceBus
         string inputQueue;
         SatelliteTransportAddressCollection satelliteTransportAddresses;
 
-        public MessagePump(ITopologySectionManager topologySectionManager, ITransportPartsContainer container)
+        public MessagePump(ITopologySectionManager topologySectionManager, ITransportPartsContainer container, ReadOnlySettings settings)
         {
             this.topologySectionManager = topologySectionManager;
             this.container = container;
-            satelliteTransportAddresses = container.Resolve<ReadOnlySettings>().Get<SatelliteTransportAddressCollection>();
+            satelliteTransportAddresses = settings.Get<SatelliteTransportAddressCollection>();
         }
 
         public Task Init(Func<MessageContext, Task> pump, Func<ErrorContext, Task<ErrorHandleResult>> onError, CriticalError criticalError, PushSettings pushSettings)
         {
             topologyOperator = DetermineTopologyOperator(pushSettings.InputQueue);
-            
+
             messagePump = pump;
             var name = $"MessagePump on the queue `{pushSettings.InputQueue}`";
             circuitBreaker = new RepeatedFailuresOverTimeCircuitBreaker(name, TimeSpan.FromSeconds(30), ex => criticalError.Raise("Failed to receive message from Azure Service Bus.", ex));
@@ -63,7 +63,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         }
 
         /// <summary>
-        /// Determine what topology operator to use. 
+        /// Determine what topology operator to use.
         /// For the main input queue, cache and re-use the same topology operator.
         /// For satellite input queues, create a new topology operator.
         /// </summary>
@@ -73,7 +73,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 return new TopologyOperator(container);
             }
-            
+
             return container.Resolve<IOperateTopology>();
         }
 

@@ -33,7 +33,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
-            var pump = new MessagePump(topology, container);
+            var pump = new MessagePump(topology, container, settings);
 
             var completed = new AsyncAutoResetEvent(false);
             //var error = new AsyncAutoResetEvent(false);
