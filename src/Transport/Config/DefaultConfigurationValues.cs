@@ -25,7 +25,6 @@
 
         static void ApplyDefaultValuesForSatelliteTransportAddresses(SettingsHolder settings)
         {
-            // TODO: review if we can improve this
             settings.SetDefault<SatelliteTransportAddressCollection>(new SatelliteTransportAddressCollection());
         }
 
@@ -96,7 +95,7 @@
         void ApplyDefaultValuesForTopics(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength, 260);
-          
+
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Topics.DefaultMessageTimeToLive, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow, TimeSpan.FromMilliseconds(600000));
@@ -113,7 +112,7 @@
         void ApplyDefaultValuesForSubscriptions(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength, 50);
-            
+
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.AutoDeleteOnIdle, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DefaultMessageTimeToLive, TimeSpan.MaxValue);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.LockDuration, TimeSpan.FromMilliseconds(30000));
