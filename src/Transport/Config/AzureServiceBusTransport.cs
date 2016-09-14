@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using AzureServiceBus.Topology.MetaModel;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Serialization;
@@ -28,7 +29,7 @@
 
             SetConnectivityMode(settings);
 
-            return new AzureServiceBusTransportInfrastructure(topology, settings);
+            return new AzureServiceBusTransportInfrastructure(topology, settings, settings.Get<SatelliteTransportAddressCollection>());
         }
 
         static ITopology GetConfiguredTopology(SettingsHolder settings)

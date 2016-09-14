@@ -4,6 +4,7 @@
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Settings;
+    using Topology.MetaModel;
     using Transport.AzureServiceBus;
 
     class DefaultConfigurationValues
@@ -18,7 +19,14 @@
             ApplyDefaultValuesForRules(settings);
             ApplyDefaultValuesForSerialization(settings);
             ApplyDefaultValuesForBrokeredMessageConventions(settings);
+            ApplyDefaultValuesForSatelliteTransportAddresses(settings);
             return settings;
+        }
+
+        static void ApplyDefaultValuesForSatelliteTransportAddresses(SettingsHolder settings)
+        {
+            // TODO: review if we can improve this
+            settings.SetDefault<SatelliteTransportAddressCollection>(new SatelliteTransportAddressCollection());
         }
 
         void ApplyDefaultValuesForBrokeredMessageConventions(SettingsHolder settings)

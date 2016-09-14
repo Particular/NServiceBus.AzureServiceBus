@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Text;
     using DelayedDelivery;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using Performance.TimeToBeReceived;
     using Routing;
     using Settings;
@@ -13,11 +14,13 @@
     {
         ITopology topology;
         SettingsHolder settings;
+        SatelliteTransportAddressCollection satelliteTransportAddresses;
 
-        public AzureServiceBusTransportInfrastructure(ITopology topology, SettingsHolder settings)
+        public AzureServiceBusTransportInfrastructure(ITopology topology, SettingsHolder settings, SatelliteTransportAddressCollection satelliteTransportAddresses)
         {
             this.topology = topology;
             this.settings = settings;
+            this.satelliteTransportAddresses = satelliteTransportAddresses;
         }
 
         public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
@@ -37,6 +40,9 @@
             if (logicalAddress.Qualifier != null)
             {
                 queue.Append("." + logicalAddress.Qualifier);
+
+                // satellite input queue, store it for message pump to be able to determine what pump is for satellites and what is the main pump
+                satelliteTransportAddresses.Add(queue.ToString());
             }
 
             return queue.ToString();
