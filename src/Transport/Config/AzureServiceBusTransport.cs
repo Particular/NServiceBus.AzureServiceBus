@@ -15,7 +15,7 @@
         {
             // override core default serialization
             settings.SetDefault(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new JsonSerializer(), new SettingsHolder()));
-            
+
 
             var topology = GetConfiguredTopology(settings);
             topology.Initialize(settings);
@@ -29,7 +29,7 @@
 
             SetConnectivityMode(settings);
 
-            return new AzureServiceBusTransportInfrastructure(topology, settings, settings.Get<SatelliteTransportAddressCollection>());
+            return new AzureServiceBusTransportInfrastructure(topology, settings.SupportedTransactionMode(), settings.Get<SatelliteTransportAddressCollection>());
         }
 
         static ITopology GetConfiguredTopology(SettingsHolder settings)
