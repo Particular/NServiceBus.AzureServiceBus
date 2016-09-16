@@ -64,7 +64,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
                 var replyToAddress = outgoingMessage.Headers[Headers.ReplyToAddress];
-                if (string.IsNullOrWhiteSpace(replyToAddress)) return;
+                // Read-only endpoints have no reply-to value
+                if (string.IsNullOrWhiteSpace(replyToAddress))
+                    return;
 
                 var replyTo = new EntityAddress(replyToAddress);
 
