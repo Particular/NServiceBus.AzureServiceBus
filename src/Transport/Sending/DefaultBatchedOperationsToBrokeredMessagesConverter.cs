@@ -63,7 +63,10 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
-                var replyTo = new EntityAddress(outgoingMessage.Headers[Headers.ReplyToAddress]);
+                var replyToAddress = outgoingMessage.Headers[Headers.ReplyToAddress];
+                if (string.IsNullOrWhiteSpace(replyToAddress)) return;
+
+                var replyTo = new EntityAddress(replyToAddress);
 
                 if (!replyTo.HasSuffix)
                 {
