@@ -63,7 +63,12 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (outgoingMessage.Headers.ContainsKey(Headers.ReplyToAddress))
             {
-                var replyTo = new EntityAddress(outgoingMessage.Headers[Headers.ReplyToAddress]);
+                var replyToAddress = outgoingMessage.Headers[Headers.ReplyToAddress];
+                // Read-only endpoints have no reply-to value
+                if (string.IsNullOrWhiteSpace(replyToAddress))
+                    return;
+
+                var replyTo = new EntityAddress(replyToAddress);
 
                 if (!replyTo.HasSuffix)
                 {
@@ -155,7 +160,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         static void CopyHeaders(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
-            brokeredMessage.Properties[Headers.ReplyToAddress] = brokeredMessage.ReplyTo;
+            if (!string.IsNullOrEmpty(brokeredMessage.ReplyTo))
+            {
+                brokeredMessage.Properties[Headers.ReplyToAddress] = brokeredMessage.ReplyTo;
+            }
 
             foreach (var header in outgoingMessage.Headers)
             {
