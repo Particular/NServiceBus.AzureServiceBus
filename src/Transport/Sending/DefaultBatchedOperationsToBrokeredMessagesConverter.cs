@@ -158,7 +158,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         static void CopyHeaders(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
         {
-            brokeredMessage.Properties[Headers.ReplyToAddress] = brokeredMessage.ReplyTo;
+            if (!string.IsNullOrEmpty(brokeredMessage.ReplyTo))
+            {
+                brokeredMessage.Properties[Headers.ReplyToAddress] = brokeredMessage.ReplyTo;
+            }
 
             foreach (var header in outgoingMessage.Headers)
             {
