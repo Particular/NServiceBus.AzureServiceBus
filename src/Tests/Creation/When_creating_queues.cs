@@ -408,6 +408,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         public async Task Should_be_able_to_update_an_existing_queue_with_new_property_values()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.DeleteQueue("existingqueue");
             await namespaceManager.CreateQueue(new QueueDescription("existingqueue"));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -432,6 +433,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         public async Task Should_be_able_to_update_an_existing_queue_with_new_property_values_without_failing_on_readonly_properties()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.DeleteQueue("existingqueue");
             await namespaceManager.CreateQueue(new QueueDescription("existingqueue")
             {
                 LockDuration = TimeSpan.FromSeconds(50),

@@ -19,8 +19,7 @@
         public AzureServiceBusQueueCreator(ReadOnlySettings settings)
         {
             this.settings = settings;
-            errorQueueAddress = settings.ErrorQueueAddress();
-            settings.TryGetAuditQueueAddress(out auditQueueAddress);
+            TryGetSystemQueuessAddresses();
 
             if(!this.settings.TryGet(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, out descriptionFactory))
             {
@@ -41,6 +40,28 @@
                     EnableExpress = setting.GetConditional<bool>(queuePath, WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress),
                     ForwardDeadLetteredMessagesTo = setting.GetConditional<string>(queuePath, WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo),
                 };
+            }
+        }
+
+        void TryGetSystemQueuessAddresses()
+        {
+            // TODO: issue with core - settings.TryGetAuditQueueAddress() throws an exception even it's not supposed to
+            // https://github.com/Particular/NServiceBus.AzureServiceBus/pull/333#discussion_r79920250
+            try
+            {
+                errorQueueAddress = settings.ErrorQueueAddress();
+            }
+            catch
+            {
+                errorQueueAddress = string.Empty;
+            }
+            try
+            {
+                settings.TryGetAuditQueueAddress(out auditQueueAddress);
+            }
+            catch (Exception)
+            {
+                auditQueueAddress = string.Empty;
             }
         }
 
