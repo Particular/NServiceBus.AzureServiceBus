@@ -1,8 +1,11 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using AzureServiceBus;
+    using Config;
+    using Config.ConfigurationSource;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
@@ -452,6 +455,50 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             //cleanup
             await namespaceManager.DeleteQueue("existingqueue");
+        }
+
+        [Test]
+        public async Task Should_not_update_properties_of_an_existing_shared_queue()
+        {
+            var queuePath = "errorQ";
+
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            if (!await namespaceManager.QueueExists(queuePath).ConfigureAwait(false))
+            {
+                await namespaceManager.CreateQueue(new QueueDescription(queuePath)).ConfigureAwait(false);
+            }
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            settings.Set("errorQueue", queuePath);
+            settings.Set("TypesToScan", new List<Type> {typeof(ConfigureAuditQueue)});
+            settings.Set<IConfigurationSource>(null);
+            settings.Set(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries, 2);
+
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.Queues().MaxDeliveryCount(2);
+
+            var creator = new AzureServiceBusQueueCreator(settings);
+
+            await creator.Create(queuePath, namespaceManager);
+
+            var real = await namespaceManager.GetQueue(queuePath);
+
+            Assert.That(real.MaxDeliveryCount, Is.EqualTo(10));
+
+            //cleanup
+            await namespaceManager.DeleteQueue(queuePath);
+        }
+
+
+        class ConfigureAuditQueue : IProvideConfiguration<AuditConfig>
+        {
+            public AuditConfig GetConfiguration()
+            {
+                return new AuditConfig
+                {
+                    QueueName = "auditQ"
+                };
+            }
         }
     }
 }

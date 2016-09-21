@@ -13,10 +13,14 @@
         ReadOnlySettings settings;
         Func<string, ReadOnlySettings, QueueDescription> descriptionFactory;
         ILog logger = LogManager.GetLogger(typeof(AzureServiceBusQueueCreator));
+        string errorQueueAddress;
+        string auditQueueAddress;
 
         public AzureServiceBusQueueCreator(ReadOnlySettings settings)
         {
             this.settings = settings;
+            errorQueueAddress = settings.ErrorQueueAddress();
+            settings.TryGetAuditQueueAddress(out auditQueueAddress);
 
             if(!this.settings.TryGet(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, out descriptionFactory))
             {
@@ -59,6 +63,11 @@
                     {
                         logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
                         logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
+                        if (IsSharedQueue(description.Path))
+                        {
+                            logger.InfoFormat("Queue '{0}' is a shared queue and should not be updated", description.Path);
+                            return description;
+                        }
                         var existingDescription = await namespaceManager.GetQueue(description.Path).ConfigureAwait(false);
                         if (MembersAreNotEqual(existingDescription, description))
                         {
@@ -101,6 +110,11 @@
             }
 
             return description;
+        }
+
+        bool IsSharedQueue(string queuePath)
+        {
+            return queuePath.Equals(errorQueueAddress, StringComparison.OrdinalIgnoreCase) || queuePath.Equals(auditQueueAddress);
         }
 
 
