@@ -460,7 +460,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         }
 
         [Test]
-        public async Task Should_not_update_properties_of_an_existing_shared_queue()
+        public async Task Should_not_update_properties_of_an_existing_system_queue()
         {
             var queuePath = "errorQ";
 
