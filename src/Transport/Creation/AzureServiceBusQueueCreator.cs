@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
@@ -13,13 +15,12 @@
         ReadOnlySettings settings;
         Func<string, ReadOnlySettings, QueueDescription> descriptionFactory;
         ILog logger = LogManager.GetLogger(typeof(AzureServiceBusQueueCreator));
-        string errorQueueAddress;
-        string auditQueueAddress;
+        IReadOnlyCollection<string> systemQueueAddresses;
 
         public AzureServiceBusQueueCreator(ReadOnlySettings settings)
         {
             this.settings = settings;
-            TryGetSystemQueuessAddresses();
+            systemQueueAddresses = settings.GetOrDefault<QueueBindings>()?.SendingAddresses ?? new List<string>();
 
             if(!this.settings.TryGet(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, out descriptionFactory))
             {
@@ -40,28 +41,6 @@
                     EnableExpress = setting.GetConditional<bool>(queuePath, WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress),
                     ForwardDeadLetteredMessagesTo = setting.GetConditional<string>(queuePath, WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo),
                 };
-            }
-        }
-
-        void TryGetSystemQueuessAddresses()
-        {
-            // TODO: issue with core - settings.TryGetAuditQueueAddress() throws an exception even it's not supposed to
-            // https://github.com/Particular/NServiceBus.AzureServiceBus/pull/333#discussion_r79920250
-            try
-            {
-                errorQueueAddress = settings.ErrorQueueAddress();
-            }
-            catch
-            {
-                errorQueueAddress = string.Empty;
-            }
-            try
-            {
-                settings.TryGetAuditQueueAddress(out auditQueueAddress);
-            }
-            catch (Exception)
-            {
-                auditQueueAddress = string.Empty;
             }
         }
 
@@ -135,7 +114,7 @@
 
         bool IsSystemQueue(string queuePath)
         {
-            return queuePath.Equals(errorQueueAddress, StringComparison.OrdinalIgnoreCase) || queuePath.Equals(auditQueueAddress);
+            return systemQueueAddresses.Any(address => address.Equals(queuePath, StringComparison.OrdinalIgnoreCase));
         }
 
 
