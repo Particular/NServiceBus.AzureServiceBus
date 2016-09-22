@@ -77,8 +77,7 @@
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration, false);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow, TimeSpan.FromMilliseconds(600000));
 
-            var maxDeliveryCount = 10;// (!settings.HasExplicitValue(typeof(FirstLevelRetries).FullName) || settings.IsFeatureEnabled(typeof(FirstLevelRetries))) ? 6 : 1;
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount, maxDeliveryCount);
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount, GetNumberOfImmediateRetries(settings));
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning, false);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering, false);
@@ -90,6 +89,13 @@
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesToCondition, new Func<string, bool>(name => true));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo, null);
+        }
+
+        static int GetNumberOfImmediateRetries(SettingsHolder settings)
+        {
+            var maxDeliveryCount = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries);
+            maxDeliveryCount = maxDeliveryCount > 0 ? maxDeliveryCount + 1 : 10;
+            return maxDeliveryCount;
         }
 
         void ApplyDefaultValuesForTopics(SettingsHolder settings)
@@ -119,8 +125,8 @@
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableBatchedOperations, true);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnFilterEvaluationExceptions, false);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnMessageExpiration, false);
-            var maxDeliveryCount = 10;// (!settings.HasExplicitValue(typeof(FirstLevelRetries).FullName) || settings.IsFeatureEnabled(typeof(FirstLevelRetries))) ? 6 : 1;
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.MaxDeliveryCount, maxDeliveryCount);
+
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.MaxDeliveryCount, GetNumberOfImmediateRetries(settings));
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition, new Func<string, bool>(name => true));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo, null);

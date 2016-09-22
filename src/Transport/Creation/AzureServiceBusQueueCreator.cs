@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
@@ -13,10 +15,12 @@
         ReadOnlySettings settings;
         Func<string, ReadOnlySettings, QueueDescription> descriptionFactory;
         ILog logger = LogManager.GetLogger(typeof(AzureServiceBusQueueCreator));
+        IReadOnlyCollection<string> systemQueueAddresses;
 
         public AzureServiceBusQueueCreator(ReadOnlySettings settings)
         {
             this.settings = settings;
+            systemQueueAddresses = settings.GetOrDefault<QueueBindings>()?.SendingAddresses ?? new List<string>();
 
             if(!this.settings.TryGet(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, out descriptionFactory))
             {
@@ -28,7 +32,7 @@
                     DefaultMessageTimeToLive = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.DefaultMessageTimeToLive),
                     EnableDeadLetteringOnMessageExpiration = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration),
                     DuplicateDetectionHistoryTimeWindow = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow),
-                    MaxDeliveryCount = setting.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount),
+                    MaxDeliveryCount = IsSystemQueue(queuePath) ? 10 : setting.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount),
                     EnableBatchedOperations = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableBatchedOperations),
                     EnablePartitioning = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning),
                     SupportOrdering = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering),
@@ -59,6 +63,11 @@
                     {
                         logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
                         logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
+                        if (IsSystemQueue(description.Path))
+                        {
+                            logger.InfoFormat("Queue '{0}' is a shared queue and should not be updated", description.Path);
+                            return description;
+                        }
                         var existingDescription = await namespaceManager.GetQueue(description.Path).ConfigureAwait(false);
                         if (MembersAreNotEqual(existingDescription, description))
                         {
@@ -101,6 +110,11 @@
             }
 
             return description;
+        }
+
+        bool IsSystemQueue(string queuePath)
+        {
+            return systemQueueAddresses.Any(address => address.Equals(queuePath, StringComparison.OrdinalIgnoreCase));
         }
 
 

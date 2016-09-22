@@ -9,6 +9,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
     using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
+    using Transport;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -405,6 +406,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         public async Task Should_be_able_to_update_an_existing_queue_with_new_property_values()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.DeleteQueue("existingqueue").ConfigureAwait(false);
             await namespaceManager.CreateQueue(new QueueDescription("existingqueue"));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -429,6 +431,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         public async Task Should_be_able_to_update_an_existing_queue_with_new_property_values_without_failing_on_readonly_properties()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.DeleteQueue("existingqueue").ConfigureAwait(false);
             await namespaceManager.CreateQueue(new QueueDescription("existingqueue")
             {
                 LockDuration = TimeSpan.FromSeconds(50),
@@ -452,6 +455,39 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             //cleanup
             await namespaceManager.DeleteQueue("existingqueue");
+        }
+
+        [Test]
+        public async Task Should_not_update_properties_of_an_existing_system_queue()
+        {
+            var queuePath = "errorQ";
+
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.DeleteQueue(queuePath).ConfigureAwait(false);
+            if (!await namespaceManager.QueueExists(queuePath).ConfigureAwait(false))
+            {
+                await namespaceManager.CreateQueue(new QueueDescription(queuePath)).ConfigureAwait(false);
+            }
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            settings.Set(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries, 2);
+            var queueBindings = new QueueBindings();
+            queueBindings.BindSending(queuePath);
+            settings.Set<QueueBindings>(queueBindings);
+
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.Queues().MaxDeliveryCount(2);
+
+            var creator = new AzureServiceBusQueueCreator(settings);
+
+            await creator.Create(queuePath, namespaceManager);
+
+            var real = await namespaceManager.GetQueue(queuePath);
+
+            Assert.That(real.MaxDeliveryCount, Is.EqualTo(10));
+
+            //cleanup
+            await namespaceManager.DeleteQueue(queuePath);
         }
     }
 }
