@@ -1,11 +1,8 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using AzureServiceBus;
-    using Config;
-    using Config.ConfigurationSource;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
