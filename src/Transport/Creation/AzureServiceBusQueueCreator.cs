@@ -31,7 +31,7 @@
                     DefaultMessageTimeToLive = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.DefaultMessageTimeToLive),
                     EnableDeadLetteringOnMessageExpiration = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration),
                     DuplicateDetectionHistoryTimeWindow = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow),
-                    MaxDeliveryCount = IsSharedQueue(queuePath) ? 10 : setting.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount),
+                    MaxDeliveryCount = IsSystemQueue(queuePath) ? 10 : setting.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount),
                     EnableBatchedOperations = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableBatchedOperations),
                     EnablePartitioning = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning),
                     SupportOrdering = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering),
@@ -84,7 +84,7 @@
                     {
                         logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
                         logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
-                        if (IsSharedQueue(description.Path))
+                        if (IsSystemQueue(description.Path))
                         {
                             logger.InfoFormat("Queue '{0}' is a shared queue and should not be updated", description.Path);
                             return description;
@@ -133,7 +133,7 @@
             return description;
         }
 
-        bool IsSharedQueue(string queuePath)
+        bool IsSystemQueue(string queuePath)
         {
             return queuePath.Equals(errorQueueAddress, StringComparison.OrdinalIgnoreCase) || queuePath.Equals(auditQueueAddress);
         }

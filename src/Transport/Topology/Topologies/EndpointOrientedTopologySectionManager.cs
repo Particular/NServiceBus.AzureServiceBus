@@ -64,6 +64,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }));
 
                 // assumed errorq and auditq are in here
+                // TODO: in the future, if queueBindings.SendingAddresses containts system only queues, we shouldn't include in the list of queues to be created by the endpoint
                 entities.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
                 {
                     Path = addressingLogic.Apply(p, EntityType.Queue).Name,
