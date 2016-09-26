@@ -22,12 +22,19 @@ namespace NServiceBus.Transport.AzureServiceBus
             var factory = factories.Get(namespaceAlias);
             var receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
-            var receiver = await factory.CreateMessageReceiver(entityPath, receiveMode).ConfigureAwait(false);
+            var prefetchCount = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount);
+            var userHasNotProvidedPrefetchCount = !settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount);
+            var transportTransactionMode = settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode();
 
-            if (settings.HasSetting(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount))
+            // do not allow prefetch if user hasn't explicitly instructed to use a prefetch count of a certain size when ReceiveAndDelete mode is used (TransTxMode.None)
+            if (userHasNotProvidedPrefetchCount && (transportTransactionMode == TransportTransactionMode.None || receiveMode == ReceiveMode.ReceiveAndDelete))
             {
-                receiver.PrefetchCount = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount);
+                prefetchCount = 0;
             }
+
+            var receiver = await factory.CreateMessageReceiver(entityPath, receiveMode).ConfigureAwait(false);
+            receiver.PrefetchCount = prefetchCount;
+            
             if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy))
             {
                 receiver.RetryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy);
