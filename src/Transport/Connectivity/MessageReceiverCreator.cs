@@ -1,12 +1,14 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
     using System.Threading.Tasks;
+    using Logging;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Settings;
 
     class MessageReceiverCreator : ICreateMessageReceivers
     {
+        static ILog logger = LogManager.GetLogger(typeof(MessageReceiverCreator));
         IManageMessagingFactoryLifeCycle factories;
         ReadOnlySettings settings;
 
@@ -30,6 +32,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             if (userHasNotProvidedPrefetchCount && (transportTransactionMode == TransportTransactionMode.None || receiveMode == ReceiveMode.ReceiveAndDelete))
             {
                 prefetchCount = 0;
+                logger.Warn("Mesasge receiver PrefetchCount was reduced to zero because to avoid message loss with ReceiveAndDelete receive mode. To enforce prefetch, use configuration API to set the value explicitly.");
             }
 
             var receiver = await factory.CreateMessageReceiver(entityPath, receiveMode).ConfigureAwait(false);
