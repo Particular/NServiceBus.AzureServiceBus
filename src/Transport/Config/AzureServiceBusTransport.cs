@@ -2,6 +2,7 @@
 {
     using System;
     using AzureServiceBus.Topology.MetaModel;
+    using Logging;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Serialization;
@@ -11,6 +12,8 @@
 
     public class AzureServiceBusTransport : TransportDefinition
     {
+        static ILog logger = LogManager.GetLogger(typeof(AzureServiceBusTransport));
+
         public override TransportInfrastructure Initialize(SettingsHolder settings, string connectionString)
         {
             // override core default serialization
@@ -67,6 +70,9 @@
                     {
                         // immediately delete after receive
                         settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.ReceiveAndDelete);
+                        // override the default for prefetch count, but user code can still take precedence
+                        settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount, 0);
+                        logger.Warn("Mesasge receiver PrefetchCount was reduced to zero because to avoid message loss with ReceiveAndDelete receive mode. To enforce prefetch, use configuration API to set the value explicitly.");
                     }
 
                 }

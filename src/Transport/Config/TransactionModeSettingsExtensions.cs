@@ -12,7 +12,7 @@
             var transportType = settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType);
             var receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
-            if (namespaces.Count == 1 && sendVia && transportType == TransportType.NetMessaging)
+            if (namespaces.Count == 1 && sendVia && transportType == TransportType.NetMessaging && receiveMode == ReceiveMode.PeekLock)
                 return TransportTransactionMode.SendsAtomicWithReceive;
 
             return receiveMode == ReceiveMode.PeekLock ? TransportTransactionMode.ReceiveOnly : TransportTransactionMode.None;
