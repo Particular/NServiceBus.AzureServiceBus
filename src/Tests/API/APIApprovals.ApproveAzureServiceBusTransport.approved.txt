@@ -700,6 +700,14 @@ namespace NServiceBus.Transport.AzureServiceBus
         public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> Namespaces { get; set; }
         public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.EntityRelationShipInfo> Relationships { get; set; }
     }
+    public class TransactionContainsTooManyMessages : System.Exception
+    {
+        public TransactionContainsTooManyMessages() { }
+        public TransactionContainsTooManyMessages(string message = "Azure Service Bus cannot send more than 100 messages in a signle transaction. Reduce number of messages sent out or reduce transport transaction mode.") { }
+        public TransactionContainsTooManyMessages(string message, System.Exception inner) { }
+        public TransactionContainsTooManyMessages(System.Exception inner) { }
+        protected TransactionContainsTooManyMessages(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+    }
     public class UnsupportedBrokeredMessageBodyTypeException : System.Exception
     {
         public UnsupportedBrokeredMessageBodyTypeException() { }
