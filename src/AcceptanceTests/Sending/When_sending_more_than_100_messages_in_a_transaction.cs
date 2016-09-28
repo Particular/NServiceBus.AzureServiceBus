@@ -1,40 +1,33 @@
 namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing
 {
-    using System.Threading;
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NUnit.Framework;
+    using Transport.AzureServiceBus;
     using X;
 
     // When sending more than 100 messages in a batch and using AtomisSendsReceive mode
-    public class When_sending_a_large_batch : NServiceBusAcceptanceTest
+    public class When_sending_more_than_100_messages_in_a_transaction : NServiceBusAcceptanceTest
     {
         const int NumberOfMessagesToSendInAnAtomicBatch = 101;
 
         [Test]
-        public async Task Should_not_fail_for_a_batch_with_more_than_100_messages()
+        public Task Should_throw_a_custom_exception_and_move_the_incoming_message_to_the_error_queue()
         {
-            await Scenario.Define<Context>()
-                .WithEndpoint<Sender>(b => b.When(c => c.EndpointsStarted, async session =>
-                {
-                    await session.SendLocal(new KickOffCommand()).ConfigureAwait(false);
-                }))
-                .Done(c => c.NumberOfReceivedMessages == NumberOfMessagesToSendInAnAtomicBatch)
+            return Scenario.Define<Context>()
+                .WithEndpoint<Sender>(b => b.DoNotFailOnErrorMessages()
+                    .When((session, ctx) => session.SendLocal(new KickOffCommand { Id = ctx.TestRunId })))
+                .WithEndpoint<ErrorSpy>()
+                .Done(c => c.MessageMovedToErrorQueue && c.ExceptionType == typeof(TransactionContainsTooManyMessages).FullName)
                 .Run();
         }
 
         public class Context : ScenarioContext
         {
-            int numberOfReceivedMessages;
-
-            public int NumberOfReceivedMessages => numberOfReceivedMessages;
-
-            public void IncrementNumberOfReceivedMessages()
-            {
-                Interlocked.Increment(ref numberOfReceivedMessages);
-            }
+            public bool MessageMovedToErrorQueue { get; set; }
+            public string ExceptionType { get; set; }
         }
 
         public class Sender : EndpointConfigurationBuilder
@@ -46,6 +39,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     var transport = config.UseTransport<AzureServiceBusTransport>();
                     transport.MessageSenders().MessageSizePaddingPercentage(0);
                     transport.UseNamespaceAliasesInsteadOfConnectionStrings();
+                    config.SendFailedMessagesTo(ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<ErrorSpy>());
                 });
             }
 
@@ -70,22 +64,45 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
 
                 public Task Handle(Cmd message, IMessageHandlerContext context)
                 {
-                    Context.IncrementNumberOfReceivedMessages();
                     return Task.FromResult(0);
                 }
             }
         }
 
-        
+        public class ErrorSpy : EndpointConfigurationBuilder
+        {
+            public ErrorSpy()
+            {
+                EndpointSetup<DefaultServer>(config => config.LimitMessageProcessingConcurrencyTo(1));
+            }
+
+            class KickOffCommandMessageHandler : IHandleMessages<KickOffCommand>
+            {
+                public Context TestContext { get; set; }
+
+                public Task Handle(KickOffCommand initiatingMessage, IMessageHandlerContext context)
+                {
+                    if (initiatingMessage.Id == TestContext.TestRunId)
+                    {
+                        TestContext.MessageMovedToErrorQueue = true;
+                        TestContext.ExceptionType = context.MessageHeaders["NServiceBus.ExceptionInfo.ExceptionType"];
+                    }
+
+                    return Task.FromResult(0);
+                }
+            }
+        }
     }
 }
 
 namespace X
 {
+    using System;
     using NServiceBus;
 
     public class KickOffCommand : ICommand
     {
+        public Guid Id { get; set; }
     }
     public class Cmd : ICommand
     {

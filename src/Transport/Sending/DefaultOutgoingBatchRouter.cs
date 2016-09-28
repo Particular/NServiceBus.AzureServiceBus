@@ -139,6 +139,11 @@ namespace NServiceBus.Transport.AzureServiceBus
                 if (exception is MessageTooLargeException)
                     throw;
 
+                if (exception is TransactionSizeExceededException)
+                {
+                    throw new TransactionContainsTooManyMessages(exception);
+                }
+
                 var fallBackSucceeded = false;
                 if (fallbacks.Any())
                 {
