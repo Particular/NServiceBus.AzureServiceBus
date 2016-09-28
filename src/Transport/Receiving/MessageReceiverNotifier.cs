@@ -11,7 +11,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Logging;
     using Settings;
     using Transport;
-    
+
     class MessageReceiverNotifier : INotifyIncomingMessages
     {
         IManageMessageReceiverLifeCycle clientEntities;
@@ -25,7 +25,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
         string fullPath;
         EntityInfo entity;
-        bool stopping;
+        volatile bool stopping;
+        volatile bool isRunning;
         ConcurrentStack<Guid> locksTokensToComplete;
         CancellationTokenSource batchedCompletionCts;
         Task batchedCompletionTask;
@@ -41,8 +42,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             batchedCompletionCts = new CancellationTokenSource();
         }
 
-        public bool IsRunning { get; private set; }
+        public bool IsRunning => isRunning;
+
         public int RefCount { get; set; }
+
+        bool ShouldReceiveMessages => !stopping || isRunning;
 
         public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
         {
@@ -106,7 +110,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
             }
-            
+
             Func<BrokeredMessage, Task> callback = message =>
             {
                 var processTask = ProcessMessageAsync(message);
@@ -119,7 +123,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 return processTask;
             };
 
-            IsRunning = true;
+            isRunning = true;
 
             internalReceiver.OnMessage(callback, options);
 
@@ -163,9 +167,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         async Task ProcessMessageAsync(BrokeredMessage message)
         {
-            if (stopping || !IsRunning)
+            if (!ShouldReceiveMessages)
             {
-                await AbandonAsync(message).ConfigureAwait(false);
+                logger.Info("Received message while shutting down, abandoning it so we can process it later.");
                 return;
             }
 
@@ -198,7 +202,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     }
                 }
             }
-            catch (Exception exception)
+            catch (Exception exception) when(ShouldReceiveMessages)
             {
                 // and go into recovery mode so that no new messages are added to the transfer queue
                 context.Recovering = true;
@@ -215,7 +219,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     {
                         await AbandonAsync(message, exception).ConfigureAwait(false);
                     }
-                    else 
+                    else
                     {
                         await HandleCompletion(message, context, completionCanBeBatched).ConfigureAwait(false);
                     }
@@ -249,13 +253,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        Task AbandonAsync(BrokeredMessage message)
-        {
-            logger.Info("Received message while shutting down, abandoning it so we can process it later.");
-
-            return AbandonInternal(message);
-        }
-
         Task AbandonAsyncOnCancellation(BrokeredMessage message)
         {
             logger.Info("Received message is cancelled by the pipeline, abandoning it so we can process it later.");
@@ -266,7 +263,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         async Task AbandonAsync(BrokeredMessage message, Exception exception)
         {
             logger.Info("Exceptions occurred OnComplete", exception);
-            
+
             await AbandonInternal(message).ConfigureAwait(false);
 
             if (errorCallback != null && exception != null)
@@ -307,13 +304,13 @@ namespace NServiceBus.Transport.AzureServiceBus
             batchedCompletionCts.Cancel();
             await Task.WhenAll(batchedCompletionTask).ConfigureAwait(false);
 
-            pipelineInvocationTasks.Clear();
-
             await internalReceiver.CloseAsync().ConfigureAwait(false);
+
+            pipelineInvocationTasks.Clear();
 
             logger.Info("Notifier for " + fullPath + " stopped");
 
-            IsRunning = false;
+            isRunning = false;
         }
     }
 }
