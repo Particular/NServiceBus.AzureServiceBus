@@ -47,7 +47,7 @@
 
         void MatchSettingsToConsistencyRequirements(SettingsHolder settings)
         {
-            if (settings.HasExplicitValue<TransportTransactionMode>())
+            if (settings.HasSetting<TransportTransactionMode>())
             {
                 var required = settings.Get<TransportTransactionMode>();
                 if (required > TransportTransactionMode.SendsAtomicWithReceive)
