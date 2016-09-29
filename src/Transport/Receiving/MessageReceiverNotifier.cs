@@ -169,7 +169,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (!ShouldReceiveMessages)
             {
-                logger.Info("Received message while shutting down, abandoning it so we can process it later.");
+                logger.Info($"Received message with ID {message.MessageId} while shutting down. Message will not be processed and will be retried after {message.LockedUntilUtc}.");
                 return;
             }
 
