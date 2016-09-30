@@ -7,10 +7,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessageReceiverCreator : ICreateMessageReceivers
     {
-        IManageMessagingFactoryLifeCycle factories;
+        ICreateMessagingFactories factories;
         ReadOnlySettings settings;
 
-        public MessageReceiverCreator(IManageMessagingFactoryLifeCycle factories, ReadOnlySettings settings)
+        public MessageReceiverCreator(ICreateMessagingFactories factories, ReadOnlySettings settings)
         {
             this.factories = factories;
             this.settings = settings;
@@ -18,7 +18,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public async Task<IMessageReceiver> Create(string entityPath, string namespaceAlias)
         {
-            var factory = factories.Get(namespaceAlias);
+            var factory = factories.Create(namespaceAlias);
             var receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
             var receiver = await factory.CreateMessageReceiver(entityPath, receiveMode).ConfigureAwait(false);

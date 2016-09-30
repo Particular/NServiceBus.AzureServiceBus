@@ -17,7 +17,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         IManageMessageReceiverLifeCycle clientEntities;
         IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
         ReadOnlySettings settings;
-        IMessageReceiver internalReceiver;
+        IList<IMessageReceiver> internalReceivers = new List<IMessageReceiver>();
         ReceiveMode receiveMode;
         OnMessageOptions options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
@@ -104,33 +104,41 @@ namespace NServiceBus.Transport.AzureServiceBus
             stopping = false;
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
 
-            internalReceiver = clientEntities.Get(fullPath, entity.Namespace.Alias);
-
-            if (internalReceiver == null)
+            var numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
+            for(var i = 0; i < numberOfClients; i++)
             {
-                throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
+
+                var internalReceiver = clientEntities.Get(fullPath, entity.Namespace.Alias);
+
+                if (internalReceiver == null)
+                {
+                    throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
+                }
+
+                Func<BrokeredMessage, Task> callback = message =>
+                {
+                    var processTask = ProcessMessageAsync(internalReceiver, message);
+                    pipelineInvocationTasks.TryAdd(processTask, processTask);
+                    processTask.ContinueWith(t =>
+                    {
+                        Task toBeRemoved;
+                        pipelineInvocationTasks.TryRemove(t, out toBeRemoved);
+                    }, TaskContinuationOptions.ExecuteSynchronously);
+                    return processTask;
+                };
+
+                isRunning = true;
+
+                internalReceiver.OnMessage(callback, options);
+                PerformBatchedCompletionTask(internalReceiver);
+
+                internalReceivers.Add(internalReceiver);
             }
 
-            Func<BrokeredMessage, Task> callback = message =>
-            {
-                var processTask = ProcessMessageAsync(message);
-                pipelineInvocationTasks.TryAdd(processTask, processTask);
-                processTask.ContinueWith(t =>
-                {
-                    Task toBeRemoved;
-                    pipelineInvocationTasks.TryRemove(t, out toBeRemoved);
-                }, TaskContinuationOptions.ExecuteSynchronously);
-                return processTask;
-            };
-
-            isRunning = true;
-
-            internalReceiver.OnMessage(callback, options);
-
-            PerformBatchedCompletionTask();
+            
         }
 
-        void PerformBatchedCompletionTask()
+        void PerformBatchedCompletionTask(IMessageReceiver internalReceiver)
         {
             batchedCompletionTask = Task.Run(async () =>
             {
@@ -165,7 +173,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }, CancellationToken.None);
         }
 
-        async Task ProcessMessageAsync(BrokeredMessage message)
+        async Task ProcessMessageAsync(IMessageReceiver internalReceiver, BrokeredMessage message)
         {
             if (!ShouldReceiveMessages)
             {
@@ -304,7 +312,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             batchedCompletionCts.Cancel();
             await Task.WhenAll(batchedCompletionTask).ConfigureAwait(false);
 
-            await internalReceiver.CloseAsync().ConfigureAwait(false);
+            var closeTasks = new List<Task>();
+            foreach (var internalReceiver in internalReceivers)
+            {
+                closeTasks.Add(internalReceiver.CloseAsync());
+            }
+            await Task.WhenAll(closeTasks).ConfigureAwait(false);
 
             pipelineInvocationTasks.Clear();
 
