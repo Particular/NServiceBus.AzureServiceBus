@@ -33,7 +33,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
-            var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryCreator, settings);
+            var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 

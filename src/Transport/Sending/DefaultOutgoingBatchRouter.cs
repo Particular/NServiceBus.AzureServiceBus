@@ -121,11 +121,18 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             try
             {
-                var scope = suppressTransaction ? new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled) : null;
-                using (scope)
+                var scope = suppressTransaction && Transaction.Current != null ? new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled) : null;
+                if (scope != null)
+                {
+                    using (scope)
+                    {
+                        await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend).ConfigureAwait(false);
+                        scope?.Complete();
+                    }
+                }
+                else
                 {
                     await RouteBatchWithEnforcedBatchSizeAsync(messageSender, messagesToSend).ConfigureAwait(false);
-                    scope?.Complete();
                 }
             }
             catch (Exception exception)

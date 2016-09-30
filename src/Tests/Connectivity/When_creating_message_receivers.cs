@@ -22,7 +22,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
             var factory = new InterceptedMessagingFactory();
 
-            var creator = new MessageReceiverCreator(null/*new InterceptedMessagingFactoryFactory(factory)*/, settings);
+            var creator = new MessageReceiverCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
             var receiver = await creator.Create("myqueue", AzureServiceBusConnectionString.Value);
 
@@ -43,7 +43,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
             var factory = new InterceptedMessagingFactory();
 
-            var creator = new MessageReceiverCreator(null/*new InterceptedMessagingFactoryFactory(factory)*/, settings);
+            var creator = new MessageReceiverCreator(new InterceptedMessagingFactoryFactory(factory), settings);
 
             var receiver = await creator.Create("myqueue", AzureServiceBusConnectionString.Value);
 
