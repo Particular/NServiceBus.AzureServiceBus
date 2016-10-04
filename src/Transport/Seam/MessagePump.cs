@@ -45,7 +45,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             inputQueue = pushSettings.InputQueue;
 
             
-            topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
+            topologyOperator.OnIncomingMessage(async (incoming, receiveContext) =>
             {
                var tokenSource = new CancellationTokenSource();
                receiveContext.CancellationToken = tokenSource.Token;
@@ -55,20 +55,16 @@ namespace NServiceBus.Transport.AzureServiceBus
                var transportTransaction = new TransportTransaction();
                transportTransaction.Set(receiveContext);
 
-                return Task.Run(async () =>
-                {
-                    await throttler.WaitAsync(receiveContext.CancellationToken).ConfigureAwait(false);
+                await throttler.WaitAsync(receiveContext.CancellationToken).ConfigureAwait(false);
 
-                    try
-                    {
-                       await messagePump(new MessageContext(incoming.MessageId, incoming.Headers, incoming.Body, transportTransaction, tokenSource, new ContextBag())).ConfigureAwait(false);
-                    }
-                    finally
-                    {
-                        throttler.Release();
-                    }
-                }, receiveContext.CancellationToken);
-              
+                try
+                {
+                    await messagePump(new MessageContext(incoming.MessageId, incoming.Headers, incoming.Body, transportTransaction, tokenSource, new ContextBag())).ConfigureAwait(false);
+                }
+                finally
+                {
+                    throttler.Release();
+                }
             });
 
             topologyOperator.OnProcessingFailure(onError);
