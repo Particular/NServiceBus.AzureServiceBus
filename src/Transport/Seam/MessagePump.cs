@@ -20,6 +20,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
         string inputQueue;
         SatelliteTransportAddressCollection satelliteTransportAddresses;
+        SemaphoreSlim throttler = new SemaphoreSlim(1);
 
         public MessagePump(ITopologySectionManager topologySectionManager, ITransportPartsContainer container, ReadOnlySettings settings)
         {
@@ -43,8 +44,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             inputQueue = pushSettings.InputQueue;
 
+            
             topologyOperator.OnIncomingMessage((incoming, receiveContext) =>
-           {
+            {
                var tokenSource = new CancellationTokenSource();
                receiveContext.CancellationToken = tokenSource.Token;
 
@@ -53,9 +55,21 @@ namespace NServiceBus.Transport.AzureServiceBus
                var transportTransaction = new TransportTransaction();
                transportTransaction.Set(receiveContext);
 
-               return messagePump(new MessageContext(incoming.MessageId, incoming.Headers, incoming.Body, transportTransaction, tokenSource, new ContextBag()));
+                return Task.Run(async () =>
+                {
+                    await throttler.WaitAsync(receiveContext.CancellationToken).ConfigureAwait(false);
 
-           });
+                    try
+                    {
+                       await messagePump(new MessageContext(incoming.MessageId, incoming.Headers, incoming.Body, transportTransaction, tokenSource, new ContextBag())).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        throttler.Release();
+                    }
+                }, receiveContext.CancellationToken);
+              
+            });
 
             topologyOperator.OnProcessingFailure(onError);
 
@@ -90,6 +104,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public void Start(PushRuntimeSettings limitations)
         {
             var definition = topologySectionManager.DetermineReceiveResources(inputQueue);
+            throttler = new SemaphoreSlim(limitations.MaxConcurrency);
             topologyOperator.Start(definition, limitations.MaxConcurrency);
         }
 

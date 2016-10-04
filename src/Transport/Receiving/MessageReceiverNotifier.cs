@@ -32,6 +32,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         Task batchedCompletionTask;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
         Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
+        int numberOfClients;
 
         public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
@@ -64,11 +65,13 @@ namespace NServiceBus.Transport.AzureServiceBus
                 fullPath = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, entity.Path);
             }
 
+            numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
+            var concurrency = maximumConcurrency / (double)numberOfClients;
             options = new OnMessageOptions
             {
                 AutoComplete = false,
                 AutoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
-                MaxConcurrentCalls = maximumConcurrency
+                MaxConcurrentCalls = (int)Math.Round(concurrency, MidpointRounding.AwayFromZero)
             };
 
             options.ExceptionReceived += OptionsOnExceptionReceived;
@@ -104,7 +107,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             stopping = false;
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
 
-            var numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
+            
             for(var i = 0; i < numberOfClients; i++)
             {
 
