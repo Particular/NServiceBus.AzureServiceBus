@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Text.RegularExpressions;
 
     public class ConnectionString : IEquatable<ConnectionString>
@@ -57,19 +58,25 @@
             return value;
         }
 
+        static ConcurrentDictionary<string, Tuple<bool, ConnectionString>> _parsingResults = new ConcurrentDictionary<string, Tuple<bool, ConnectionString>>();
         public static bool TryParse(string value, out ConnectionString connectionString)
         {
-            try
+            var t = _parsingResults.GetOrAdd(value, s =>
             {
-                var result = Regex.IsMatch(value, Pattern, RegexOptions.IgnoreCase);
-                connectionString = result ?  new ConnectionString(value) : null;
-                return result;
-            }
-            catch (ArgumentException)
-            {
-                connectionString = null;
-                return false;
-            }
+                try
+                {
+                    var result = Regex.IsMatch(value, Pattern, RegexOptions.IgnoreCase);
+                    var c = result ? new ConnectionString(value) : null;
+                    return new Tuple<bool, ConnectionString>(result, c);
+                }
+                catch (ArgumentException)
+                {
+                    return new Tuple<bool, ConnectionString>(false, null);
+                }
+            });
+
+            connectionString = t.Item2;
+            return t.Item1;
         }
 
         public static bool IsConnectionString(string value)

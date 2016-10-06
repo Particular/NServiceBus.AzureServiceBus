@@ -48,7 +48,7 @@
 
         void ApplyDefaultsForConnectivity(SettingsHolder settings)
         {
-            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 5);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 1);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.ConnectivityMode, ConnectivityMode.Tcp);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.TransportType, TransportType.NetMessaging); // can't make TransportType.Amqp the default due to performance issues investigated with ASB team
