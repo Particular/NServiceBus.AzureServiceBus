@@ -42,7 +42,7 @@
             public Type EventTypePassedToRouting { get; set; }
         }
 
-        internal class Publisher : EndpointConfigurationBuilder
+        class Publisher : EndpointConfigurationBuilder
         {
             public Publisher()
             {
