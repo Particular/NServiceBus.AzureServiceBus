@@ -67,7 +67,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
             var concurrency = maximumConcurrency / (double)numberOfClients;
-            var maxConcurrentCalls = concurrency > 0 ? (int) Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
+            var maxConcurrentCalls = concurrency > 1 ? (int) Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
             options = new OnMessageOptions
             {
                 AutoComplete = false,
