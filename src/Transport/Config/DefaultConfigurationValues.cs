@@ -48,14 +48,15 @@
 
         void ApplyDefaultsForConnectivity(SettingsHolder settings)
         {
-            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 1);
+            var numberOfLogicalCores = Math.Max(0, Environment.ProcessorCount);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, numberOfLogicalCores);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.ConnectivityMode, ConnectivityMode.Tcp);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.TransportType, TransportType.NetMessaging); // can't make TransportType.Amqp the default due to performance issues investigated with ASB team
-            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, 5);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, numberOfLogicalCores);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.PeekLock);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout, TimeSpan.FromMinutes(5.0));
-            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount, 200);
+            settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount, 20);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval, TimeSpan.FromSeconds(0.5));
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle, TimeSpan.FromSeconds(10));
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle, 5);
