@@ -108,37 +108,44 @@ namespace NServiceBus.Transport.AzureServiceBus
             stopping = false;
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
 
-
+            var exceptions = new ConcurrentQueue<Exception>();
             Parallel.For(0, numberOfClients, i =>
             {
-
-                var internalReceiver = clientEntities.Get(fullPath, entity.Namespace.Alias);
-
-                if (internalReceiver == null)
+                try
                 {
-                    throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
+                    var internalReceiver = clientEntities.Get(fullPath, entity.Namespace.Alias);
+
+                    if (internalReceiver == null)
+                    {
+                        throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
+                    }
+
+                    Func<BrokeredMessage, Task> callback = message =>
+                    {
+                        var processTask = ProcessMessageAsync(internalReceiver, message);
+                        pipelineInvocationTasks.TryAdd(processTask, processTask);
+                        processTask.ContinueWith(t =>
+                        {
+                            Task toBeRemoved;
+                            pipelineInvocationTasks.TryRemove(t, out toBeRemoved);
+                        }, TaskContinuationOptions.ExecuteSynchronously);
+                        return processTask;
+                    };
+
+                    isRunning = true;
+
+                    internalReceiver.OnMessage(callback, options);
+                    PerformBatchedCompletionTask(internalReceiver);
+
+                    internalReceivers.Add(internalReceiver);
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Enqueue(ex);
                 }
 
-                Func<BrokeredMessage, Task> callback = message =>
-                {
-                    var processTask = ProcessMessageAsync(internalReceiver, message);
-                    pipelineInvocationTasks.TryAdd(processTask, processTask);
-                    processTask.ContinueWith(t =>
-                    {
-                        Task toBeRemoved;
-                        pipelineInvocationTasks.TryRemove(t, out toBeRemoved);
-                    }, TaskContinuationOptions.ExecuteSynchronously);
-                    return processTask;
-                };
-
-                isRunning = true;
-
-                internalReceiver.OnMessage(callback, options);
-                PerformBatchedCompletionTask(internalReceiver);
-
-                internalReceivers.Add(internalReceiver);
             });
-
+            if (exceptions.Count > 0) throw new AggregateException(exceptions);
 
         }
 

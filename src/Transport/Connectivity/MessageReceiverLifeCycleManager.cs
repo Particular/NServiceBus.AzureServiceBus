@@ -1,5 +1,6 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
     using Settings;
@@ -21,12 +22,22 @@ namespace NServiceBus.Transport.AzureServiceBus
             var buffer = MessageReceivers.GetOrAdd(entityPath + namespaceAlias, s =>
             {
                 var b = new CircularBuffer<EntityClientEntry>(numberOfReceiversPerEntity);
+                var exceptions = new ConcurrentQueue<Exception>();
                 Parallel.For(0, numberOfReceiversPerEntity, i =>
                 {
-                    var e = new EntityClientEntry();
-                    e.ClientEntity = receiveFactory.Create(entityPath, namespaceAlias).GetAwaiter().GetResult();
-                    b.Put(e);
+                    try
+                    {
+                        var e = new EntityClientEntry();
+                        e.ClientEntity = receiveFactory.Create(entityPath, namespaceAlias).GetAwaiter().GetResult();
+                        b.Put(e);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Enqueue(ex);
+                    }
+                   
                 });
+                if (exceptions.Count > 0) throw new AggregateException(exceptions);
                 return b;
             });
 

@@ -1,5 +1,6 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -24,15 +25,23 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var b = new CircularBuffer<FactoryEntry>(numberOfFactoriesPerNamespace);
 
                 var factories = new List<FactoryEntry>(numberOfFactoriesPerNamespace);
+                var exceptions = new ConcurrentQueue<Exception>();
                 Parallel.For(0, numberOfFactoriesPerNamespace, i =>
                 {
-                    var factory = createMessagingFactories.Create(namespaceName);
-                    factories.Add(new FactoryEntry
+                    try
                     {
-                        Factory = factory
-                    });
+                        var factory = createMessagingFactories.Create(namespaceName);
+                        factories.Add(new FactoryEntry
+                        {
+                            Factory = factory
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Enqueue(ex);
+                    }
                 });
-
+                if (exceptions.Count > 0) throw new AggregateException(exceptions);
                 b.Put(factories.ToArray());
                 return b;
             });
