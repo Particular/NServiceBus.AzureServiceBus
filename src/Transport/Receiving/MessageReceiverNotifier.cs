@@ -108,8 +108,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             stopping = false;
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
 
-            
-            for(var i = 0; i < numberOfClients; i++)
+
+            Parallel.For(0, numberOfClients, i =>
             {
 
                 var internalReceiver = clientEntities.Get(fullPath, entity.Namespace.Alias);
@@ -137,9 +137,9 @@ namespace NServiceBus.Transport.AzureServiceBus
                 PerformBatchedCompletionTask(internalReceiver);
 
                 internalReceivers.Add(internalReceiver);
-            }
+            });
 
-            
+
         }
 
         void PerformBatchedCompletionTask(IMessageReceiver internalReceiver)

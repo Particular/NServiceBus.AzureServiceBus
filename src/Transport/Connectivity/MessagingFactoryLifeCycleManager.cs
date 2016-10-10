@@ -24,11 +24,14 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var b = new CircularBuffer<FactoryEntry>(numberOfFactoriesPerNamespace);
 
                 var factories = new List<FactoryEntry>(numberOfFactoriesPerNamespace);
-                for (var i = 0; i < numberOfFactoriesPerNamespace; i++)
+                Parallel.For(0, numberOfFactoriesPerNamespace, i =>
                 {
                     var factory = createMessagingFactories.Create(namespaceName);
-                    factories.Add(new FactoryEntry { Factory = factory });
-                }
+                    factories.Add(new FactoryEntry
+                    {
+                        Factory = factory
+                    });
+                });
 
                 b.Put(factories.ToArray());
                 return b;
