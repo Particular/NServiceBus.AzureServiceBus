@@ -1,6 +1,6 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
-    using System;
+    //using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -25,23 +25,15 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var b = new CircularBuffer<FactoryEntry>(numberOfFactoriesPerNamespace);
 
                 var factories = new List<FactoryEntry>(numberOfFactoriesPerNamespace);
-                var exceptions = new ConcurrentQueue<Exception>();
-                Parallel.For(0, numberOfFactoriesPerNamespace, i =>
+                for(var i= 0; i < numberOfFactoriesPerNamespace; i++)
                 {
-                    try
+                    var factory = createMessagingFactories.Create(namespaceName);
+                    factories.Add(new FactoryEntry
                     {
-                        var factory = createMessagingFactories.Create(namespaceName);
-                        factories.Add(new FactoryEntry
-                        {
-                            Factory = factory
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptions.Enqueue(ex);
-                    }
-                });
-                if (exceptions.Count > 0) throw new AggregateException(exceptions);
+                        Factory = factory
+                    });
+                    
+                }
                 b.Put(factories.ToArray());
                 return b;
             });
@@ -70,7 +62,10 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var buffer = MessagingFactories[key];
                 foreach (var entry in buffer.GetBuffer())
                 {
-                    await entry.Factory.CloseAsync().ConfigureAwait(false);
+                    //if (entry?.Factory != null)
+                    //{
+                        await entry.Factory.CloseAsync().ConfigureAwait(false);
+                    //}
                 }
             }
         }
