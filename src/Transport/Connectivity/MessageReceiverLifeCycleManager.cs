@@ -21,10 +21,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             var buffer = MessageReceivers.GetOrAdd(entityPath + namespaceAlias, s =>
             {
                 var b = new CircularBuffer<EntityClientEntry>(numberOfReceiversPerEntity);
-                Parallel.For(0, numberOfReceiversPerEntity, async i =>
+                Parallel.For(0, numberOfReceiversPerEntity, i =>
                 {
                     var e = new EntityClientEntry();
-                    e.ClientEntity = await receiveFactory.Create(entityPath, namespaceAlias).ConfigureAwait(false);
+                    e.ClientEntity = receiveFactory.Create(entityPath, namespaceAlias).GetAwaiter().GetResult();
                     b.Put(e);
                 });
                 return b;
