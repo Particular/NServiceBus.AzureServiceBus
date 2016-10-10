@@ -1,8 +1,6 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
-    using System;
     using System.Collections.Concurrent;
-    using System.Threading.Tasks;
     using Settings;
 
     class MessageReceiverLifeCycleManager : IManageMessageReceiverLifeCycle
@@ -22,22 +20,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             var buffer = MessageReceivers.GetOrAdd(entityPath + namespaceAlias, s =>
             {
                 var b = new CircularBuffer<EntityClientEntry>(numberOfReceiversPerEntity);
-                var exceptions = new ConcurrentQueue<Exception>();
-                Parallel.For(0, numberOfReceiversPerEntity, i =>
+                for(var i = 0; i < numberOfReceiversPerEntity; i++)
                 {
-                    try
-                    {
-                        var e = new EntityClientEntry();
-                        e.ClientEntity = receiveFactory.Create(entityPath, namespaceAlias).GetAwaiter().GetResult();
-                        b.Put(e);
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptions.Enqueue(ex);
-                    }
-                   
-                });
-                if (exceptions.Count > 0) throw new AggregateException(exceptions);
+                    var e = new EntityClientEntry();
+                    e.ClientEntity = receiveFactory.Create(entityPath, namespaceAlias).GetAwaiter().GetResult();
+                    b.Put(e);
+                }
                 return b;
             });
 
