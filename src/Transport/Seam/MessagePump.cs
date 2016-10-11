@@ -20,7 +20,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
         string inputQueue;
         SatelliteTransportAddressCollection satelliteTransportAddresses;
-        SemaphoreSlim throttler;
+        SemaphoreSlim throttler = new SemaphoreSlim(1);
 
         public MessagePump(ITopologySectionManager topologySectionManager, ITransportPartsContainer container, ReadOnlySettings settings)
         {
