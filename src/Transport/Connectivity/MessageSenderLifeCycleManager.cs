@@ -38,7 +38,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     if (entry.ClientEntity.IsClosed)
                     {
-                        entry.ClientEntity = senderFactory.Create(entitypath, viaEntityPath, namespaceName).Result;
+                        entry.ClientEntity = senderFactory.Create(entitypath, viaEntityPath, namespaceName).GetAwaiter().GetResult();
                     }
                 }
             }
