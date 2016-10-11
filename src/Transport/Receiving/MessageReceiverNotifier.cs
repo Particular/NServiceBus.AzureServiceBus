@@ -68,6 +68,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
             var concurrency = maximumConcurrency / (double)numberOfClients;
             var maxConcurrentCalls = concurrency > 1 ? (int) Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
+            if (Math.Abs(maxConcurrentCalls - concurrency) > 0)
+            {
+                logger.InfoFormat("The maximum concurrency on this message receiver instance has been adjusted to '{0}', because the total maximum concurrency '{1}' wasn't divisable by the number of clients '{2}'", maxConcurrentCalls, maximumConcurrency, numberOfClients);
+            }
             options = new OnMessageOptions
             {
                 AutoComplete = false,
