@@ -29,7 +29,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         volatile bool isRunning;
         ConcurrentStack<Guid> locksTokensToComplete;
         CancellationTokenSource batchedCompletionCts;
-        Task batchedCompletionTask;
+        Task[] batchedCompletionTasks;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
         Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
         int numberOfClients;
@@ -80,6 +80,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
 
             options.ExceptionReceived += OptionsOnExceptionReceived;
+
+            batchedCompletionTasks = new Task[numberOfClients];
         }
 
         void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
@@ -139,7 +141,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     isRunning = true;
 
                     internalReceiver.OnMessage(callback, options);
-                    PerformBatchedCompletionTask(internalReceiver);
+                PerformBatchedCompletionTask(internalReceiver, i);
 
                     internalReceivers.Add(internalReceiver);
                 }
@@ -153,9 +155,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         }
 
-        void PerformBatchedCompletionTask(IMessageReceiver internalReceiver)
+        void PerformBatchedCompletionTask(IMessageReceiver internalReceiver, int index)
         {
-            batchedCompletionTask = Task.Run(async () =>
+            batchedCompletionTasks[index] = Task.Run(async () =>
             {
                 int count;
                 var buffer = new Guid[5000];
@@ -181,8 +183,8 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
 
                 count = locksTokensToComplete.TryPopRange(buffer);
-                var remainingtocomplete = buffer.Take(count).ToList();
-                await internalReceiver.SafeCompleteBatchAsync(remainingtocomplete).ConfigureAwait(false);
+                var remainingToComplete = buffer.Take(count).ToList();
+                await internalReceiver.SafeCompleteBatchAsync(remainingToComplete).ConfigureAwait(false);
                 Array.Clear(buffer, 0, buffer.Length);
 
             }, CancellationToken.None);
@@ -325,7 +327,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             batchedCompletionCts.Cancel();
-            await Task.WhenAll(batchedCompletionTask).ConfigureAwait(false);
+            await Task.WhenAll(batchedCompletionTasks).ConfigureAwait(false);
 
             var closeTasks = new List<Task>();
             foreach (var internalReceiver in internalReceivers)
