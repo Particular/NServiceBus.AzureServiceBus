@@ -148,34 +148,22 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             batchedCompletionTasks[index] = Task.Run(async () =>
             {
-                int count;
                 var buffer = new Guid[5000];
 
-                while (!batchedCompletionCts.Token.IsCancellationRequested)
+                while (!batchedCompletionCts.Token.IsCancellationRequested || !locksTokensToComplete.IsEmpty)
                 {
-                    if (locksTokensToComplete.IsEmpty)
+                    // running concurrently, two tasks could get to this line, but only one will pop items
+                    var count = locksTokensToComplete.TryPopRange(buffer, 0, buffer.Length);
+
+                    if (count == 0)
                     {
                         await Task.Delay(TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
                         continue;
                     }
 
-                    count = locksTokensToComplete.TryPopRange(buffer);
-                    var tocomplete = buffer.Take(count).ToList();
-                    await internalReceiver.SafeCompleteBatchAsync(tocomplete).ConfigureAwait(false);
-                    Array.Clear(buffer, 0, buffer.Length);
+                    var toComplete = buffer.Take(count).ToList();
+                    await internalReceiver.SafeCompleteBatchAsync(toComplete).ConfigureAwait(false);
                 }
-
-                // run last check when task has been cancelled to drain remaining lock tokens
-                if (locksTokensToComplete.IsEmpty)
-                {
-                    return;
-                }
-
-                count = locksTokensToComplete.TryPopRange(buffer);
-                var remainingToComplete = buffer.Take(count).ToList();
-                await internalReceiver.SafeCompleteBatchAsync(remainingToComplete).ConfigureAwait(false);
-                Array.Clear(buffer, 0, buffer.Length);
-
             }, CancellationToken.None);
         }
 
