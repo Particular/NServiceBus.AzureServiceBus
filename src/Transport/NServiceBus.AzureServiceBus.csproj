@@ -126,6 +126,7 @@
     <Compile Include="Sending\Time.cs" />
     <Compile Include="Topology\ConventionsAdapter.cs" />
     <Compile Include="Topology\IConventions.cs" />
+    <Compile Include="Topology\IStoppableTopology.cs" />
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Topology\MetaModel\SatelliteTransportAddressCollection.cs" />
     <Compile Include="Utils\MessageReceiverExtensions.cs" />
