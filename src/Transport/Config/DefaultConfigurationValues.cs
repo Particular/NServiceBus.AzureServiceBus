@@ -48,7 +48,7 @@
 
         void ApplyDefaultsForConnectivity(SettingsHolder settings)
         {
-            var numberOfLogicalCores = Math.Max(0, Environment.ProcessorCount);
+            var numberOfLogicalCores = Environment.ProcessorCount;
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, numberOfLogicalCores);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.ConnectivityMode, ConnectivityMode.Tcp);
