@@ -72,7 +72,7 @@
                         settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.ReceiveAndDelete);
                         // override the default for prefetch count, but user code can still take precedence
                         settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount, 0);
-                        logger.Warn("Mesasge receiver PrefetchCount was reduced to zero because to avoid message loss with ReceiveAndDelete receive mode. To enforce prefetch, use configuration API to set the value explicitly.");
+                        logger.Warn("Default value for message receiver's PrefetchCount was reduced to zero to avoid message loss with ReceiveAndDelete receive mode. To enforce prefetch, use the configuration API to set the value explicitly.");
                     }
 
                 }
