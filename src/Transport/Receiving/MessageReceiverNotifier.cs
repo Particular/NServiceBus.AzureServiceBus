@@ -303,7 +303,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             stopping = true;
 
-            logger.Info("Stopping notifier for " + fullPath);
+            logger.Info($"Stopping notifier for '{fullPath}'");
 
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
             var allTasks = pipelineInvocationTasks.Values;
@@ -326,7 +326,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             pipelineInvocationTasks.Clear();
 
-            logger.Info("Notifier for " + fullPath + " stopped");
+            logger.Info($"Notifier for '{fullPath}' stopped");
 
             isRunning = false;
         }
