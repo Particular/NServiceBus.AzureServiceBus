@@ -3,13 +3,15 @@ namespace NServiceBus
     using System;
     using System.Threading.Tasks;
     using AzureServiceBus;
+    using Logging;
     using Routing;
     using Settings;
     using Transport;
     using Transport.AzureServiceBus;
 
-    public class EndpointOrientedTopology :ITopology
+    public class EndpointOrientedTopology :ITopology, IStoppableTopology
     {
+        ILog logger = LogManager.GetLogger(typeof(EndpointOrientedTopology));
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
 
@@ -133,6 +135,13 @@ namespace NServiceBus
         public OutboundRoutingPolicy GetOutboundRoutingPolicy()
         {
             return new OutboundRoutingPolicy(OutboundRoutingType.Unicast, OutboundRoutingType.Multicast, OutboundRoutingType.Unicast);
+        }
+
+        public Task Stop()
+        {
+            logger.Info("Closing messaging factories");
+            var factories = container.Resolve<IManageMessagingFactoryLifeCycle>();
+            return factories.CloseAll();
         }
     }
 }

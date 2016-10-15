@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
+    using System.Threading.Tasks;
     using DelayedDelivery;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using Performance.TimeToBeReceived;
@@ -13,6 +14,11 @@
     {
         ITopology topology;
         SatelliteTransportAddressCollection satelliteTransportAddresses;
+
+        public override Task Stop()
+        {
+            return ((IStoppableTopology) topology).Stop();
+        }
 
         public AzureServiceBusTransportInfrastructure(ITopology topology, TransportTransactionMode supportedTransactionMode, SatelliteTransportAddressCollection satelliteTransportAddresses)
         {
