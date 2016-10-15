@@ -58,7 +58,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var factories = container.Resolve<IManageMessagingFactoryLifeCycle>();
                 await factories.CloseAll().ConfigureAwait(false);
             }
-            catch (ObjectDisposedException)
+            catch
             {
                 logger.Debug("Factories already closed, skipping");
             }
