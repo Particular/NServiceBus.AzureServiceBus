@@ -52,9 +52,16 @@ namespace NServiceBus.Transport.AzureServiceBus
             logger.Info("Stopping notifiers");
             await StopNotifiersForAsync(topology.Entities).ConfigureAwait(false);
 
-            logger.Info("Forcing messaging factories to close");
-            var factories = container.Resolve<IManageMessagingFactoryLifeCycle>();
-            await factories.CloseAll().ConfigureAwait(false);
+            try
+            {
+                logger.Info("Forcing messaging factories to close");
+                var factories = container.Resolve<IManageMessagingFactoryLifeCycle>();
+                await factories.CloseAll().ConfigureAwait(false);
+            }
+            catch (ObjectDisposedException)
+            {
+                logger.Debug("Factories already closed, skipping");
+            }
         }
 
         public void Start(IEnumerable<EntityInfo> subscriptions)

@@ -106,11 +106,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public async Task Stop()
         {
-            logger.Info("Stopping messagepump");
+            logger.Info($"Stopping '{inputQueue}' messagepump");
 
             await topologyOperator.Stop().ConfigureAwait(false);
 
-            logger.Info("Messagepump stopped");
+            logger.Info($"Messagepump '{inputQueue}' stopped");
         }
 
         public void Dispose()

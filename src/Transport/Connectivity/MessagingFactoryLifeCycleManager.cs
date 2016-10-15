@@ -62,10 +62,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var buffer = MessagingFactories[key];
                 foreach (var entry in buffer.GetBuffer())
                 {
-                    //if (entry?.Factory != null)
-                    //{
-                        await entry.Factory.CloseAsync().ConfigureAwait(false);
-                    //}
+                    await entry.Factory.CloseAsync().ConfigureAwait(false);
                 }
             }
         }
