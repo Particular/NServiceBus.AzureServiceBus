@@ -17,7 +17,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         IManageMessageReceiverLifeCycle clientEntities;
         IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
         ReadOnlySettings settings;
-        IList<IMessageReceiver> internalReceivers = new List<IMessageReceiver>();
+        IMessageReceiver[] internalReceivers;
         ReceiveMode receiveMode;
         OnMessageOptions options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
@@ -67,7 +67,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
             var concurrency = maximumConcurrency / (double)numberOfClients;
-            var maxConcurrentCalls = concurrency > 1 ? (int) Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
+            var maxConcurrentCalls = concurrency > 1 ? (int)Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
             if (Math.Abs(maxConcurrentCalls - concurrency) > 0)
             {
                 logger.InfoFormat("The maximum concurrency on this message receiver instance has been adjusted to '{0}', because the total maximum concurrency '{1}' wasn't divisable by the number of clients '{2}'", maxConcurrentCalls, maximumConcurrency, numberOfClients);
@@ -82,6 +82,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             options.ExceptionReceived += OptionsOnExceptionReceived;
 
             batchedCompletionTasks = new Task[numberOfClients];
+            internalReceivers = new IMessageReceiver[numberOfClients];
         }
 
         void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
@@ -138,55 +139,41 @@ namespace NServiceBus.Transport.AzureServiceBus
                         return processTask;
                     };
 
-                    isRunning = true;
-
                     internalReceiver.OnMessage(callback, options);
-                PerformBatchedCompletionTask(internalReceiver, i);
+                    PerformBatchedCompletionTask(internalReceiver, i);
 
-                    internalReceivers.Add(internalReceiver);
+                    internalReceivers[i] = internalReceiver;
+
+                    isRunning = true;
                 }
                 catch (Exception ex)
                 {
                     exceptions.Enqueue(ex);
                 }
-
             });
             if (exceptions.Count > 0) throw new AggregateException(exceptions);
-
         }
 
         void PerformBatchedCompletionTask(IMessageReceiver internalReceiver, int index)
         {
             batchedCompletionTasks[index] = Task.Run(async () =>
             {
-                int count;
                 var buffer = new Guid[5000];
 
-                while (!batchedCompletionCts.Token.IsCancellationRequested)
+                while (!batchedCompletionCts.Token.IsCancellationRequested || !locksTokensToComplete.IsEmpty)
                 {
-                    if (locksTokensToComplete.IsEmpty)
+                    // running concurrently, two tasks could get to this line, but only one will pop items
+                    var count = locksTokensToComplete.TryPopRange(buffer, 0, buffer.Length);
+
+                    if (count == 0)
                     {
                         await Task.Delay(TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
                         continue;
                     }
 
-                    count = locksTokensToComplete.TryPopRange(buffer);
-                    var tocomplete = buffer.Take(count).ToList();
-                    await internalReceiver.SafeCompleteBatchAsync(tocomplete).ConfigureAwait(false);
-                    Array.Clear(buffer, 0, buffer.Length);
+                    var toComplete = buffer.Take(count).ToList();
+                    await internalReceiver.SafeCompleteBatchAsync(toComplete).ConfigureAwait(false);
                 }
-
-                // run last check when task has been cancelled to drain remaining lock tokens
-                if (locksTokensToComplete.IsEmpty)
-                {
-                    return;
-                }
-
-                count = locksTokensToComplete.TryPopRange(buffer);
-                var remainingToComplete = buffer.Take(count).ToList();
-                await internalReceiver.SafeCompleteBatchAsync(remainingToComplete).ConfigureAwait(false);
-                Array.Clear(buffer, 0, buffer.Length);
-
             }, CancellationToken.None);
         }
 
@@ -227,7 +214,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     }
                 }
             }
-            catch (Exception exception) when(ShouldReceiveMessages)
+            catch (Exception exception) when (ShouldReceiveMessages)
             {
                 // and go into recovery mode so that no new messages are added to the transfer queue
                 context.Recovering = true;
@@ -297,7 +284,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        async Task AbandonInternal(BrokeredMessage message, IDictionary<string, object> propertiesToModify=null)
+        async Task AbandonInternal(BrokeredMessage message, IDictionary<string, object> propertiesToModify = null)
         {
             if (receiveMode == ReceiveMode.ReceiveAndDelete) return;
 
@@ -315,7 +302,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             stopping = true;
 
-            logger.Info("Stopping notifier for " + fullPath);
+            logger.Info($"Stopping notifier for '{fullPath}'");
 
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
             var allTasks = pipelineInvocationTasks.Values;
@@ -338,7 +325,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             pipelineInvocationTasks.Clear();
 
-            logger.Info("Notifier for " + fullPath + " stopped");
+            logger.Info($"Notifier for '{fullPath}' stopped");
 
             isRunning = false;
         }
