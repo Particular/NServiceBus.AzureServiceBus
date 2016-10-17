@@ -47,21 +47,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             running = true;
         }
 
-        public async Task Stop()
+        public Task Stop()
         {
             logger.Info("Stopping notifiers");
-            await StopNotifiersForAsync(topology.Entities).ConfigureAwait(false);
-
-            try
-            {
-                logger.Info("Forcing messaging factories to close");
-                var factories = container.Resolve<IManageMessagingFactoryLifeCycle>();
-                await factories.CloseAll().ConfigureAwait(false);
-            }
-            catch
-            {
-                logger.Debug("Factories already closed, skipping");
-            }
+            return StopNotifiersForAsync(topology.Entities);
         }
 
         public void Start(IEnumerable<EntityInfo> subscriptions)

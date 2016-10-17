@@ -17,7 +17,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         IManageMessageReceiverLifeCycle clientEntities;
         IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
         ReadOnlySettings settings;
-        IList<IMessageReceiver> internalReceivers = new List<IMessageReceiver>();
+        IMessageReceiver[] internalReceivers;
         ReceiveMode receiveMode;
         OnMessageOptions options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
@@ -82,6 +82,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             options.ExceptionReceived += OptionsOnExceptionReceived;
 
             batchedCompletionTasks = new Task[numberOfClients];
+            internalReceivers = new IMessageReceiver[numberOfClients];
         }
 
         void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
@@ -137,22 +138,20 @@ namespace NServiceBus.Transport.AzureServiceBus
                         }, TaskContinuationOptions.ExecuteSynchronously);
                         return processTask;
                     };
+                    
+                    internalReceiver.OnMessage(callback, options);
+                    PerformBatchedCompletionTask(internalReceiver, i);
+
+                    internalReceivers[i] = internalReceiver;
 
                     isRunning = true;
-
-                    internalReceiver.OnMessage(callback, options);
-                PerformBatchedCompletionTask(internalReceiver, i);
-
-                    internalReceivers.Add(internalReceiver);
                 }
                 catch (Exception ex)
                 {
                     exceptions.Enqueue(ex);
                 }
-
             });
             if (exceptions.Count > 0) throw new AggregateException(exceptions);
-
         }
 
         void PerformBatchedCompletionTask(IMessageReceiver internalReceiver, int index)
@@ -303,7 +302,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             stopping = true;
 
-            logger.Info("Stopping notifier for " + fullPath);
+            logger.Info($"Stopping notifier for '{fullPath}'");
 
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
             var allTasks = pipelineInvocationTasks.Values;
@@ -326,7 +325,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             pipelineInvocationTasks.Clear();
 
-            logger.Info("Notifier for " + fullPath + " stopped");
+            logger.Info($"Notifier for '{fullPath}' stopped");
 
             isRunning = false;
         }
