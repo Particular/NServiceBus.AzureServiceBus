@@ -17,7 +17,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         IManageMessageReceiverLifeCycle clientEntities;
         IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
         ReadOnlySettings settings;
-        IList<IMessageReceiver> internalReceivers = new List<IMessageReceiver>();
+        IMessageReceiver[] internalReceivers;
         ReceiveMode receiveMode;
         OnMessageOptions options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
@@ -82,6 +82,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             options.ExceptionReceived += OptionsOnExceptionReceived;
 
             batchedCompletionTasks = new Task[numberOfClients];
+            internalReceivers = new IMessageReceiver[numberOfClients];
         }
 
         void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
@@ -141,9 +142,9 @@ namespace NServiceBus.Transport.AzureServiceBus
                     isRunning = true;
 
                     internalReceiver.OnMessage(callback, options);
-                PerformBatchedCompletionTask(internalReceiver, i);
+                    PerformBatchedCompletionTask(internalReceiver, i);
 
-                    internalReceivers.Add(internalReceiver);
+                    internalReceivers[i] = internalReceiver;
                 }
                 catch (Exception ex)
                 {
