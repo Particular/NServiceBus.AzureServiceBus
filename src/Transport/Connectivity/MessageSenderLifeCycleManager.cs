@@ -20,15 +20,13 @@ namespace NServiceBus.Transport.AzureServiceBus
             var buffer = MessageSenders.GetOrAdd(entitypath + viaEntityPath + namespaceName, s =>
             {
                 var b = new CircularBuffer<EntityClientEntry>(numberOfSendersPerEntity);
-                for (var i = 0; i < numberOfSendersPerEntity; i++)
+                for(var i = 0; i < numberOfSendersPerEntity; i++)
                 {
                     var e = new EntityClientEntry();
-                    lock (e.Mutex)
-                    {
-                        e.ClientEntity = senderFactory.Create(entitypath, viaEntityPath, namespaceName).Result;
-                    }
+                    e.ClientEntity = senderFactory.Create(entitypath, viaEntityPath, namespaceName).GetAwaiter().GetResult();
                     b.Put(e);
                 }
+
                 return b;
             });
 
@@ -40,7 +38,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     if (entry.ClientEntity.IsClosed)
                     {
-                        entry.ClientEntity = senderFactory.Create(entitypath, viaEntityPath, namespaceName).Result;
+                        entry.ClientEntity = senderFactory.Create(entitypath, viaEntityPath, namespaceName).GetAwaiter().GetResult();
                     }
                 }
             }

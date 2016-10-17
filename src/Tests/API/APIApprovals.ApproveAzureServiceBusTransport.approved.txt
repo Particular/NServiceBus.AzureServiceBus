@@ -215,7 +215,7 @@
         public DiscriminatorBasedIndividualization(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Individualize(string endpointName) { }
     }
-    public class EndpointOrientedTopology : NServiceBus.Transport.AzureServiceBus.ITopology
+    public class EndpointOrientedTopology : NServiceBus.Transport.AzureServiceBus.IStoppableTopology, NServiceBus.Transport.AzureServiceBus.ITopology
     {
         public EndpointOrientedTopology() { }
         public bool HasNativePubSubSupport { get; }
@@ -228,6 +228,7 @@
         public System.Func<NServiceBus.Transport.IManageSubscriptions> GetSubscriptionManagerFactory() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
         public System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks() { }
+        public System.Threading.Tasks.Task Stop() { }
     }
     public enum EntityType
     {
@@ -248,7 +249,7 @@
         public FlatComposition() { }
         public string GetEntityPath(string entityname, NServiceBus.EntityType entityType) { }
     }
-    public class ForwardingTopology : NServiceBus.Transport.AzureServiceBus.ITopology
+    public class ForwardingTopology : NServiceBus.Transport.AzureServiceBus.IStoppableTopology, NServiceBus.Transport.AzureServiceBus.ITopology
     {
         public ForwardingTopology() { }
         public bool HasNativePubSubSupport { get; }
@@ -261,6 +262,7 @@
         public System.Func<NServiceBus.Transport.IManageSubscriptions> GetSubscriptionManagerFactory() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
         public async System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks() { }
+        public System.Threading.Tasks.Task Stop() { }
     }
     public class HierarchyComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
     {

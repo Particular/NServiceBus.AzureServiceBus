@@ -3,7 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
+    using System.Threading.Tasks;
     using DelayedDelivery;
+    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using Performance.TimeToBeReceived;
     using Routing;
@@ -19,6 +21,17 @@
             this.topology = topology;
             TransactionMode = supportedTransactionMode;
             this.satelliteTransportAddresses = satelliteTransportAddresses;
+        }
+
+        public override Task Stop()
+        {
+            var stoppableTopology = topology as IStoppableTopology;
+            if (stoppableTopology != null)
+            {
+                return stoppableTopology.Stop();
+            }
+
+            return TaskEx.Completed;
         }
 
         public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
