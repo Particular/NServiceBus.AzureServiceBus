@@ -138,22 +138,20 @@ namespace NServiceBus.Transport.AzureServiceBus
                         }, TaskContinuationOptions.ExecuteSynchronously);
                         return processTask;
                     };
-
-                    isRunning = true;
-
+                    
                     internalReceiver.OnMessage(callback, options);
                     PerformBatchedCompletionTask(internalReceiver, i);
 
                     internalReceivers[i] = internalReceiver;
+
+                    isRunning = true;
                 }
                 catch (Exception ex)
                 {
                     exceptions.Enqueue(ex);
                 }
-
             });
             if (exceptions.Count > 0) throw new AggregateException(exceptions);
-
         }
 
         void PerformBatchedCompletionTask(IMessageReceiver internalReceiver, int index)
