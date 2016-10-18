@@ -9,6 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using NServiceBus.AzureServiceBus.Receiving;
     using Settings;
     using Transport;
 
@@ -27,20 +28,16 @@ namespace NServiceBus.Transport.AzureServiceBus
         EntityInfo entity;
         volatile bool stopping;
         volatile bool isRunning;
-        ConcurrentStack<Guid> locksTokensToComplete;
-        CancellationTokenSource batchedCompletionCts;
-        Task[] batchedCompletionTasks;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
         Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
         int numberOfClients;
+        MultiProducerConcurrentDispatcher<Guid> dispatcher;
 
         public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.settings = settings;
-            locksTokensToComplete = new ConcurrentStack<Guid>();
-            batchedCompletionCts = new CancellationTokenSource();
         }
 
         public bool IsRunning => isRunning;
@@ -81,8 +78,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             options.ExceptionReceived += OptionsOnExceptionReceived;
 
-            batchedCompletionTasks = new Task[numberOfClients];
             internalReceivers = new IMessageReceiver[numberOfClients];
+            dispatcher = new MultiProducerConcurrentDispatcher<Guid>(5000, TimeSpan.FromMilliseconds(500), 2, numberOfClients);
         }
 
         void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
@@ -114,6 +111,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             stopping = false;
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
+            dispatcher.Start(CompletionCallback, internalReceivers);
 
             var exceptions = new ConcurrentQueue<Exception>();
             Parallel.For(0, numberOfClients, i =>
@@ -129,7 +127,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                     Func<BrokeredMessage, Task> callback = message =>
                     {
-                        var processTask = ProcessMessageAsync(internalReceiver, message);
+                        var processTask = ProcessMessageAsync(internalReceiver, message, i);
                         pipelineInvocationTasks.TryAdd(processTask, processTask);
                         processTask.ContinueWith(t =>
                         {
@@ -140,8 +138,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                     };
 
                     internalReceiver.OnMessage(callback, options);
-                    PerformBatchedCompletionTask(internalReceiver, i);
-
                     internalReceivers[i] = internalReceiver;
 
                     isRunning = true;
@@ -154,30 +150,14 @@ namespace NServiceBus.Transport.AzureServiceBus
             if (exceptions.Count > 0) throw new AggregateException(exceptions);
         }
 
-        void PerformBatchedCompletionTask(IMessageReceiver internalReceiver, int index)
+        static Task CompletionCallback(List<Guid> lockTokens, int slotNumber, object state, CancellationToken token)
         {
-            batchedCompletionTasks[index] = Task.Run(async () =>
-            {
-                var buffer = new Guid[5000];
-
-                while (!batchedCompletionCts.Token.IsCancellationRequested || !locksTokensToComplete.IsEmpty)
-                {
-                    // running concurrently, two tasks could get to this line, but only one will pop items
-                    var count = locksTokensToComplete.TryPopRange(buffer, 0, buffer.Length);
-
-                    if (count == 0)
-                    {
-                        await Task.Delay(TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
-                        continue;
-                    }
-
-                    var toComplete = buffer.Take(count).ToList();
-                    await internalReceiver.SafeCompleteBatchAsync(toComplete).ConfigureAwait(false);
-                }
-            }, CancellationToken.None);
+            var receivers = (IMessageReceiver[]) state;
+            var receiver = receivers[slotNumber];
+            return receiver.SafeCompleteBatchAsync(lockTokens);
         }
 
-        async Task ProcessMessageAsync(IMessageReceiver internalReceiver, BrokeredMessage message)
+        async Task ProcessMessageAsync(IMessageReceiver internalReceiver, BrokeredMessage message, int slotNumber)
         {
             if (!ShouldReceiveMessages)
             {
@@ -209,7 +189,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     {
                         await incomingCallback(incomingMessage, context).ConfigureAwait(false);
 
-                        await HandleCompletion(message, context, completionCanBeBatched).ConfigureAwait(false);
+                        await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
                         scope?.Complete();
                     }
                 }
@@ -233,7 +213,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     }
                     else
                     {
-                        await HandleCompletion(message, context, completionCanBeBatched).ConfigureAwait(false);
+                        await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
                     }
                 }
                 catch (Exception onErrorException)
@@ -243,7 +223,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        async Task HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContext context, bool canbeBatched)
+        async Task HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContext context, bool canbeBatched, int slotNumber)
         {
             if (context.CancellationToken.IsCancellationRequested)
             {
@@ -255,7 +235,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     if (canbeBatched)
                     {
-                        locksTokensToComplete.Push(message.LockToken);
+                        dispatcher.Push(message.LockToken, slotNumber);
                     }
                     else
                     {
@@ -313,8 +293,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 logger.Error("The receiver failed to stop with in the time allowed (30s)");
             }
 
-            batchedCompletionCts.Cancel();
-            await Task.WhenAll(batchedCompletionTasks).ConfigureAwait(false);
+            await dispatcher.Complete().ConfigureAwait(false);
 
             var closeTasks = new List<Task>();
             foreach (var internalReceiver in internalReceivers)
