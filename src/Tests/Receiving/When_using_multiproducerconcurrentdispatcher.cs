@@ -6,7 +6,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AzureServiceBus.Receiving;
+    using AzureServiceBus;
     using NUnit.Framework;
 
     [TestFixture]

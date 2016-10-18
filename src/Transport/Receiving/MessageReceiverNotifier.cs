@@ -9,7 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Transactions;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
-    using NServiceBus.AzureServiceBus.Receiving;
+    using NServiceBus.AzureServiceBus;
     using Settings;
     using Transport;
 

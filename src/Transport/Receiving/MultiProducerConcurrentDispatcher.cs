@@ -1,4 +1,4 @@
-﻿namespace NServiceBus.AzureServiceBus.Receiving
+﻿namespace NServiceBus.AzureServiceBus
 {
     using System;
     using System.Collections.Concurrent;
