@@ -9,7 +9,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using AzureServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Tests;
-    using Receiving;
     using TestUtils;
     using Transport.AzureServiceBus;
     using DeliveryConstraints;
