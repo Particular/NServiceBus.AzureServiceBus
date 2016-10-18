@@ -1,3 +1,5 @@
+[![NuGet](https://img.shields.io/nuget/v/NServiceBus.Azure.Transports.WindowsAzureServiceBus.svg)](https://www.nuget.org/packages/NServiceBus.Azure.Transports.WindowsAzureServiceBus) 
+
 # Azure ServiceBus Transport for NServiceBus
 
 The Azure ServiceBus transport for NServiceBus enables the use of the Azure Service Bus Brokered Messaging service as the underlying transport used by NServiceBus. 
