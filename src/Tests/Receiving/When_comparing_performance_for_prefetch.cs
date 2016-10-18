@@ -73,8 +73,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 (message, context) =>
                 {
-                    Interlocked.Increment(ref receivedMessages);
-                    if (receivedMessages == expected)
+                    var numberOfMessages = Interlocked.Increment(ref receivedMessages);
+                    if (numberOfMessages == expected)
                     {
                         completed.Set();
                     }
