@@ -79,7 +79,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             options.ExceptionReceived += OptionsOnExceptionReceived;
 
             internalReceivers = new IMessageReceiver[numberOfClients];
-            dispatcher = new MultiProducerConcurrentDispatcher<Guid>(5000, TimeSpan.FromMilliseconds(500), 2, numberOfClients);
+            dispatcher = new MultiProducerConcurrentDispatcher<Guid>(1000, TimeSpan.FromMilliseconds(500), 6, numberOfClients);
         }
 
         void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
