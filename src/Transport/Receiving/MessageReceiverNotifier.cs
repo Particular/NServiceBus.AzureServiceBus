@@ -125,19 +125,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
                     }
 
-                    Func<BrokeredMessage, Task> callback = message =>
-                    {
-                        var processTask = ProcessMessageAsync(internalReceiver, message, i);
-                        pipelineInvocationTasks.TryAdd(processTask, processTask);
-                        processTask.ContinueWith(t =>
-                        {
-                            Task toBeRemoved;
-                            pipelineInvocationTasks.TryRemove(t, out toBeRemoved);
-                        }, TaskContinuationOptions.ExecuteSynchronously);
-                        return processTask;
-                    };
-
-                    internalReceiver.OnMessage(callback, options);
+                    internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, i, pipelineInvocationTasks), options);
                     internalReceivers[i] = internalReceiver;
 
                     isRunning = true;
@@ -157,7 +145,20 @@ namespace NServiceBus.Transport.AzureServiceBus
             return receiver.SafeCompleteBatchAsync(lockTokens);
         }
 
-        async Task ProcessMessageAsync(IMessageReceiver internalReceiver, BrokeredMessage message, int slotNumber)
+        Task ReceiveMessage(IMessageReceiver internalReceiver, BrokeredMessage message, int slotNumber, ConcurrentDictionary<Task, Task> pipelineInvocations)
+        {
+            var processTask = ProcessMessage(internalReceiver, message, slotNumber);
+            pipelineInvocations.TryAdd(processTask, processTask);
+            processTask.ContinueWith((t, state) =>
+            {
+                var invocations = (ConcurrentDictionary<Task, Task>) state;
+                Task toBeRemoved;
+                invocations.TryRemove(t, out toBeRemoved);
+            }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously);
+            return processTask;
+        }
+
+        async Task ProcessMessage(IMessageReceiver internalReceiver, BrokeredMessage message, int slotNumber)
         {
             if (!ShouldReceiveMessages)
             {
@@ -209,7 +210,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
                     if (result == ErrorHandleResult.RetryRequired)
                     {
-                        await AbandonAsync(message, exception).ConfigureAwait(false);
+                        await Abandon(message, exception).ConfigureAwait(false);
                     }
                     else
                     {
@@ -218,7 +219,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
                 catch (Exception onErrorException)
                 {
-                    await AbandonAsync(message, onErrorException).ConfigureAwait(false);
+                    await Abandon(message, onErrorException).ConfigureAwait(false);
                 }
             }
         }
@@ -227,7 +228,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (context.CancellationToken.IsCancellationRequested)
             {
-                await AbandonAsyncOnCancellation(message).ConfigureAwait(false);
+                await AbandonOnCancellation(message).ConfigureAwait(false);
             }
             else
             {
@@ -245,14 +246,14 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        Task AbandonAsyncOnCancellation(BrokeredMessage message)
+        Task AbandonOnCancellation(BrokeredMessage message)
         {
             logger.Info("Received message is cancelled by the pipeline, abandoning it so we can process it later.");
 
             return AbandonInternal(message);
         }
 
-        async Task AbandonAsync(BrokeredMessage message, Exception exception)
+        async Task Abandon(BrokeredMessage message, Exception exception)
         {
             logger.Info("Exceptions occurred OnComplete", exception);
 
