@@ -31,7 +31,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
         Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
         int numberOfClients;
-        MultiProducerConcurrentDispatcher<Guid> dispatcher;
+        MultiProducerConcurrentCompletion<Guid> completion;
 
         public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
@@ -79,7 +79,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             options.ExceptionReceived += OptionsOnExceptionReceived;
 
             internalReceivers = new IMessageReceiver[numberOfClients];
-            dispatcher = new MultiProducerConcurrentDispatcher<Guid>(1000, TimeSpan.FromMilliseconds(500), 6, numberOfClients);
+            completion = new MultiProducerConcurrentCompletion<Guid>(1000, TimeSpan.FromMilliseconds(500), 6, numberOfClients);
         }
 
         void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
@@ -111,7 +111,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             stopping = false;
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
-            dispatcher.Start(CompletionCallback, internalReceivers);
+            completion.Start(CompletionCallback, internalReceivers);
 
             var exceptions = new ConcurrentQueue<Exception>();
             Parallel.For(0, numberOfClients, i =>
@@ -236,7 +236,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     if (canbeBatched)
                     {
-                        dispatcher.Push(message.LockToken, slotNumber);
+                        completion.Push(message.LockToken, slotNumber);
                     }
                     else
                     {
@@ -294,7 +294,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 logger.Error("The receiver failed to stop with in the time allowed (30s)");
             }
 
-            await dispatcher.Complete().ConfigureAwait(false);
+            await completion.Complete().ConfigureAwait(false);
 
             var closeTasks = new List<Task>();
             foreach (var internalReceiver in internalReceivers)

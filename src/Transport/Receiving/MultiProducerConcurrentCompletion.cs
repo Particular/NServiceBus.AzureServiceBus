@@ -16,9 +16,9 @@
     /// and available slots.
     /// </summary>
     /// <typeparam name="TItem">The item that is managed by the dispatcher.</typeparam>
-    class MultiProducerConcurrentDispatcher<TItem>
+    class MultiProducerConcurrentCompletion<TItem>
     {
-        public MultiProducerConcurrentDispatcher(int batchSize, TimeSpan pushInterval, int maxConcurrency, int numberOfSlots)
+        public MultiProducerConcurrentCompletion(int batchSize, TimeSpan pushInterval, int maxConcurrency, int numberOfSlots)
         {
             this.maxConcurrency = maxConcurrency;
             this.pushInterval = pushInterval;

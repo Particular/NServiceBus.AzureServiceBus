@@ -10,7 +10,7 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class When_using_multiproducerconcurrentdispatcher
+    public class When_using_multiproducerconcurrentcompletion
     {
         [Test]
         public async Task Pushing_for_slots_before_start_works_when_batch_size_is_reached()
@@ -26,11 +26,11 @@
             var countDownEvent = new CountdownEvent(16);
 
             // choose insanely high push interval
-            var dispatcher = new MultiProducerConcurrentDispatcher<int>(batchSize: 100, pushInterval: TimeSpan.FromDays(1), maxConcurrency: 4, numberOfSlots: 4);
+            var completion = new MultiProducerConcurrentCompletion<int>(batchSize: 100, pushInterval: TimeSpan.FromDays(1), maxConcurrency: 4, numberOfSlots: 4);
 
-            var numberOfItems = await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(dispatcher);
+            var numberOfItems = await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(completion);
 
-            dispatcher.Start((items, slot, state, token) =>
+            completion.Start((items, slot, state, token) =>
             {
                 receivedItems[slot].Enqueue(new List<int>(items)); // take a copy
                 if (!countDownEvent.IsSet)
@@ -44,7 +44,7 @@
 
             var snapShotOfElementsBeforeComplete = Flatten(receivedItems).Count();
 
-            await dispatcher.Complete();
+            await completion.Complete();
 
             Assert.AreEqual(1600, snapShotOfElementsBeforeComplete);
             Assert.AreEqual(TriangularNumber(numberOfItems), Flatten(receivedItems).Sum(i => i));
@@ -64,9 +64,9 @@
             var countDownEvent = new CountdownEvent(16);
 
             // choose insanely high push interval
-            var dispatcher = new MultiProducerConcurrentDispatcher<int>(batchSize: 100, pushInterval: TimeSpan.FromDays(1), maxConcurrency: 4, numberOfSlots: 4);
+            var completion = new MultiProducerConcurrentCompletion<int>(batchSize: 100, pushInterval: TimeSpan.FromDays(1), maxConcurrency: 4, numberOfSlots: 4);
 
-            dispatcher.Start((items, slot, state, token) =>
+            completion.Start((items, slot, state, token) =>
             {
                 receivedItems[slot].Enqueue(new List<int>(items)); // take a copy
                 if (!countDownEvent.IsSet)
@@ -76,12 +76,12 @@
                 return Task.FromResult(0);
             });
 
-            var numberOfItems = await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(dispatcher);
+            var numberOfItems = await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(completion);
 
             // we wait for 16 counts and then complete midway
             await Task.Run(() => countDownEvent.Wait(TimeSpan.FromSeconds(5)));
 
-            await dispatcher.Complete();
+            await completion.Complete();
 
             Assert.AreEqual(TriangularNumber(numberOfItems), Flatten(receivedItems).Sum(i => i));
         }
@@ -100,11 +100,11 @@
             var countDownEvent = new CountdownEvent(4);
 
             // choose insanely high batchSize
-            var dispatcher = new MultiProducerConcurrentDispatcher<int>(batchSize: 10000, pushInterval: TimeSpan.FromMilliseconds(1), maxConcurrency: 4, numberOfSlots: 4);
+            var completion = new MultiProducerConcurrentCompletion<int>(batchSize: 10000, pushInterval: TimeSpan.FromMilliseconds(1), maxConcurrency: 4, numberOfSlots: 4);
 
-            var numberOfItems = await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(dispatcher);
+            var numberOfItems = await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(completion);
 
-            dispatcher.Start((items, slot, state, token) =>
+            completion.Start((items, slot, state, token) =>
             {
                 receivedItems[slot].Enqueue(new List<int>(items)); // take a copy
                 if (!countDownEvent.IsSet)
@@ -118,7 +118,7 @@
 
             var sumOfAllElementsSeenSoFar = Flatten(receivedItems).Sum(i => i);
 
-            await dispatcher.Complete();
+            await completion.Complete();
 
             Assert.AreEqual(TriangularNumber(numberOfItems), sumOfAllElementsSeenSoFar);
             Assert.AreEqual(TriangularNumber(numberOfItems), Flatten(receivedItems).Sum(i => i), "Dispatcher complete brought more items than expected");
@@ -138,9 +138,9 @@
             var countDownEvent = new CountdownEvent(4);
 
             // choose insanely high batchSize to force push interval picking up all the content
-            var dispatcher = new MultiProducerConcurrentDispatcher<int>(batchSize: 10000, pushInterval: TimeSpan.FromMilliseconds(1), maxConcurrency: 4, numberOfSlots: 4);
+            var completion = new MultiProducerConcurrentCompletion<int>(batchSize: 10000, pushInterval: TimeSpan.FromMilliseconds(1), maxConcurrency: 4, numberOfSlots: 4);
 
-            dispatcher.Start((items, slot, state, token) =>
+            completion.Start((items, slot, state, token) =>
             {
                 receivedItems[slot].Enqueue(new List<int>(items)); // take a copy
                 if (!countDownEvent.IsSet)
@@ -150,13 +150,13 @@
                 return Task.FromResult(0);
             });
 
-            var numberOfItems = await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(dispatcher);
+            var numberOfItems = await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(completion);
 
             await Task.Run(() => countDownEvent.Wait(TimeSpan.FromSeconds(5)));
 
             var sumOfAllElementsSeenSoFar = Flatten(receivedItems).Sum(i => i);
 
-            await dispatcher.Complete();
+            await completion.Complete();
 
             Assert.AreEqual(TriangularNumber(numberOfItems), sumOfAllElementsSeenSoFar);
             Assert.AreEqual(TriangularNumber(numberOfItems), Flatten(receivedItems).Sum(i => i), "Dispatcher complete brought more items than expected");
@@ -174,44 +174,44 @@
             };
 
             // choose insanely high batchSize to force push interval picking up all the content
-            var dispatcher = new MultiProducerConcurrentDispatcher<int>(batchSize: 100, pushInterval: TimeSpan.FromMilliseconds(1), maxConcurrency: 4, numberOfSlots: 4);
+            var completion = new MultiProducerConcurrentCompletion<int>(batchSize: 100, pushInterval: TimeSpan.FromMilliseconds(1), maxConcurrency: 4, numberOfSlots: 4);
 
-            await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(dispatcher);
+            await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(completion);
 
-            await dispatcher.Complete(drain: false);
+            await completion.Complete(drain: false);
 
             var countDownEvent = new CountdownEvent(1);
-            dispatcher.Start((items, slot, state, token) =>
+            completion.Start((items, slot, state, token) =>
             {
                 pushedItems[slot].Enqueue(new List<int>(items)); // take a copy
                 countDownEvent.Signal();
                 return Task.FromResult(0);
             });
 
-            dispatcher.Push(1, slotNumber: 1);
+            completion.Push(1, slotNumber: 1);
 
             await Task.Run(() => countDownEvent.Wait(TimeSpan.FromSeconds(5)));
 
-            await dispatcher.Complete();
+            await completion.Complete();
 
             Assert.AreEqual(1, Flatten(pushedItems).Sum(i => i));
         }
 
-        static async Task<int> PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(MultiProducerConcurrentDispatcher<int> dispatcher)
+        static async Task<int> PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(MultiProducerConcurrentCompletion<int> completion)
         {
             var t1 = Task.Run(() => Parallel.For(1, 500, i =>
             {
-                dispatcher.Push(slotNumber: 0, item: i);
+                completion.Push(slotNumber: 0, item: i);
             }));
 
             var t2 = Task.Run(() => Parallel.For(500, 1000, i =>
             {
-                dispatcher.Push(slotNumber: 1, item: i);
+                completion.Push(slotNumber: 1, item: i);
             }));
 
             var t3 = Task.Run(() => Parallel.For(1000, 1500, i =>
             {
-                dispatcher.Push(slotNumber: 2, item: i);
+                completion.Push(slotNumber: 2, item: i);
             }));
 
             await Task.WhenAll(t1, t2, t3);
@@ -219,7 +219,7 @@
             var numberOfItems = 2000;
             for (var i = 1500; i < numberOfItems + 1; i++)
             {
-                dispatcher.Push(slotNumber: 3, item: i);
+                completion.Push(slotNumber: 3, item: i);
             }
             return numberOfItems;
         }
