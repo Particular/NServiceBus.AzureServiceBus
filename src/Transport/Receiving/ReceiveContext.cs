@@ -18,6 +18,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public CancellationToken CancellationToken { get; internal set; }
 
 
+        [ObsoleteEx(Message = "Not required.", RemoveInVersion = "9.0", TreatAsErrorFromVersion = "8.0")]
         public CommittableTransaction Transaction { get; set; }
     }
 }
