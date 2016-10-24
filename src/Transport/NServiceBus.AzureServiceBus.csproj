@@ -113,6 +113,7 @@
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
     <Compile Include="obsoletes.cs" />
     <Compile Include="Receiving\BrokeredMessageReceiveContext.cs" />
+    <Compile Include="Receiving\MultiProducerConcurrentCompletion.cs" />
     <Compile Include="Receiving\TransactionScopeSuppressBehavior.cs" />
     <Compile Include="Receiving\TransactionScopeSuppressFeature.cs" />
     <Compile Include="Resharper.Annotations.g.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Topology\IStoppableTopology.cs" />
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Topology\MetaModel\SatelliteTransportAddressCollection.cs" />
+    <Compile Include="Utils\AsyncAutoResetEvent.cs" />
     <Compile Include="Utils\MessageReceiverExtensions.cs" />
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />
