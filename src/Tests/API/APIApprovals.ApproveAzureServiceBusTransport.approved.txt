@@ -534,6 +534,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         System.Threading.Tasks.Task Stop();
         System.Threading.Tasks.Task Stop(System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.EntityInfo> subscriptions);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IRegisterTransportParts
     {
         void Register<T>();
@@ -543,6 +545,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         void RegisterSingleton<T>();
         void RegisterSingleton(System.Type t);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IResolveTransportParts
     {
         object Resolve(System.Type typeToBuild);
@@ -584,6 +588,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         NServiceBus.Transport.AzureServiceBus.TopologySection DetermineResourcesToUnsubscribeFrom(System.Type eventtype);
         NServiceBus.Transport.AzureServiceBus.TopologySection DetermineSendDestination(string destination);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ITransportPartsContainer : NServiceBus.Transport.AzureServiceBus.IRegisterTransportParts, NServiceBus.Transport.AzureServiceBus.IResolveTransportParts { }
     public class MessageTooLargeException : System.Exception
     {
