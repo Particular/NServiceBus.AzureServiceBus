@@ -650,6 +650,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         protected ReceiveContext() { }
         public System.Threading.CancellationToken CancellationToken { get; }
+        [System.ObsoleteAttribute("Not required. Will be treated as an error from version 8.0.0. Will be removed in " +
+            "version 9.0.0.", false)]
         public System.Transactions.CommittableTransaction Transaction { get; set; }
     }
     public class RoutingOptions
