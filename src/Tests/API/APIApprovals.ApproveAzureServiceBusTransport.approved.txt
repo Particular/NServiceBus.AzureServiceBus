@@ -558,6 +558,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType);
     }
+    public interface IStoppableTopology
+    {
+        System.Threading.Tasks.Task Stop();
+    }
     public interface ITopology
     {
         bool HasNativePubSubSupport { get; }
