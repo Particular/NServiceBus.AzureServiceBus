@@ -390,6 +390,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         bool IsClosed { get; }
         Microsoft.ServiceBus.RetryPolicy RetryPolicy { get; set; }
     }
+    [System.ObsoleteAttribute("Internal unutilized contract that shouldn\'t be exposed. Will be treated as an err" +
+        "or from version 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IClientSideSubscriptionFilter
     {
         bool Execute(object message);
@@ -691,6 +693,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         public SubscriptionInfo() { }
         public NServiceBus.Transport.AzureServiceBus.IBrokerSideSubscriptionFilter BrokerSideFilter { get; set; }
+        [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+            "sion 8.0.0. Will be removed in version 9.0.0.", false)]
         public NServiceBus.Transport.AzureServiceBus.IClientSideSubscriptionFilter ClientSideFilter { get; set; }
         public NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata Metadata { get; set; }
     }
