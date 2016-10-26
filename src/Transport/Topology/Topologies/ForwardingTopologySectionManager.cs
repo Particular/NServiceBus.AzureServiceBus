@@ -113,7 +113,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         IEnumerable<EntityInfo> SelectSingleRandomTopicFromBundle(List<EntityInfo> entityInfos)
         {
-            var index = randomGenerator.Next(1, entityInfos.Count);
+            var index = randomGenerator.Next(0, entityInfos.Count);
             var selected = entityInfos[index];
 
             return entityInfos.Where(i => i.Path == selected.Path);
