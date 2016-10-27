@@ -8,12 +8,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessagingFactoryCreator : ICreateMessagingFactories
     {
-        IManageNamespaceManagerLifeCycle namespaceManagers;
-        Func<string, MessagingFactorySettings> settingsFactory;
-        RetryPolicy retryPolicy;
-        TransportType transportType;
-        TimeSpan batchFlushInterval;
-
         public MessagingFactoryCreator(IManageNamespaceManagerLifeCycle namespaceManagers, ReadOnlySettings settings)
         {
             this.namespaceManagers = namespaceManagers;
@@ -79,5 +73,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             return new MessagingFactoryAdapter(inner);
         }
+
+        IManageNamespaceManagerLifeCycle namespaceManagers;
+        Func<string, MessagingFactorySettings> settingsFactory;
+        RetryPolicy retryPolicy;
+        TransportType transportType;
+        TimeSpan batchFlushInterval;
     }
 }
