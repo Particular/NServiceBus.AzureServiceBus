@@ -8,10 +8,10 @@
 
     class PublishersConfiguration
     {
-        IConventions conventions;
+        Conventions conventions;
         Dictionary<Type, List<string>> publishers;
 
-        public PublishersConfiguration(IConventions conventions, ReadOnlySettings settings)
+        public PublishersConfiguration(Conventions conventions, ReadOnlySettings settings)
         {
             this.conventions = conventions;
             publishers = new Dictionary<Type, List<string>>();
