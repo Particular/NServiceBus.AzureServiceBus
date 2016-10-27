@@ -28,8 +28,13 @@ namespace NServiceBus.Transport.AzureServiceBus
         public async Task Unsubscribe(Type eventType, ContextBag context)
         {
             var section = topologySectionManager.DetermineResourcesToUnsubscribeFrom(eventType);
-            await topologyCreator.TearDownSubscription(section).ConfigureAwait(false);
             await topologyOperator.Stop(section.Entities).ConfigureAwait(false);
+
+            var topologyCreatorThatCanDeleteSubscriptions = (topologyCreator as ICreateTopologyAbleToDeleteSubscriptions);
+            if (topologyCreatorThatCanDeleteSubscriptions != null)
+            {
+                await topologyCreatorThatCanDeleteSubscriptions.TearDownSubscription(section).ConfigureAwait(false);
+            }
         }
     }
 }

@@ -438,7 +438,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface ICreateTopology
     {
         System.Threading.Tasks.Task Create(NServiceBus.Transport.AzureServiceBus.TopologySection topology);
-        System.Threading.Tasks.Task TearDownSubscription(NServiceBus.Transport.AzureServiceBus.TopologySection topologySection);
     }
     public interface IHandleOversizedBrokeredMessages
     {

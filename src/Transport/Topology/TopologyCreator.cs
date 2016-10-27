@@ -3,7 +3,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
 
-    class TopologyCreator : ICreateTopology
+    class TopologyCreator : ICreateTopology, ICreateTopologyAbleToDeleteSubscriptions
     {
         ITransportPartsContainer container;
         IManageNamespaceManagerLifeCycle namespaces;

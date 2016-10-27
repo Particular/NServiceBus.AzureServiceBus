@@ -10,6 +10,11 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface ICreateTopology
     {
         Task Create(TopologySection topology);
+    }
+
+    // Move into internalized ICreateTopology in v8
+    interface ICreateTopologyAbleToDeleteSubscriptions
+    {
         Task TearDownSubscription(TopologySection topologySection);
     }
 }
