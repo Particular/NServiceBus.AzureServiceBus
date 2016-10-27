@@ -125,8 +125,6 @@
     <Compile Include="Sending\TransactionContainsTooManyMessages.cs" />
     <Compile Include="Sending\MessageTooLargeException.cs" />
     <Compile Include="Sending\Time.cs" />
-    <Compile Include="Topology\ConventionsAdapter.cs" />
-    <Compile Include="Topology\IConventions.cs" />
     <Compile Include="Topology\IStoppableTopology.cs" />
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Topology\MetaModel\SatelliteTransportAddressCollection.cs" />
@@ -140,7 +138,6 @@
     <Compile Include="Topology\MetaModel\DefaultConnectionStringToNamespaceAliasMapper.cs" />
     <Compile Include="Topology\MetaModel\EntityAddress.cs" />
     <Compile Include="Topology\MetaModel\ForwardingTopologySubscriptionMetadata.cs" />
-    <Compile Include="Topology\MetaModel\ICanMapConnectionStringToNamespaceAlias.cs" />
     <Compile Include="Topology\MetaModel\NamespaceInfo.cs" />
     <Compile Include="Topology\MetaModel\NamespaceConfigurations.cs" />
     <Compile Include="Topology\MetaModel\SubscriptionMetadata.cs" />

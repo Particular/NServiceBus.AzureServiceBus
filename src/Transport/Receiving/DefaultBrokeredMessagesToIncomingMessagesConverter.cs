@@ -12,10 +12,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         ILog logger = LogManager.GetLogger<DefaultBrokeredMessagesToIncomingMessagesConverter>();
         ReadOnlySettings settings;
-        ICanMapConnectionStringToNamespaceAlias mapper;
+        DefaultConnectionStringToNamespaceAliasMapper mapper;
         static byte[] EmptyBody = new byte[0];
 
-        public DefaultBrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings, ICanMapConnectionStringToNamespaceAlias mapper)
+        public DefaultBrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings, DefaultConnectionStringToNamespaceAliasMapper mapper)
         {
             this.settings = settings;
             this.mapper = mapper;
