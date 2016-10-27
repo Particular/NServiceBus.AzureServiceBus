@@ -98,6 +98,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             return manager.CreateSubscriptionAsync(subscriptionDescription, ruleDescription);
         }
 
+        public Task DeleteSubscription(SubscriptionDescription subscriptionDescription)
+        {
+            return manager.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
+        }
+
         public Task<TopicDescription> UpdateTopic(TopicDescription topicDescription)
         {
             return manager.UpdateTopicAsync(topicDescription);

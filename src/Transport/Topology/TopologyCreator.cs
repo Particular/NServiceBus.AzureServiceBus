@@ -51,5 +51,27 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
             }
         }
+
+        public async Task TearDownSubscription(TopologySection topologySection)
+        {
+            var subscriptions = topologySection.Entities.Where(e => e.Type == EntityType.Subscription).ToList();
+            if (subscriptions.Any())
+            {
+                var subscriptionCreator = (ICreateAzureServiceBusSubscriptions)container.Resolve(typeof(ICreateAzureServiceBusSubscriptions));
+                foreach (var subscription in subscriptions)
+                {
+                    var topic = subscription.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
+                    var forwardTo = subscription.RelationShips.FirstOrDefault(r => r.Type == EntityRelationShipType.Forward);
+                    var sqlFilter = (subscription as SubscriptionInfo)?.BrokerSideFilter.Serialize();
+                    var metadata = (subscription as SubscriptionInfo)?.Metadata ?? new SubscriptionMetadata();
+                    await subscriptionCreator.DeleteSubscription(topicPath: topic.Target.Path, 
+                                                     subscriptionName: subscription.Path, 
+                                                     metadata: metadata, 
+                                                     sqlFilter: sqlFilter, 
+                                                     namespaceManager: namespaces.Get(subscription.Namespace.Alias), 
+                                                     forwardTo: forwardTo?.Target.Path).ConfigureAwait(false);
+                }
+            }
+        }
     }
 }

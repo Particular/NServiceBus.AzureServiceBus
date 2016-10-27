@@ -10,5 +10,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface ICreateTopology
     {
         Task Create(TopologySection topology);
+        Task TearDownSubscription(TopologySection topologySection);
     }
 }

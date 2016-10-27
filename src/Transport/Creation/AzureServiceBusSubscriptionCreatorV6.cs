@@ -29,6 +29,23 @@
             return subscriptionDescription;
         }
 
+        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo)
+        {
+            var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName);
+            
+            // check the if the subscription with event name only is the one we should delete, i.e. event with another namespace owns it
+            if (!await SubscriptionIsReusedAcrossDifferentNamespaces(subscriptionDescription, sqlFilter, namespaceManager).ConfigureAwait(false))
+            {
+                logger.Debug("Deleting subscription using event type full name");
+                var alternativeSubscription = new SubscriptionDescription(topicPath, metadata.SubscriptionNameBasedOnEventWithNamespace);
+                await namespaceManager.DeleteSubscription(alternativeSubscription).ConfigureAwait(false);
+                return;
+            }
+
+            // delete subscription based on event name only
+            await namespaceManager.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
+        }
+
         async Task<bool> SubscriptionIsReusedAcrossDifferentNamespaces(SubscriptionDescription subscriptionDescription, string sqlFilter, INamespaceManager namespaceManager)
         {
             var rules = await namespaceManager.GetRules(subscriptionDescription).ConfigureAwait(false);

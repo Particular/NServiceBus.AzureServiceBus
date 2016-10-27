@@ -31,5 +31,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription);
         Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription);
+        Task DeleteSubscription(SubscriptionDescription subscriptionDescription);
     }
 }

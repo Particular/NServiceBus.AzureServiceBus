@@ -413,6 +413,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface ICreateAzureServiceBusSubscriptions
     {
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> Create(string topicPath, string subscriptionName, NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata metadata, string sqlFilter, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager, string forwardTo);
+        System.Threading.Tasks.Task DeleteSubscription(string topicPath, string subscriptionName, NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata metadata, string sqlFilter, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager, string forwardTo);
     }
     public interface ICreateAzureServiceBusTopics
     {
@@ -437,6 +438,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface ICreateTopology
     {
         System.Threading.Tasks.Task Create(NServiceBus.Transport.AzureServiceBus.TopologySection topology);
+        System.Threading.Tasks.Task TearDownSubscription(NServiceBus.Transport.AzureServiceBus.TopologySection topologySection);
     }
     public interface IHandleOversizedBrokeredMessages
     {
@@ -493,6 +495,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription);
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription);
         System.Threading.Tasks.Task DeleteQueue(string path);
+        System.Threading.Tasks.Task DeleteSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription);
         System.Threading.Tasks.Task DeleteTopic(string path);
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> GetQueue(string path);
         System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.RuleDescription>> GetRules(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription);
@@ -621,6 +624,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription) { }
         public System.Threading.Tasks.Task DeleteQueue(string path) { }
+        public System.Threading.Tasks.Task DeleteSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription) { }
         public System.Threading.Tasks.Task DeleteSubscriptionAsync(string topicPath, string subscriptionName) { }
         public System.Threading.Tasks.Task DeleteTopic(string path) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> GetQueue(string path) { }
