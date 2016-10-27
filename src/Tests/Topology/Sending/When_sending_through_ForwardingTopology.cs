@@ -25,7 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         }
 
         [Test]
-        public void Should_set_a_signle_topic_as_destination_for_events()
+        public void Should_set_a_single_topic_as_destination_for_events()
         {
             var container = new TransportPartsContainer();
 
