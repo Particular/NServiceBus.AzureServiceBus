@@ -89,21 +89,25 @@ namespace NServiceBus.Transport.AzureServiceBus
             //- Exceptions raised during the time that your code is processing the BrokeredMessage
             //- It is raised when the receive process successfully completes. (Does not seem to be the case)
 
-            if (!stopping) //- It is raised when the underlying connection closes because of our close operation
+            if (!ShouldReceiveMessages)
             {
-                var messagingException = exceptionReceivedEventArgs.Exception as MessagingException;
-                if (messagingException != null && messagingException.IsTransient)
-                {
-                    logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
+                logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}' while shutting down.");
+                return;
+            }
 
-                    // TODO ideally we'd failover to another space if in a certain period of time there are too many transient errors
-                }
-                else
-                {
-                    logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}', with non-transient exception.", exceptionReceivedEventArgs.Exception);
+            //- It is raised when the underlying connection closes because of our close operation
+            var messagingException = exceptionReceivedEventArgs.Exception as MessagingException;
+            if (messagingException != null && messagingException.IsTransient)
+            {
+                logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
 
-                    errorCallback?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
-                }
+                // TODO ideally we'd failover to another space if in a certain period of time there are too many transient errors
+            }
+            else
+            {
+                logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}', with non-transient exception.", exceptionReceivedEventArgs.Exception);
+
+                errorCallback?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
             }
         }
 
@@ -281,6 +285,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public async Task Stop()
         {
+            options.ExceptionReceived -= OptionsOnExceptionReceived;
+
             stopping = true;
 
             logger.Info($"Stopping notifier for '{fullPath}'");
