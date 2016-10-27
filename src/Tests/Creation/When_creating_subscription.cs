@@ -45,7 +45,7 @@
             const string subscriptionName = "mysubscription1";
             //make sure there is no leftover from previous test
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
@@ -76,7 +76,7 @@
             Assert.IsNull(subscriptionDescription.ForwardDeadLetteredMessagesTo);
             Assert.IsNull(subscriptionDescription.ForwardTo);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
 
@@ -102,7 +102,7 @@
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
             Assert.AreEqual(subscriptionDescription, foundDescription);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -124,7 +124,7 @@
 
             Assert.AreEqual(autoDeleteTime, foundDescription.AutoDeleteOnIdle);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -147,7 +147,7 @@
 
             Assert.AreEqual(timeToLive, foundDescription.DefaultMessageTimeToLive);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -169,7 +169,7 @@
 
             Assert.IsFalse(foundDescription.EnableBatchedOperations);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -191,7 +191,7 @@
 
             Assert.IsTrue(foundDescription.EnableDeadLetteringOnFilterEvaluationExceptions);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -213,7 +213,7 @@
 
             Assert.IsTrue(foundDescription.EnableDeadLetteringOnMessageExpiration);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -236,7 +236,7 @@
 
             Assert.AreEqual(lockDuration, foundDescription.LockDuration);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -259,7 +259,7 @@
 
             Assert.AreEqual(deliveryCount, foundDescription.MaxDeliveryCount);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -280,7 +280,7 @@
 
             Assert.That(foundDescription.ForwardTo.EndsWith(queueToForwardTo.Path));
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteQueue(queueToForwardTo.Path);
         }
 
@@ -307,7 +307,7 @@
 
             Assert.That(foundDescription.ForwardDeadLetteredMessagesTo.EndsWith(topicToForwardTo.Path));
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
 
@@ -334,7 +334,7 @@
 
             Assert.That(foundDescription.ForwardDeadLetteredMessagesTo.EndsWith(topicToForwardTo.Path));
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
 
@@ -360,7 +360,7 @@
             Assert.IsTrue(rules.Count() == 1, "Subscription should only have 1 rule");
             Assert.AreEqual(filter, foundFilter.SqlExpression, "Rule was expected to have a specific SQL filter, but it didn't");
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -377,7 +377,7 @@
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
             Assert.AreEqual("very.logn.name.of.an.event.that.would.exceed.subscription.length", subscriptionDescription.UserMetadata);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
 

@@ -494,7 +494,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription);
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription);
         System.Threading.Tasks.Task DeleteQueue(string path);
-        System.Threading.Tasks.Task DeleteSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription);
         System.Threading.Tasks.Task DeleteTopic(string path);
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> GetQueue(string path);
         System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.RuleDescription>> GetRules(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription);
@@ -612,7 +611,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
     }
-    public class NamespaceManagerAdapter : NServiceBus.Transport.AzureServiceBus.INamespaceManager
+    public class NamespaceManagerAdapter : NServiceBus.Transport.AzureServiceBus.INamespaceManager, NServiceBus.Transport.AzureServiceBus.INamespaceManagerAbleToDeleteSubscriptions
     {
         public NamespaceManagerAdapter(Microsoft.ServiceBus.NamespaceManager manager) { }
         public System.Uri Address { get; }

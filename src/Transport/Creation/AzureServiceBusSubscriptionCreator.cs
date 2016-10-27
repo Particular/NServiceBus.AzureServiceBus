@@ -119,7 +119,11 @@
                 {
                     if (await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager, true).ConfigureAwait(false))
                     {
-                        await namespaceManager.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
+                        var namespaceManagerAbleToDeleteSubscriptions = namespaceManager as INamespaceManagerAbleToDeleteSubscriptions;
+                        if (namespaceManagerAbleToDeleteSubscriptions != null)
+                        {
+                            await namespaceManagerAbleToDeleteSubscriptions.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
+                        }
                     }
                 }
                 else
