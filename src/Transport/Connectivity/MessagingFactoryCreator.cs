@@ -10,7 +10,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         IManageNamespaceManagerLifeCycle namespaceManagers;
         Func<string, MessagingFactorySettings> settingsFactory;
-        ReadOnlySettings settings;
         RetryPolicy retryPolicy;
         TransportType transportType;
         TimeSpan batchFlushInterval;
@@ -18,9 +17,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public MessagingFactoryCreator(IManageNamespaceManagerLifeCycle namespaceManagers, ReadOnlySettings settings)
         {
             this.namespaceManagers = namespaceManagers;
-            this.settings = settings;
-            transportType = this.settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType);
-            batchFlushInterval = this.settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval);
+            transportType = settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType);
+            batchFlushInterval = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval);
 
             if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy))
             {
@@ -35,11 +33,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 settingsFactory = namespaceName =>
                 {
-                    var namespaceManager = this.namespaceManagers.Get(namespaceName);
-
                     var factorySettings = new MessagingFactorySettings
                     {
-                        TokenProvider = namespaceManager.Settings.TokenProvider,
                         TransportType = transportType
                     };
 
@@ -68,11 +63,20 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var namespaceManager = namespaceManagers.Get(namespaceName);
             var factorySettings = settingsFactory(namespaceName);
+
+            // if none has been provided either by us or the customer we need to set one
+            if (factorySettings.TokenProvider == null)
+            {
+                factorySettings.TokenProvider = namespaceManager.Settings.TokenProvider;
+            }
+
             var inner = MessagingFactory.Create(namespaceManager.Address, factorySettings);
+
             if (retryPolicy != null)
             {
                 inner.RetryPolicy = retryPolicy;
             }
+
             return new MessagingFactoryAdapter(inner);
         }
     }
