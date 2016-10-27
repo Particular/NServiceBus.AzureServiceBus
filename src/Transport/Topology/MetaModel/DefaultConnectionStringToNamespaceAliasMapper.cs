@@ -5,7 +5,7 @@
     using Logging;
     using Settings;
 
-    class DefaultConnectionStringToNamespaceAliasMapper : ICanMapConnectionStringToNamespaceAlias
+    class DefaultConnectionStringToNamespaceAliasMapper
     {
         ReadOnlySettings settings;
         static ILog Logger = LogManager.GetLogger<DefaultConnectionStringToNamespaceAliasMapper>();
@@ -15,7 +15,7 @@
             this.settings = settings;
         }
 
-        public EntityAddress Map(EntityAddress value)
+        public virtual EntityAddress Map(EntityAddress value)
         {
             if (!value.HasConnectionString)
             {
