@@ -7,32 +7,13 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Threading;
     using System.Threading.Tasks;
     using System.Transactions;
-    using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using Settings;
-    using Transport;
 
     class MessageReceiverNotifier : INotifyIncomingMessages
     {
-        IManageMessageReceiverLifeCycle clientEntities;
-        IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
-        ReadOnlySettings settings;
-        IMessageReceiver[] internalReceivers;
-        ReceiveMode receiveMode;
-        OnMessageOptions options;
-        Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
-        Func<Exception, Task> errorCallback;
-        ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
-        string fullPath;
-        EntityInfo entity;
-        volatile bool stopping;
-        volatile bool isRunning;
-        static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
-        Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
-        int numberOfClients;
-        MultiProducerConcurrentCompletion<Guid> completion;
-
         public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
             this.clientEntities = clientEntities;
@@ -40,11 +21,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.settings = settings;
         }
 
+        bool ShouldReceiveMessages => !stopping || isRunning;
+
         public bool IsRunning => isRunning;
 
         public int RefCount { get; set; }
-
-        bool ShouldReceiveMessages => !stopping || isRunning;
 
         public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
         {
@@ -63,8 +44,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
-            var concurrency = maximumConcurrency / (double)numberOfClients;
-            var maxConcurrentCalls = concurrency > 1 ? (int)Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
+            var concurrency = maximumConcurrency/(double) numberOfClients;
+            var maxConcurrentCalls = concurrency > 1 ? (int) Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
             if (Math.Abs(maxConcurrentCalls - concurrency) > 0)
             {
                 logger.InfoFormat("The maximum concurrency on this message receiver instance has been adjusted to '{0}', because the total maximum concurrency '{1}' wasn't divisable by the number of clients '{2}'", maxConcurrentCalls, maximumConcurrency, numberOfClients);
@@ -80,35 +61,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             internalReceivers = new IMessageReceiver[numberOfClients];
             completion = new MultiProducerConcurrentCompletion<Guid>(1000, TimeSpan.FromSeconds(1), 6, numberOfClients);
-        }
-
-        void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
-        {
-            // according to blog posts, this method is invoked on
-            //- Exceptions raised during the time that the message pump is waiting for messages to arrive on the service bus
-            //- Exceptions raised during the time that your code is processing the BrokeredMessage
-            //- It is raised when the receive process successfully completes. (Does not seem to be the case)
-
-            if (!ShouldReceiveMessages)
-            {
-                logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}' while shutting down.");
-                return;
-            }
-
-            //- It is raised when the underlying connection closes because of our close operation
-            var messagingException = exceptionReceivedEventArgs.Exception as MessagingException;
-            if (messagingException != null && messagingException.IsTransient)
-            {
-                logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
-
-                // TODO ideally we'd failover to another space if in a certain period of time there are too many transient errors
-            }
-            else
-            {
-                logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}', with non-transient exception.", exceptionReceivedEventArgs.Exception);
-
-                errorCallback?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
-            }
         }
 
         public void Start()
@@ -140,6 +92,68 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
             });
             if (exceptions.Count > 0) throw new AggregateException(exceptions);
+        }
+
+        public async Task Stop()
+        {
+            options.ExceptionReceived -= OptionsOnExceptionReceived;
+
+            stopping = true;
+
+            logger.Info($"Stopping notifier for '{fullPath}'");
+
+            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
+            var allTasks = pipelineInvocationTasks.Values;
+            var finishedTask = await Task.WhenAny(Task.WhenAll(allTasks), timeoutTask).ConfigureAwait(false);
+
+            if (finishedTask.Equals(timeoutTask))
+            {
+                logger.Error("The receiver failed to stop with in the time allowed (30s)");
+            }
+
+            await completion.Complete().ConfigureAwait(false);
+
+            var closeTasks = new List<Task>();
+            foreach (var internalReceiver in internalReceivers)
+            {
+                closeTasks.Add(internalReceiver.CloseAsync());
+            }
+            await Task.WhenAll(closeTasks).ConfigureAwait(false);
+
+            pipelineInvocationTasks.Clear();
+
+            logger.Info($"Notifier for '{fullPath}' stopped");
+
+            isRunning = false;
+        }
+
+        void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
+        {
+            // according to blog posts, this method is invoked on
+            //- Exceptions raised during the time that the message pump is waiting for messages to arrive on the service bus
+            //- Exceptions raised during the time that your code is processing the BrokeredMessage
+            //- It is raised when the receive process successfully completes. (Does not seem to be the case)
+
+            if (!ShouldReceiveMessages)
+            {
+                logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}' while shutting down.");
+                return;
+            }
+
+            //- It is raised when the underlying connection closes because of our close operation
+            var messagingException = exceptionReceivedEventArgs.Exception as MessagingException;
+            if (messagingException != null && messagingException.IsTransient)
+            {
+                logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
+
+                // TODO ideally we'd failover to another space if in a certain period of time there are too many transient errors
+            }
+            else
+            {
+                logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}', with non-transient exception.", exceptionReceivedEventArgs.Exception);
+
+                errorCallback?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
+            }
         }
 
         static Task CompletionCallback(List<Guid> lockTokens, int slotNumber, object state, CancellationToken token)
@@ -188,7 +202,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             var completionCanBeBatched = !wrapInScope;
             try
             {
-                var scope = wrapInScope ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled) : null;
+                var scope = wrapInScope ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
+                {
+                    IsolationLevel = IsolationLevel.Serializable
+                }, TransactionScopeAsyncFlowOption.Enabled) : null;
                 {
                     using (scope)
                     {
@@ -283,37 +300,22 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public async Task Stop()
-        {
-            options.ExceptionReceived -= OptionsOnExceptionReceived;
-
-            stopping = true;
-
-            logger.Info($"Stopping notifier for '{fullPath}'");
-
-            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
-            var allTasks = pipelineInvocationTasks.Values;
-            var finishedTask = await Task.WhenAny(Task.WhenAll(allTasks), timeoutTask).ConfigureAwait(false);
-
-            if (finishedTask.Equals(timeoutTask))
-            {
-                logger.Error("The receiver failed to stop with in the time allowed (30s)");
-            }
-
-            await completion.Complete().ConfigureAwait(false);
-
-            var closeTasks = new List<Task>();
-            foreach (var internalReceiver in internalReceivers)
-            {
-                closeTasks.Add(internalReceiver.CloseAsync());
-            }
-            await Task.WhenAll(closeTasks).ConfigureAwait(false);
-
-            pipelineInvocationTasks.Clear();
-
-            logger.Info($"Notifier for '{fullPath}' stopped");
-
-            isRunning = false;
-        }
+        IManageMessageReceiverLifeCycle clientEntities;
+        IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
+        ReadOnlySettings settings;
+        IMessageReceiver[] internalReceivers;
+        ReceiveMode receiveMode;
+        OnMessageOptions options;
+        Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
+        Func<Exception, Task> errorCallback;
+        ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
+        string fullPath;
+        EntityInfo entity;
+        volatile bool stopping;
+        volatile bool isRunning;
+        Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
+        int numberOfClients;
+        MultiProducerConcurrentCompletion<Guid> completion;
+        static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
     }
 }
