@@ -26,17 +26,33 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     var namespaceManager = this.namespaceManagers.Get(namespaceName);
 
-                    var s = new MessagingFactorySettings
+                    var transportType = this.settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType);
+
+                    var factorySettings = new MessagingFactorySettings
                     {
                         TokenProvider = namespaceManager.Settings.TokenProvider,
-                        NetMessagingTransportSettings =
-                        {
-                            BatchFlushInterval = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval)
-                        },
-                        TransportType = settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType)
+                        TransportType = transportType
                     };
 
-                    return s;
+                    var batchFlushInterval = this.settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval);
+
+                    switch (transportType)
+                    {
+                        case TransportType.NetMessaging:
+                            factorySettings.NetMessagingTransportSettings = new NetMessagingTransportSettings
+                            {
+                                BatchFlushInterval = batchFlushInterval,
+                            };
+                            break;
+                        case TransportType.Amqp:
+                            factorySettings.AmqpTransportSettings = new AmqpTransportSettings
+                            {
+                                BatchFlushInterval = batchFlushInterval,
+                            };
+                            break;
+                    }
+
+                    return factorySettings;
                 };
             }
         }
