@@ -3,6 +3,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
+    using Microsoft.ServiceBus.Messaging.Amqp;
     using Settings;
 
     class MessagingFactoryCreator : ICreateMessagingFactories
@@ -10,11 +11,17 @@ namespace NServiceBus.Transport.AzureServiceBus
         IManageNamespaceManagerLifeCycle namespaceManagers;
         Func<string, MessagingFactorySettings> settingsFactory;
         ReadOnlySettings settings;
+        RetryPolicy retryPolicy;
 
         public MessagingFactoryCreator(IManageNamespaceManagerLifeCycle namespaceManagers, ReadOnlySettings settings)
         {
             this.namespaceManagers = namespaceManagers;
             this.settings = settings;
+
+            if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy))
+            {
+                retryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy);
+            }
 
             if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.MessagingFactorySettingsFactory))
             {
@@ -62,12 +69,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             var namespaceManager = namespaceManagers.Get(namespaceName);
             var factorySettings = settingsFactory(namespaceName);
             var inner = MessagingFactory.Create(namespaceManager.Address, factorySettings);
-            if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy))
+            if (retryPolicy != null)
             {
-                inner.RetryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy);
+                inner.RetryPolicy = retryPolicy;
             }
             return new MessagingFactoryAdapter(inner);
         }
-
     }
 }
