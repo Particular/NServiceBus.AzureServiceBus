@@ -12,11 +12,15 @@ namespace NServiceBus.Transport.AzureServiceBus
         Func<string, MessagingFactorySettings> settingsFactory;
         ReadOnlySettings settings;
         RetryPolicy retryPolicy;
+        TransportType transportType;
+        TimeSpan batchFlushInterval;
 
         public MessagingFactoryCreator(IManageNamespaceManagerLifeCycle namespaceManagers, ReadOnlySettings settings)
         {
             this.namespaceManagers = namespaceManagers;
             this.settings = settings;
+            transportType = this.settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType);
+            batchFlushInterval = this.settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval);
 
             if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy))
             {
@@ -33,28 +37,24 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     var namespaceManager = this.namespaceManagers.Get(namespaceName);
 
-                    var transportType = this.settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType);
-
                     var factorySettings = new MessagingFactorySettings
                     {
                         TokenProvider = namespaceManager.Settings.TokenProvider,
                         TransportType = transportType
                     };
 
-                    var batchFlushInterval = this.settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval);
-
                     switch (transportType)
                     {
                         case TransportType.NetMessaging:
                             factorySettings.NetMessagingTransportSettings = new NetMessagingTransportSettings
                             {
-                                BatchFlushInterval = batchFlushInterval,
+                                BatchFlushInterval = batchFlushInterval
                             };
                             break;
                         case TransportType.Amqp:
                             factorySettings.AmqpTransportSettings = new AmqpTransportSettings
                             {
-                                BatchFlushInterval = batchFlushInterval,
+                                BatchFlushInterval = batchFlushInterval
                             };
                             break;
                     }
