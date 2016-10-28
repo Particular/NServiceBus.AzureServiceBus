@@ -15,7 +15,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualiz
             const string discriminator = "-mydiscriminator";
 
             var settingsHolder = new SettingsHolder();
+#pragma warning disable 618
             var config = new AzureServiceBusIndividualizationSettings(settingsHolder);
+#pragma warning restore 618
             config.UseStrategy<DiscriminatorBasedIndividualization>().DiscriminatorGenerator(endpointName => discriminator);
 
             var strategy = new DiscriminatorBasedIndividualization(settingsHolder);
@@ -29,7 +31,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualiz
             const string endpointname = "myendpoint";
 
             var settingsHolder = new SettingsHolder();
+#pragma warning disable 618
             var config = new AzureServiceBusIndividualizationSettings(settingsHolder);
+#pragma warning restore 618
             config.UseStrategy<DiscriminatorBasedIndividualization>();
 
             var strategy = new DiscriminatorBasedIndividualization(settingsHolder);
