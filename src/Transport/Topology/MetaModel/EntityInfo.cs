@@ -2,7 +2,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     using System.Collections.Generic;
 
-    [ObsoleteEx(Message = "Internal contract that shouldn't be exposed.", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public class EntityInfo
     {
         public string Path { get; set; }

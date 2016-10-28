@@ -25,9 +25,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
+#pragma warning disable 618
             extensions.UseBrokeredMessageToIncomingMessageConverter<ConvertBrokeredMessagesToIncomingMessages>();
-
+#pragma warning restore 618
             Assert.AreEqual(typeof(ConvertBrokeredMessagesToIncomingMessages), settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter));
         }
 

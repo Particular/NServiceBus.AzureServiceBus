@@ -10,8 +10,7 @@
     {
         SettingsHolder settings;
 
-        public AzureServiceBusQueueSettings(SettingsHolder settings)
-            : base(settings)
+        public AzureServiceBusQueueSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }

@@ -10,8 +10,7 @@
     {
         SettingsHolder settings;
 
-        public AzureServiceBusNamespaceManagersSettings(SettingsHolder settings)
-            : base(settings)
+        public AzureServiceBusNamespaceManagersSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }

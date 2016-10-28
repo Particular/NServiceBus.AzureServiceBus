@@ -8,8 +8,7 @@ namespace NServiceBus
     {
         SettingsHolder settings;
 
-        public AzureServiceBusNamespaceRoutingSettings(SettingsHolder settings)
-            : base(settings)
+        public AzureServiceBusNamespaceRoutingSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }

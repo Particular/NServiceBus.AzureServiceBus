@@ -8,22 +8,41 @@ namespace NServiceBus
 
     public static class AzureServiceBusTransportExtensions
     {
+        // TODO: replace topology registration
+
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0", ReplacementTypeOrMember = "transport.UseForwardingTopology() or transport.UseEndpointOrientedTopology()")]
         public static AzureServiceBusTopologySettings<T> UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions) where T : ITopology, new()
         {
             var topology = Activator.CreateInstance<T>();
             return UseTopology(transportExtensions, topology);
         }
 
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0", ReplacementTypeOrMember = "transport.UseForwardingTopology() or transport.UseEndpointOrientedTopology()")]
         public static AzureServiceBusTopologySettings<T> UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, Func<T> factory) where T : ITopology
         {
             return UseTopology(transportExtensions, factory());
         }
 
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0", ReplacementTypeOrMember = "transport.UseForwardingTopology() or transport.UseEndpointOrientedTopology()")]
         public static AzureServiceBusTopologySettings<T> UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, T topology) where T : ITopology
         {
             var settings = transportExtensions.GetSettings();
             settings.Set<ITopology>(topology);
             return new AzureServiceBusTopologySettings<T>(settings);
+        }
+
+        public static AzureServiceBusTopologySettings<ForwardingTopology> UseForwardingTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        {
+            var settings = transportExtensions.GetSettings();
+            settings.Set<ITopology>(new ForwardingTopology());
+            return new AzureServiceBusTopologySettings<ForwardingTopology>(settings);
+        }
+
+        public static AzureServiceBusTopologySettings<EndpointOrientedTopology> UseEndpointOrientedTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        {
+            var settings = transportExtensions.GetSettings();
+            settings.Set<ITopology>(new EndpointOrientedTopology());
+            return new AzureServiceBusTopologySettings<EndpointOrientedTopology>(settings);
         }
 
         /// <summary>
@@ -39,8 +58,8 @@ namespace NServiceBus
         /// <summary>
         /// Provide custom implementation to convert brokered message to incoming message
         /// </summary>
-        public static void UseBrokeredMessageToIncomingMessageConverter<T>(this TransportExtensions<AzureServiceBusTransport>  transportExtensions)
-            where T : IConvertBrokeredMessagesToIncomingMessages
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public static void UseBrokeredMessageToIncomingMessageConverter<T>(this TransportExtensions<AzureServiceBusTransport>  transportExtensions) where T : IConvertBrokeredMessagesToIncomingMessages
         {
             var settings = transportExtensions.GetSettings();
             settings.Set(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter, typeof(T));
@@ -49,8 +68,8 @@ namespace NServiceBus
         /// <summary>
         /// Provide custom implementation to convert outgoing message to brokered message
         /// </summary>
-        public static void UseOutgoingMessageToBrokeredMessageConverter<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-            where T : IConvertOutgoingMessagesToBrokeredMessages
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public static void UseOutgoingMessageToBrokeredMessageConverter<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions) where T : IConvertOutgoingMessagesToBrokeredMessages
         {
             var settings = transportExtensions.GetSettings();
             settings.Set(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter, typeof(T));

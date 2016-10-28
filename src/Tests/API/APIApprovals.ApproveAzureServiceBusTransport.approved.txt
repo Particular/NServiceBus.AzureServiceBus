@@ -193,15 +193,30 @@
         public static NServiceBus.AzureServiceBusSubscriptionSettings Subscriptions(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusTopicSettings Topics(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void TransportType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, Microsoft.ServiceBus.Messaging.TransportType transportType) { }
+        [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+            "sion 8.0.0. Will be removed in version 9.0.0.", false)]
         public static void UseBrokeredMessageToIncomingMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
             where T : NServiceBus.Transport.AzureServiceBus.IConvertBrokeredMessagesToIncomingMessages { }
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> UseEndpointOrientedTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> UseForwardingTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void UseNamespaceAliasesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+            "sion 8.0.0. Will be removed in version 9.0.0.", false)]
         public static void UseOutgoingMessageToBrokeredMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
             where T : NServiceBus.Transport.AzureServiceBus.IConvertOutgoingMessagesToBrokeredMessages { }
+        [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Use `transport.UseForwardingTopology" +
+            "() or transport.UseEndpointOrientedTopology()` instead. Will be treated as an er" +
+            "ror from version 8.0.0. Will be removed in version 9.0.0.", false)]
         public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
             where T : NServiceBus.Transport.AzureServiceBus.ITopology, new () { }
+        [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Use `transport.UseForwardingTopology" +
+            "() or transport.UseEndpointOrientedTopology()` instead. Will be treated as an er" +
+            "ror from version 8.0.0. Will be removed in version 9.0.0.", false)]
         public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, System.Func<T> factory)
             where T : NServiceBus.Transport.AzureServiceBus.ITopology { }
+        [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Use `transport.UseForwardingTopology" +
+            "() or transport.UseEndpointOrientedTopology()` instead. Will be treated as an er" +
+            "ror from version 8.0.0. Will be removed in version 9.0.0.", false)]
         public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, T topology)
             where T : NServiceBus.Transport.AzureServiceBus.ITopology { }
     }

@@ -8,8 +8,7 @@
     {
         SettingsHolder settings;
 
-        public AzureServiceBusNamespacePartitioningSettings(SettingsHolder settings)
-            : base(settings)
+        public AzureServiceBusNamespacePartitioningSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }
