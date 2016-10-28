@@ -78,6 +78,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             Assert.AreNotEqual(first, second);
         }
 
+#pragma warning disable 618
         class InterceptedMessageReceiverCreator : ICreateMessageReceivers
         {
 
@@ -122,5 +123,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 isClosed = true;
             }
         }
+#pragma warning restore 618
     }
 }

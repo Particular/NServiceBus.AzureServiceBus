@@ -13,6 +13,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using Transport;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_routing_outgoingmessages_to_endpoints

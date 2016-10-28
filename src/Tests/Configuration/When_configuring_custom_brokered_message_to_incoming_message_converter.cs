@@ -31,6 +31,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             Assert.AreEqual(typeof(ConvertBrokeredMessagesToIncomingMessages), settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter));
         }
 
+#pragma warning disable 618
         class ConvertBrokeredMessagesToIncomingMessages : IConvertBrokeredMessagesToIncomingMessages
         {
             public IncomingMessageDetails Convert(BrokeredMessage brokeredMessage)
@@ -38,5 +39,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
                 throw new NotImplementedException();
             }
         }
+#pragma warning restore 618
     }
 }

@@ -14,9 +14,9 @@
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
+#pragma warning disable 618
             var topologySettings = extensions.UseTopology(A.Fake<ITopology>);
-
+#pragma warning restore 618
             Assert.IsInstanceOf<TransportExtensions<AzureServiceBusTransport>>(topologySettings);
         }
 

@@ -11,6 +11,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_creating_message_receivers
@@ -52,6 +53,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             Assert.AreEqual(1000, receiver.PrefetchCount);
         }
 
+#pragma warning disable 618
         class InterceptedMessagingFactoryFactory : IManageMessagingFactoryLifeCycle
         {
             readonly IMessagingFactory factory;
@@ -135,5 +137,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 throw new NotImplementedException();
             }
         }
+#pragma warning restore 618
     }
 }

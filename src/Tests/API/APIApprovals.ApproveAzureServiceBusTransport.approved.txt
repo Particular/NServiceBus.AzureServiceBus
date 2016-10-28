@@ -313,6 +313,8 @@ namespace NServiceBus.Config
 namespace NServiceBus.Transport.AzureServiceBus
 {
     
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class Batch
     {
         public Batch() { }
@@ -320,6 +322,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public System.Collections.Generic.IList<NServiceBus.Transport.AzureServiceBus.BatchedOperation> Operations { get; set; }
         public NServiceBus.Transport.DispatchConsistency RequiredDispatchConsistency { get; set; }
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class BatchedOperation
     {
         public BatchedOperation(int messageSizePaddingPercentage = 0) { }
@@ -327,6 +331,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public NServiceBus.Transport.OutgoingMessage Message { get; set; }
         public long GetEstimatedSize() { }
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class BrokeredMessageReceiveContext : NServiceBus.Transport.AzureServiceBus.ReceiveContext
     {
         public BrokeredMessageReceiveContext(Microsoft.ServiceBus.Messaging.BrokeredMessage message, NServiceBus.Transport.AzureServiceBus.EntityInfo entity, Microsoft.ServiceBus.Messaging.ReceiveMode receiveMode) { }
@@ -348,6 +354,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public override string ToString() { }
         public static bool TryParse(string value, out NServiceBus.Transport.AzureServiceBus.ConnectionString connectionString) { }
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class EntityInfo
     {
         public EntityInfo() { }
@@ -377,14 +385,20 @@ namespace NServiceBus.Transport.AzureServiceBus
         Primary = 0,
         Secondary = 1,
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IBatcher
     {
         System.Collections.Generic.IList<NServiceBus.Transport.AzureServiceBus.Batch> ToBatches(NServiceBus.Transport.TransportOperations operations);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IBrokerSideSubscriptionFilter
     {
         string Serialize();
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IClientEntity
     {
         bool IsClosed { get; }
@@ -400,18 +414,26 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         string GetEntityPath(string entityname, NServiceBus.EntityType entityType);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IConvertBrokeredMessagesToIncomingMessages
     {
         NServiceBus.Transport.AzureServiceBus.IncomingMessageDetails Convert(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IConvertOutgoingMessagesToBrokeredMessages
     {
         System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> Convert(System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.BatchedOperation> outgoingOperations, NServiceBus.Transport.AzureServiceBus.RoutingOptions routingOptions);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ICreateAzureServiceBusQueues
     {
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> Create(string queuePath, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ICreateAzureServiceBusSubscriptions
     {
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> Create(string topicPath, string subscriptionName, NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata metadata, string sqlFilter, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager, string forwardTo);
@@ -420,22 +442,32 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> Create(string topicPath, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ICreateMessageReceivers
     {
         System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageReceiver> Create(string entityPath, string namespaceAlias);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ICreateMessageSenders
     {
         System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ICreateMessagingFactories
     {
         NServiceBus.Transport.AzureServiceBus.IMessagingFactory Create(string namespaceName);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ICreateNamespaceManagers
     {
         NServiceBus.Transport.AzureServiceBus.INamespaceManager Create(string namespaceName);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ICreateTopology
     {
         System.Threading.Tasks.Task Create(NServiceBus.Transport.AzureServiceBus.TopologySection topology);
@@ -448,23 +480,33 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         string Individualize(string endpointName);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IManageMessageReceiverLifeCycle
     {
         NServiceBus.Transport.AzureServiceBus.IMessageReceiver Get(string entityPath, string namespaceAlias);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IManageMessageSenderLifeCycle
     {
         NServiceBus.Transport.AzureServiceBus.IMessageSender Get(string entitypath, string viaEntityPath, string namespaceName);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IManageMessagingFactoryLifeCycle
     {
         System.Threading.Tasks.Task CloseAll();
         NServiceBus.Transport.AzureServiceBus.IMessagingFactory Get(string namespaceName);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IManageNamespaceManagerLifeCycle
     {
         NServiceBus.Transport.AzureServiceBus.INamespaceManager Get(string namespaceAlias);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IMessageReceiver : NServiceBus.Transport.AzureServiceBus.IClientEntity
     {
         Microsoft.ServiceBus.Messaging.ReceiveMode Mode { get; }
@@ -473,11 +515,15 @@ namespace NServiceBus.Transport.AzureServiceBus
         System.Threading.Tasks.Task CompleteBatchAsync(System.Collections.Generic.IEnumerable<System.Guid> lockTokens);
         void OnMessage(System.Func<Microsoft.ServiceBus.Messaging.BrokeredMessage, System.Threading.Tasks.Task> callback, Microsoft.ServiceBus.Messaging.OnMessageOptions options);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IMessageSender : NServiceBus.Transport.AzureServiceBus.IClientEntity
     {
         System.Threading.Tasks.Task Send(Microsoft.ServiceBus.Messaging.BrokeredMessage message);
         System.Threading.Tasks.Task SendBatch(System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.BrokeredMessage> messages);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IMessagingFactory : NServiceBus.Transport.AzureServiceBus.IClientEntity
     {
         System.Threading.Tasks.Task CloseAsync();
@@ -485,6 +531,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageSender> CreateMessageSender(string entitypath);
         System.Threading.Tasks.Task<NServiceBus.Transport.AzureServiceBus.IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface INamespaceManager
     {
         System.Uri Address { get; }
@@ -511,6 +559,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class IncomingMessageDetails
     {
         public IncomingMessageDetails(string messageId, System.Collections.Generic.Dictionary<string, string> headers, byte[] body) { }
@@ -528,6 +578,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         void Start();
         System.Threading.Tasks.Task Stop();
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IOperateTopology
     {
         void OnError(System.Func<System.Exception, System.Threading.Tasks.Task> func);
@@ -558,6 +610,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         System.Collections.Generic.IEnumerable<T> ResolveAll<T>();
         System.Collections.Generic.IEnumerable<object> ResolveAll(System.Type typeToBuild);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface IRouteOutgoingBatches
     {
         System.Threading.Tasks.Task RouteBatches(System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.Batch> outgoingBatches, NServiceBus.Transport.AzureServiceBus.ReceiveContext receiveContext, NServiceBus.Transport.DispatchConsistency consistency);
@@ -566,10 +620,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType);
     }
-    public interface IStoppableTopology
-    {
-        System.Threading.Tasks.Task Stop();
-    }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ITopology
     {
         bool HasNativePubSubSupport { get; }
@@ -583,6 +635,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         void Initialize(NServiceBus.Settings.SettingsHolder settings);
         System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks();
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ITopologySectionManager
     {
         NServiceBus.Transport.AzureServiceBus.TopologySection DeterminePublishDestination(System.Type eventType);
@@ -661,6 +715,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         Sending = 1,
         Creating = 2,
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public abstract class ReceiveContext
     {
         protected ReceiveContext() { }
@@ -669,6 +725,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             "version 9.0.0.", false)]
         public System.Transactions.CommittableTransaction Transaction { get; set; }
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class RoutingOptions
     {
         public RoutingOptions() { }
@@ -679,6 +737,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public string ViaEntityPath { get; set; }
         public string ViaPartitionKey { get; set; }
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class RuntimeNamespaceInfo : System.IEquatable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo>
     {
         public RuntimeNamespaceInfo(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose = 1, NServiceBus.Transport.AzureServiceBus.NamespaceMode mode = 0) { }
@@ -714,6 +774,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public ThrowOnOversizedBrokeredMessages() { }
         public System.Threading.Tasks.Task Handle(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage) { }
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class TopologySection
     {
         public TopologySection() { }

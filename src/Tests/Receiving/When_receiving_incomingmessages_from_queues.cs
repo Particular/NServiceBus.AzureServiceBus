@@ -10,6 +10,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_receiving_incomingmessages_from_queues

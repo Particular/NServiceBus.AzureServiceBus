@@ -6,6 +6,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Settings;
     using Transport;
 
+    [ObsoleteEx(Message = "Internal contract that shouldn't be exposed.", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public interface ITopology
     {
         void Initialize(SettingsHolder settings);
