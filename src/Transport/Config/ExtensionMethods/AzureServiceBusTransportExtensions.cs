@@ -31,18 +31,18 @@ namespace NServiceBus
             return new AzureServiceBusTopologySettings<T>(settings);
         }
 
-        public static AzureServiceBusTopologySettings<ForwardingTopology> UseForwardingTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        public static AzureServiceBusForwardingTopologySettings UseForwardingTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();
             settings.Set<ITopology>(new ForwardingTopology());
-            return new AzureServiceBusTopologySettings<ForwardingTopology>(settings);
+            return new AzureServiceBusForwardingTopologySettings(settings);
         }
 
-        public static AzureServiceBusTopologySettings<EndpointOrientedTopology> UseEndpointOrientedTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        public static AzureServiceBusEndpointOrientedTopologySettings UseEndpointOrientedTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();
             settings.Set<ITopology>(new EndpointOrientedTopology());
-            return new AzureServiceBusTopologySettings<EndpointOrientedTopology>(settings);
+            return new AzureServiceBusEndpointOrientedTopologySettings(settings);
         }
 
         /// <summary>

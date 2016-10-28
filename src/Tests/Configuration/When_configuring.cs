@@ -1,7 +1,5 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
-    using FakeItEasy;
-    using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
 
@@ -14,9 +12,9 @@
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-#pragma warning disable 618
-            var topologySettings = extensions.UseTopology(A.Fake<ITopology>);
-#pragma warning restore 618
+
+            var topologySettings = extensions.UseForwardingTopology();
+
             Assert.IsInstanceOf<TransportExtensions<AzureServiceBusTransport>>(topologySettings);
         }
 

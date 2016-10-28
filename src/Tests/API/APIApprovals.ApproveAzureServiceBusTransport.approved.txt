@@ -20,15 +20,29 @@
     {
         public static NServiceBus.AzureServiceBusIndividualizationExtensionPoint<NServiceBus.DiscriminatorBasedIndividualization> DiscriminatorGenerator(this NServiceBus.AzureServiceBusIndividualizationExtensionPoint<NServiceBus.DiscriminatorBasedIndividualization> individualizationStrategy, System.Func<string, string> discriminatorGenerator) { }
     }
+    public class AzureServiceBusEndpointOrientedTopologySettings : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> { }
     public class static AzureServiceBusEndpointOrientedTopologySettingsExtensions
     {
+        [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+            "sion 8.0.0. Will be removed in version 9.0.0.", false)]
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> topologySettings, System.Type type, string publisherName) { }
+        [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+            "sion 8.0.0. Will be removed in version 9.0.0.", false)]
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> topologySettings, System.Reflection.Assembly assembly, string publisherName) { }
+        public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings topologySettings, System.Type type, string publisherName) { }
+        public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings topologySettings, System.Reflection.Assembly assembly, string publisherName) { }
     }
+    public class AzureServiceBusForwardingTopologySettings : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> { }
     public class static AzureServiceBusForwardingTopologySettingsExtensions
     {
+        [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+            "sion 8.0.0. Will be removed in version 9.0.0.", false)]
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> BundlePrefix(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> topologySettings, string prefix) { }
+        public static NServiceBus.AzureServiceBusForwardingTopologySettings BundlePrefix(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, string prefix) { }
+        [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+            "sion 8.0.0. Will be removed in version 9.0.0.", false)]
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> topologySettings, int number) { }
+        public static NServiceBus.AzureServiceBusForwardingTopologySettings NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, int number) { }
     }
     public class static AzureServiceBusHierarchyCompositionSettingsExtensions
     {
@@ -191,6 +205,8 @@
         public NServiceBus.AzureServiceBusTopicSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusTopicSettings SupportOrdering(bool supported) { }
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class AzureServiceBusTopologySettings<T> : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport>
         where T : NServiceBus.Transport.AzureServiceBus.ITopology
     {
@@ -229,8 +245,8 @@
             "sion 8.0.0. Will be removed in version 9.0.0.", false)]
         public static void UseBrokeredMessageToIncomingMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
             where T : NServiceBus.Transport.AzureServiceBus.IConvertBrokeredMessagesToIncomingMessages { }
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> UseEndpointOrientedTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> UseForwardingTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings UseEndpointOrientedTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusForwardingTopologySettings UseForwardingTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void UseNamespaceAliasesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
             "sion 8.0.0. Will be removed in version 9.0.0.", false)]

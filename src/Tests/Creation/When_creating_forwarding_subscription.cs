@@ -106,7 +106,7 @@
                 LockDuration = TimeSpan.FromMinutes(3)
             };
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((x, y, z) => subscriptionDescription);
+            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory((x, y, z) => subscriptionDescription);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -127,7 +127,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var autoDeleteTime = TimeSpan.FromDays(1);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().AutoDeleteOnIdle(autoDeleteTime);
+            extensions.UseForwardingTopology().Subscriptions().AutoDeleteOnIdle(autoDeleteTime);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -154,7 +154,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var timeToLive = TimeSpan.FromDays(10);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DefaultMessageTimeToLive(timeToLive);
+            extensions.UseForwardingTopology().Subscriptions().DefaultMessageTimeToLive(timeToLive);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -176,7 +176,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().EnableBatchedOperations(false);
+            extensions.UseForwardingTopology().Subscriptions().EnableBatchedOperations(false);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -198,7 +198,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
+            extensions.UseForwardingTopology().Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -220,7 +220,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
+            extensions.UseForwardingTopology().Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -243,7 +243,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var lockDuration = TimeSpan.FromMinutes(2);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().LockDuration(lockDuration);
+            extensions.UseForwardingTopology().Subscriptions().LockDuration(lockDuration);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -266,7 +266,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             const int deliveryCount = 10;
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().MaxDeliveryCount(deliveryCount);
+            extensions.UseForwardingTopology().Subscriptions().MaxDeliveryCount(deliveryCount);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -314,7 +314,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().ForwardDeadLetteredMessagesTo(topicToForwardTo.Path);
+            extensions.UseForwardingTopology().Subscriptions().ForwardDeadLetteredMessagesTo(topicToForwardTo.Path);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -341,7 +341,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "endpoint14", notUsedEntity.Path);
+            extensions.UseForwardingTopology().Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "endpoint14", notUsedEntity.Path);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -390,7 +390,7 @@
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
+            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
             {
                 MaxDeliveryCount = 100,
                 EnableDeadLetteringOnMessageExpiration = true,
@@ -415,7 +415,7 @@
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((topic, sub, readOnlySettings) => new SubscriptionDescription(topic, sub)
+            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory((topic, sub, readOnlySettings) => new SubscriptionDescription(topic, sub)
             {
                 EnableDeadLetteringOnFilterEvaluationExceptions = false,
                 RequiresSession = false,
@@ -432,7 +432,7 @@
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
+            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
             {
                 MaxDeliveryCount = 100,
                 EnableDeadLetteringOnMessageExpiration = true,
@@ -463,7 +463,7 @@
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseTopology<ForwardingTopology>().Topics().EnablePartitioning(true);
+            extensions.UseForwardingTopology().Topics().EnablePartitioning(true);
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
