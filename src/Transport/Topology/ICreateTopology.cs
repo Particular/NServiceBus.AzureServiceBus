@@ -11,4 +11,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         Task Create(TopologySection topology);
     }
+
+    // TODO: Move into internalized ICreateTopology in v8
+    interface ITearDownTopology
+    {
+        Task TearDown(TopologySection topologySection);
+    }
 }

@@ -414,6 +414,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> Create(string topicPath, string subscriptionName, NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata metadata, string sqlFilter, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager, string forwardTo);
     }
+    public interface ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
+    {
+        System.Threading.Tasks.Task DeleteSubscription(string topicPath, string subscriptionName, NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata metadata, string sqlFilter, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager, string forwardTo);
+    }
     public interface ICreateAzureServiceBusTopics
     {
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> Create(string topicPath, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager);
@@ -610,7 +614,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
     }
-    public class NamespaceManagerAdapter : NServiceBus.Transport.AzureServiceBus.INamespaceManager
+    public class NamespaceManagerAdapter : NServiceBus.Transport.AzureServiceBus.INamespaceManager, NServiceBus.Transport.AzureServiceBus.INamespaceManagerAbleToDeleteSubscriptions
     {
         public NamespaceManagerAdapter(Microsoft.ServiceBus.NamespaceManager manager) { }
         public System.Uri Address { get; }
@@ -621,6 +625,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> CreateTopic(Microsoft.ServiceBus.Messaging.TopicDescription topicDescription) { }
         public System.Threading.Tasks.Task DeleteQueue(string path) { }
+        public System.Threading.Tasks.Task DeleteSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription) { }
         public System.Threading.Tasks.Task DeleteSubscriptionAsync(string topicPath, string subscriptionName) { }
         public System.Threading.Tasks.Task DeleteTopic(string path) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.QueueDescription> GetQueue(string path) { }
