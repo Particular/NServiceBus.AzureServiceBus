@@ -14,6 +14,7 @@
     using NUnit.Framework;
     using Transport;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_dispatching_messages

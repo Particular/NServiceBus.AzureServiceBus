@@ -7,6 +7,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_configuring_namespace_partitioning
@@ -37,7 +38,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             CollectionAssert.Contains(namespacesDefinition, new NamespaceInfo(name, connectionString));
         }
 
-#pragma warning disable 618
         class MyNamespacePartitioningStrategy : INamespacePartitioningStrategy
         {
             public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
@@ -45,6 +45,5 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
                 throw new NotImplementedException(); // not relevant for the test
             }
         }
-#pragma warning restore 618
     }
 }

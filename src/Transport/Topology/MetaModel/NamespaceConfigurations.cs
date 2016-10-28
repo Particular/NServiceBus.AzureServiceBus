@@ -6,6 +6,7 @@
     using System.Linq;
     using Logging;
 
+    [ObsoleteEx(Message = "Internal contract that shouldn't be exposed.", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public class NamespaceConfigurations : IEnumerable<NamespaceInfo>
     {
         static ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
