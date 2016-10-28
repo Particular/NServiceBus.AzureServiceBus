@@ -30,10 +30,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             var section = topologySectionManager.DetermineResourcesToUnsubscribeFrom(eventType);
             await topologyOperator.Stop(section.Entities).ConfigureAwait(false);
 
-            var topologyCreatorThatCanDeleteSubscriptions = (topologyCreator as ICreateTopologyAbleToDeleteSubscriptions);
+            var topologyCreatorThatCanDeleteSubscriptions = (topologyCreator as ITearDownTopology);
             if (topologyCreatorThatCanDeleteSubscriptions != null)
             {
-                await topologyCreatorThatCanDeleteSubscriptions.TearDownSubscription(section).ConfigureAwait(false);
+                await topologyCreatorThatCanDeleteSubscriptions.TearDown(section).ConfigureAwait(false);
             }
         }
     }

@@ -3,7 +3,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
 
-    class TopologyCreator : ICreateTopology, ICreateTopologyAbleToDeleteSubscriptions
+    class TopologyCreator : ICreateTopology, ITearDownTopology
     {
         ITransportPartsContainer container;
         IManageNamespaceManagerLifeCycle namespaces;
@@ -52,7 +52,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public async Task TearDownSubscription(TopologySection topologySection)
+        public async Task TearDown(TopologySection topologySection)
         {
             var subscriptions = topologySection.Entities.Where(e => e.Type == EntityType.Subscription).ToList();
             if (subscriptions.Any())

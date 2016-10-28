@@ -13,8 +13,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
 
     // TODO: Move into internalized ICreateTopology in v8
-    interface ICreateTopologyAbleToDeleteSubscriptions
+    interface ITearDownTopology
     {
-        Task TearDownSubscription(TopologySection topologySection);
+        Task TearDown(TopologySection topologySection);
     }
 }
