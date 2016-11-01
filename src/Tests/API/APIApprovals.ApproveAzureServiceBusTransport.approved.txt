@@ -414,10 +414,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> Create(string topicPath, string subscriptionName, NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata metadata, string sqlFilter, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager, string forwardTo);
     }
-    public interface ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
-    {
-        System.Threading.Tasks.Task DeleteSubscription(string topicPath, string subscriptionName, NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata metadata, string sqlFilter, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager, string forwardTo);
-    }
     public interface ICreateAzureServiceBusTopics
     {
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> Create(string topicPath, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager);
