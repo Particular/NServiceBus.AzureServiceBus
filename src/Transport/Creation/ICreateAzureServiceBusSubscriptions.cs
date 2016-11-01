@@ -9,7 +9,7 @@
     }
 
     // TODO Move into internalized ICreateAzureServiceBusSubscriptions in v8
-    public interface ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
+    interface ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
     {
         Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo);
     }

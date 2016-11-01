@@ -6,7 +6,7 @@
     using Logging;
     using Settings;
 
-    class AzureServiceBusSubscriptionCreatorV6 : ICreateAzureServiceBusSubscriptions
+    class AzureServiceBusSubscriptionCreatorV6 : ICreateAzureServiceBusSubscriptions, ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
     {
         AzureServiceBusSubscriptionCreator creator;
         ILog logger = LogManager.GetLogger<AzureServiceBusSubscriptionCreatorV6>();

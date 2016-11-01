@@ -2,12 +2,13 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
     using Settings;
 
-    class AzureServiceBusForwardingSubscriptionCreator : ICreateAzureServiceBusSubscriptions
+    class AzureServiceBusForwardingSubscriptionCreator : ICreateAzureServiceBusSubscriptions, ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
     {
         ReadOnlySettings settings;
         Func<string, string, ReadOnlySettings, SubscriptionDescription> subscriptionDescriptionFactory;
@@ -154,6 +155,14 @@
                         logger.Info($"Removing subscription rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
                         var subscriptionClient = SubscriptionClient.CreateFromConnectionString(meta.NamespaceInfo.ConnectionString, topicPath, subscriptionName);
                         await subscriptionClient.RemoveRuleAsync(ruleDescription.Name).ConfigureAwait(false);
+
+                        var remainingRules = await namespaceManager.GetRules(subscriptionDescription).ConfigureAwait(false);
+                        var namespaceManagerThatCanDelete = namespaceManager as INamespaceManagerAbleToDeleteSubscriptions;
+                        if (!remainingRules.Any() && namespaceManagerThatCanDelete != null)
+                        {
+                            await namespaceManagerThatCanDelete.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
+                            logger.Debug($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' was removed as part of unsubscribe since events are subscribed to.");
+                        }
                     }
                 }
                 else
