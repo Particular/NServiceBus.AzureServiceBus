@@ -7,6 +7,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
     using NUnit.Framework;
     using Transport;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_computing_EndpointOrientedTopology
@@ -92,6 +93,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales.events" && ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring));
         }
 
+#pragma warning disable 618
         static TopologySection DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)
         {
             var topology = new EndpointOrientedTopology(container);
@@ -103,6 +105,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
             return definition;
         }
+#pragma warning restore 618
     }
-
 }

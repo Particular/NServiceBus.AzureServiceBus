@@ -84,6 +84,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             Assert.IsTrue(sw.ElapsedMilliseconds > TimeSpan.FromSeconds(4).TotalMilliseconds);
         }
 
+#pragma warning disable 618
         class FakeMessageSender : IMessageSender
         {
             public bool IsClosed { get; } = false;
@@ -116,5 +117,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                 return TaskEx.Completed;
             }
         }
+#pragma warning restore 618
     }
 }

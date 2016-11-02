@@ -1,7 +1,8 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
-    
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public class NamespaceInfo : IEquatable<NamespaceInfo>
     {
         public string Alias { get; }

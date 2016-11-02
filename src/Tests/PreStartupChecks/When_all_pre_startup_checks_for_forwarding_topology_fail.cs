@@ -8,6 +8,7 @@
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_all_pre_startup_checks_for_forwarding_topology_fail

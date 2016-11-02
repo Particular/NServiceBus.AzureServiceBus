@@ -10,8 +10,8 @@
     {
         SettingsHolder settings;
 
-        public AzureServiceBusTopicSettings(SettingsHolder settings)
-            : base(settings)
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusTopicSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }

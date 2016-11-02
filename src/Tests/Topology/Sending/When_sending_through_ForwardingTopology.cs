@@ -37,6 +37,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             Assert.IsTrue(destination.Entities.Single().Path.StartsWith("bundle"));
         }
 
+#pragma warning disable 618
         ITopologySectionManager SetupForwardingTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
@@ -51,6 +52,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 
             return container.Resolve<ITopologySectionManager>();
         }
+#pragma warning restore 618
 
         class SomeMessageType
         {

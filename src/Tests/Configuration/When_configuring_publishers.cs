@@ -23,7 +23,7 @@
         [Test]
         public void Should_be_able_to_add_a_publisher_for_a_specific_event()
         {
-            extensions.UseTopology<EndpointOrientedTopology>()
+            extensions.UseEndpointOrientedTopology()
                 .RegisterPublisher(typeof(MyType), "publisherName");
 
             var publishers = settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);
@@ -35,7 +35,7 @@
         [Test]
         public void Should_be_able_to_add_a_publisher_for_the_events_contained_in_an_assembly()
         {
-            extensions.UseTopology<EndpointOrientedTopology>()
+            extensions.UseEndpointOrientedTopology()
                 .RegisterPublisher(Assembly.GetExecutingAssembly(), "publisherName");
 
             var publishers = settings.Get<IDictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers);

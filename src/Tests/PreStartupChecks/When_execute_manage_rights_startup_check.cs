@@ -7,6 +7,7 @@
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_execute_manage_rights_startup_check

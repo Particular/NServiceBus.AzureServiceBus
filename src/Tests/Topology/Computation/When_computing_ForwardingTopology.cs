@@ -7,6 +7,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
     using NUnit.Framework;
     using Transport;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_computing_ForwardingTopology
@@ -117,7 +118,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
-            extensions.UseTopology<ForwardingTopology>().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -142,7 +143,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
-            extensions.UseTopology<ForwardingTopology>().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
 
@@ -166,7 +167,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
-            extensions.UseTopology<ForwardingTopology>().NamespacePartitioning().AddNamespace(Name, Connectionstring);
+            extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTopology(container);
             topology.Initialize(settings);

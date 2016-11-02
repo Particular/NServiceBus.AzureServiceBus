@@ -11,6 +11,7 @@
     using Transport;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_message_pump_is_failing_to_receive_messages
@@ -62,6 +63,7 @@
             Assert.AreEqual(exceptionThrownByMessagePump, exceptionReceivedByCircuitBreaker, "Exception circuit breaker got should be the same as the one raised by message pump");
         }
 
+#pragma warning disable 618
         class FakeReceiveContext : ReceiveContext
         {
         }
@@ -143,6 +145,7 @@
 
             }
         }
+#pragma warning restore 618
 
         class FakeEndpoint : IEndpointInstance
         {

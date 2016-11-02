@@ -21,13 +21,16 @@ class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfra
         if (topologyName == nameof(ForwardingTopology))
         {
             var topology = Activator.CreateInstance<ForwardingTopology>();
+#pragma warning disable 618
             settings.Set<ITopology>(topology);
+#pragma warning restore 618
         }
         else
         {
             var topology = Activator.CreateInstance<EndpointOrientedTopology>();
+#pragma warning disable 618
             settings.Set<ITopology>(topology);
-
+#pragma warning restore 618
         }
 
         var transport = new AzureServiceBusTransport();

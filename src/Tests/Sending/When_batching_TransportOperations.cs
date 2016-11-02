@@ -119,6 +119,7 @@
     {
     }
 
+#pragma warning disable 618
     public class FakeTopolySectionManager : ITopologySectionManager
     {
         public TopologySection DetermineReceiveResources(string inputQueue)
@@ -163,5 +164,6 @@
         {
             throw new NotImplementedException();
         }
+#pragma warning restore 618
     }
 }

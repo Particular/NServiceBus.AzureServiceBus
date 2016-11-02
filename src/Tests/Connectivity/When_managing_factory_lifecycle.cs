@@ -76,6 +76,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             Assert.AreNotEqual(first, second);
         }
 
+#pragma warning disable 618
         class InterceptedFactoryCreator : ICreateMessagingFactories
         {
             public int InvocationCount = 0;
@@ -125,5 +126,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 throw new System.NotImplementedException();
             }
         }
+#pragma warning restore 618
     }
 }

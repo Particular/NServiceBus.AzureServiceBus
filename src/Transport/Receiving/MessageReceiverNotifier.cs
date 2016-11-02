@@ -145,8 +145,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             if (messagingException != null && messagingException.IsTransient)
             {
                 logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
-
-                // TODO ideally we'd failover to another space if in a certain period of time there are too many transient errors
             }
             else
             {

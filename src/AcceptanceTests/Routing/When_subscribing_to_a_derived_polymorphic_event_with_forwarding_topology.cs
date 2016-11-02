@@ -99,7 +99,9 @@
 
                 protected override Task OnStart(IMessageSession session)
                 {
+#pragma warning disable 618
                     context.IsForwardingTopology = settings.Get<ITopology>() is ForwardingTopology;
+#pragma warning restore 618
                     return TaskEx.Completed;
                 }
 
