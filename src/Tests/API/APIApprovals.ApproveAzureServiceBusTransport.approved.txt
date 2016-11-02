@@ -505,6 +505,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> Create(string topicPath, string subscriptionName, NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata metadata, string sqlFilter, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager, string forwardTo);
     }
+    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
+        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public interface ICreateAzureServiceBusTopics
     {
         System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.TopicDescription> Create(string topicPath, NServiceBus.Transport.AzureServiceBus.INamespaceManager namespaceManager);
