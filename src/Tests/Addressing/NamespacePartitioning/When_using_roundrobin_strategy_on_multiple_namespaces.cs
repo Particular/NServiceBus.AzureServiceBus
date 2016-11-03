@@ -2,35 +2,27 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
 {
     using System.Configuration;
     using System.Linq;
-    using Settings;
-    using Transport.AzureServiceBus;
     using NUnit.Framework;
+    using Transport.AzureServiceBus;
 
-    #pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_using_roundrobin_strategy_on_multiple_namespaces
     {
-        static string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        static string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        static string TertiaryConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-
-        static string PrimaryName = "namespace1";
-        static string SecondaryName = "namespace2";
-        static string TertiaryName = "namespace3";
-
-        RoundRobinNamespacePartitioning strategy;
-
         [SetUp]
         public void SetUp()
         {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
-            extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
-            extensions.NamespacePartitioning().AddNamespace(TertiaryName, TertiaryConnectionString);
+            var primary = new NamespaceInfo(PrimaryName, PrimaryConnectionString);
+            var secondary = new NamespaceInfo(SecondaryName, SecondaryConnectionString);
+            var tertiary = new NamespaceInfo(TertiaryName, TertiaryConnectionString);
 
-            strategy = new RoundRobinNamespacePartitioning(settings);
+            strategy = new RoundRobinPartitioning();
+            strategy.Initialize(new[]
+            {
+                primary,
+                secondary,
+                tertiary
+            });
         }
 
         [Test]
@@ -72,20 +64,30 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Roundrobin_partitioning_strategy_will_throw_if_no_namespace_are_provided()
         {
-            var settings = new SettingsHolder();
+            var strategyWhichShouldThrow = new RoundRobinPartitioning();
 
-            Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => strategyWhichShouldThrow.Initialize(new NamespaceInfo[0]));
         }
 
         [Test]
         public void Roundrobin_partitioning_strategy_will_throw_if_too_little_namespaces_are_provided()
         {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
+            var strategyWhichShouldThrow = new RoundRobinPartitioning();
+            var primary = new NamespaceInfo(PrimaryName, PrimaryConnectionString);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => strategyWhichShouldThrow.Initialize(new[]
+            {
+                primary
+            }));
         }
 
+        RoundRobinPartitioning strategy;
+        static string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string TertiaryConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+
+        static string PrimaryName = "namespace1";
+        static string SecondaryName = "namespace2";
+        static string TertiaryName = "namespace3";
     }
 }

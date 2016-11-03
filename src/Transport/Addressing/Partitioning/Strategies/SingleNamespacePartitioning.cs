@@ -6,6 +6,7 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    [ObsoleteEx(RemoveInVersion = "9.0", TreatAsErrorFromVersion = "8.0", ReplacementTypeOrMember = "FailOverPartitioning")]
     public class SingleNamespacePartitioning : INamespacePartitioningStrategy
     {
         NamespaceConfigurations namespaces;

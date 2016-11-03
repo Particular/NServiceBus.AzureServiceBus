@@ -6,6 +6,7 @@
     using Transport.AzureServiceBus;
     using Settings;
 
+    [ObsoleteEx(RemoveInVersion = "9.0", TreatAsErrorFromVersion = "8.0", ReplacementTypeOrMember = "FailOverPartitioning")]
     public class FailOverNamespacePartitioning : INamespacePartitioningStrategy
     {
         NamespaceConfigurations namespaces;

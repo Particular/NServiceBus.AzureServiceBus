@@ -21,9 +21,38 @@
         /// <see cref="FailOverNamespacePartitioning"/>,
         /// </remarks>
         /// </summary>
+        [ObsoleteEx(RemoveInVersion = "9.0", TreatAsErrorFromVersion = "8.0", ReplacementTypeOrMember = "With<T>() where T : IPartitioningStrategy")]
         public AzureServiceBusNamespacePartitioningSettings UseStrategy<T>() where T : INamespacePartitioningStrategy
         {
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(T));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Namespace partitioning strategy to use.
+        /// <remarks> Default is <see cref="SinglePartitioning"/>. 
+        /// Additional strategies are <see cref="RoundRobinPartitioning"/>,
+        /// <see cref="FailOverPartitioning"/>,
+        /// </remarks>
+        /// </summary>
+        public AzureServiceBusNamespacePartitioningSettings With<T>() where T : IPartitioningStrategy, new()
+        {
+            settings.Set<IPartitioningStrategy>(new T());
+
+            return this;
+        }
+
+        /// <summary>
+        /// Namespace partitioning strategy to use.
+        /// <remarks> Default is <see cref="SinglePartitioning"/>. 
+        /// Additional strategies are <see cref="RoundRobinNamespacePartitioning"/>,
+        /// <see cref="FailOverPartitioning"/>,
+        /// </remarks>
+        /// </summary>
+        public AzureServiceBusNamespacePartitioningSettings With(IPartitioningStrategy strategy)
+        {
+            settings.Set<IPartitioningStrategy>(strategy);
 
             return this;
         }

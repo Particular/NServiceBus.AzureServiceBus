@@ -2,9 +2,10 @@
 {
     using System.Collections.Generic;
 
-    [ObsoleteEx(RemoveInVersion = "9.0", TreatAsErrorFromVersion = "8.0", ReplacementTypeOrMember = "IPartitioningStrategy")]
-    public interface INamespacePartitioningStrategy
+    public interface IPartitioningStrategy
     {
+        void Initialize(NamespaceInfo[] namespacesForPartitioning);
+
         IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent);
     }
 }
