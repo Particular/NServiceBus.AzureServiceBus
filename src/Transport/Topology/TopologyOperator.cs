@@ -132,11 +132,8 @@ namespace NServiceBus.Transport.AzureServiceBus
                     continue;
                 }
 
-                if (notifier.RefCount > 0)
-                {
-                    notifier.RefCount--;
-                }
-                else
+                notifier.RefCount--;
+                if (notifier.RefCount <= 0)
                 {
                     await notifier.Stop().ConfigureAwait(false);
                 }

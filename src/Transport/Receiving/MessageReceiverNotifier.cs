@@ -19,6 +19,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.settings = settings;
+            RefCount = 1;
         }
 
         bool ShouldReceiveMessages => !stopping || isRunning;
