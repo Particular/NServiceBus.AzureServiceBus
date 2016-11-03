@@ -43,23 +43,17 @@ namespace NServiceBus.Transport.AzureServiceBus
                 fullPath = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, entity.Path);
             }
 
+            autoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout);
             numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
             var concurrency = maximumConcurrency/(double) numberOfClients;
-            var maxConcurrentCalls = concurrency > 1 ? (int) Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
+            maxConcurrentCalls = concurrency > 1 ? (int) Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
             if (Math.Abs(maxConcurrentCalls - concurrency) > 0)
             {
                 logger.InfoFormat("The maximum concurrency on this message receiver instance has been adjusted to '{0}', because the total maximum concurrency '{1}' wasn't divisable by the number of clients '{2}'", maxConcurrentCalls, maximumConcurrency, numberOfClients);
             }
-            options = new OnMessageOptions
-            {
-                AutoComplete = false,
-                AutoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
-                MaxConcurrentCalls = maxConcurrentCalls
-            };
-
-            options.ExceptionReceived += OptionsOnExceptionReceived;
 
             internalReceivers = new IMessageReceiver[numberOfClients];
+            options = new OnMessageOptions[numberOfClients];
             completion = new MultiProducerConcurrentCompletion<Guid>(1000, TimeSpan.FromSeconds(1), 6, numberOfClients);
         }
 
@@ -81,8 +75,17 @@ namespace NServiceBus.Transport.AzureServiceBus
                         throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
                     }
 
-                    internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, i, pipelineInvocationTasks), options);
+                    var onMessageOptions = new OnMessageOptions
+                    {
+                        AutoComplete = false,
+                        AutoRenewTimeout = autoRenewTimeout,
+                        MaxConcurrentCalls = maxConcurrentCalls
+                    };
+                    onMessageOptions.ExceptionReceived += OptionsOnExceptionReceived;
+                    internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, i, pipelineInvocationTasks), onMessageOptions);
+
                     internalReceivers[i] = internalReceiver;
+                    options[i] = onMessageOptions;
 
                     isRunning = true;
                 }
@@ -96,11 +99,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public async Task Stop()
         {
-            options.ExceptionReceived -= OptionsOnExceptionReceived;
-
             stopping = true;
 
             logger.Info($"Stopping notifier for '{fullPath}'");
+
+            foreach (var option in options)
+            {
+                option.ExceptionReceived -= OptionsOnExceptionReceived;
+            }
 
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
             var allTasks = pipelineInvocationTasks.Values;
@@ -121,6 +127,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             await Task.WhenAll(closeTasks).ConfigureAwait(false);
 
             pipelineInvocationTasks.Clear();
+            Array.Clear(internalReceivers, 0, internalReceivers.Length);
+            Array.Clear(options, 0, options.Length);
 
             logger.Info($"Notifier for '{fullPath}' stopped");
 
@@ -303,7 +311,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         ReadOnlySettings settings;
         IMessageReceiver[] internalReceivers;
         ReceiveMode receiveMode;
-        OnMessageOptions options;
+        OnMessageOptions[] options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
         ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
@@ -314,6 +322,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
         int numberOfClients;
         MultiProducerConcurrentCompletion<Guid> completion;
+        int maxConcurrentCalls;
+        TimeSpan autoRenewTimeout;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
     }
 }
