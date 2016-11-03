@@ -6,9 +6,13 @@
     {
         readonly NamespaceInfo info;
 
-        public RuntimeNamespaceInfo(string alias, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning, NamespaceMode mode = NamespaceMode.Active)
+        public RuntimeNamespaceInfo(string alias, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning, NamespaceMode mode = NamespaceMode.Active) : this(new NamespaceInfo(alias, connectionString, purpose), mode)
         {
-            info = new NamespaceInfo(alias, connectionString, purpose);
+        }
+
+        internal RuntimeNamespaceInfo(NamespaceInfo info, NamespaceMode mode = NamespaceMode.Active)
+        {
+            this.info = info;
             Mode = mode;
         }
 

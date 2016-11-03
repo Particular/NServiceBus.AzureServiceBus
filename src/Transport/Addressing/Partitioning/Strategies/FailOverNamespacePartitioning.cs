@@ -3,21 +3,17 @@
     using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
+    using AzureServiceBus.Addressing.Partitioning;
     using Transport.AzureServiceBus;
     using Settings;
 
     public class FailOverNamespacePartitioning : INamespacePartitioningStrategy
     {
-        NamespaceConfigurations namespaces;
+        List<RuntimeNamespaceInfo> namespaces;
 
         public FailOverNamespacePartitioning(ReadOnlySettings settings)
         {
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
-            {
-                throw new ConfigurationErrorsException($"The '{nameof(FailOverNamespacePartitioning)}' strategy requires exactly two namespaces to be configured, please use {nameof(AzureServiceBusTransportExtensions.NamespacePartitioning)}().{nameof(AzureServiceBusNamespacePartitioningSettings.AddNamespace)}() to register the namespaces.");
-            }
-
-            namespaces = new NamespaceConfigurations(namespaces.Where(n => n.Purpose == NamespacePurpose.Partitioning).ToList());
+            namespaces = settings.GetPartitioningNamespaces();
 
             if (namespaces.Count < 2)
             {
@@ -38,15 +34,13 @@
 
             if (partitioningIntent == PartitioningIntent.Sending)
             {
-                yield return Mode == FailOverMode.Primary
-                ? new RuntimeNamespaceInfo(primary.Alias, primary.ConnectionString, primary.Purpose, NamespaceMode.Active)
-                : new RuntimeNamespaceInfo(secondary.Alias, secondary.ConnectionString, secondary.Purpose, NamespaceMode.Active);
+                yield return Mode == FailOverMode.Primary ? primary : secondary;
             }
 
             if (partitioningIntent == PartitioningIntent.Creating || partitioningIntent == PartitioningIntent.Receiving)
             {
-                yield return new RuntimeNamespaceInfo(primary.Alias, primary.ConnectionString, primary.Purpose, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
-                yield return new RuntimeNamespaceInfo(secondary.Alias, secondary.ConnectionString, secondary.Purpose, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
+                yield return new RuntimeNamespaceInfo(primary.Alias, primary.ConnectionString, NamespacePurpose.Partitioning, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
+                yield return new RuntimeNamespaceInfo(secondary.Alias, secondary.ConnectionString, NamespacePurpose.Partitioning, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
             }
         }
     }

@@ -1,4 +1,12 @@
-﻿namespace NServiceBus
+﻿namespace NServiceBus.AzureServiceBus.Addressing.Partitioning
+{
+    
+    public class static ReadOnlySettingsExtensions
+    {
+        public static System.Collections.Generic.List<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetPartitioningNamespaces(this NServiceBus.Settings.ReadOnlySettings settings) { }
+    }
+}
+namespace NServiceBus
 {
     
     public class AzureServiceBusCompositionExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings

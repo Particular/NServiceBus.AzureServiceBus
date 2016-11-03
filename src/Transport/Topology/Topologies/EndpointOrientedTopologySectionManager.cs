@@ -113,7 +113,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 if (inputQueueAddress.HasConnectionString)
                 {
                     namespaces = new[]{
-                        new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing, NamespaceMode.Active)
+                        new RuntimeNamespaceInfo(new NamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing))
                     };
                 }
                 else
@@ -126,7 +126,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         {
                             namespaces = new[]
                             {
-                                new RuntimeNamespaceInfo(configured.Alias, configured.ConnectionString, configured.Purpose, NamespaceMode.Active)
+                                new RuntimeNamespaceInfo(new NamespaceInfo(configured.Alias, configured.ConnectionString, configured.Purpose))
                             };
                         }
                     }
