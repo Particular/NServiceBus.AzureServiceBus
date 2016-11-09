@@ -62,6 +62,35 @@
             Assert.AreEqual(exceptionThrownByMessagePump, exceptionReceivedByCircuitBreaker, "Exception circuit breaker got should be the same as the one raised by message pump");
         }
 
+        [Test]
+        public async Task Should_failover_for_partitioning_strategy_that_can_fail_over()
+        {
+            var container = new TransportPartsContainer();
+
+            var fakeTopologyOperator = new FakeTopologyOperator();
+            container.Register<IOperateTopology>(() => fakeTopologyOperator);
+
+            var settings = new SettingsHolder();
+            new DefaultConfigurationValues().Apply(settings);
+            container.Register<ReadOnlySettings>(() => settings);
+
+            var criticalError = new CriticalError(ctx => TaskEx.Completed);
+            // capture failover intent to verify behavior
+            var namespacePartitioningStrategy = new FakeFailoverPartitioningStrategy();
+
+            var pump = new MessagePump(new FakeTopology(), container, namespacePartitioningStrategy, settings);
+            await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+            pump.OnError(exception => TaskEx.Completed);
+            pump.Start(new PushRuntimeSettings(1));
+
+            await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new byte[0]), new FakeReceiveContext());
+            var exceptionThrownByMessagePump = new Exception("kaboom");
+            await fakeTopologyOperator.onError(exceptionThrownByMessagePump);
+
+            // validate
+            Assert.IsTrue(namespacePartitioningStrategy.FailedOver, "should_fail_over");
+        }
+
         class FakeReceiveContext : ReceiveContext
         {
         }
@@ -180,6 +209,21 @@
             {
                 throw new NotImplementedException();
             }
+        }
+    }
+
+    class FakeFailoverPartitioningStrategy : INamespacePartitioningStrategy, IPerformNamespacePartitioningFailOver
+    {
+        public bool FailedOver { get; set; }
+
+        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
+        {
+            return new List<RuntimeNamespaceInfo>();
+        }
+
+        public void FailOver()
+        {
+            FailedOver = true;
         }
     }
 }
