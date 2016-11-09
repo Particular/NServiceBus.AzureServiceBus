@@ -41,7 +41,7 @@
             });
             criticalError.GetType().GetMethod("SetEndpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Invoke(criticalError, new[] { new FakeEndpoint() });
 
-            var pump = new MessagePump(new FakeTopology(), container, settings);
+            var pump = new MessagePump(new FakeTopology(), container, null, settings);
             await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
             pump.OnError(exception =>
             {

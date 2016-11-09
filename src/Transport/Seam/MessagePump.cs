@@ -14,6 +14,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         ITopologySectionManager topologySectionManager;
         readonly ITransportPartsContainer container;
+        readonly INamespacePartitioningStrategy namespacePartitioningStrategy;
         IOperateTopology topologyOperator;
         Func<MessageContext, Task> messagePump;
         RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
@@ -22,10 +23,11 @@ namespace NServiceBus.Transport.AzureServiceBus
         SatelliteTransportAddressCollection satelliteTransportAddresses;
         SemaphoreSlim throttler;
 
-        public MessagePump(ITopologySectionManager topologySectionManager, ITransportPartsContainer container, ReadOnlySettings settings)
+        public MessagePump(ITopologySectionManager topologySectionManager, ITransportPartsContainer container, INamespacePartitioningStrategy namespacePartitioningStrategy, ReadOnlySettings settings)
         {
             this.topologySectionManager = topologySectionManager;
             this.container = container;
+            this.namespacePartitioningStrategy = namespacePartitioningStrategy;
             satelliteTransportAddresses = settings.Get<SatelliteTransportAddressCollection>();
         }
 
@@ -93,6 +95,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             topologyOperator.OnError(async exception =>
             {
                 await circuitBreaker.Failure(exception).ConfigureAwait(false);
+
+                // in case of failover partitioning strategy, fail over
+                var namespacePartitioningStrategyWithFailover = namespacePartitioningStrategy as IPerformNamespacePartitioningFailOver;
+                namespacePartitioningStrategyWithFailover?.FailOver();
+
                 await func(exception).ConfigureAwait(false);
             });
         }
