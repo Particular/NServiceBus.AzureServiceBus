@@ -89,6 +89,7 @@
     <Compile Include="Addressing\Partitioning\Strategies\FailOverMode.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualization.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualization.cs" />
+    <Compile Include="Addressing\Partitioning\IPerformNamespacePartitioningFailOver.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\ValidateAndHashIfNeeded.cs" />
     <Compile Include="Addressing\Sanitization\ValidationResult.cs" />
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
