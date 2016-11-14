@@ -157,7 +157,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
                 else // sending to the partition
                 {
-                    namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+                    namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
                 }
 
                 if (namespaces == null)
