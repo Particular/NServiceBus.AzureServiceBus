@@ -6,7 +6,7 @@
     using Transport.AzureServiceBus;
     using Settings;
 
-    public class FailOverNamespacePartitioning : INamespacePartitioningStrategy, IPerformNamespacePartitioningFailOver
+    public class FailOverNamespacePartitioning : INamespacePartitioningStrategy
     {
         NamespaceConfigurations namespaces;
 
@@ -38,18 +38,6 @@
 
             yield return new RuntimeNamespaceInfo(primary.Alias, primary.ConnectionString, primary.Purpose, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
             yield return new RuntimeNamespaceInfo(secondary.Alias, secondary.ConnectionString, secondary.Purpose, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
-        }
-
-        void IPerformNamespacePartitioningFailOver.FailOver()
-        {
-            if (Mode == FailOverMode.Primary)
-            {
-                Mode = FailOverMode.Secondary;
-            }
-            else
-            {
-                Mode = FailOverMode.Primary;
-            }
         }
     }
 }

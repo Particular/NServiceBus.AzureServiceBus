@@ -20,7 +20,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             new DefaultConfigurationValues().Apply(settings);
             container.Register<ReadOnlySettings>(() => settings);
 
-            var pump = new MessagePump(null, container, null, settings);
+            var pump = new MessagePump(null, container, settings);
             var criticalError = new CriticalError(ctx => TaskEx.Completed);
 
             const bool purgeOnStartup = true;

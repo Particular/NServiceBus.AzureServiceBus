@@ -237,7 +237,7 @@
         Subscription = 2,
         Rule = 3,
     }
-    public class FailOverNamespacePartitioning : NServiceBus.IPerformNamespacePartitioningFailOver, NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
+    public class FailOverNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
     {
         public FailOverNamespacePartitioning(NServiceBus.Settings.ReadOnlySettings settings) { }
         public NServiceBus.Transport.AzureServiceBus.FailOverMode Mode { get; set; }
