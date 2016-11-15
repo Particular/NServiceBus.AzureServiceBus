@@ -1,5 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -9,6 +10,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using TestUtils;
     using Transport.AzureServiceBus;
     using DeliveryConstraints;
+    using Microsoft.ServiceBus;
     using Settings;
     using Transport;
     using NUnit.Framework;
@@ -47,28 +49,28 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                 Destinations = new TopologySectionInternal
                 {
                     Entities = new List<EntityInfoInternal>
-                        {
+                    {
                             new EntityInfoInternal
-                            {
-                                Namespace = @namespace,
-                                Path = "MyQueue",
-                                Type = EntityType.Queue
-                            }
-                        },
-                    Namespaces = new List<RuntimeNamespaceInfo>
                         {
-                            @namespace
+                            Namespace = @namespace,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
                         }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace
+                    }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
                 Operations = new List<BatchedOperationInternal>
-                    {
+                {
                         new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        },
-                    }
+                    {
+                        Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
+                    },
+                }
             };
 
             // perform the test
@@ -112,34 +114,34 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                 Destinations = new TopologySectionInternal
                 {
                     Entities = new List<EntityInfoInternal>
-                        {
+                    {
                             new EntityInfoInternal
-                            {
-                                Namespace = @namespace,
-                                Path = "MyQueue",
-                                Type = EntityType.Queue
-                            }
-                        },
-                    Namespaces = new List<RuntimeNamespaceInfo>
                         {
-                            @namespace
+                            Namespace = @namespace,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
                         }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace
+                    }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
                 Operations = new List<BatchedOperationInternal>
-                    {
+                {
                         new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        },
+                    {
+                        Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
+                    },
 
                         new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        }
+                    {
+                        Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
                     }
+                }
             };
 
             // perform the test
@@ -177,39 +179,39 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
-            var bytes = Enumerable.Range(0, 220 * 1024).Select(x => (byte)(x % 256)).ToArray();
+            var bytes = Enumerable.Range(0, 220*1024).Select(x => (byte) (x%256)).ToArray();
             var batch = new BatchInternal
             {
                 Destinations = new TopologySectionInternal
                 {
                     Entities = new List<EntityInfoInternal>
-                        {
+                    {
                             new EntityInfoInternal
-                            {
-                                Namespace = @namespace,
-                                Path = "MyQueue",
-                                Type = EntityType.Queue
-                            }
-                        },
-                    Namespaces = new List<RuntimeNamespaceInfo>
                         {
-                            @namespace
+                            Namespace = @namespace,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
                         }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace
+                    }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
                 Operations = new List<BatchedOperationInternal>
+                {
+                        new BatchedOperationInternal
                     {
+                        Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
+                    },
                         new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        },
-                        new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        }
+                    {
+                        Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
                     }
+                }
             };
 
             // perform the test
@@ -247,35 +249,35 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
-            var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
+            var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes)*1024).Select(x => (byte) (x%256)).ToArray();
 
             var batch = new BatchInternal
             {
                 Destinations = new TopologySectionInternal
                 {
                     Entities = new List<EntityInfoInternal>
-                        {
+                    {
                             new EntityInfoInternal
-                            {
-                                Namespace = @namespace,
-                                Path = "MyQueue",
-                                Type = EntityType.Queue
-                            }
-                        },
-                    Namespaces = new List<RuntimeNamespaceInfo>
                         {
-                            @namespace
+                            Namespace = @namespace,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
                         }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace
+                    }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
                 Operations = new List<BatchedOperationInternal>
-                    {
+                {
                         new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        }
+                    {
+                        Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
                     }
+                }
             };
 
             // perform the test
@@ -311,35 +313,35 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
-            var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
+            var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes)*1024).Select(x => (byte) (x%256)).ToArray();
 
             var batch = new BatchInternal
             {
                 Destinations = new TopologySectionInternal
                 {
                     Entities = new List<EntityInfoInternal>
-                        {
+                    {
                             new EntityInfoInternal
-                            {
-                                Namespace = @namespace,
-                                Path = "MyQueue",
-                                Type = EntityType.Queue
-                            }
-                        },
-                    Namespaces = new List<RuntimeNamespaceInfo>
                         {
-                            @namespace
+                            Namespace = @namespace,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
                         }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace
+                    }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
                 Operations = new List<BatchedOperationInternal>
-                    {
+                {
                         new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        }
+                    {
+                        Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
                     }
+                }
             };
 
             // perform the test
@@ -386,35 +388,35 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                 Destinations = new TopologySectionInternal
                 {
                     Entities = new List<EntityInfoInternal>
+                    {
+                            new EntityInfoInternal
                         {
-                            new EntityInfoInternal
-                            {
-                                Namespace = @namespace,
-                                Path = "MyQueue",
-                                Type = EntityType.Queue
-                            },
-                            new EntityInfoInternal
-                            {
-                                Namespace = fallback,
-                                Path = "MyQueue",
-                                Type = EntityType.Queue
-                            }
+                            Namespace = @namespace,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
                         },
-                    Namespaces = new List<RuntimeNamespaceInfo>
+                            new EntityInfoInternal
                         {
-                            @namespace,
-                            fallback
+                            Namespace = fallback,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
                         }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace,
+                        fallback
+                    }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
                 Operations = new List<BatchedOperationInternal>
-                    {
+                {
                         new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        },
-                    }
+                    {
+                        Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
+                    },
+                }
             };
 
             // perform the test
@@ -464,35 +466,35 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                 Destinations = new TopologySectionInternal
                 {
                     Entities = new List<EntityInfoInternal>
+                    {
+                            new EntityInfoInternal
                         {
-                            new EntityInfoInternal
-                            {
-                                Namespace = @namespace,
-                                Path = "MyQueue",
-                                Type = EntityType.Queue
-                            },
-                            new EntityInfoInternal
-                            {
-                                Namespace = fallback,
-                                Path = "MyQueue",
-                                Type = EntityType.Queue
-                            }
+                            Namespace = @namespace,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
                         },
-                    Namespaces = new List<RuntimeNamespaceInfo>
+                            new EntityInfoInternal
                         {
-                            @namespace,
-                            fallback
+                            Namespace = fallback,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
                         }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace,
+                        fallback
+                    }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
                 Operations = new List<BatchedOperationInternal>
-                    {
+                {
                         new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        },
-                    }
+                    {
+                        Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
+                    },
+                }
             };
 
             // perform the test
@@ -537,36 +539,36 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
             var @fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, mode: NamespaceMode.Passive);
-            var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
+            var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes)*1024).Select(x => (byte) (x%256)).ToArray();
 
             var batch = new BatchInternal
             {
                 Destinations = new TopologySectionInternal
                 {
                     Entities = new List<EntityInfoInternal>
-                        {
+                    {
                             new EntityInfoInternal
-                            {
-                                Namespace = @namespace,
-                                Path = "myqueue",
-                                Type = EntityType.Queue
-                            }
-                        },
-                    Namespaces = new List<RuntimeNamespaceInfo>
                         {
-                            @namespace,
-                            @fallback
+                            Namespace = @namespace,
+                            Path = "myqueue",
+                            Type = EntityType.Queue
                         }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace,
+                        @fallback
+                    }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
                 Operations = new List<BatchedOperationInternal>
-                    {
+                {
                         new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        }
+                    {
+                        Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
                     }
+                }
             };
 
             // perform the test
@@ -608,36 +610,36 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
             var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, mode: NamespaceMode.Passive);
-            var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
+            var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes)*1024).Select(x => (byte) (x%256)).ToArray();
 
             var batch = new BatchInternal
             {
                 Destinations = new TopologySectionInternal
                 {
                     Entities = new List<EntityInfoInternal>
-                        {
+                    {
                             new EntityInfoInternal
-                            {
-                                Namespace = @namespace,
-                                Path = "MyQueue",
-                                Type = EntityType.Queue
-                            }
-                        },
-                    Namespaces = new List<RuntimeNamespaceInfo>
                         {
-                            @namespace,
-                            fallback
+                            Namespace = @namespace,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
                         }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace,
+                        fallback
+                    }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
                 Operations = new List<BatchedOperationInternal>
-                    {
+                {
                         new BatchedOperationInternal
-                        {
-                            Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
-                            DeliveryConstraints = new List<DeliveryConstraint>()
-                        }
+                    {
+                        Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
                     }
+                }
             };
 
             // perform the test
@@ -676,6 +678,176 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                 throw new MessageTooLargeException();
             }
         }
-    }
 
+        [Test]
+        public async Task Should_route_via_active_namespace_first_no_ASB_required()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var messageSenderCreator = new FakeICreateMessageSenders();
+            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
+            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
+
+            // setup the batch
+            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
+            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
+            var bytes = Encoding.UTF8.GetBytes("Whatever");
+            var batch = new Batch
+            {
+                Destinations = new TopologySection
+                {
+                    Entities = new List<EntityInfo>
+                    {
+                        new EntityInfo
+                        {
+                            Namespace = @namespace,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
+                        },
+                        new EntityInfo
+                        {
+                            Namespace = fallback,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
+                        }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace,
+                        fallback
+                    }
+                },
+                RequiredDispatchConsistency = DispatchConsistency.Default,
+                Operations = new List<BatchedOperation>
+                {
+                    new BatchedOperation
+                    {
+                        Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
+                    },
+                }
+            };
+
+            // perform the test
+            await router.RouteBatch(batch, null, DispatchConsistency.Default);
+
+            Assert.That(messageSenderCreator.Senders["primary"].NumberOfTimeInvoked, Is.EqualTo(1));
+            Assert.That(messageSenderCreator.Senders["fallback"].NumberOfTimeInvoked, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task Can_route_via_fallback_namespace_no_ASB_required()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var messageSenderCreator = new FakeICreateMessageSenders("primary");
+            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
+            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
+
+            // setup the batch
+            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
+            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
+            var bytes = Encoding.UTF8.GetBytes("Whatever");
+            var batch = new Batch
+            {
+                Destinations = new TopologySection
+                {
+                    Entities = new List<EntityInfo>
+                    {
+                        new EntityInfo
+                        {
+                            Namespace = @namespace,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
+                        },
+                        new EntityInfo
+                        {
+                            Namespace = fallback,
+                            Path = "MyQueue",
+                            Type = EntityType.Queue
+                        }
+                    },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        @namespace,
+                        fallback
+                    }
+                },
+                RequiredDispatchConsistency = DispatchConsistency.Default,
+                Operations = new List<BatchedOperation>
+                {
+                    new BatchedOperation
+                    {
+                        Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
+                        DeliveryConstraints = new List<DeliveryConstraint>()
+                    },
+                }
+            };
+
+            // perform the test
+            await router.RouteBatch(batch, null, DispatchConsistency.Default);
+
+            Assert.That(messageSenderCreator.Senders["primary"].NumberOfTimeInvoked, Is.EqualTo(0));
+            Assert.That(messageSenderCreator.Senders["fallback"].NumberOfTimeInvoked, Is.EqualTo(1));
+        }
+
+
+        class FakeICreateMessageSenders : ICreateMessageSenders
+        {
+            readonly string failOnNamespaceAlias;
+            public Dictionary<string, FakeIMessageSender> Senders = new Dictionary<string, FakeIMessageSender>();
+
+            public FakeICreateMessageSenders(string failOnNamespaceAlias = "")
+            {
+                this.failOnNamespaceAlias = failOnNamespaceAlias;
+            }
+
+            public Task<IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName)
+            {
+                FakeIMessageSender fakeIMessageSender;
+                if (!Senders.TryGetValue(namespaceName, out fakeIMessageSender))
+                {
+                    fakeIMessageSender = new FakeIMessageSender(namespaceName == failOnNamespaceAlias);
+                    Senders.Add(namespaceName, fakeIMessageSender);
+                }
+                return Task.FromResult<IMessageSender>(fakeIMessageSender);
+            }
+        }
+
+        class FakeIMessageSender : IMessageSender
+        {
+            readonly bool shouldThrowException;
+            public int NumberOfTimeInvoked;
+
+            public FakeIMessageSender(bool shouldThrowException)
+            {
+                this.shouldThrowException = shouldThrowException;
+                NumberOfTimeInvoked = 0;
+            }
+
+            public bool IsClosed => false;
+            public RetryPolicy RetryPolicy  { get; set; }
+            public Task Send(BrokeredMessage message)
+            {
+                if (shouldThrowException)
+                {
+                    throw new Exception("kaboom");
+                }
+                NumberOfTimeInvoked++;
+                return Task.FromResult(true);
+            }
+
+            public Task SendBatch(IEnumerable<BrokeredMessage> messages)
+            {
+                if (shouldThrowException)
+                {
+                    throw new Exception("kaboom");
+                }
+                NumberOfTimeInvoked++;
+                return Task.FromResult(true);
+            }
+        }
+    }
 }
