@@ -353,6 +353,86 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         }
 
         [Test]
+        public async Task Should_route_via_active_namespace_first()
+        {
+            // default settings
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
+            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
+
+            // setup the infrastructure
+            var namespaceManagerCreator = new NamespaceManagerCreator(settings);
+            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
+            var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
+            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
+            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
+
+            // create the fallback queue (but not the queue in the primary to emulate that it is down)
+            var creator = new AzureServiceBusQueueCreator(settings);
+            var primaryNamespaceManager = namespaceManagerLifeCycleManager.Get("primary");
+            var fallbackNamespaceManager = namespaceManagerLifeCycleManager.Get("fallback");
+            await creator.Create("myqueue", primaryNamespaceManager);
+            await creator.Create("myqueue", fallbackNamespaceManager);
+
+            // setup the batch
+            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
+            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
+            var bytes = Encoding.UTF8.GetBytes("Whatever");
+            var batch = new Batch
+            {
+                Destinations = new TopologySection
+                {
+                    Entities = new List<EntityInfo>
+                        {
+                            new EntityInfo
+                            {
+                                Namespace = @namespace,
+                                Path = "MyQueue",
+                                Type = EntityType.Queue
+                            },
+                            new EntityInfo
+                            {
+                                Namespace = fallback,
+                                Path = "MyQueue",
+                                Type = EntityType.Queue
+                            }
+                        },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                        {
+                            @namespace,
+                            fallback
+                        }
+                },
+                RequiredDispatchConsistency = DispatchConsistency.Default,
+                Operations = new List<BatchedOperation>
+                    {
+                        new BatchedOperation
+                        {
+                            Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
+                            DeliveryConstraints = new List<DeliveryConstraint>()
+                        },
+                    }
+            };
+
+            // perform the test
+            await router.RouteBatch(batch, null, DispatchConsistency.Default);
+
+            //validate
+            var queueOnPrimaryNamespace = await primaryNamespaceManager.GetQueue("myqueue");
+            Assert.IsTrue(queueOnPrimaryNamespace.MessageCount > 0, "expected to have messages in the primary queue, but there were no messages");
+
+            var queueOnSecondaryNamespace = await fallbackNamespaceManager.GetQueue("myqueue");
+            Assert.IsTrue(queueOnSecondaryNamespace.MessageCount == 0, "expected NOT to have messages in the secondary queue, but there were no messages");
+
+            //cleanup
+            await primaryNamespaceManager.DeleteQueue("myqueue");
+            await fallbackNamespaceManager.DeleteQueue("myqueue");
+        }
+
+        [Test]
         public async Task Can_route_via_fallback_namespace()
         {
             // default settings
@@ -388,6 +468,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                             new EntityInfo
                             {
                                 Namespace = @namespace,
+                                Path = "MyQueue",
+                                Type = EntityType.Queue
+                            },
+                            new EntityInfo
+                            {
+                                Namespace = fallback,
                                 Path = "MyQueue",
                                 Type = EntityType.Queue
                             }
