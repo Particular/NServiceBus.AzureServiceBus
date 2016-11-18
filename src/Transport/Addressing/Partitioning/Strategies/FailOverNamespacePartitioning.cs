@@ -36,18 +36,8 @@
             var primary = namespaces.First();
             var secondary = namespaces.Last();
 
-            if (partitioningIntent == PartitioningIntent.Sending)
-            {
-                yield return Mode == FailOverMode.Primary
-                ? new RuntimeNamespaceInfo(primary.Alias, primary.ConnectionString, primary.Purpose, NamespaceMode.Active)
-                : new RuntimeNamespaceInfo(secondary.Alias, secondary.ConnectionString, secondary.Purpose, NamespaceMode.Active);
-            }
-
-            if (partitioningIntent == PartitioningIntent.Creating || partitioningIntent == PartitioningIntent.Receiving)
-            {
-                yield return new RuntimeNamespaceInfo(primary.Alias, primary.ConnectionString, primary.Purpose, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
-                yield return new RuntimeNamespaceInfo(secondary.Alias, secondary.ConnectionString, secondary.Purpose, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
-            }
+            yield return new RuntimeNamespaceInfo(primary.Alias, primary.ConnectionString, primary.Purpose, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
+            yield return new RuntimeNamespaceInfo(secondary.Alias, secondary.ConnectionString, secondary.Purpose, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
         }
     }
 }
