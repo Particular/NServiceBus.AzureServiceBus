@@ -86,6 +86,7 @@
     <Compile Include="Addressing\Composition\Strategies\FlatComposition.cs" />
     <Compile Include="Addressing\Composition\Strategies\HierarchyComposition.cs" />
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\ReadOnlySettingsExtensions.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverMode.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualization.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualization.cs" />
