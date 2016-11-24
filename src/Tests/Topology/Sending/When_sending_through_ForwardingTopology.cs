@@ -57,5 +57,36 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         class SomeMessageType
         {
         }
+
+        [Test]
+        public void Returns_active_and_passive_namespaces_for_partitioned_sends()
+        {
+            var container = new TransportPartsContainer();
+
+            // setup using FailOverNamespacePartitioning to ensure we have active and passive namespaces for a failover
+            var topology = SetupForwardingTopologyWithFailoverNamespace(container, "sales");
+
+            var destination = topology.DetermineSendDestination("operations");
+
+            Assert.AreEqual(2, destination.Entities.Count(), "active and passive namespace should be returned");
+        }
+
+        ITopologySectionManager SetupForwardingTopologyWithFailoverNamespace(TransportPartsContainer container, string enpointname)
+        {
+            var settings = new SettingsHolder();
+            container.Register(typeof(SettingsHolder), () => settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
+            extensions.NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
+            extensions.NamespacePartitioning().AddNamespace("namespace2", AzureServiceBusConnectionString.Fallback);
+            extensions.NamespacePartitioning().UseStrategy<FailOverNamespacePartitioning>();
+
+            var topology = new ForwardingTopology(container);
+
+            topology.Initialize(settings);
+
+            return container.Resolve<ITopologySectionManager>();
+        }
+
     }
 }

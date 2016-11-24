@@ -410,5 +410,23 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var creator = new AzureServiceBusTopicCreator(settings);
             Assert.ThrowsAsync<ArgumentException>(async () => await creator.Create("existingtopic2", namespaceManager));
         }
+
+        [Test]
+        public async Task Should_create_topic_on_multiple_namespaces()
+        {
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var namespaceManager1 = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager2 = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
+            const string topicPath = "topic-caching-key";
+            await namespaceManager1.DeleteTopic(topicPath);
+            await namespaceManager2.DeleteTopic(topicPath);
+
+            var creator = new AzureServiceBusTopicCreator(settings);
+            await creator.Create(topicPath, namespaceManager1);
+            await creator.Create(topicPath, namespaceManager2);
+
+            Assert.IsTrue(await namespaceManager1.TopicExists(topicPath));
+            Assert.IsTrue(await namespaceManager2.TopicExists(topicPath));
+        }
     }
 }
