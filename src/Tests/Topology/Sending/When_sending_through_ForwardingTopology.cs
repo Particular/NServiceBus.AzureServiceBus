@@ -71,6 +71,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             Assert.AreEqual(2, destination.Entities.Count(), "active and passive namespace should be returned");
         }
 
+#pragma warning disable 618
         ITopologySectionManager SetupForwardingTopologyWithFailoverNamespace(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
@@ -87,6 +88,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 
             return container.Resolve<ITopologySectionManager>();
         }
-
+#pragma warning restore 618
     }
 }
