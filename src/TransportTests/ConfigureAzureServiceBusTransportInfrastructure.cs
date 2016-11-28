@@ -12,24 +12,20 @@ class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfra
         settings.Set("Transport.ConnectionString", Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString"));
         var connectionString = settings.Get<string>("Transport.ConnectionString");
         settings.Set<Conventions>(new Conventions());
-        //settings.Set("NServiceBus.Routing.EndpointName", "onmessagethrowsafterdelayedretryreceiveonly");
 
         var topologyName = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology", EnvironmentVariableTarget.User);
         topologyName = topologyName ?? Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
 
-        //endpointOrientedTopology.Initialize(settings);
-        if (topologyName == nameof(ForwardingTopology))
+        if (topologyName == "ForwardingTopology")
         {
-            var topology = Activator.CreateInstance<ForwardingTopology>();
 #pragma warning disable 618
-            settings.Set<ITopology>(topology);
+            settings.Set<ITopology>(new ForwardingTopology());
 #pragma warning restore 618
         }
         else
         {
-            var topology = Activator.CreateInstance<EndpointOrientedTopology>();
 #pragma warning disable 618
-            settings.Set<ITopology>(topology);
+            settings.Set<ITopology>(new EndpointOrientedTopology());
 #pragma warning restore 618
         }
 

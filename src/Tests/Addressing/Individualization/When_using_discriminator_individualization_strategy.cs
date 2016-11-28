@@ -19,9 +19,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualiz
             var config = new AzureServiceBusIndividualizationSettings(settingsHolder);
 #pragma warning restore 618
             config.UseStrategy<DiscriminatorBasedIndividualization>().DiscriminatorGenerator(endpointName => discriminator);
-
+#pragma warning disable 618
             var strategy = new DiscriminatorBasedIndividualization(settingsHolder);
-            
+#pragma warning restore 618
             Assert.That(strategy.Individualize(endpointname), Is.EqualTo(endpointname + discriminator));
         }
 
@@ -35,9 +35,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Individualiz
             var config = new AzureServiceBusIndividualizationSettings(settingsHolder);
 #pragma warning restore 618
             config.UseStrategy<DiscriminatorBasedIndividualization>();
-
+#pragma warning disable 618
             var strategy = new DiscriminatorBasedIndividualization(settingsHolder);
-            
+#pragma warning restore 618
             Assert.Throws<Exception>(() => strategy.Individualize(endpointname));
         }
     }
