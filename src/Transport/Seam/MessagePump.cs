@@ -10,7 +10,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Settings;
     using Transport;
 
-    class MessagePump : IPushMessages, IDisposable
+    class MessagePump : IPushMessages
     {
         ITopologySectionManager topologySectionManager;
         readonly ITransportPartsContainer container;
@@ -111,11 +111,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             await topologyOperator.Stop().ConfigureAwait(false);
 
             logger.Info($"Messagepump '{inputQueue}' stopped");
-        }
 
-        public void Dispose()
-        {
-            // Injected
+            throttler.Dispose();
+            circuitBreaker.Dispose();
         }
     }
 }

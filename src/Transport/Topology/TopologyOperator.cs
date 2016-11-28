@@ -7,7 +7,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Logging;
     using Transport;
 
-    class TopologyOperator : IOperateTopology, IDisposable
+    class TopologyOperator : IOperateTopology
     {
         ITransportPartsContainer container;
 
@@ -141,11 +141,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                     await notifier.Stop().ConfigureAwait(false);
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            // Injected
         }
     }
 }
