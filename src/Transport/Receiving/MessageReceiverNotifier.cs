@@ -221,46 +221,46 @@ namespace NServiceBus.Transport.AzureServiceBus
                 return;
             }
 
-            IncomingMessageDetails incomingMessage;
             try
             {
-                incomingMessage = brokeredMessageConverter.Convert(message);
-            }
-            catch (UnsupportedBrokeredMessageBodyTypeException exception)
-            {
-                await message.DeadLetterAsync("BrokeredMessage to IncomingMessageDetails conversion failure", exception.ToString()).ConfigureAwait(false);
-                return;
-            }
-
-            var context = new BrokeredMessageReceiveContext(message, entity, internalReceiver.Mode);
-            try
-            {
-                var scope = wrapInScope ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
-                {
-                    IsolationLevel = IsolationLevel.Serializable
-                }, TransactionScopeAsyncFlowOption.Enabled) : null;
-                {
-                    using (scope)
-                    {
-                        await incomingCallback(incomingMessage, context).ConfigureAwait(false);
-
-                        await HandleCompletion(message, context, completionCanBeBatched).ConfigureAwait(false);
-                        scope?.Complete();
-                    }
-                }
-            }
-            catch (Exception exception) when (ShouldReceiveMessages)
-            {
-                // and go into recovery mode so that no new messages are added to the transfer queue
-                context.Recovering = true;
-
-                // pass the context into the error pipeline
-                var transportTransaction = new TransportTransaction();
-                transportTransaction.Set(context);
-                var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
-
+                IncomingMessageDetails incomingMessage;
                 try
                 {
+                    incomingMessage = brokeredMessageConverter.Convert(message);
+                }
+                catch (UnsupportedBrokeredMessageBodyTypeException exception)
+                {
+                    await message.DeadLetterAsync("BrokeredMessage to IncomingMessageDetails conversion failure", exception.ToString()).ConfigureAwait(false);
+                    return;
+                }
+
+                var context = new BrokeredMessageReceiveContext(message, entity, internalReceiver.Mode);
+                try
+                {
+                    var scope = wrapInScope ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
+                    {
+                        IsolationLevel = IsolationLevel.Serializable
+                    }, TransactionScopeAsyncFlowOption.Enabled) : null;
+                    {
+                        using (scope)
+                        {
+                            await incomingCallback(incomingMessage, context).ConfigureAwait(false);
+
+                            await HandleCompletion(message, context, completionCanBeBatched).ConfigureAwait(false);
+                            scope?.Complete();
+                        }
+                    }
+                }
+                catch (Exception exception) when (ShouldReceiveMessages)
+                {
+                    // and go into recovery mode so that no new messages are added to the transfer queue
+                    context.Recovering = true;
+
+                    // pass the context into the error pipeline
+                    var transportTransaction = new TransportTransaction();
+                    transportTransaction.Set(context);
+                    var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
+
                     var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
                     if (result == ErrorHandleResult.RetryRequired)
                     {
@@ -271,10 +271,11 @@ namespace NServiceBus.Transport.AzureServiceBus
                         await HandleCompletion(message, context, completionCanBeBatched).ConfigureAwait(false);
                     }
                 }
-                catch (Exception onErrorException)
-                {
-                    await AbandonAsync(message, onErrorException).ConfigureAwait(false);
-                }
+            }
+            catch (Exception onErrorException)
+            {
+                await AbandonAsync(message, onErrorException).ConfigureAwait(false);
+                await errorCallback(onErrorException).ConfigureAwait(false);
             }
         }
 
@@ -312,11 +313,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             logger.Info("Exceptions occurred OnComplete", exception);
 
             await AbandonInternal(message).ConfigureAwait(false);
-
-            if (exception != null)
-            {
-                await errorCallback(exception).ConfigureAwait(false);
-            }
         }
 
         async Task AbandonInternal(BrokeredMessage message, IDictionary<string, object> propertiesToModify = null)
@@ -327,7 +323,14 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 logger.InfoFormat("Abandoning brokered message {0}", message.MessageId);
 
-                await message.SafeAbandonAsync(propertiesToModify).ConfigureAwait(false);
+                if (await message.SafeAbandonAsync(propertiesToModify).ConfigureAwait(false))
+                {
+                    logger.InfoFormat("Brokered message {0} abandoned successfully.", message.MessageId);
+                }
+                else
+                {
+                    logger.InfoFormat("Abandoning brokered message {0} failed. Message will reappear after peek lock duration is over.", message.MessageId);
+                }
 
                 suppressScope.Complete();
             }
