@@ -294,7 +294,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     }
                     else
                     {
-                        await context.IncomingBrokeredMessage.CompleteAsync().ConfigureAwait(false);
+                        await context.IncomingBrokeredMessage.SafeCompleteAsync().ConfigureAwait(false);
                     }
                 }
             }
