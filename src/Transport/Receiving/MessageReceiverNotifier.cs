@@ -20,6 +20,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.settings = settings;
             locksTokensToComplete = new ConcurrentStack<Guid>();
             batchedCompletionCts = new CancellationTokenSource();
+            RefCount = 1;
         }
 
         bool ShouldReceiveMessages => !stopping || isRunning;
