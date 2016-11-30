@@ -9,6 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Transactions;
     using Logging;
     using Microsoft.ServiceBus.Messaging;
+    using NServiceBus.AzureServiceBus;
     using Settings;
 
     class MessageReceiverNotifier : INotifyIncomingMessages
@@ -34,7 +35,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
             incomingCallback = callback;
-            this.errorCallback = errorCallback;
+            this.errorCallback = errorCallback ?? EmptyErrorCallback;
             this.processingFailureCallback = processingFailureCallback;
             this.entity = entity;
 
@@ -139,30 +140,37 @@ namespace NServiceBus.Transport.AzureServiceBus
             isRunning = false;
         }
 
-        void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
+        // Intentionally made async void since we don't care about the outcome here
+        // according to blog posts, this method is invoked on
+        //- Exceptions raised during the time that the message pump is waiting for messages to arrive on the service bus
+        //- Exceptions raised during the time that your code is processing the BrokeredMessage
+        //- It is raised when the receive process successfully completes. (Does not seem to be the case)
+        async void OptionsOnExceptionReceived(object sender, ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
-            // according to blog posts, this method is invoked on
-            //- Exceptions raised during the time that the message pump is waiting for messages to arrive on the service bus
-            //- Exceptions raised during the time that your code is processing the BrokeredMessage
-            //- It is raised when the receive process successfully completes. (Does not seem to be the case)
-
-            if (!ShouldReceiveMessages)
+            try
             {
-                logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}' while shutting down.");
-                return;
+                if (!ShouldReceiveMessages)
+                {
+                    logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}' while shutting down.");
+                    return;
+                }
+
+                //- It is raised when the underlying connection closes because of our close operation
+                var messagingException = exceptionReceivedEventArgs.Exception as MessagingException;
+                if (messagingException != null && messagingException.IsTransient)
+                {
+                    logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
+                }
+                else
+                {
+                    logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}', with non-transient exception.", exceptionReceivedEventArgs.Exception);
+
+                    await errorCallback.Invoke(exceptionReceivedEventArgs.Exception).ConfigureAwait(false);
+                }
             }
-
-            //- It is raised when the underlying connection closes because of our close operation
-            var messagingException = exceptionReceivedEventArgs.Exception as MessagingException;
-            if (messagingException != null && messagingException.IsTransient)
+            catch 
             {
-                logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
-            }
-            else
-            {
-                logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}', with non-transient exception.", exceptionReceivedEventArgs.Exception);
-
-                errorCallback?.Invoke(exceptionReceivedEventArgs.Exception).GetAwaiter().GetResult();
+                // Intentionally left blank. Any exception raised to the SDK would issue an Environment.FailFast
             }
         }
 
@@ -306,7 +314,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             await AbandonInternal(message).ConfigureAwait(false);
 
-            if (errorCallback != null && exception != null)
+            if (exception != null)
             {
                 await errorCallback(exception).ConfigureAwait(false);
             }
@@ -326,7 +334,13 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
+        static Task EmptyErrorCallback(Exception exception)
+        {
+            return TaskEx.Completed;
+        }
+
         IManageMessageReceiverLifeCycle clientEntities;
+
         IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
         ReadOnlySettings settings;
         IMessageReceiver[] internalReceivers;
