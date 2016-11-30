@@ -24,8 +24,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             RefCount = 1;
         }
 
-        bool ShouldReceiveMessages => !stopping;
-
         public bool IsRunning => isRunning;
 
         public int RefCount { get; set; }
@@ -152,7 +150,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             try
             {
-                if (!ShouldReceiveMessages)
+                if (stopping)
                 {
                     logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}' while shutting down.");
                     return;
@@ -215,7 +213,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         async Task ProcessMessage(IMessageReceiver internalReceiver, BrokeredMessage message)
         {
-            if (!ShouldReceiveMessages)
+            if (stopping)
             {
                 logger.Info($"Received message with ID {message.MessageId} while shutting down. Message will not be processed and will be retried after {message.LockedUntilUtc}.");
                 return;
@@ -251,7 +249,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         }
                     }
                 }
-                catch (Exception exception) when (ShouldReceiveMessages)
+                catch (Exception exception) when (!stopping)
                 {
                     // and go into recovery mode so that no new messages are added to the transfer queue
                     context.Recovering = true;
