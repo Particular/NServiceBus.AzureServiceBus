@@ -46,6 +46,9 @@ namespace NServiceBus.Transport.AzureServiceBus
                 fullPath = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, entity.Path);
             }
 
+            var transportTransactionMode = settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode();
+            wrapInScope = transportTransactionMode == TransportTransactionMode.SendsAtomicWithReceive;
+            completionCanBeBatched = !wrapInScope;
             autoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout);
             numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
             var concurrency = maximumConcurrency/(double) numberOfClients;
@@ -230,10 +233,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             var context = new BrokeredMessageReceiveContext(message, entity, internalReceiver.Mode);
-
-            var transportTransactionMode = settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode();
-            var wrapInScope = transportTransactionMode == TransportTransactionMode.SendsAtomicWithReceive;
-            var completionCanBeBatched = !wrapInScope;
             try
             {
                 var scope = wrapInScope ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
@@ -361,5 +360,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         int maxConcurrentCalls;
         TimeSpan autoRenewTimeout;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
+        bool wrapInScope;
+        bool completionCanBeBatched;
     }
 }
