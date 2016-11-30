@@ -45,24 +45,18 @@ namespace NServiceBus.Transport.AzureServiceBus
                 fullPath = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, entity.Path);
             }
 
+            autoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout);
             numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
             var concurrency = maximumConcurrency/(double) numberOfClients;
-            var maxConcurrentCalls = concurrency > 1 ? (int) Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
+            maxConcurrentCalls = concurrency > 1 ? (int) Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
             if (Math.Abs(maxConcurrentCalls - concurrency) > 0)
             {
                 logger.InfoFormat("The maximum concurrency on this message receiver instance has been adjusted to '{0}', because the total maximum concurrency '{1}' wasn't divisable by the number of clients '{2}'", maxConcurrentCalls, maximumConcurrency, numberOfClients);
             }
-            options = new OnMessageOptions
-            {
-                AutoComplete = false,
-                AutoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
-                MaxConcurrentCalls = maxConcurrentCalls
-            };
-
-            options.ExceptionReceived += OptionsOnExceptionReceived;
 
             batchedCompletionTasks = new Task[numberOfClients];
             internalReceivers = new IMessageReceiver[numberOfClients];
+            options = new OnMessageOptions[numberOfClients];
         }
 
         public void Start()
@@ -82,22 +76,18 @@ namespace NServiceBus.Transport.AzureServiceBus
                         throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
                     }
 
-                    Func<BrokeredMessage, Task> callback = message =>
+                    var onMessageOptions = new OnMessageOptions
                     {
-                        var processTask = ProcessMessageAsync(internalReceiver, message);
-                        pipelineInvocationTasks.TryAdd(processTask, processTask);
-                        processTask.ContinueWith(t =>
-                        {
-                            Task toBeRemoved;
-                            pipelineInvocationTasks.TryRemove(t, out toBeRemoved);
-                        }, TaskContinuationOptions.ExecuteSynchronously);
-                        return processTask;
+                        AutoComplete = false,
+                        AutoRenewTimeout = autoRenewTimeout,
+                        MaxConcurrentCalls = maxConcurrentCalls
                     };
-
-                    internalReceiver.OnMessage(callback, options);
+                    onMessageOptions.ExceptionReceived += OptionsOnExceptionReceived;
+                    internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, pipelineInvocationTasks), onMessageOptions);
                     PerformBatchedCompletionTask(internalReceiver, i);
 
                     internalReceivers[i] = internalReceiver;
+                    options[i] = onMessageOptions;
 
                     isRunning = true;
                 }
@@ -114,6 +104,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             stopping = true;
 
             logger.Info($"Stopping notifier for '{fullPath}'");
+
+            foreach (var option in options)
+            {
+                option.ExceptionReceived -= OptionsOnExceptionReceived;
+            }
 
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
             var allTasks = pipelineInvocationTasks.Values;
@@ -135,6 +130,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             await Task.WhenAll(closeTasks).ConfigureAwait(false);
 
             pipelineInvocationTasks.Clear();
+            Array.Clear(internalReceivers, 0, internalReceivers.Length);
+            Array.Clear(options, 0, options.Length);
 
             logger.Info($"Notifier for '{fullPath}' stopped");
 
@@ -165,6 +162,19 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
             }
         }
+        
+        Task ReceiveMessage(IMessageReceiver internalReceiver, BrokeredMessage message, ConcurrentDictionary<Task, Task> pipelineInvocations)
+        {
+            var processTask = ProcessMessage(internalReceiver, message);
+            pipelineInvocations.TryAdd(processTask, processTask);
+            processTask.ContinueWith((t, state) =>
+            {
+                var invocations = (ConcurrentDictionary<Task, Task>) state;
+                Task toBeRemoved;
+                invocations.TryRemove(t, out toBeRemoved);
+            }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously);
+            return processTask;
+        }
 
         void PerformBatchedCompletionTask(IMessageReceiver internalReceiver, int index)
         {
@@ -189,7 +199,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }, CancellationToken.None);
         }
 
-        async Task ProcessMessageAsync(IMessageReceiver internalReceiver, BrokeredMessage message)
+        async Task ProcessMessage(IMessageReceiver internalReceiver, BrokeredMessage message)
         {
             if (!ShouldReceiveMessages)
             {
@@ -318,7 +328,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         ReadOnlySettings settings;
         IMessageReceiver[] internalReceivers;
         ReceiveMode receiveMode;
-        OnMessageOptions options;
+        OnMessageOptions[] options;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
         ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
@@ -331,6 +341,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         Task[] batchedCompletionTasks;
         Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
         int numberOfClients;
+        int maxConcurrentCalls;
+        TimeSpan autoRenewTimeout;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
     }
 }
