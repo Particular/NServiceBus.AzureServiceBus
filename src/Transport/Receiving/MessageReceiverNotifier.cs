@@ -262,7 +262,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
                     if (result == ErrorHandleResult.RetryRequired)
                     {
-                        await AbandonAsync(message, exception).ConfigureAwait(false);
+                        await Abandon(message, exception).ConfigureAwait(false);
                     }
                     else
                     {
@@ -272,45 +272,44 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             catch (Exception onErrorException)
             {
-                await AbandonAsync(message, onErrorException).ConfigureAwait(false);
+                await Abandon(message, onErrorException).ConfigureAwait(false);
                 await errorCallback(onErrorException).ConfigureAwait(false);
             }
         }
 
-        async Task HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContext context, bool canbeBatched)
+        Task HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContext context, bool canbeBatched)
         {
             if (context.CancellationToken.IsCancellationRequested)
             {
-                await AbandonAsyncOnCancellation(message).ConfigureAwait(false);
+                return AbandonOnCancellation(message);
             }
-            else
+
+            if (receiveMode == ReceiveMode.PeekLock)
             {
-                if (receiveMode == ReceiveMode.PeekLock)
+                if (canbeBatched)
                 {
-                    if (canbeBatched)
-                    {
-                        locksTokensToComplete.Push(message.LockToken);
-                    }
-                    else
-                    {
-                        await context.IncomingBrokeredMessage.SafeCompleteAsync().ConfigureAwait(false);
-                    }
+                    locksTokensToComplete.Push(message.LockToken);
+                }
+                else
+                {
+                    return context.IncomingBrokeredMessage.SafeCompleteAsync();
                 }
             }
+            return TaskEx.Completed;
         }
 
-        Task AbandonAsyncOnCancellation(BrokeredMessage message)
+        Task AbandonOnCancellation(BrokeredMessage message)
         {
-            logger.Info("Received message is cancelled by the pipeline, abandoning it so we can process it later.");
+            logger.Debug("Received message is cancelled by the pipeline, abandoning it so we can process it later.");
 
             return AbandonInternal(message);
         }
 
-        async Task AbandonAsync(BrokeredMessage message, Exception exception)
+        Task Abandon(BrokeredMessage message, Exception exception)
         {
-            logger.Info("Exceptions occurred OnComplete", exception);
+            logger.Debug("Exceptions occurred OnComplete", exception);
 
-            await AbandonInternal(message).ConfigureAwait(false);
+            return AbandonInternal(message);
         }
 
         async Task AbandonInternal(BrokeredMessage message, IDictionary<string, object> propertiesToModify = null)
