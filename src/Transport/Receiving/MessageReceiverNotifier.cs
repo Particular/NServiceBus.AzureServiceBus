@@ -319,15 +319,15 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             using (var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
-                logger.InfoFormat("Abandoning brokered message {0}", message.MessageId);
+                logger.DebugFormat("Abandoning brokered message {0}", message.MessageId);
 
                 if (await message.SafeAbandonAsync(propertiesToModify).ConfigureAwait(false))
                 {
-                    logger.InfoFormat("Brokered message {0} abandoned successfully.", message.MessageId);
+                    logger.DebugFormat("Brokered message {0} abandoned successfully.", message.MessageId);
                 }
                 else
                 {
-                    logger.InfoFormat("Abandoning brokered message {0} failed. Message will reappear after peek lock duration is over.", message.MessageId);
+                    logger.DebugFormat("Abandoning brokered message {0} failed. Message will reappear after peek lock duration is over.", message.MessageId);
                 }
 
                 suppressScope.Complete();
