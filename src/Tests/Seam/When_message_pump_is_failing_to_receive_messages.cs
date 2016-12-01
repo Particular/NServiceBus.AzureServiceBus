@@ -2,14 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Reflection;
+    using System.Threading;
     using System.Threading.Tasks;
     using AzureServiceBus;
-    using Transport.AzureServiceBus;
+    using NUnit.Framework;
     using Settings;
     using Transport;
-    using NUnit.Framework;
+    using Transport.AzureServiceBus;
 
 #pragma warning disable 618
     [TestFixture]
@@ -19,6 +18,7 @@
         [Test]
         public async Task Should_trigger_circuit_breaker()
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             var container = new TransportPartsContainer();
 
             var fakeTopologyOperator = new FakeTopologyOperator();
@@ -30,40 +30,52 @@
 
             Exception exceptionReceivedByCircuitBreaker = null;
             var criticalErrorWasRaised = false;
-            var stopwatch = new Stopwatch();
+
+            var tcs = new TaskCompletionSource<object>();
+            cts.Token.Register(() => tcs.TrySetCanceled());
 
             // setup critical error action to capture exception thrown by message pump
-            var criticalError = new CriticalError(ctx =>
+            var criticalError = new FakeCriticalError(ctx =>
             {
-                stopwatch.Stop();
                 criticalErrorWasRaised = true;
                 exceptionReceivedByCircuitBreaker = ctx.Exception;
-                return TaskEx.Completed;
-            });
-            criticalError.GetType().GetMethod("SetEndpoint", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Invoke(criticalError, new[] { new FakeEndpoint() });
 
-            var pump = new MessagePump(new FakeTopology(), container, settings);
-            await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
-            pump.OnError(exception =>
-            {
-                // circuit breaker is armed now
-                stopwatch.Start();
+                tcs.TrySetResult(null);
+
                 return TaskEx.Completed;
             });
+
+            var pump = new MessagePump(new FakeTopology(), container, settings, TimeSpan.FromSeconds(1));
+            await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
+
             pump.Start(new PushRuntimeSettings(1));
 
             await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new byte[0]), new FakeReceiveContext());
             var exceptionThrownByMessagePump = new Exception("kaboom");
             await fakeTopologyOperator.onError(exceptionThrownByMessagePump);
 
-            await Task.Delay(TimeSpan.FromSeconds(32)); // let circuit breaker kick in
+            await tcs.Task; // let circuit breaker kick in
 
             // validate
             Assert.IsTrue(criticalErrorWasRaised, "Expected critical error to be raised, but it wasn't");
             Assert.AreEqual(exceptionThrownByMessagePump, exceptionReceivedByCircuitBreaker, "Exception circuit breaker got should be the same as the one raised by message pump");
         }
 
-#pragma warning disable 618
+        class FakeCriticalError : CriticalError
+        {
+            Func<ICriticalErrorContext, Task> func;
+
+            public FakeCriticalError(Func<ICriticalErrorContext, Task> onCriticalErrorAction) : base(onCriticalErrorAction)
+            {
+                func = onCriticalErrorAction;
+            }
+
+            public override void Raise(string errorMessage, Exception exception)
+            {
+                func(new CriticalErrorContext(() => TaskEx.Completed, errorMessage, exception)).GetAwaiter().GetResult();
+            }
+        }
+
         class FakeReceiveContext : ReceiveContext
         {
         }
@@ -74,7 +86,10 @@
             {
                 return new TopologySection
                 {
-                    Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
+                    Namespaces = new List<RuntimeNamespaceInfo>
+                    {
+                        new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample)
+                    },
                     Entities = new List<EntityInfo>()
                 };
             }
@@ -107,12 +122,8 @@
 
         class FakeTopologyOperator : IOperateTopology
         {
-            public Func<Exception, Task> onError;
-            public Func<IncomingMessageDetails, ReceiveContext, Task> onIncomingMessage;
-
             public void Start(TopologySection topology, int maximumConcurrency)
             {
-
             }
 
             public Task Stop()
@@ -122,7 +133,6 @@
 
             public void Start(IEnumerable<EntityInfo> subscriptions)
             {
-
             }
 
             public Task Stop(IEnumerable<EntityInfo> subscriptions)
@@ -142,47 +152,12 @@
 
             public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func)
             {
-
-            }
-        }
-#pragma warning restore 618
-
-        class FakeEndpoint : IEndpointInstance
-        {
-            public Task Stop()
-            {
-                return TaskEx.Completed;
             }
 
-            public Task Send(object message, SendOptions options)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task Send<T>(Action<T> messageConstructor, SendOptions options)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task Publish(object message, PublishOptions options)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task Publish<T>(Action<T> messageConstructor, PublishOptions publishOptions)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task Subscribe(Type eventType, SubscribeOptions options)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task Unsubscribe(Type eventType, UnsubscribeOptions options)
-            {
-                throw new NotImplementedException();
-            }
+            public Func<Exception, Task> onError;
+            public Func<IncomingMessageDetails, ReceiveContext, Task> onIncomingMessage;
         }
     }
+#pragma warning restore 618
+
 }
