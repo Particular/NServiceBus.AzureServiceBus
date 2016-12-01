@@ -58,7 +58,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             batchedCompletionTasks = new Task[numberOfClients];
             internalReceivers = new IMessageReceiver[numberOfClients];
-            options = new OnMessageOptions[numberOfClients];
+            onMessageOptions = new OnMessageOptions[numberOfClients];
         }
 
         public void Start()
@@ -89,7 +89,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     PerformBatchedCompletionTask(internalReceiver, i);
 
                     internalReceivers[i] = internalReceiver;
-                    options[i] = onMessageOptions;
+                    this.onMessageOptions[i] = onMessageOptions;
 
                     isRunning = true;
                 }
@@ -107,7 +107,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             logger.Info($"Stopping notifier for '{fullPath}'");
 
-            foreach (var option in options)
+            foreach (var option in onMessageOptions)
             {
                 option.ExceptionReceived -= OptionsOnExceptionReceived;
             }
@@ -134,7 +134,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             pipelineInvocationTasks.Clear();
             Array.Clear(batchedCompletionTasks, 0, batchedCompletionTasks.Length);
             Array.Clear(internalReceivers, 0, internalReceivers.Length);
-            Array.Clear(options, 0, options.Length);
+            Array.Clear(onMessageOptions, 0, onMessageOptions.Length);
 
             logger.Info($"Notifier for '{fullPath}' stopped");
 
@@ -345,7 +345,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         ReadOnlySettings settings;
         IMessageReceiver[] internalReceivers;
         ReceiveMode receiveMode;
-        OnMessageOptions[] options;
+        OnMessageOptions[] onMessageOptions;
         Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
         ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
