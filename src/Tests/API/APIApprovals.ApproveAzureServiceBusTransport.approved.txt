@@ -725,8 +725,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         public MessageTooLargeException(string message, System.Exception inner) { }
         protected MessageTooLargeException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
     }
-    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
-        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class NamespaceConfigurations : System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.NamespaceInfo>, System.Collections.IEnumerable
     {
         public NamespaceConfigurations() { }
@@ -735,8 +733,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         public string GetConnectionString(string name) { }
         public System.Collections.Generic.IEnumerator<NServiceBus.Transport.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
     }
-    [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
-        "sion 8.0.0. Will be removed in version 9.0.0.", false)]
     public class NamespaceInfo : System.IEquatable<NServiceBus.Transport.AzureServiceBus.NamespaceInfo>
     {
         public NamespaceInfo(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose = 1) { }
