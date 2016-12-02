@@ -86,9 +86,11 @@
     <Compile Include="Addressing\Composition\Strategies\FlatComposition.cs" />
     <Compile Include="Addressing\Composition\Strategies\HierarchyComposition.cs" />
     <Compile Include="Addressing\Individualization\IIndividualizationStrategy.cs" />
+    <Compile Include="Addressing\Partitioning\IPartitioningStrategy.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverMode.cs" />
     <Compile Include="Addressing\Individualization\Strategies\CoreIndividualization.cs" />
     <Compile Include="Addressing\Individualization\Strategies\DiscriminatorBasedIndividualization.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\RoundRobinPartitioning.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\ValidateAndHashIfNeeded.cs" />
     <Compile Include="Addressing\Sanitization\ValidationResult.cs" />
     <Compile Include="CircuitBreakers\RepeatedFailuresOverTimeCircuitBreaker.cs" />
@@ -162,8 +164,10 @@
     <Compile Include="Sending\RoutingOptions.cs" />
     <Compile Include="Addressing\Partitioning\PartitioningIntent.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\FailOverNamespacePartitioning.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\FailOverPartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\RoundRobinNamespacePartitioning.cs" />
     <Compile Include="Addressing\Partitioning\Strategies\SingleNamespacePartitioning.cs" />
+    <Compile Include="Addressing\Partitioning\Strategies\SinglePartitioning.cs" />
     <Compile Include="Addressing\Sanitization\Strategies\ThrowOnFailedValidation.cs" />
     <Compile Include="Addressing\Sanitization\ISanitizationStrategy.cs" />
     <Compile Include="Addressing\Composition\ICompositionStrategy.cs" />

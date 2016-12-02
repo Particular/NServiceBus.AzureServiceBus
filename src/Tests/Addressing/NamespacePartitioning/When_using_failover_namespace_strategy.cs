@@ -2,34 +2,25 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
 {
     using System.Configuration;
     using System.Linq;
-    using Settings;
     using NUnit.Framework;
     using Transport.AzureServiceBus;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_using_failover_namespace_strategy
     {
-        const string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        const string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        const string OtherConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-
-        const string PrimaryName = "namespace1";
-        const string SecondaryName = "namespace2";
-        const string OtherName = "namespace3";
-
-        FailOverNamespacePartitioning strategy;
-
         [SetUp]
         public void SetUp()
         {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
-            extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
+            var primary = new NamespaceInfo(PrimaryName, PrimaryConnectionString);
+            var secondary = new NamespaceInfo(SecondaryName, SecondaryConnectionString);
 
-            strategy = new FailOverNamespacePartitioning(settings);
+            strategy = new FailOverPartitioning();
+            strategy.Initialize(new[]
+            {
+                primary,
+                secondary
+            });
         }
 
         [Test]
@@ -77,31 +68,46 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Failover_partitioning_strategy_will_throw_if_no_namespace_defined()
         {
-            var settings = new SettingsHolder();
+            var strategyWhichShouldThrow = new FailOverPartitioning();
 
-            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => strategyWhichShouldThrow.Initialize(new NamespaceInfo[0]));
         }
 
         [Test]
         public void Failover_partitioning_strategy_will_throw_if_no_secondary_namespace_is_provided()
         {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
+            var strategyWhichShouldThrow = new FailOverPartitioning();
+            var primary = new NamespaceInfo(PrimaryName, PrimaryConnectionString);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => strategyWhichShouldThrow.Initialize(new[]
+            {
+                primary
+            }));
         }
 
         [Test]
         public void Failover_partitioning_strategy_will_throw_if_more_than_primary_and_secondary_namespaces_are_provided()
         {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
-            extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
-            extensions.NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
+            var strategyWhichShouldThrow = new FailOverPartitioning();
+            var primary = new NamespaceInfo(PrimaryName, PrimaryConnectionString);
+            var secondary = new NamespaceInfo(SecondaryName, SecondaryConnectionString);
+            var another = new NamespaceInfo(OtherName, OtherConnectionString);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => strategyWhichShouldThrow.Initialize(new[]
+            {
+                primary,
+                secondary,
+                another
+            }));
         }
+
+        FailOverPartitioning strategy;
+        const string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        const string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        const string OtherConnectionString = "Endpoint=sb://namespace3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+
+        const string PrimaryName = "namespace1";
+        const string SecondaryName = "namespace2";
+        const string OtherName = "namespace3";
     }
 }
