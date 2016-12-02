@@ -39,7 +39,7 @@
 
             if (!context.IsForwardingTopology)
             {
-                Assert.Inconclusive($"The test is designed for {typeof(ForwardingTopology).Name} only.");
+                Assert.Inconclusive("The test is designed for ForwardingTopology only.");
             }
 
             Assert.That(context.SubscriberGotTheBaseEvent, Is.EqualTo(1), $"Should only receive BaseEvent once, but it was {context.SubscriberGotTheBaseEvent}");

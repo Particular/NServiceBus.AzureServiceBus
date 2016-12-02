@@ -11,6 +11,7 @@ namespace NServiceBus
     {
         CircularBuffer<NamespaceInfo> namespaces;
 
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public RoundRobinNamespacePartitioning(ReadOnlySettings settings)
         {
             NamespaceConfigurations namespaces;

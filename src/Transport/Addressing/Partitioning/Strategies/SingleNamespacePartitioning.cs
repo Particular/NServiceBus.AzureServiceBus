@@ -10,6 +10,7 @@ namespace NServiceBus
     {
         NamespaceConfigurations namespaces;
 
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public SingleNamespacePartitioning(ReadOnlySettings settings)
         {
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
