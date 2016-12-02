@@ -96,18 +96,19 @@
 
         async Task<bool> ExistsAsync(string topicPath, INamespaceManager namespaceClient, bool removeCacheEntry = false)
         {
+            var key = topicPath + namespaceClient.Address;
             logger.InfoFormat("Checking existence cache for '{0}'", topicPath);
 
             if (removeCacheEntry)
             {
                 Task<bool> dummy;
-                rememberExistence.TryRemove(topicPath, out dummy);
+                rememberExistence.TryRemove(key, out dummy);
             }
 
-            var exists = await rememberExistence.GetOrAdd(topicPath, notFoundTopicPath =>
+            var exists = await rememberExistence.GetOrAdd(key, notFoundTopicPath =>
             {
-                logger.InfoFormat("Checking namespace for existence of the topic '{0}'", notFoundTopicPath);
-                return namespaceClient.TopicExists(notFoundTopicPath);
+                logger.InfoFormat("Checking namespace for existence of the topic '{0}'", topicPath);
+                return namespaceClient.TopicExists(topicPath);
             }).ConfigureAwait(false);
 
             logger.InfoFormat("Determined, from cache, that the topic '{0}' {1}", topicPath, exists ? "exists" : "does not exist");
