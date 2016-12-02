@@ -51,7 +51,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var passiveNamespaces = batch.Destinations.Namespaces.Where(n => n.Mode == NamespaceMode.Passive).ToList();
             var pendingSends = new List<Task>();
 
-            foreach (var entity in batch.Destinations.Entities)
+            foreach (var entity in batch.Destinations.Entities.Where(entity => entity.Namespace.Mode == NamespaceMode.Active))
             {
                 var routingOptions = GetRoutingOptions(context, consistency);
 

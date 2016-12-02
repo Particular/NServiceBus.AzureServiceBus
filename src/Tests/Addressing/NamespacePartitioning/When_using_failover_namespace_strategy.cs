@@ -33,11 +33,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         }
 
         [Test]
-        public void Failover_partitioning_strategy_will_return_a_single_active_namespace_for_the_purpose_of_sending()
+        public void Failover_partitioning_strategy_will_return_a_all_namespace_for_the_purpose_of_sending()
         {
             var namespaces = strategy.GetNamespaces(PartitioningIntent.Sending);
 
-            Assert.AreEqual(1, namespaces.Count());
+            Assert.AreEqual(2, namespaces.Count());
         }
 
         [Test]
@@ -65,13 +65,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         }
 
         [Test]
-        public void Failover_partitioning_strategy_will_return_secondary_namespace_when_in_secondary_state()
+        public void Failover_partitioning_strategy_will_return_primary_and_secondary_namespace_when_in_secondary_state()
         {
             strategy.Mode = FailOverMode.Secondary;
 
             var namespaces = strategy.GetNamespaces(PartitioningIntent.Sending);
 
-            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString), namespaces.First());
+            Assert.AreEqual(new RuntimeNamespaceInfo(SecondaryName, SecondaryConnectionString), namespaces.Last());
         }
 
         [Test]

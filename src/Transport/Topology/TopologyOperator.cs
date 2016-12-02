@@ -5,30 +5,17 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Logging;
-    using Transport;
 
     class TopologyOperator : IOperateTopology, IDisposable
     {
-        ITransportPartsContainer container;
-
-        TopologySection topology;
-
-        Func<IncomingMessageDetails, ReceiveContext, Task> onMessage;
-        Func<Exception, Task> onError;
-        Func<ErrorContext, Task<ErrorHandleResult>> onProcessingFailure;
-
-        ConcurrentDictionary<EntityInfo, INotifyIncomingMessages> notifiers = new ConcurrentDictionary<EntityInfo, INotifyIncomingMessages>();
-
-        bool running;
-        List<Action> pendingStartOperations = new List<Action>();
-        ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
-
-        int maxConcurrency;
-        
-
         public TopologyOperator(ITransportPartsContainer container)
         {
             this.container = container;
+        }
+
+        public void Dispose()
+        {
+            // Injected
         }
 
         public void Start(TopologySection topologySection, int maximumConcurrency)
@@ -114,7 +101,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (type == EntityType.Queue || type == EntityType.Subscription)
             {
-                return (INotifyIncomingMessages)container.Resolve(typeof(MessageReceiverNotifier));
+                return (INotifyIncomingMessages) container.Resolve(typeof(MessageReceiverNotifier));
             }
 
             throw new NotSupportedException("Entity type " + type + " not supported");
@@ -132,20 +119,28 @@ namespace NServiceBus.Transport.AzureServiceBus
                     continue;
                 }
 
-                if (notifier.RefCount > 0)
-                {
-                    notifier.RefCount--;
-                }
-                else
+                notifier.RefCount--;
+                if (notifier.RefCount <= 0)
                 {
                     await notifier.Stop().ConfigureAwait(false);
                 }
             }
         }
 
-        public void Dispose()
-        {
-            // Injected
-        }
+        ITransportPartsContainer container;
+
+        TopologySection topology;
+
+        Func<IncomingMessageDetails, ReceiveContext, Task> onMessage;
+        Func<Exception, Task> onError;
+        Func<ErrorContext, Task<ErrorHandleResult>> onProcessingFailure;
+
+        ConcurrentDictionary<EntityInfo, INotifyIncomingMessages> notifiers = new ConcurrentDictionary<EntityInfo, INotifyIncomingMessages>();
+
+        bool running;
+        List<Action> pendingStartOperations = new List<Action>();
+        ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
+
+        int maxConcurrency;
     }
 }
