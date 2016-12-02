@@ -48,31 +48,24 @@
 
             try
             {
-                if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
+                if (!await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager).ConfigureAwait(false))
                 {
-                    if (!await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager).ConfigureAwait(false))
-                    {
-                        await namespaceManager.CreateSubscription(subscriptionDescription, sqlFilter).ConfigureAwait(false);
-                        logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}'");
+                    await namespaceManager.CreateSubscription(subscriptionDescription, sqlFilter).ConfigureAwait(false);
+                    logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}'");
 
-                        var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
-                        await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        logger.Info($"Subscription '{subscriptionDescription.Name}' aka '{subscriptionDescription.UserMetadata}' already exists, skipping creation");
-                        logger.InfoFormat("Checking if subscription '{0}' needs to be updated", subscriptionDescription.Name);
-                        var existingSubscriptionDescription = await namespaceManager.GetSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
-                        if (MembersAreNotEqual(existingSubscriptionDescription, subscriptionDescription))
-                        {
-                            logger.InfoFormat("Updating subscription '{0}' with new description", subscriptionDescription.Name);
-                            await namespaceManager.UpdateSubscription(subscriptionDescription).ConfigureAwait(false);
-                        }
-                    }
+                    var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
+                    await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
                 }
                 else
                 {
-                    logger.InfoFormat("'{0}' is set to false, skipping the creation of subscription '{1}' aka '{2}'", WellKnownConfigurationKeys.Core.CreateTopology, subscriptionDescription.Name, subscriptionDescription.UserMetadata);
+                    logger.Info($"Subscription '{subscriptionDescription.Name}' aka '{subscriptionDescription.UserMetadata}' already exists, skipping creation");
+                    logger.InfoFormat("Checking if subscription '{0}' needs to be updated", subscriptionDescription.Name);
+                    var existingSubscriptionDescription = await namespaceManager.GetSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
+                    if (MembersAreNotEqual(existingSubscriptionDescription, subscriptionDescription))
+                    {
+                        logger.InfoFormat("Updating subscription '{0}' with new description", subscriptionDescription.Name);
+                        await namespaceManager.UpdateSubscription(subscriptionDescription).ConfigureAwait(false);
+                    }
                 }
             }
             catch (MessagingEntityAlreadyExistsException)
@@ -115,20 +108,13 @@
 
             try
             {
-                if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
+                if (await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager, true).ConfigureAwait(false))
                 {
-                    if (await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager, true).ConfigureAwait(false))
+                    var namespaceManagerAbleToDeleteSubscriptions = namespaceManager as INamespaceManagerAbleToDeleteSubscriptions;
+                    if (namespaceManagerAbleToDeleteSubscriptions != null)
                     {
-                        var namespaceManagerAbleToDeleteSubscriptions = namespaceManager as INamespaceManagerAbleToDeleteSubscriptions;
-                        if (namespaceManagerAbleToDeleteSubscriptions != null)
-                        {
-                            await namespaceManagerAbleToDeleteSubscriptions.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
-                        }
+                        await namespaceManagerAbleToDeleteSubscriptions.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
                     }
-                }
-                else
-                {
-                    logger.Info($"'{WellKnownConfigurationKeys.Core.CreateTopology}' is set to false, skipping the deletion of subscription '{subscriptionDescription.Name}' aka '{subscriptionDescription.TopicPath}'");
                 }
             }
             catch (MessagingException ex)

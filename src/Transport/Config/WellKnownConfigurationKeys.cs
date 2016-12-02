@@ -161,7 +161,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         internal static class Core
         {
-            public const string CreateTopology = "Transport.CreateQueues";
             public const string MainSerializerSettingsKey = "MainSerializer";
             public const string RecoverabilityNumberOfImmediateRetries = "Recoverability.Immediate.Retries";
         }

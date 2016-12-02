@@ -19,7 +19,6 @@
             var settings = new SettingsHolder();
             var container = new TransportPartsContainer();
 
-            settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, new NamespaceConfigurations { {"namespace1", ConnectionStringValue.Sample, NamespacePurpose.Partitioning } });
             settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnablePartitioning, true);
 
