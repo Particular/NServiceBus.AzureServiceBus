@@ -7,8 +7,15 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     // note there is some creation logic elsewhere already, those calls should be removed and centralized here
 
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public interface ICreateTopology
     {
         Task Create(TopologySection topology);
+    }
+
+    // TODO: Move into internalized ICreateTopology in v8
+    interface ITearDownTopology
+    {
+        Task TearDown(TopologySection topologySection);
     }
 }

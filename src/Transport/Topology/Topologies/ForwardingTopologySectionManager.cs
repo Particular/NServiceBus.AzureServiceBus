@@ -72,7 +72,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                     Namespace = n
                 }));
 
-                // TODO: in the future, if queueBindings.SendingAddresses containts system only queues, we shouldn't include in the list of queues to be created by the endpoint
                 inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
                 {
                     Path = addressingLogic.Apply(p, EntityType.Queue).Name,
@@ -113,7 +112,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         IEnumerable<EntityInfo> SelectSingleRandomTopicFromBundle(List<EntityInfo> entityInfos)
         {
-            var index = randomGenerator.Next(1, entityInfos.Count);
+            var index = randomGenerator.Next(0, entityInfos.Count);
             var selected = entityInfos[index];
 
             return entityInfos.Where(i => i.Path == selected.Path);

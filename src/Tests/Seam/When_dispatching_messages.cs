@@ -14,6 +14,7 @@
     using NUnit.Framework;
     using Transport;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_dispatching_messages
@@ -87,7 +88,7 @@
             Assert.ThrowsAsync<MessagingEntityNotFoundException>(async () => await dispatcher.Dispatch(new TransportOperations(), new TransportTransaction(), new ContextBag()));
         }
 
-
+#pragma warning disable 618
         class FakeBatcher : IBatcher
         {
             public IList<Batch> ToBatches(TransportOperations operations)
@@ -174,5 +175,6 @@
                 };
             }
         }
+#pragma warning restore 618
     }
 }

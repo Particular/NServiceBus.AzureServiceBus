@@ -13,6 +13,7 @@
     /// So is the list of notifiers etc...
     /// etc..
     /// </summary>
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public interface IOperateTopology
     {
         //invoked for static parts of the topology

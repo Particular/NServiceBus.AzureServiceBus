@@ -11,8 +11,8 @@
     {
         SettingsHolder settings;
 
-        public AzureServiceBusMessagingFactoriesSettings(SettingsHolder settings)
-            : base(settings)
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusMessagingFactoriesSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }

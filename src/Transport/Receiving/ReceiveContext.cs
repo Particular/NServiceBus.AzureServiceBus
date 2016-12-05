@@ -8,6 +8,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     /// - the original message so that it can be completed or abandoned when processing is done
     /// - the queue where it came from, so that sends can go via that queue to emulate send transactions
     /// </summary>
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public abstract class ReceiveContext
     {
         protected ReceiveContext()
@@ -18,6 +19,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public CancellationToken CancellationToken { get; internal set; }
 
 
+        [ObsoleteEx(Message = "Not required.", RemoveInVersion = "9.0", TreatAsErrorFromVersion = "8.0")]
         public CommittableTransaction Transaction { get; set; }
     }
 }

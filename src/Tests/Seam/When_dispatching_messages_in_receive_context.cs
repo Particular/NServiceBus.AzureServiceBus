@@ -11,13 +11,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using DeliveryConstraints;
     using Microsoft.ServiceBus.Messaging;
     using NUnit.Framework;
-    using Receiving;
     using Routing;
     using Settings;
     using TestUtils;
     using Transport;
     using Transport.AzureServiceBus;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_dispatching_messages_in_receive_context

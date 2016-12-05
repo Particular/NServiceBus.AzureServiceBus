@@ -11,6 +11,7 @@
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_creating_forwarding_subscription
@@ -49,24 +50,6 @@
         }
 
         [Test]
-        public async Task Should_not_create_subscription_when_topology_creation_is_turned_off()
-        {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, false);
-
-            const string subscriptionName = "endpoint0";
-            //make sure there is no leftover from previous test
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
-
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
-
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
-
-            Assert.IsFalse(await namespaceManager.TopicExists(subscriptionName));
-        }
-
-        [Test]
         public async Task Should_properly_set_use_subscription_description_defaults_if_user_does_not_provide_topic_description_values()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -88,7 +71,7 @@
             Assert.IsNull(subscriptionDescription.ForwardDeadLetteredMessagesTo);
             Assert.That(subscriptionDescription.ForwardTo, Does.EndWith(forwardToQueue));
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
 
@@ -105,7 +88,7 @@
                 LockDuration = TimeSpan.FromMinutes(3)
             };
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((x, y, z) => subscriptionDescription);
+            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory((x, y, z) => subscriptionDescription);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -114,7 +97,7 @@
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
             Assert.AreEqual(subscriptionDescription, foundDescription);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -126,7 +109,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var autoDeleteTime = TimeSpan.FromDays(1);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().AutoDeleteOnIdle(autoDeleteTime);
+            extensions.UseForwardingTopology().Subscriptions().AutoDeleteOnIdle(autoDeleteTime);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -141,7 +124,7 @@
             }
             Assert.AreEqual(autoDeleteTime, foundDescription.AutoDeleteOnIdle);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -153,7 +136,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var timeToLive = TimeSpan.FromDays(10);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DefaultMessageTimeToLive(timeToLive);
+            extensions.UseForwardingTopology().Subscriptions().DefaultMessageTimeToLive(timeToLive);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -164,7 +147,7 @@
 
             Assert.AreEqual(timeToLive, foundDescription.DefaultMessageTimeToLive);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -175,7 +158,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().EnableBatchedOperations(false);
+            extensions.UseForwardingTopology().Subscriptions().EnableBatchedOperations(false);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -186,7 +169,7 @@
 
             Assert.IsFalse(foundDescription.EnableBatchedOperations);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -197,7 +180,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
+            extensions.UseForwardingTopology().Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -208,7 +191,7 @@
 
             Assert.IsTrue(foundDescription.EnableDeadLetteringOnFilterEvaluationExceptions);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -219,7 +202,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
+            extensions.UseForwardingTopology().Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -230,7 +213,7 @@
 
             Assert.IsTrue(foundDescription.EnableDeadLetteringOnMessageExpiration);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -242,7 +225,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var lockDuration = TimeSpan.FromMinutes(2);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().LockDuration(lockDuration);
+            extensions.UseForwardingTopology().Subscriptions().LockDuration(lockDuration);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -253,7 +236,7 @@
 
             Assert.AreEqual(lockDuration, foundDescription.LockDuration);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -265,7 +248,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             const int deliveryCount = 10;
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().MaxDeliveryCount(deliveryCount);
+            extensions.UseForwardingTopology().Subscriptions().MaxDeliveryCount(deliveryCount);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -276,7 +259,7 @@
 
             Assert.AreEqual(deliveryCount, foundDescription.MaxDeliveryCount);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -297,7 +280,7 @@
 
             Assert.That(foundDescription.ForwardTo.EndsWith(queueToForwardTo.Path));
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteQueue(queueToForwardTo.Path);
         }
 
@@ -313,7 +296,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().ForwardDeadLetteredMessagesTo(topicToForwardTo.Path);
+            extensions.UseForwardingTopology().Subscriptions().ForwardDeadLetteredMessagesTo(topicToForwardTo.Path);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -324,7 +307,7 @@
 
             Assert.That(foundDescription.ForwardDeadLetteredMessagesTo.EndsWith(topicToForwardTo.Path));
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
 
@@ -340,7 +323,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "endpoint14", notUsedEntity.Path);
+            extensions.UseForwardingTopology().Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "endpoint14", notUsedEntity.Path);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
 
@@ -351,7 +334,7 @@
 
             Assert.That(foundDescription.ForwardDeadLetteredMessagesTo.EndsWith(notUsedEntity.Path));
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteTopic(notUsedEntity.Path);
         }
 
@@ -377,7 +360,7 @@
             Assert.IsTrue(rules.Count() == 1, "Subscription should only have 1 rule");
             Assert.AreEqual(filter, foundFilter.SqlExpression, "Rule was expected to have a specific SQL filter, but it didn't");
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriber);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriber));
         }
 
 
@@ -389,7 +372,7 @@
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
+            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
             {
                 MaxDeliveryCount = 100,
                 EnableDeadLetteringOnMessageExpiration = true,
@@ -414,7 +397,7 @@
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((topic, sub, readOnlySettings) => new SubscriptionDescription(topic, sub)
+            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory((topic, sub, readOnlySettings) => new SubscriptionDescription(topic, sub)
             {
                 EnableDeadLetteringOnFilterEvaluationExceptions = false,
                 RequiresSession = false,
@@ -431,7 +414,7 @@
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
+            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
             {
                 MaxDeliveryCount = 100,
                 EnableDeadLetteringOnMessageExpiration = true,
@@ -462,7 +445,7 @@
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseTopology<ForwardingTopology>().Topics().EnablePartitioning(true);
+            extensions.UseForwardingTopology().Topics().EnablePartitioning(true);
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
@@ -474,7 +457,7 @@
 
             Assert.That(rules.Count(), Is.EqualTo(2), "Subscription didn't have correct number of rules");
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriber);
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriber));
         }
 
     }

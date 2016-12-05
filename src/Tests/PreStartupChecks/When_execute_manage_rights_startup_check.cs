@@ -7,27 +7,15 @@
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_execute_manage_rights_startup_check
     {
         [Test]
-        public async Task Should_return_success_if_create_queues_is_not_required()
-        {
-            var settings = new SettingsHolder();
-            settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, false);
-
-            var check = new ManageRightsCheck(A.Fake<IManageNamespaceManagerLifeCycle>(), settings);
-            var result = await check.Run();
-
-            Assert.True(result.Succeeded);
-        }
-
-        [Test]
         public async Task Should_return_success_if_all_namespaces_have_manage_rights()
         {
             var settings = new SettingsHolder();
-            settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
 
             var namespaces = new NamespaceConfigurations
             {
@@ -51,7 +39,6 @@
         public async Task Should_return_failure_if_a_namespace_has_not_manage_rights()
         {
             var settings = new SettingsHolder();
-            settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
 
             var namespaces = new NamespaceConfigurations
             {
@@ -78,7 +65,6 @@
         public async Task Should_compose_right_error_message_when_failed()
         {
             var settings = new SettingsHolder();
-            settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
 
             var namespaces = new NamespaceConfigurations
             {

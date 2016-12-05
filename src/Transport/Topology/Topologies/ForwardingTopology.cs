@@ -11,6 +11,7 @@ namespace NServiceBus
     using Transport;
     using Transport.AzureServiceBus;
 
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public class ForwardingTopology : ITopology, IStoppableTopology
     {
         ILog logger = LogManager.GetLogger(typeof(ForwardingTopology));

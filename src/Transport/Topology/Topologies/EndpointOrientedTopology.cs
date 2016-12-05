@@ -9,7 +9,8 @@ namespace NServiceBus
     using Transport;
     using Transport.AzureServiceBus;
 
-    public class EndpointOrientedTopology :ITopology, IStoppableTopology
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class EndpointOrientedTopology : ITopology, IStoppableTopology
     {
         ILog logger = LogManager.GetLogger(typeof(EndpointOrientedTopology));
         ITopologySectionManager topologySectionManager;
@@ -95,7 +96,7 @@ namespace NServiceBus
             container.Register(sanitizationStrategyType);
 
             var conventions = settings.Get<Conventions>();
-            var publishersConfiguration = new PublishersConfiguration(new ConventionsAdapter(conventions), settings);
+            var publishersConfiguration = new PublishersConfiguration(conventions, settings);
             container.Register<PublishersConfiguration>(() => publishersConfiguration);
         }
 

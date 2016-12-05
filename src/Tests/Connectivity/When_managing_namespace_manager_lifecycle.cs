@@ -39,6 +39,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             Assert.AreEqual(first, second);
         }
 
+#pragma warning disable 618
         class InterceptingCreator : ICreateNamespaceManagers
         {
             public bool HasBeenInvoked;
@@ -149,6 +150,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             {
                 throw new NotImplementedException();
             }
+
+            public Task DeleteSubscription(SubscriptionDescription subscriptionDescription)
+            {
+                throw new NotImplementedException();
+            }
         }
+#pragma warning restore 618
     }
 }

@@ -25,7 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         }
 
         [Test]
-        public void Should_set_a_signle_topic_as_destination_for_events()
+        public void Should_set_a_single_topic_as_destination_for_events()
         {
             var container = new TransportPartsContainer();
 
@@ -37,6 +37,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             Assert.IsTrue(destination.Entities.Single().Path.StartsWith("bundle"));
         }
 
+#pragma warning disable 618
         ITopologySectionManager SetupForwardingTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
@@ -85,6 +86,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 
             return container.Resolve<ITopologySectionManager>();
         }
-
+#pragma warning restore 618
     }
 }

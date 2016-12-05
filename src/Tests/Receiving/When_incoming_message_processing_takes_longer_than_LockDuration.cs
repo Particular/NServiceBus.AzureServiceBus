@@ -12,6 +12,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_incoming_message_processing_takes_longer_than_LockDuration
@@ -37,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper());
+            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
@@ -89,9 +90,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await namespaceManager.DeleteQueue("autorenewtimeout");
         }
 
-        class PassThroughMapper : ICanMapConnectionStringToNamespaceAlias
+        class PassThroughMapper : DefaultConnectionStringToNamespaceAliasMapper
         {
-            public EntityAddress Map(EntityAddress value)
+            public PassThroughMapper(ReadOnlySettings settings) : base(settings)
+            {
+            }
+
+            public override EntityAddress Map(EntityAddress value)
             {
                 return value;
             }

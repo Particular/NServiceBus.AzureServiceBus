@@ -8,6 +8,7 @@
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_all_pre_startup_checks_for_forwarding_topology_fail
@@ -18,7 +19,6 @@
             var settings = new SettingsHolder();
             var container = new TransportPartsContainer();
 
-            settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, true);
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, new NamespaceConfigurations { {"namespace1", ConnectionStringValue.Sample, NamespacePurpose.Partitioning } });
             settings.Set(WellKnownConfigurationKeys.Topology.Resources.Topics.EnablePartitioning, true);
 

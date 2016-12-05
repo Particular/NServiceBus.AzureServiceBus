@@ -43,29 +43,22 @@
 
             try
             {
-                if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
+                if (!await ExistsAsync(topicPath, namespaceManager).ConfigureAwait(false))
                 {
-                    if (!await ExistsAsync(topicPath, namespaceManager).ConfigureAwait(false))
-                    {
-                        await namespaceManager.CreateTopic(topicDescription).ConfigureAwait(false);
-                        logger.InfoFormat("Topic '{0}' created", topicDescription.Path);
-                        await rememberExistence.AddOrUpdate(topicDescription.Path, notFoundTopicPath => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        logger.InfoFormat("Topic '{0}' already exists, skipping creation", topicDescription.Path);
-                        logger.InfoFormat("Checking if topic '{0}' needs to be updated", topicDescription.Path);
-                        var existingTopicDescription = await namespaceManager.GetTopic(topicDescription.Path).ConfigureAwait(false);
-                        if (MembersAreNotEqual(existingTopicDescription, topicDescription))
-                        {
-                            logger.InfoFormat("Updating topic '{0}' with new description", topicDescription.Path);
-                            await namespaceManager.UpdateTopic(topicDescription).ConfigureAwait(false);
-                        }
-                    }
+                    await namespaceManager.CreateTopic(topicDescription).ConfigureAwait(false);
+                    logger.InfoFormat("Topic '{0}' created", topicDescription.Path);
+                    await rememberExistence.AddOrUpdate(topicDescription.Path, notFoundTopicPath => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
                 }
                 else
                 {
-                    logger.InfoFormat("'{0}' is set to false, skipping the creation of topic '{1}'", WellKnownConfigurationKeys.Core.CreateTopology, topicDescription.Path);
+                    logger.InfoFormat("Topic '{0}' already exists, skipping creation", topicDescription.Path);
+                    logger.InfoFormat("Checking if topic '{0}' needs to be updated", topicDescription.Path);
+                    var existingTopicDescription = await namespaceManager.GetTopic(topicDescription.Path).ConfigureAwait(false);
+                    if (MembersAreNotEqual(existingTopicDescription, topicDescription))
+                    {
+                        logger.InfoFormat("Updating topic '{0}' with new description", topicDescription.Path);
+                        await namespaceManager.UpdateTopic(topicDescription).ConfigureAwait(false);
+                    }
                 }
             }
             catch (MessagingEntityAlreadyExistsException)

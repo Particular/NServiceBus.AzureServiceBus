@@ -6,7 +6,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
 
-    public class NamespaceManagerAdapter : INamespaceManager
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class NamespaceManagerAdapter : INamespaceManager, INamespaceManagerAbleToDeleteSubscriptions
     {
         NamespaceManager manager;
 
@@ -113,9 +114,15 @@ namespace NServiceBus.Transport.AzureServiceBus
             return manager.GetTopicAsync(path);
         }
 
+        // TODO: delete this once NamespaceManagerAdapter is internalized
         public Task DeleteSubscriptionAsync(string topicPath, string subscriptionName)
         {
-            return manager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            return DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
+        }
+
+        public Task DeleteSubscription(SubscriptionDescription subscriptionDescription)
+        {
+            return manager.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
         }
     }
 }

@@ -26,12 +26,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
+#pragma warning disable 618
             extensions.UseOutgoingMessageToBrokeredMessageConverter<ConvertOutgoingMessagesToBrokeredMessages>();
-
+#pragma warning restore 618
             Assert.AreEqual(typeof(ConvertOutgoingMessagesToBrokeredMessages), settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter));
         }
 
+#pragma warning disable 618
         class ConvertOutgoingMessagesToBrokeredMessages : IConvertOutgoingMessagesToBrokeredMessages
         {
             public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperation> outgoingOperations, RoutingOptions routingOptions)
@@ -39,5 +40,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
                 throw new NotImplementedException();
             }
         }
+#pragma warning restore 618
     }
 }

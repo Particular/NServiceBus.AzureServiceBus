@@ -10,6 +10,7 @@
     using Transport;
     using Transport.AzureServiceBus;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_message_pump_is_failing_to_receive_messages
@@ -60,6 +61,7 @@
             Assert.AreEqual(exceptionThrownByMessagePump, exceptionReceivedByCircuitBreaker, "Exception circuit breaker got should be the same as the one raised by message pump");
         }
 
+#pragma warning disable 618
         class FakeCriticalError : CriticalError
         {
             Func<ICriticalErrorContext, Task> func;
@@ -151,10 +153,12 @@
 
             public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func)
             {
+
             }
 
             public Func<Exception, Task> onError;
             public Func<IncomingMessageDetails, ReceiveContext, Task> onIncomingMessage;
+#pragma warning restore 618
         }
     }
 }

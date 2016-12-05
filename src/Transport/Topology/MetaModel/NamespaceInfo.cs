@@ -1,7 +1,7 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
-    
+
     public class NamespaceInfo : IEquatable<NamespaceInfo>
     {
         public string Alias { get; }

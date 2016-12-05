@@ -14,6 +14,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_comparing_performance_for_prefetch
@@ -40,7 +41,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
-            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper());
+            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 
             // create the queue
             var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
@@ -73,8 +74,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 (message, context) =>
                 {
-                    Interlocked.Increment(ref receivedMessages);
-                    if (receivedMessages == expected)
+                    var numberOfMessages = Interlocked.Increment(ref receivedMessages);
+                    if (numberOfMessages == expected)
                     {
                         completed.Set();
                     }
@@ -101,9 +102,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await namespaceManager.DeleteQueue("myqueue");
         }
 
-        class PassThroughMapper : ICanMapConnectionStringToNamespaceAlias
+        class PassThroughMapper : DefaultConnectionStringToNamespaceAliasMapper
         {
-            public EntityAddress Map(EntityAddress value)
+            public PassThroughMapper(ReadOnlySettings settings) : base(settings)
+            {
+            }
+
+            public override EntityAddress Map(EntityAddress value)
             {
                 return value;
             }

@@ -6,13 +6,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
     using AzureServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Tests;
-    using Receiving;
     using TestUtils;
     using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
     using Transport;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_operating_EndpointOrientedTopology

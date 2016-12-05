@@ -15,7 +15,8 @@
         [SetUp]
         public void SetUp()
         {
-            var conventions = new FakeConventions();
+            var conventions = new Conventions();
+            conventions.AddSystemMessagesConventions(type => type != typeof(MyType));
             configuration = new PublishersConfiguration(conventions, new SettingsHolder());
         }
 
@@ -106,15 +107,5 @@
         class MyBaseMessage : MyType { }
         class MyDerivedMessage1 : MyBaseMessage { }
         class MyDerivedMessage2 : MyBaseMessage { }
-
-        class FakeConventions : IConventions
-        {
-            public bool IsMessageType(Type type)
-            {
-                return type != typeof(MyType);
-            }
-        }
     }
-
-
 }

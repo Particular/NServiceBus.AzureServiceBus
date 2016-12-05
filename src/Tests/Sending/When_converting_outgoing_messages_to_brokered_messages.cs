@@ -12,6 +12,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using Transport;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_converting_outgoing_messages_to_brokered_messages

@@ -11,28 +11,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
     using Settings;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_creating_topics
     {
-        [Test]
-        public async Task Should_not_create_topics_when_topology_creation_is_turned_off()
-        {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, false);
-
-            //make sure there is no leftover from previous test
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            const string topicPath = "mytopic1";
-            await namespaceManager.DeleteTopic(topicPath);
-
-            var creator = new AzureServiceBusTopicCreator(settings);
-
-            await creator.Create(topicPath, namespaceManager);
-
-            Assert.IsFalse(await namespaceManager.TopicExists(topicPath));
-        }
-
         [Test]
         public async Task Should_use_topic_description_defaults_if_user_does_not_provide_topic_description_values()
         {

@@ -95,7 +95,9 @@
     <Compile Include="Config\AzureServiceBusTransportInfrastructure.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusCompositionExtensionPoint.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusDiscriminatorBasedIndividualizationSettingsExtensions.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusEndpointOrientedTopologySettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusEndpointOrientedTopologySettingsExtensions.cs" />
+    <Compile Include="Config\ExtensionPoints\AzureServiceBusForwardingTopologySettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusForwardingTopologySettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusHierarchyCompositionSettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusIndividualizationExtensionPoint.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
     <Compile Include="obsoletes.cs" />
     <Compile Include="Receiving\BrokeredMessageReceiveContext.cs" />
+    <Compile Include="Receiving\MultiProducerConcurrentCompletion.cs" />
     <Compile Include="Receiving\TransactionScopeSuppressBehavior.cs" />
     <Compile Include="Receiving\TransactionScopeSuppressFeature.cs" />
     <Compile Include="Resharper.Annotations.g.cs" />
@@ -124,11 +127,10 @@
     <Compile Include="Sending\TransactionContainsTooManyMessages.cs" />
     <Compile Include="Sending\MessageTooLargeException.cs" />
     <Compile Include="Sending\Time.cs" />
-    <Compile Include="Topology\ConventionsAdapter.cs" />
-    <Compile Include="Topology\IConventions.cs" />
     <Compile Include="Topology\IStoppableTopology.cs" />
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Topology\MetaModel\SatelliteTransportAddressCollection.cs" />
+    <Compile Include="Utils\AsyncAutoResetEvent.cs" />
     <Compile Include="Utils\MessageReceiverExtensions.cs" />
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />
@@ -138,7 +140,6 @@
     <Compile Include="Topology\MetaModel\DefaultConnectionStringToNamespaceAliasMapper.cs" />
     <Compile Include="Topology\MetaModel\EntityAddress.cs" />
     <Compile Include="Topology\MetaModel\ForwardingTopologySubscriptionMetadata.cs" />
-    <Compile Include="Topology\MetaModel\ICanMapConnectionStringToNamespaceAlias.cs" />
     <Compile Include="Topology\MetaModel\NamespaceInfo.cs" />
     <Compile Include="Topology\MetaModel\NamespaceConfigurations.cs" />
     <Compile Include="Topology\MetaModel\SubscriptionMetadata.cs" />

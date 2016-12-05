@@ -6,13 +6,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using AzureServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Tests;
-    using Receiving;
     using TestUtils;
     using Transport.AzureServiceBus;
     using Settings;
     using Transport;
     using NUnit.Framework;
 
+#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_receiving_messages

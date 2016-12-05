@@ -34,13 +34,13 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
             transportConfig.ConnectionString(connectionString);
         }
 
-        if (topology == nameof(ForwardingTopology))
+        if (topology == "ForwardingTopology")
         {
-            transportConfig.UseTopology<ForwardingTopology>();
+            transportConfig.UseForwardingTopology();
         }
         else
         {
-            transportConfig.UseTopology<EndpointOrientedTopology>()
+            transportConfig.UseEndpointOrientedTopology()
                 .RegisterPublisher(typeof(When_multiple_versions_of_a_message_is_published.V1Event), NameForEndpoint<When_multiple_versions_of_a_message_is_published.V2Publisher>())
                 .RegisterPublisher(typeof(When_multiple_versions_of_a_message_is_published.V2Event), NameForEndpoint<When_multiple_versions_of_a_message_is_published.V2Publisher>())
                 .RegisterPublisher(typeof(When_replies_to_message_published_by_a_saga.DidSomething), NameForEndpoint<When_replies_to_message_published_by_a_saga.SagaEndpoint>())

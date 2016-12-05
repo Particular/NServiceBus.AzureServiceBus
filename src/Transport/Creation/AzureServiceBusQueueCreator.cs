@@ -50,35 +50,28 @@
 
             try
             {
-                if (settings.GetOrDefault<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
+                if (!await ExistsAsync(namespaceManager, description.Path).ConfigureAwait(false))
                 {
-                    if (!await ExistsAsync(namespaceManager, description.Path).ConfigureAwait(false))
-                    {
-                        await namespaceManager.CreateQueue(description).ConfigureAwait(false);
-                        logger.InfoFormat("Queue '{0}' created", description.Path);
+                    await namespaceManager.CreateQueue(description).ConfigureAwait(false);
+                    logger.InfoFormat("Queue '{0}' created", description.Path);
 
-                        await rememberExistence.AddOrUpdate(description.Path, s => Task.FromResult(true), (s, b) => Task.FromResult(true)).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
-                        logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
-                        if (IsSystemQueue(description.Path))
-                        {
-                            logger.InfoFormat("Queue '{0}' is a shared queue and should not be updated", description.Path);
-                            return description;
-                        }
-                        var existingDescription = await namespaceManager.GetQueue(description.Path).ConfigureAwait(false);
-                        if (MembersAreNotEqual(existingDescription, description))
-                        {
-                            logger.InfoFormat("Updating queue '{0}' with new description", description.Path);
-                            await namespaceManager.UpdateQueue(description).ConfigureAwait(false);
-                        }
-                    }
+                    await rememberExistence.AddOrUpdate(description.Path, s => Task.FromResult(true), (s, b) => Task.FromResult(true)).ConfigureAwait(false);
                 }
                 else
                 {
-                    logger.InfoFormat("Transport.CreateQueues is set to false, skipping the creation of '{0}'", description.Path);
+                    logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
+                    logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
+                    if (IsSystemQueue(description.Path))
+                    {
+                        logger.InfoFormat("Queue '{0}' is a shared queue and should not be updated", description.Path);
+                        return description;
+                    }
+                    var existingDescription = await namespaceManager.GetQueue(description.Path).ConfigureAwait(false);
+                    if (MembersAreNotEqual(existingDescription, description))
+                    {
+                        logger.InfoFormat("Updating queue '{0}' with new description", description.Path);
+                        await namespaceManager.UpdateQueue(description).ConfigureAwait(false);
+                    }
                 }
             }
             catch (MessagingEntityAlreadyExistsException)
