@@ -38,24 +38,6 @@
         }
 
         [Test]
-        public async Task Should_not_create_subscription_when_topology_creation_is_turned_off()
-        {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            settings.Set(WellKnownConfigurationKeys.Core.CreateTopology, false);
-
-            const string subscriptionName = "mysubscription1";
-            //make sure there is no leftover from previous test
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
-
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
-
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
-
-            Assert.IsFalse(await namespaceManager.TopicExists(subscriptionName));
-        }
-
-        [Test]
         public async Task Should_properly_set_use_subscription_description_defaults_if_user_does_not_provide_topic_description_values()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());

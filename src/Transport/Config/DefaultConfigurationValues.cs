@@ -67,8 +67,6 @@
 
         void ApplyDefaultValuesForQueueDescriptions(SettingsHolder settings)
         {
-            settings.Set("Transport.CreateQueues", true);
-
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength, 260);
 
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration, TimeSpan.FromMilliseconds(30000));

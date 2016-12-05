@@ -17,25 +17,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
     public class When_creating_queues
     {
         [Test]
-        public async Task Does_not_create_queues_when_createqueues_is_set_to_false()
-        {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            //make sure there is no leftover from previous test
-            await namespaceManager.DeleteQueue("myqueue");
-
-            settings.Set("Transport.CreateQueues", false);
-
-            var creator = new AzureServiceBusQueueCreator(settings);
-
-            await creator.Create("myqueue", namespaceManager);
-
-            Assert.IsFalse(await namespaceManager.QueueExists("myqueue"));
-        }
-
-        [Test]
         public async Task Uses_queue_description_when_provided_by_user()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());

@@ -19,11 +19,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public async Task<StartupCheckResult> Run()
         {
-            if (!settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
-            {
-                return StartupCheckResult.Success;
-            }
-
             var namespacesWithoutManageRights = new List<string>();
 
             var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);

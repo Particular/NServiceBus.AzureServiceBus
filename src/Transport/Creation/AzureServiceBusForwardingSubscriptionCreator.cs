@@ -51,55 +51,48 @@
 
             try
             {
-                if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
+                if (!await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager).ConfigureAwait(false))
                 {
-                    if (!await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager).ConfigureAwait(false))
+                    var ruleDescription = new RuleDescription
                     {
-                        var ruleDescription = new RuleDescription
-                        {
-                            Filter = new SqlFilter(sqlFilter),
-                            Name = metadata.SubscriptionNameBasedOnEventWithNamespace
-                        };
+                        Filter = new SqlFilter(sqlFilter),
+                        Name = metadata.SubscriptionNameBasedOnEventWithNamespace
+                    };
 
-                        await namespaceManager.CreateSubscription(subscriptionDescription, ruleDescription).ConfigureAwait(false);
-                        logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' with rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
+                    await namespaceManager.CreateSubscription(subscriptionDescription, ruleDescription).ConfigureAwait(false);
+                    logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' with rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
 
-                        var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
-                        await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        logger.Info($"Subscription '{subscriptionDescription.Name}' aka '{subscriptionDescription.UserMetadata}' already exists, skipping creation");
-                        logger.InfoFormat("Checking if subscription '{0}' needs to be updated", subscriptionDescription.Name);
-
-                        var existingSubscriptionDescription = await namespaceManager.GetSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
-                        if (MembersAreNotEqual(existingSubscriptionDescription, subscriptionDescription))
-                        {
-                            logger.Info($"Updating subscription '{subscriptionDescription.Name}' with new description");
-                            await namespaceManager.UpdateSubscription(subscriptionDescription).ConfigureAwait(false);
-                        }
-
-                        // Rules can't be queried, so try to add
-                        var ruleDescription = new RuleDescription
-                        {
-                            Filter = new SqlFilter(sqlFilter),
-                            Name = metadata.SubscriptionNameBasedOnEventWithNamespace
-                        };
-                        logger.Info($"Adding subscription rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
-                        try
-                        {
-                            var subscriptionClient = SubscriptionClient.CreateFromConnectionString(meta.NamespaceInfo.ConnectionString, topicPath, subscriptionName);
-                            await subscriptionClient.AddRuleAsync(ruleDescription).ConfigureAwait(false);
-                        }
-                        catch (MessagingEntityAlreadyExistsException exception)
-                        {
-                            logger.Debug($"Rule '{ruleDescription.Name}' already exists. Response from the server: '{exception.Message}'");
-                        }
-                    }
+                    var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
+                    await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
                 }
                 else
                 {
-                    logger.Info($"'{WellKnownConfigurationKeys.Core.CreateTopology}' is set to false, skipping the creation of subscription '{subscriptionDescription.Name}' aka '{meta.SubscribedEventFullName}'");
+                    logger.Info($"Subscription '{subscriptionDescription.Name}' aka '{subscriptionDescription.UserMetadata}' already exists, skipping creation");
+                    logger.InfoFormat("Checking if subscription '{0}' needs to be updated", subscriptionDescription.Name);
+
+                    var existingSubscriptionDescription = await namespaceManager.GetSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
+                    if (MembersAreNotEqual(existingSubscriptionDescription, subscriptionDescription))
+                    {
+                        logger.Info($"Updating subscription '{subscriptionDescription.Name}' with new description");
+                        await namespaceManager.UpdateSubscription(subscriptionDescription).ConfigureAwait(false);
+                    }
+
+                    // Rules can't be queried, so try to add
+                    var ruleDescription = new RuleDescription
+                    {
+                        Filter = new SqlFilter(sqlFilter),
+                        Name = metadata.SubscriptionNameBasedOnEventWithNamespace
+                    };
+                    logger.Info($"Adding subscription rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
+                    try
+                    {
+                        var subscriptionClient = SubscriptionClient.CreateFromConnectionString(meta.NamespaceInfo.ConnectionString, topicPath, subscriptionName);
+                        await subscriptionClient.AddRuleAsync(ruleDescription).ConfigureAwait(false);
+                    }
+                    catch (MessagingEntityAlreadyExistsException exception)
+                    {
+                        logger.Debug($"Rule '{ruleDescription.Name}' already exists. Response from the server: '{exception.Message}'");
+                    }
                 }
             }
             catch (MessagingEntityAlreadyExistsException)
@@ -143,31 +136,24 @@
 
             try
             {
-                if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
+                if (await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager, removeCacheEntry: true).ConfigureAwait(false))
                 {
-                    if (await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager, removeCacheEntry:true).ConfigureAwait(false))
+                    var ruleDescription = new RuleDescription
                     {
-                        var ruleDescription = new RuleDescription
-                        {
-                            Filter = new SqlFilter(sqlFilter),
-                            Name = metadata.SubscriptionNameBasedOnEventWithNamespace
-                        };
-                        logger.Info($"Removing subscription rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
-                        var subscriptionClient = SubscriptionClient.CreateFromConnectionString(meta.NamespaceInfo.ConnectionString, topicPath, subscriptionName);
-                        await subscriptionClient.RemoveRuleAsync(ruleDescription.Name).ConfigureAwait(false);
+                        Filter = new SqlFilter(sqlFilter),
+                        Name = metadata.SubscriptionNameBasedOnEventWithNamespace
+                    };
+                    logger.Info($"Removing subscription rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
+                    var subscriptionClient = SubscriptionClient.CreateFromConnectionString(meta.NamespaceInfo.ConnectionString, topicPath, subscriptionName);
+                    await subscriptionClient.RemoveRuleAsync(ruleDescription.Name).ConfigureAwait(false);
 
-                        var remainingRules = await namespaceManager.GetRules(subscriptionDescription).ConfigureAwait(false);
-                        var namespaceManagerThatCanDelete = namespaceManager as INamespaceManagerAbleToDeleteSubscriptions;
-                        if (!remainingRules.Any() && namespaceManagerThatCanDelete != null)
-                        {
-                            await namespaceManagerThatCanDelete.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
-                            logger.Debug($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' was removed as part of unsubscribe since events are subscribed to.");
-                        }
+                    var remainingRules = await namespaceManager.GetRules(subscriptionDescription).ConfigureAwait(false);
+                    var namespaceManagerThatCanDelete = namespaceManager as INamespaceManagerAbleToDeleteSubscriptions;
+                    if (!remainingRules.Any() && namespaceManagerThatCanDelete != null)
+                    {
+                        await namespaceManagerThatCanDelete.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
+                        logger.Debug($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' was removed as part of unsubscribe since events are subscribed to.");
                     }
-                }
-                else
-                {
-                    logger.Info($"'{WellKnownConfigurationKeys.Core.CreateTopology}' is set to false, skipping the deletion of subscription '{subscriptionDescription.Name}' aka '{meta?.SubscribedEventFullName}'");
                 }
             }
             catch (MessagingException ex)

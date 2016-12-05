@@ -52,7 +52,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 
             return container.Resolve<ITopologySectionManager>();
         }
-#pragma warning restore 618
 
         class SomeMessageType
         {

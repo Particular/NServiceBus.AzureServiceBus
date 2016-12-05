@@ -34,7 +34,7 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
             transportConfig.ConnectionString(connectionString);
         }
 
-        if (topology == nameof(ForwardingTopology))
+        if (topology == "ForwardingTopology")
         {
             transportConfig.UseForwardingTopology();
         }
