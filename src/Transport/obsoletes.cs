@@ -42,5 +42,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface ICreateNamespaceManagers { }
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface ITopologySectionManager { }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public class NamespaceManagerAdapter : INamespaceManager { }
 }
