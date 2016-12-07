@@ -4,7 +4,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus;
     using Settings;
 
-    class NamespaceManagerCreator : ICreateNamespaceManagers
+    class NamespaceManagerCreator : ICreateNamespaceManagersInternal
     {
         ReadOnlySettings settings;
         Func<string, NamespaceManagerSettings> settingsFactory;

@@ -7,7 +7,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Transport;
     using Settings;
 
-    class EndpointOrientedTopologySectionManager : ITopologySectionManager
+    class EndpointOrientedTopologySectionManager : ITopologySectionManagerInternal
     {
         SettingsHolder settings;
         ITransportPartsContainer container;

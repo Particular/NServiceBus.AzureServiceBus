@@ -6,13 +6,13 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Threading.Tasks;
     using Settings;
 
-    class MessagingFactoryLifeCycleManager : IManageMessagingFactoryLifeCycle
+    class MessagingFactoryLifeCycleManager : IManageMessagingFactoryLifeCycleInternal
     {
         int numberOfFactoriesPerNamespace;
-        ICreateMessagingFactories createMessagingFactories;
+        ICreateMessagingFactoriesInternal createMessagingFactories;
         ConcurrentDictionary<string, CircularBuffer<FactoryEntry>> MessagingFactories = new ConcurrentDictionary<string, CircularBuffer<FactoryEntry>>();
 
-        public MessagingFactoryLifeCycleManager(ICreateMessagingFactories createMessagingFactories, ReadOnlySettings settings)
+        public MessagingFactoryLifeCycleManager(ICreateMessagingFactoriesInternal createMessagingFactories, ReadOnlySettings settings)
         {
             this.createMessagingFactories = createMessagingFactories;
             numberOfFactoriesPerNamespace = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);

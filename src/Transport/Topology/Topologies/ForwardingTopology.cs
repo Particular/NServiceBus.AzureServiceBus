@@ -15,7 +15,7 @@ namespace NServiceBus
     class ForwardingTopologyInternal : ITopologyInternal
     {
         ILog logger = LogManager.GetLogger("ForwardingTopology");
-        ITopologySectionManager topologySectionManager;
+        ITopologySectionManagerInternal topologySectionManager;
         ITransportPartsContainer container;
 
         public ForwardingTopologyInternal() : this(new TransportPartsContainer()) { }
@@ -51,9 +51,9 @@ namespace NServiceBus
         {
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
-            container.Register<ITopologySectionManager>(() => topologySectionManager);
+            container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
             container.RegisterSingleton<NamespaceManagerCreator>();
-            container.RegisterSingleton<NamespaceManagerLifeCycleManager>();
+            container.RegisterSingleton<NamespaceManagerLifeCycleManagerInternal>();
             container.RegisterSingleton<MessagingFactoryCreator>();
             container.RegisterSingleton<MessagingFactoryLifeCycleManager>();
             container.RegisterSingleton<MessageReceiverCreator>();
@@ -153,7 +153,7 @@ namespace NServiceBus
         public Task Stop()
         {
             logger.Info("Closing messaging factories");
-            var factories = container.Resolve<IManageMessagingFactoryLifeCycle>();
+            var factories = container.Resolve<IManageMessagingFactoryLifeCycleInternal>();
             return factories.CloseAll();
         }
     }

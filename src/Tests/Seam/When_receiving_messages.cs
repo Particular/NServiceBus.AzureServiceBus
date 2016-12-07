@@ -72,7 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await pump.Stop();
         }
 
-        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
+        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
@@ -87,7 +87,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // create the topologySectionManager
             var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
             container.RegisterSingleton<TopologyOperator>();
             return sectionManager;

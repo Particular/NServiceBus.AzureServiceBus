@@ -113,7 +113,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return manager.GetTopicAsync(path);
         }
 
-        // TODO: delete this once NamespaceManagerAdapter is internalized
+        // TODO: delete this once NamespaceManagerAdapterInternal is internalized
         public Task DeleteSubscriptionAsync(string topicPath, string subscriptionName)
         {
             return DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));

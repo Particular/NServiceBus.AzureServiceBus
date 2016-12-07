@@ -13,7 +13,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     class DefaultOutgoingBatchRouter : IRouteOutgoingBatches
     {
         ILog logger = LogManager.GetLogger<DefaultOutgoingBatchRouter>();
-        IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter;
+        IConvertOutgoingMessagesToBrokeredMessagesInternal outgoingMessageConverter;
         IManageMessageSenderLifeCycle senders;
         ReadOnlySettings settings;
         IHandleOversizedBrokeredMessages oversizedMessageHandler;
@@ -22,7 +22,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         TimeSpan backOffTimeOnThrottle;
         int maximuMessageSizeInKilobytes;
 
-        public DefaultOutgoingBatchRouter(IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings, IHandleOversizedBrokeredMessages oversizedMessageHandler)
+        public DefaultOutgoingBatchRouter(IConvertOutgoingMessagesToBrokeredMessagesInternal outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings, IHandleOversizedBrokeredMessages oversizedMessageHandler)
         {
             this.outgoingMessageConverter = outgoingMessageConverter;
             this.senders = senders;

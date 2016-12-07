@@ -9,7 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class Dispatcher : IDispatchMessages
     {
-        public Dispatcher(IRouteOutgoingBatches routeOutgoingBatches, IBatcher batcher)
+        public Dispatcher(IRouteOutgoingBatches routeOutgoingBatches, IBatcherInternal batcher)
         {
             this.routeOutgoingBatches = routeOutgoingBatches;
             this.batcher = batcher;
@@ -81,6 +81,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         }
 
         IRouteOutgoingBatches routeOutgoingBatches;
-        IBatcher batcher;
+        IBatcherInternal batcher;
     }
 }

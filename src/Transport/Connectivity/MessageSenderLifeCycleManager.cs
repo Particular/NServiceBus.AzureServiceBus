@@ -5,11 +5,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessageSenderLifeCycleManager : IManageMessageSenderLifeCycle
     {
-        ICreateMessageSenders senderFactory;
+        ICreateMessageSendersInternal senderFactory;
         int numberOfSendersPerEntity;
         ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>> MessageSenders = new ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>>();
 
-        public MessageSenderLifeCycleManager(ICreateMessageSenders senderFactory, ReadOnlySettings settings)
+        public MessageSenderLifeCycleManager(ICreateMessageSendersInternal senderFactory, ReadOnlySettings settings)
         {
             this.senderFactory = senderFactory;
             numberOfSendersPerEntity = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);

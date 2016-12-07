@@ -120,7 +120,7 @@
     }
 
 #pragma warning disable 618
-    public class FakeTopolySectionManager : ITopologySectionManager
+    public class FakeTopolySectionManager : ITopologySectionManagerInternal
     {
         public TopologySection DetermineReceiveResources(string inputQueue)
         {

@@ -18,7 +18,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         {
             var creator = new InterceptingCreator();
 
-            var lifecycleManager = new NamespaceManagerLifeCycleManager(creator);
+            var lifecycleManager = new NamespaceManagerLifeCycleManagerInternal(creator);
 
             lifecycleManager.Get(AzureServiceBusConnectionString.Value);
 
@@ -30,7 +30,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         {
             var creator = new InterceptingCreator();
 
-            var lifecycleManager = new NamespaceManagerLifeCycleManager(creator);
+            var lifecycleManager = new NamespaceManagerLifeCycleManagerInternal(creator);
 
             var first = lifecycleManager.Get(AzureServiceBusConnectionString.Value);
             var second = lifecycleManager.Get(AzureServiceBusConnectionString.Value);

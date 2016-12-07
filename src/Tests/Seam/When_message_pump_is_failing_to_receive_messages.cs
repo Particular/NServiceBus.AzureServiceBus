@@ -81,7 +81,7 @@
         {
         }
 
-        class FakeTopology : ITopologySectionManager
+        class FakeTopology : ITopologySectionManagerInternal
         {
             public TopologySection DetermineReceiveResources(string inputQueue)
             {

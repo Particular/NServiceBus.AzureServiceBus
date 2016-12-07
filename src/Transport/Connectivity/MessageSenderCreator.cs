@@ -4,12 +4,12 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus;
     using Settings;
 
-    class MessageSenderCreator : ICreateMessageSenders
+    class MessageSenderCreator : ICreateMessageSendersInternal
     {
-        IManageMessagingFactoryLifeCycle factories;
+        IManageMessagingFactoryLifeCycleInternal factories;
         ReadOnlySettings settings;
 
-        public MessageSenderCreator(IManageMessagingFactoryLifeCycle factories, ReadOnlySettings settings)
+        public MessageSenderCreator(IManageMessagingFactoryLifeCycleInternal factories, ReadOnlySettings settings)
         {
             this.factories = factories;
             this.settings = settings;

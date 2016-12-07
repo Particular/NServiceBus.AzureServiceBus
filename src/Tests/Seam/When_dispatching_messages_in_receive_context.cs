@@ -191,7 +191,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             }
         }
 
-        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string endpointName, SettingsHolder settings)
+        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(TransportPartsContainer container, string endpointName, SettingsHolder settings)
         {
             container.Register(typeof(SettingsHolder), () => settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
@@ -205,7 +205,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             // create the topologySectionManager
             var topologyCreator = (ICreateTopology) container.Resolve(typeof(TopologyCreator));
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
             container.RegisterSingleton<TopologyOperator>();
             return sectionManager;
@@ -239,7 +239,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         IDispatchMessages dispatcher;
         CriticalError criticalError;
         TransportPartsContainer container;
-        ITopologySectionManager topology;
+        ITopologySectionManagerInternal topology;
         INamespaceManagerInternal namespaceManager;
         TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker;
         const string DestinationQueueName = "myqueue";

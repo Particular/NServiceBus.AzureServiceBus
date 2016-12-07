@@ -6,7 +6,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus.Messaging.Amqp;
     using Settings;
 
-    class MessagingFactoryCreator : ICreateMessagingFactories
+    class MessagingFactoryCreator : ICreateMessagingFactoriesInternal
     {
         public MessagingFactoryCreator(IManageNamespaceManagerLifeCycleInternal namespaceManagers, ReadOnlySettings settings)
         {

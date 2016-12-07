@@ -38,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         }
 
 #pragma warning disable 618
-        ITopologySectionManager SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
+        ITopologySectionManagerInternal SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
@@ -51,7 +51,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 
             topology.Initialize(settings);
 
-            return container.Resolve<ITopologySectionManager>();
+            return container.Resolve<ITopologySectionManagerInternal>();
         }
 
         class SomeMessageType
@@ -72,7 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         }
 
 #pragma warning disable 618
-        ITopologySectionManager SetupEndpointOrientedTopologyWithFailoverNamespace(TransportPartsContainer container, string enpointname)
+        ITopologySectionManagerInternal SetupEndpointOrientedTopologyWithFailoverNamespace(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
@@ -87,7 +87,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 
             topology.Initialize(settings);
 
-            return container.Resolve<ITopologySectionManager>();
+            return container.Resolve<ITopologySectionManagerInternal>();
         }
 #pragma warning restore 618
     }

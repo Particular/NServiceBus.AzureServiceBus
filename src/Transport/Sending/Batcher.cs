@@ -7,10 +7,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class Batcher : IBatcher
     {
-        ITopologySectionManager topologySectionManager;
+        ITopologySectionManagerInternal topologySectionManager;
         int messageSizePaddingPercentage;
 
-        public Batcher(ITopologySectionManager topologySectionManager, ReadOnlySettings settings)
+        public Batcher(ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings)
         {
             this.topologySectionManager = topologySectionManager;
             messageSizePaddingPercentage = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage);
