@@ -6,9 +6,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     class TopologyCreator : ICreateTopology, ITearDownTopology
     {
         ITransportPartsContainer container;
-        IManageNamespaceManagerLifeCycle namespaces;
+        IManageNamespaceManagerLifeCycleInternal namespaces;
 
-        public TopologyCreator(ITransportPartsContainer container, IManageNamespaceManagerLifeCycle namespaces)
+        public TopologyCreator(ITransportPartsContainer container, IManageNamespaceManagerLifeCycleInternal namespaces)
         {
             this.container = container;
             this.namespaces = namespaces;
@@ -22,7 +22,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             if (queues.Any())
             {
-                var queueCreator = (ICreateAzureServiceBusQueues)container.Resolve(typeof(ICreateAzureServiceBusQueues));
+                var queueCreator = (ICreateAzureServiceBusQueuesInternal)container.Resolve(typeof(ICreateAzureServiceBusQueuesInternal));
                 foreach (var queue in queues)
                 {
                     await queueCreator.Create(queue.Path, namespaces.Get(queue.Namespace.Alias)).ConfigureAwait(false);
@@ -31,7 +31,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             if (topics.Any())
             {
-                var topicCreator = (ICreateAzureServiceBusTopics)container.Resolve(typeof(ICreateAzureServiceBusTopics));
+                var topicCreator = (ICreateAzureServiceBusTopicsInternal)container.Resolve(typeof(ICreateAzureServiceBusTopicsInternal));
                 foreach (var topic in topics)
                 {
                     await topicCreator.Create(topic.Path, namespaces.Get(topic.Namespace.Alias)).ConfigureAwait(false);
@@ -40,7 +40,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             if (subscriptions.Any())
             {
-                var subscriptionCreator = (ICreateAzureServiceBusSubscriptions) container.Resolve(typeof(ICreateAzureServiceBusSubscriptions));
+                var subscriptionCreator = (ICreateAzureServiceBusSubscriptionsInternal) container.Resolve(typeof(ICreateAzureServiceBusSubscriptionsInternal));
                 foreach (var subscription in subscriptions)
                 {
                     var topic = subscription.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
@@ -57,13 +57,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var subscriptions = topologySection.Entities.Where(e => e.Type == EntityType.Subscription).ToList();
             if (subscriptions.Any())
             {
-                var subscriptionCreator = (ICreateAzureServiceBusSubscriptions)container.Resolve(typeof(ICreateAzureServiceBusSubscriptions));
-
-                var subscriptionCreatorAbleToDeleteSubscriptions = subscriptionCreator as ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions;
-                if (subscriptionCreatorAbleToDeleteSubscriptions == null)
-                {
-                    return;
-                }
+                var subscriptionCreator = (ICreateAzureServiceBusSubscriptionsInternal)container.Resolve(typeof(ICreateAzureServiceBusSubscriptionsInternal));
 
                 foreach (var subscription in subscriptions)
                 {
@@ -73,11 +67,11 @@ namespace NServiceBus.Transport.AzureServiceBus
                     var metadata = (subscription as SubscriptionInfo)?.Metadata ?? new SubscriptionMetadata();
 
 
-                    await subscriptionCreatorAbleToDeleteSubscriptions.DeleteSubscription(topicPath: topic.Target.Path, 
-                        subscriptionName: subscription.Path, 
-                        metadata: metadata, 
-                        sqlFilter: sqlFilter, 
-                        namespaceManager: namespaces.Get(subscription.Namespace.Alias), 
+                    await subscriptionCreator.DeleteSubscription(topicPath: topic.Target.Path,
+                        subscriptionName: subscription.Path,
+                        metadata: metadata,
+                        sqlFilter: sqlFilter,
+                        namespaceManager: namespaces.Get(subscription.Namespace.Alias),
                         forwardTo: forwardTo?.Target.Path).ConfigureAwait(false);
                 }
             }

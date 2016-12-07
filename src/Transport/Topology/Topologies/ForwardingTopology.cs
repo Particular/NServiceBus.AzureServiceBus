@@ -11,7 +11,7 @@ namespace NServiceBus
     using Transport;
     using Transport.AzureServiceBus;
 
-    
+
     class ForwardingTopologyInternal : ITopologyInternal
     {
         ILog logger = LogManager.GetLogger("ForwardingTopology");
@@ -130,7 +130,7 @@ namespace NServiceBus
         {
             var settings = container.Resolve<ReadOnlySettings>();
 
-            var manageRightsCheck = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycle>(), settings);
+            var manageRightsCheck = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycleInternal>(), settings);
 
             var results = new List<StartupCheckResult>
             {

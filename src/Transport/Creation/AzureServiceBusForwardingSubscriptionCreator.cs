@@ -8,7 +8,7 @@
     using Logging;
     using Settings;
 
-    class AzureServiceBusForwardingSubscriptionCreator : ICreateAzureServiceBusSubscriptions, ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
+    class AzureServiceBusForwardingSubscriptionCreator : ICreateAzureServiceBusSubscriptionsInternal
     {
         ReadOnlySettings settings;
         Func<string, string, ReadOnlySettings, SubscriptionDescription> subscriptionDescriptionFactory;
@@ -36,7 +36,7 @@
             }
         }
 
-        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo)
+        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
             var meta = metadata as ForwardingTopologySubscriptionMetadata;
             if (meta == null)
@@ -129,7 +129,7 @@
 
         }
 
-        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo)
+        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
             var meta = metadata as ForwardingTopologySubscriptionMetadata;
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
@@ -148,10 +148,9 @@
                     await subscriptionClient.RemoveRuleAsync(ruleDescription.Name).ConfigureAwait(false);
 
                     var remainingRules = await namespaceManager.GetRules(subscriptionDescription).ConfigureAwait(false);
-                    var namespaceManagerThatCanDelete = namespaceManager as INamespaceManagerAbleToDeleteSubscriptions;
-                    if (!remainingRules.Any() && namespaceManagerThatCanDelete != null)
+                    if (!remainingRules.Any())
                     {
-                        await namespaceManagerThatCanDelete.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
+                        await namespaceManager.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
                         logger.Debug($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' was removed as part of unsubscribe since events are subscribed to.");
                     }
                 }
@@ -170,7 +169,7 @@
             }
         }
 
-        async Task<bool> ExistsAsync(string topicPath, string subscriptionName, string metadata, INamespaceManager namespaceClient, bool removeCacheEntry = false)
+        async Task<bool> ExistsAsync(string topicPath, string subscriptionName, string metadata, INamespaceManagerInternal namespaceClient, bool removeCacheEntry = false)
         {
             logger.Info($"Checking existence cache for subscription '{subscriptionName}' aka '{metadata}'");
 

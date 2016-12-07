@@ -9,7 +9,7 @@ namespace NServiceBus
     using Transport;
     using Transport.AzureServiceBus;
 
-    
+
     class EndpointOrientedTopologyInternal : ITopology
     {
         ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
@@ -128,7 +128,7 @@ namespace NServiceBus
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
-            var check = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycle>(), container.Resolve<ReadOnlySettings>());
+            var check = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycleInternal>(), container.Resolve<ReadOnlySettings>());
 
             return check.Run();
         }

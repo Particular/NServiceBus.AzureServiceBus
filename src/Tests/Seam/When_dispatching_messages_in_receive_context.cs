@@ -49,8 +49,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             topology = await SetupEndpointOrientedTopology(container, SourceQueueName, settings);
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycleInternal) container.Resolve(typeof(IManageNamespaceManagerLifeCycleInternal));
+            var creator = (ICreateAzureServiceBusQueuesInternal) container.Resolve(typeof(ICreateAzureServiceBusQueuesInternal));
             namespaceManager = namespaceLifeCycle.Get("namespaceName");
             await creator.Create(DestinationQueueName, namespaceManager);
         }
@@ -200,7 +200,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
-            var endpointOrientedTopology = new EndpointOrientedTopology(container);
+            var endpointOrientedTopology = new EndpointOrientedTopologyInternal(container);
             endpointOrientedTopology.Initialize(settings);
 
             // create the topologySectionManager
@@ -240,7 +240,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         CriticalError criticalError;
         TransportPartsContainer container;
         ITopologySectionManager topology;
-        INamespaceManager namespaceManager;
+        INamespaceManagerInternal namespaceManager;
         TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker;
         const string DestinationQueueName = "myqueue";
         const string SourceQueueName = "sales";

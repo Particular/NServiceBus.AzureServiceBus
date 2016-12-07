@@ -24,7 +24,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public INamespaceManager Create(string @namespace)
+        public INamespaceManagerInternal Create(string @namespace)
         {
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             var connectionString = @namespace;
@@ -60,7 +60,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     manager.Settings.RetryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.NamespaceManagers.RetryPolicy);
                 }
             }
-            return new NamespaceManagerAdapter(manager);
+            return new NamespaceManagerAdapterInternal(manager);
         }
     }
 }
