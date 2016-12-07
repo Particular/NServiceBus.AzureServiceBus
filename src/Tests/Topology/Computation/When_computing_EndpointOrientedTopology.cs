@@ -7,7 +7,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
     using NUnit.Framework;
     using Transport;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_computing_EndpointOrientedTopology

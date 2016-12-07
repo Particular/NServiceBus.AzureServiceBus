@@ -8,7 +8,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_sending_brokeredmessages_to_queues

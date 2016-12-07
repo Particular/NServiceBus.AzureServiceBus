@@ -6,7 +6,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
     using NUnit.Framework;
     using Transport.AzureServiceBus;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_using_failover_namespace_strategy

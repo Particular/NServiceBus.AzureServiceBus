@@ -37,7 +37,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             Assert.IsTrue(destination.Entities.Single().Path == "sales.events");
         }
 
-#pragma warning disable 618
         ITopologySectionManagerInternal SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();

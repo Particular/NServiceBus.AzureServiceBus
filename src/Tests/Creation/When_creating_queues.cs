@@ -11,7 +11,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
     using NUnit.Framework;
     using Transport;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_creating_queues

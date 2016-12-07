@@ -17,7 +17,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using Transport;
     using Transport.AzureServiceBus;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_dispatching_messages_in_receive_context

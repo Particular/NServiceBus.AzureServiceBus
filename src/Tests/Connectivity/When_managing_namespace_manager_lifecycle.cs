@@ -39,7 +39,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             Assert.AreEqual(first, second);
         }
 
-#pragma warning disable 618
         class InterceptingCreator : ICreateNamespaceManagersInternal
         {
             public bool HasBeenInvoked;
@@ -156,6 +155,5 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 throw new NotImplementedException();
             }
         }
-#pragma warning restore 618
     }
 }
