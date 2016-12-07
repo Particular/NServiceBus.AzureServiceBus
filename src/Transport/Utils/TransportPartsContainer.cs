@@ -132,7 +132,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 var args = constructor.GetParameters().Select(p => Resolve(p.ParameterType)).ToArray();
 
-                return Activator.CreateInstance(type, args, null);
+                return Activator.CreateInstance(type, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, args);
             };
 
         }
