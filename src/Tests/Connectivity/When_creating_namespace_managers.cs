@@ -23,8 +23,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             var first = creator.Create("namespace");
             var second = creator.Create("namespace");
 
-            Assert.IsInstanceOf<INamespaceManager>(first);
-            Assert.IsInstanceOf<INamespaceManager>(second);
+            Assert.IsInstanceOf<INamespaceManagerInternal>(first);
+            Assert.IsInstanceOf<INamespaceManagerInternal>(second);
             Assert.AreNotEqual(first, second);
         }
     }

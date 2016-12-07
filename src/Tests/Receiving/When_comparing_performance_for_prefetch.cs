@@ -71,7 +71,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // sending messages to the queue is done
 
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
-            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
+            notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 (message, context) =>
                 {
                     var numberOfMessages = Interlocked.Increment(ref receivedMessages);

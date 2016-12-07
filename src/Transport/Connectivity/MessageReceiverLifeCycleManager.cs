@@ -3,7 +3,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Concurrent;
     using Settings;
 
-    class MessageReceiverLifeCycleManager : IManageMessageReceiverLifeCycle
+    class MessageReceiverLifeCycleManager : IManageMessageReceiverLifeCycleInternal
     {
         ICreateMessageReceiversInternal receiveFactory;
         int numberOfReceiversPerEntity;

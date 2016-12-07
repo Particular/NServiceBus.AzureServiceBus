@@ -290,7 +290,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             const string topicPath = "testtopic";
 
-            var namespaceManager = A.Fake<INamespaceManager>();
+            var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.TopicExists(topicPath)).Returns(Task.FromResult(false));
 
             var topicCreationThrewException = false;
@@ -309,7 +309,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public void Should_throw_TimeoutException_if_creation_of_entity_timed_out_and_topic_was_not_created()
         {
-            var namespaceManager = A.Fake<INamespaceManager>();
+            var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).Returns(Task.FromResult(false));
             A.CallTo(() => namespaceManager.CreateTopic(A<TopicDescription>.Ignored)).Throws<TimeoutException>();
 
@@ -322,7 +322,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public Task Should_not_throw_TimeoutException_if_creation_of_entity_timed_out_and_topic_was_created()
         {
-            var namespaceManager = A.Fake<INamespaceManager>();
+            var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).ReturnsNextFromSequence(Task.FromResult(false), Task.FromResult(true));
             A.CallTo(() => namespaceManager.CreateTopic(A<TopicDescription>.Ignored)).Throws<TimeoutException>();
 
@@ -335,7 +335,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public void Should_throw_for_MessagingException_that_is_not_transient()
         {
-            var namespaceManager = A.Fake<INamespaceManager>();
+            var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).Throws(new MessagingException("boom", false, new Exception("wrapped")));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());

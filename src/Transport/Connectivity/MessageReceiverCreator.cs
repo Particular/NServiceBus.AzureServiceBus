@@ -5,7 +5,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus.Messaging;
     using Settings;
 
-    class MessageReceiverCreator : ICreateMessageReceivers
+    class MessageReceiverCreator : ICreateMessageReceiversInternal
     {
         IManageMessagingFactoryLifeCycleInternal factories;
         ReadOnlySettings settings;

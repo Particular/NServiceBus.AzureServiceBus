@@ -43,12 +43,12 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var creator = new AzureServiceBusSubscriptionCreatorV6(settings);
-            var metadata1 = new SubscriptionMetadata
+            var metadata1 = new SubscriptionMetadataInternal
             {
                 SubscriptionNameBasedOnEventWithNamespace = typeof(Ns1.ReusedEvent).FullName,
                 Description = Guid.NewGuid().ToString()
             };
-            var metadata2 = new SubscriptionMetadata
+            var metadata2 = new SubscriptionMetadataInternal
             {
                 SubscriptionNameBasedOnEventWithNamespace = typeof(Ns2.ReusedEvent).FullName,
                 Description = Guid.NewGuid().ToString()
