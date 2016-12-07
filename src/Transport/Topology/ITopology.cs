@@ -8,7 +8,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     static class ObsoleteMessages
     {
-        public const string WillBeInternalized = "Internal contract that shouldn't be exposed.";
+        public const string InternalizedContract = "Internal contract.";
     }
 
     interface ITopologyInternal
