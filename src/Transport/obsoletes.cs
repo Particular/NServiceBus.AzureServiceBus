@@ -199,4 +199,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     public class BatchedOperation
     {
     }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class SubscriptionInfo : EntityInfo
+    {
+    }
 }

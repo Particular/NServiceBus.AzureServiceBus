@@ -5,13 +5,13 @@
 
     interface ITopologySectionManagerInternal
     {
-        TopologySection DetermineReceiveResources(string inputQueue);
-        TopologySection DetermineResourcesToCreate(QueueBindings queueBindings);
+        TopologySectionInternal DetermineReceiveResources(string inputQueue);
+        TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings);
 
-        TopologySection DeterminePublishDestination(Type eventType);
-        TopologySection DetermineSendDestination(string destination);
+        TopologySectionInternal DeterminePublishDestination(Type eventType);
+        TopologySectionInternal DetermineSendDestination(string destination);
 
-        TopologySection DetermineResourcesToSubscribeTo(Type eventType);
-        TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype);
+        TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType);
+        TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype);
     }
 }
