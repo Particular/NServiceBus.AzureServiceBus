@@ -8,7 +8,6 @@
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_all_pre_startup_checks_for_forwarding_topology_fail
@@ -24,13 +23,13 @@
 
             container.Register(typeof(SettingsHolder), () => settings);
 
-            var namespaceManager = A.Fake<INamespaceManager>();
+            var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.CanManageEntities()).Returns(Task.FromResult(false));
-            var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycle>();
+            var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycleInternal>();
             A.CallTo(() => manageNamespaceLifeCycle.Get("namespace1")).Returns(namespaceManager);
-            container.Register<IManageNamespaceManagerLifeCycle>(() => manageNamespaceLifeCycle);
+            container.Register<IManageNamespaceManagerLifeCycleInternal>(() => manageNamespaceLifeCycle);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
             topology.Initialize(settings);
 
             var result = await topology.RunPreStartupChecks();

@@ -9,8 +9,7 @@ namespace NServiceBus
     {
         SettingsHolder settings;
 
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public AzureServiceBusSanitizationExtensionPoint(SettingsHolder settings) : base(settings)
+        internal AzureServiceBusSanitizationExtensionPoint(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }

@@ -8,7 +8,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class TopologyOperator : IOperateTopologyInternal, IDisposable
     {
-        public TopologyOperator(ITransportPartsContainer container)
+        public TopologyOperator(ITransportPartsContainerInternal container)
         {
             this.container = container;
         }
@@ -127,7 +127,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        ITransportPartsContainer container;
+        ITransportPartsContainerInternal container;
 
         TopologySectionInternal topology;
 

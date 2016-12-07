@@ -2,9 +2,9 @@
 {
     class SubscriptionInfoInternal : EntityInfoInternal
     {
-        public IBrokerSideSubscriptionFilter BrokerSideFilter { get; set; }
+        public IBrokerSideSubscriptionFilterInternal BrokerSideFilter { get; set; }
 
-        public IClientSideSubscriptionFilter ClientSideFilter { get; set; }
+        public IClientSideSubscriptionFilterInternal ClientSideFilter { get; set; }
 
         public SubscriptionMetadataInternal Metadata { get; set; }
     }

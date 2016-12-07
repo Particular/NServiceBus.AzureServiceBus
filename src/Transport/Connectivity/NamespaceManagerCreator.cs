@@ -28,7 +28,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             var connectionString = @namespace;
-            if (!ConnectionString.IsConnectionString(connectionString))
+            if (!ConnectionStringInternal.IsConnectionString(connectionString))
             {
                 connectionString = namespacesDefinition.GetConnectionString(connectionString);
             }

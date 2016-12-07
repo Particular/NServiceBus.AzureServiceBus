@@ -2,11 +2,15 @@
 {
     using System;
 
-    public class NamespaceInfo : IEquatable<NamespaceInfo>
+    public partial class NamespaceInfo : IEquatable<NamespaceInfo>
     {
+        ConnectionStringInternal connectionString;
+
         public string Alias { get; }
-        public ConnectionString ConnectionString { get; }
+  
         public NamespacePurpose Purpose { get; }
+
+        public string Connection => connectionString;
 
         public NamespaceInfo(string alias, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
         {
@@ -21,7 +25,7 @@
             }
 
             Alias = alias;
-            ConnectionString = new ConnectionString(connectionString);
+            this.connectionString = new ConnectionStringInternal(connectionString);
             Purpose = purpose;
         }
 
@@ -29,7 +33,7 @@
         {
             return other != null
                    && Alias.Equals(other.Alias, StringComparison.OrdinalIgnoreCase)
-                   && ConnectionString.Equals(other.ConnectionString);
+                   && connectionString.Equals(other.connectionString);
         }
 
         public override bool Equals(object obj)
@@ -41,7 +45,7 @@
         public override int GetHashCode()
         {
             var name = Alias.ToLower();
-            return string.Concat(name, "#", ConnectionString).GetHashCode();
+            return string.Concat(name, "#", connectionString).GetHashCode();
         }
     }
 }

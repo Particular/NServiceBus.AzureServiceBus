@@ -27,7 +27,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             var sender = await creator.Create("myqueue", null, AzureServiceBusConnectionString.Value);
 
             Assert.IsTrue(factory.IsInvoked);
-            Assert.IsInstanceOf<IMessageSender>(sender);
+            Assert.IsInstanceOf<IMessageSenderInternal>(sender);
         }
 
         [Test]

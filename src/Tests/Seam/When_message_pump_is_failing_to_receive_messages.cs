@@ -10,7 +10,6 @@
     using Transport;
     using Transport.AzureServiceBus;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_message_pump_is_failing_to_receive_messages
@@ -22,7 +21,7 @@
             var container = new TransportPartsContainer();
 
             var fakeTopologyOperator = new FakeTopologyOperator();
-            container.Register<IOperateTopology>(() => fakeTopologyOperator);
+            container.Register<IOperateTopologyInternal>(() => fakeTopologyOperator);
 
             var settings = new SettingsHolder();
             new DefaultConfigurationValues().Apply(settings);

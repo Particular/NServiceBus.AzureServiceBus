@@ -1,6 +1,8 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using System.Reflection;
+    using Settings;
     using Transport.AzureServiceBus;
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
@@ -41,10 +43,50 @@
             throw new NotImplementedException();
         }
     }
+
+    public static partial class AzureServiceBusEndpointOrientedTopologySettingsExtensions
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public static AzureServiceBusTopologySettings<EndpointOrientedTopology> RegisterPublisher(this AzureServiceBusTopologySettings<EndpointOrientedTopology> topologySettings, Type type, string publisherName)
+        {
+            throw new NotImplementedException();
+        }
+
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public static AzureServiceBusTopologySettings<EndpointOrientedTopology> RegisterPublisher(this AzureServiceBusTopologySettings<EndpointOrientedTopology> topologySettings, Assembly assembly, string publisherName)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public static partial class AzureServiceBusForwardingTopologySettingsExtensions
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public static AzureServiceBusTopologySettings<ForwardingTopology> NumberOfEntitiesInBundle(this AzureServiceBusTopologySettings<ForwardingTopology> topologySettings, int number)
+        {
+            throw new NotImplementedException();
+        }
+
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public static AzureServiceBusTopologySettings<ForwardingTopology> BundlePrefix(this AzureServiceBusTopologySettings<ForwardingTopology> topologySettings, string prefix)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class AzureServiceBusTopologySettings<T> : TransportExtensions<AzureServiceBusTransport> where T : ITopology
+    {
+        public AzureServiceBusTopologySettings(SettingsHolder settings) : base(settings)
+        {
+        }
+    }
 }
 
 namespace NServiceBus.Transport.AzureServiceBus
 {
+    using System;
+
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public interface ITopology
     {
@@ -171,6 +213,29 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface IRegisterTransportParts
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface IResolveTransportParts
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface ITransportPartsContainer : IRegisterTransportParts, IResolveTransportParts { }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface IBrokerSideSubscriptionFilter
+    {
+    }
+
+    [ObsoleteEx(Message = "Internal unutilized contract that shouldn't be exposed.", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface IClientSideSubscriptionFilter
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public class RoutingOptions
     {
     }
@@ -233,5 +298,19 @@ namespace NServiceBus.Transport.AzureServiceBus
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public class SubscriptionInfo : EntityInfo
     {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class ConnectionString
+    {
+    }
+
+    public partial class NamespaceInfo
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public ConnectionString ConnectionString
+        {
+            get {  throw new NotImplementedException(); }
+        }
     }
 }

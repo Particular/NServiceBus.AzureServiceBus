@@ -6,7 +6,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
     using Transport.AzureServiceBus;
     using NUnit.Framework;
 
-    #pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_using_roundrobin_strategy_on_multiple_namespaces
@@ -86,6 +85,5 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
 
             Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioning(settings));
         }
-
     }
 }

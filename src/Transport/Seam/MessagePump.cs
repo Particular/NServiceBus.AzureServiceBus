@@ -11,11 +11,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessagePump : IPushMessages, IDisposable
     {
-        public MessagePump(ITopologySectionManagerInternal topologySectionManager, ITransportPartsContainer container, ReadOnlySettings settings) : this(topologySectionManager, container, settings, TimeSpan.FromSeconds(30))
+        public MessagePump(ITopologySectionManagerInternal topologySectionManager, ITransportPartsContainerInternal container, ReadOnlySettings settings) : this(topologySectionManager, container, settings, TimeSpan.FromSeconds(30))
         {
         }
 
-        internal MessagePump(ITopologySectionManagerInternal topologySectionManager, ITransportPartsContainer container, ReadOnlySettings settings, TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker)
+        internal MessagePump(ITopologySectionManagerInternal topologySectionManager, ITransportPartsContainerInternal container, ReadOnlySettings settings, TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker)
         {
             this.topologySectionManager = topologySectionManager;
             this.container = container;
@@ -103,7 +103,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return container.Resolve<IOperateTopologyInternal>();
         }
 
-        readonly ITransportPartsContainer container;
+        readonly ITransportPartsContainerInternal container;
         ITopologySectionManagerInternal topologySectionManager;
         IOperateTopologyInternal topologyOperator;
         Func<MessageContext, Task> messagePump;

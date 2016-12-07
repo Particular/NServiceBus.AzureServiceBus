@@ -27,7 +27,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
@@ -51,7 +51,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
@@ -74,7 +74,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
@@ -94,7 +94,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
@@ -104,8 +104,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring && ei.Path.StartsWith("bundle-"));
 
             Assert.That(result.Count(), Is.EqualTo(2));
-            Assert.That(result, Has.Exactly(1).Matches<EntityInfo>(x => x.Path == "bundle-1"));
-            Assert.That(result, Has.Exactly(1).Matches<EntityInfo>(x => x.Path == "bundle-2"));
+            Assert.That(result, Has.Exactly(1).Matches<EntityInfoInternal>(x => x.Path == "bundle-1"));
+            Assert.That(result, Has.Exactly(1).Matches<EntityInfoInternal>(x => x.Path == "bundle-2"));
         }
 
         [Test]
@@ -120,7 +120,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
@@ -145,7 +145,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
@@ -169,7 +169,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();

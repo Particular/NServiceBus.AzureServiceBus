@@ -5,10 +5,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class TopologyCreator : ICreateTopologyInternal
     {
-        ITransportPartsContainer container;
+        ITransportPartsContainerInternal container;
         IManageNamespaceManagerLifeCycleInternal namespaces;
 
-        public TopologyCreator(ITransportPartsContainer container, IManageNamespaceManagerLifeCycleInternal namespaces)
+        public TopologyCreator(ITransportPartsContainerInternal container, IManageNamespaceManagerLifeCycleInternal namespaces)
         {
             this.container = container;
             this.namespaces = namespaces;

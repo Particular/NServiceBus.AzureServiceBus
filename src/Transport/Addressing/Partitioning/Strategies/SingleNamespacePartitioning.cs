@@ -10,8 +10,7 @@ namespace NServiceBus
     {
         NamespaceConfigurations namespaces;
 
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public SingleNamespacePartitioning(ReadOnlySettings settings)
+        internal SingleNamespacePartitioning(ReadOnlySettings settings)
         {
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
             {
@@ -29,7 +28,7 @@ namespace NServiceBus
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {
             var @namespace = namespaces.First();
-            yield return new RuntimeNamespaceInfo(@namespace.Alias, @namespace.ConnectionString, @namespace.Purpose, NamespaceMode.Active);
+            yield return new RuntimeNamespaceInfo(@namespace.Alias, @namespace.Connection, @namespace.Purpose, NamespaceMode.Active);
         }
     }
 }

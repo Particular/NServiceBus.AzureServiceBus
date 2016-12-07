@@ -10,7 +10,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     class ForwardingTopologySectionManager : ITopologySectionManagerInternal
     {
         SettingsHolder settings;
-        ITransportPartsContainer container;
+        ITransportPartsContainerInternal container;
 
         readonly ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
         readonly ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
@@ -18,7 +18,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         readonly List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
         readonly Random randomGenerator = new Random();
 
-        public ForwardingTopologySectionManager(SettingsHolder settings, ITransportPartsContainer container)
+        public ForwardingTopologySectionManager(SettingsHolder settings, ITransportPartsContainerInternal container)
         {
             this.settings = settings;
             this.container = container;
@@ -148,7 +148,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             {
                                 namespaces = new[]
                                 {
-                                    new RuntimeNamespaceInfo(configured.Alias, configured.ConnectionString, configured.Purpose, NamespaceMode.Active)
+                                    new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose, NamespaceMode.Active)
                                 };
                             }
                         }

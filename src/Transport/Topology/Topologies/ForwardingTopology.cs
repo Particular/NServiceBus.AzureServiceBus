@@ -16,11 +16,11 @@ namespace NServiceBus
     {
         ILog logger = LogManager.GetLogger("ForwardingTopology");
         ITopologySectionManagerInternal topologySectionManager;
-        ITransportPartsContainer container;
+        ITransportPartsContainerInternal container;
 
         public ForwardingTopologyInternal() : this(new TransportPartsContainer()) { }
 
-        internal ForwardingTopologyInternal(ITransportPartsContainer container)
+        internal ForwardingTopologyInternal(ITransportPartsContainerInternal container)
         {
             this.container = container;
         }

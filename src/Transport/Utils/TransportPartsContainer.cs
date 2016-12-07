@@ -5,14 +5,14 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using System.Reflection;
 
-    class TransportPartsContainer : ITransportPartsContainer
+    class TransportPartsContainer : ITransportPartsContainerInternal
     {
         List<Tuple<Type, Func<object>>> funcs = new List<Tuple<Type, Func<object>>>();
 
         public TransportPartsContainer()
         {
-            Register<IRegisterTransportParts>(() => this);
-            Register<IResolveTransportParts>(() => this);
+            Register<IRegisterTransportPartsInternal>(() => this);
+            Register<IResolveTransportPartsInternal>(() => this);
         }
 
         public void Register<T>()

@@ -41,7 +41,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
-            notifier.Initialize(new EntityInfo { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, 10);
+            notifier.Initialize(new EntityInfoInternal { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -76,7 +76,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
-            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, 10);
+            notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -126,7 +126,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             Exception ex = null;
             var received = false;
 
-            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) =>
+            notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) =>
             {
                 received = true;
 

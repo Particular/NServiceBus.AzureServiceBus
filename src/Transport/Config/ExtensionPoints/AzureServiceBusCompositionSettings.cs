@@ -8,8 +8,7 @@
     {
         SettingsHolder settings;
 
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public AzureServiceBusCompositionSettings(SettingsHolder settings) : base(settings)
+        internal AzureServiceBusCompositionSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }

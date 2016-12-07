@@ -84,7 +84,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         }
                         else
                         {
-                            replyTo = new EntityAddress(replyTo.Name, selected.ConnectionString);
+                            replyTo = new EntityAddress(replyTo.Name, selected.Connection);
                         }
                     }
                 }

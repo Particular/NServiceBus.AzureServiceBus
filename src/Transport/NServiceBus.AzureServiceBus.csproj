@@ -105,7 +105,6 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusNamespaceRoutingSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSanitizationExtensionPoint.cs" />
     <Compile Include="Config\TransactionModeSettingsExtensions.cs" />
-    <Compile Include="Config\ExtensionPoints\AzureServiceBusTopologySettings.cs" />
     <Compile Include="Config\ExtensionPoints\SizeInMegabytes.cs" />
     <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />

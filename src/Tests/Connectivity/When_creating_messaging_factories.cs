@@ -23,8 +23,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             var first = lifecycleManager.Create("namespace");
             var second = lifecycleManager.Create("namespace");
 
-            Assert.IsInstanceOf<IMessagingFactory>(first);
-            Assert.IsInstanceOf<IMessagingFactory>(second);
+            Assert.IsInstanceOf<IMessagingFactoryInternal>(first);
+            Assert.IsInstanceOf<IMessagingFactoryInternal>(second);
             Assert.AreNotEqual(first, second);
         }
 

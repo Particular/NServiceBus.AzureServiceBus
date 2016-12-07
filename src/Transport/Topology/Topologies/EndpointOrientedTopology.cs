@@ -14,11 +14,11 @@ namespace NServiceBus
     {
         ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
         ITopologySectionManagerInternal topologySectionManager;
-        ITransportPartsContainer container;
+        ITransportPartsContainerInternal container;
 
         public EndpointOrientedTopologyInternal() : this(new TransportPartsContainer()){ }
 
-        internal EndpointOrientedTopologyInternal(ITransportPartsContainer container)
+        internal EndpointOrientedTopologyInternal(ITransportPartsContainerInternal container)
         {
             this.container = container;
         }

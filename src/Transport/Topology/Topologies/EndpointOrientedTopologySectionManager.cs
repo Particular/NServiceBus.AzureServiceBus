@@ -10,10 +10,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     class EndpointOrientedTopologySectionManager : ITopologySectionManagerInternal
     {
         SettingsHolder settings;
-        ITransportPartsContainer container;
+        ITransportPartsContainerInternal container;
         ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
 
-        public EndpointOrientedTopologySectionManager(SettingsHolder settings, ITransportPartsContainer container)
+        public EndpointOrientedTopologySectionManager(SettingsHolder settings, ITransportPartsContainerInternal container)
         {
             this.settings = settings;
             this.container = container;
@@ -126,7 +126,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         {
                             namespaces = new[]
                             {
-                                new RuntimeNamespaceInfo(configured.Alias, configured.ConnectionString, configured.Purpose, NamespaceMode.Active)
+                                new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose, NamespaceMode.Active)
                             };
                         }
                     }

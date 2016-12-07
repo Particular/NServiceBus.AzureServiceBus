@@ -24,13 +24,13 @@
 
             var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
 
-            var namespaceInfo = namespaces.SingleOrDefault(x => x.ConnectionString == value.Suffix);
+            var namespaceInfo = namespaces.SingleOrDefault(x => x.Connection == value.Suffix);
             if (namespaceInfo != null)
             {
                 return new EntityAddress($"{value.Name}@{namespaceInfo.Alias}");
             }
 
-            var namespaceName = new ConnectionString(value.Suffix).NamespaceName;
+            var namespaceName = new ConnectionStringInternal(value.Suffix).NamespaceName;
             Logger.Warn($"Connection string for for namespace name '{namespaceName}' hasn't been configured. {Environment.NewLine}, replying may not work properly" +
                                                 "Use `AddNamespace` configuration API to map connection string to namespace alias.");
             return value;

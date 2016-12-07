@@ -11,8 +11,7 @@ namespace NServiceBus
     {
         CircularBuffer<NamespaceInfo> namespaces;
 
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public RoundRobinNamespacePartitioning(ReadOnlySettings settings)
+        internal RoundRobinNamespacePartitioning(ReadOnlySettings settings)
         {
             NamespaceConfigurations namespaces;
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
@@ -36,7 +35,7 @@ namespace NServiceBus
             if (partitioningIntent == PartitioningIntent.Sending)
             {
                 var @namespace = namespaces.Get();
-                yield return new RuntimeNamespaceInfo(@namespace.Alias, @namespace.ConnectionString, @namespace.Purpose, NamespaceMode.Active);
+                yield return new RuntimeNamespaceInfo(@namespace.Alias, @namespace.Connection, @namespace.Purpose, NamespaceMode.Active);
             }
 
             if (partitioningIntent == PartitioningIntent.Receiving || partitioningIntent == PartitioningIntent.Creating)
@@ -45,7 +44,7 @@ namespace NServiceBus
                 for (var i = 0; i < namespaces.Size; i++)
                 {
                     var @namespace = namespaces.Get();
-                    yield return new RuntimeNamespaceInfo(@namespace.Alias, @namespace.ConnectionString, @namespace.Purpose, mode);
+                    yield return new RuntimeNamespaceInfo(@namespace.Alias, @namespace.Connection, @namespace.Purpose, mode);
                     mode = NamespaceMode.Passive;
                 }
             }

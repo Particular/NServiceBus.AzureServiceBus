@@ -17,8 +17,8 @@
         {
             var @namespace = string.Format(Template, value, "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionString connectionString;
-            var isValid = ConnectionString.TryParse(@namespace, out connectionString);
+            ConnectionStringInternal connectionString;
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
 
             Assert.IsFalse(isValid);
             Assert.Null(connectionString);
@@ -31,8 +31,8 @@
         {
             var @namespace = string.Format(Template, value, "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionString connectionString;
-            var isValid = ConnectionString.TryParse(@namespace, out connectionString);
+            ConnectionStringInternal connectionString;
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
 
             Assert.IsFalse(isValid);
             Assert.Null(connectionString);
@@ -45,8 +45,8 @@
         {
             var @namespace = string.Format(Template, value, "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionString connectionString;
-            var isValid = ConnectionString.TryParse(@namespace, out connectionString);
+            ConnectionStringInternal connectionString;
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
 
             Assert.IsFalse(isValid);
             Assert.Null(connectionString);
@@ -57,8 +57,8 @@
         {
             var @namespace = string.Format(Template, "abcdef-", "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionString connectionString;
-            var isValid = ConnectionString.TryParse(@namespace, out connectionString);
+            ConnectionStringInternal connectionString;
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
 
             Assert.IsFalse(isValid);
             Assert.Null(connectionString);
@@ -75,8 +75,8 @@
         {
             var @namespace = string.Format(Template, value, "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionString connectionString;
-            var isValid = ConnectionString.TryParse(@namespace, out connectionString);
+            ConnectionStringInternal connectionString;
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
 
             Assert.IsFalse(isValid);
             Assert.Null(connectionString);
@@ -93,8 +93,8 @@
         {
             var @namespace = string.Format(Template, value, "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionString connectionString;
-            var isValid = ConnectionString.TryParse(@namespace, out connectionString);
+            ConnectionStringInternal connectionString;
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
 
             Assert.True(isValid);
             Assert.NotNull(connectionString);
@@ -105,7 +105,7 @@
         {
             var @namespace = string.Format(Template, "namespace", "RootManageSharedAccessKey", "YourSecret");
 
-            var connectionString = new ConnectionString(@namespace);
+            var connectionString = new ConnectionStringInternal(@namespace);
 
             Assert.AreEqual("namespace", connectionString.NamespaceName);
             Assert.AreEqual("RootManageSharedAccessKey", connectionString.SharedAccessPolicyName);
@@ -118,8 +118,8 @@
             var namespace1 = string.Format(Template, "namespace1", "RootManageSharedAccessKey", "YourSecret");
             var namespace2 = string.Format(Template, "namespace2", "RootManageSharedAccessKey", "YourSecret");
             
-            var connectionString1 = new ConnectionString(namespace1);
-            var connectionString2 = new ConnectionString(namespace2);
+            var connectionString1 = new ConnectionStringInternal(namespace1);
+            var connectionString2 = new ConnectionStringInternal(namespace2);
 
             Assert.AreNotEqual(connectionString1, connectionString2);
         }
@@ -130,8 +130,8 @@
             var namespace1 = string.Format(Template, "namespace", "RootManageSharedAccessKey1", "YourSecret");
             var namespace2 = string.Format(Template, "namespace", "RootManageSharedAccessKey2", "YourSecret");
 
-            var connectionString1 = new ConnectionString(namespace1);
-            var connectionString2 = new ConnectionString(namespace2);
+            var connectionString1 = new ConnectionStringInternal(namespace1);
+            var connectionString2 = new ConnectionStringInternal(namespace2);
 
             Assert.AreNotEqual(connectionString1, connectionString2);
         }
@@ -145,8 +145,8 @@
             var namespace1 = string.Format(Template, "namespace", "RootManageSharedAccessKey", value1);
             var namespace2 = string.Format(Template, "namespace", "RootManageSharedAccessKey", value2);
 
-            var connectionString1 = new ConnectionString(namespace1);
-            var connectionString2 = new ConnectionString(namespace2);
+            var connectionString1 = new ConnectionStringInternal(namespace1);
+            var connectionString2 = new ConnectionStringInternal(namespace2);
 
             Assert.AreNotEqual(connectionString1, connectionString2);
         }
@@ -160,8 +160,8 @@
             var namespace1 = string.Format(Template, value1, "RootManageSharedAccessKey", "YourSecret");
             var namespace2 = string.Format(Template, value2, "RootManageSharedAccessKey", "YourSecret");
 
-            var connectionString1 = new ConnectionString(namespace1);
-            var connectionString2 = new ConnectionString(namespace2);
+            var connectionString1 = new ConnectionStringInternal(namespace1);
+            var connectionString2 = new ConnectionStringInternal(namespace2);
 
             Assert.AreEqual(connectionString1, connectionString2);
         }
@@ -175,8 +175,8 @@
             var namespace1 = string.Format(Template, "namespace", value1, "YourSecret");
             var namespace2 = string.Format(Template, "namespace", value2, "YourSecret");
 
-            var connectionString1 = new ConnectionString(namespace1);
-            var connectionString2 = new ConnectionString(namespace2);
+            var connectionString1 = new ConnectionStringInternal(namespace1);
+            var connectionString2 = new ConnectionStringInternal(namespace2);
 
             Assert.AreEqual(connectionString1, connectionString2);
         }
@@ -187,8 +187,8 @@
             var namespace1 = string.Format(Template, "namespace", "RootManageSharedAccessKey", "YourSecret");
             var namespace2 = string.Format(Template, "namespace", "RootManageSharedAccessKey", "YourSecret");
 
-            var connectionString1 = new ConnectionString(namespace1);
-            var connectionString2 = new ConnectionString(namespace2);
+            var connectionString1 = new ConnectionStringInternal(namespace1);
+            var connectionString2 = new ConnectionStringInternal(namespace2);
 
             Assert.AreEqual(connectionString1, connectionString2);
         }
@@ -198,7 +198,7 @@
         {
             var @namespace = string.Format(Template, "namespace", "RootManageSharedAccessKey", "YourSecret");
 
-            var connectionString = new ConnectionString(@namespace);
+            var connectionString = new ConnectionStringInternal(@namespace);
             var areEqual = connectionString.Equals(null);
 
             Assert.False(areEqual);
@@ -213,8 +213,8 @@
             var namespace1 = string.Format(Template, namespaceName1, sharedAccessPolicyName1, "YourSecret");
             var namespace2 = string.Format(Template, namespaceName2, sharedAccessPolicyName2, "YourSecret");
 
-            var connectionString1 = new ConnectionString(namespace1);
-            var connectionString2 = new ConnectionString(namespace2);
+            var connectionString1 = new ConnectionStringInternal(namespace1);
+            var connectionString2 = new ConnectionStringInternal(namespace2);
 
             var hashCode1 = connectionString1.GetHashCode();
             var hashCode2 = connectionString2.GetHashCode();

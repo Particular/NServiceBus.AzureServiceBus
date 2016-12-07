@@ -28,7 +28,7 @@
         {
             var definition = new NamespaceInfo(alias, connectionString, purpose);
 
-            var namespaceInfo = inner.SingleOrDefault(x => x.ConnectionString == definition.ConnectionString);
+            var namespaceInfo = inner.SingleOrDefault(x => x.Connection == definition.Connection);
             if (namespaceInfo != null)
             {
                 Log.Info($"Duplicated connection string for namespace `{namespaceInfo.Alias}` and alias `{alias}.`  + {Environment.NewLine} + `{alias}` namespace alias was not registered.");
@@ -49,7 +49,7 @@
             try
             {
                 var selected = inner.Single(x => x.Alias.Equals(name, StringComparison.OrdinalIgnoreCase));
-                return selected.ConnectionString;
+                return selected.Connection;
             }
             catch (InvalidOperationException ex)
             {
