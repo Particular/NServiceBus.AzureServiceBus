@@ -121,7 +121,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         Func<object> DetermineFunc(Type type)
         {
-            var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
+            var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .OrderByDescending(c => c.GetParameters().Count())
                 .FirstOrDefault();
 
