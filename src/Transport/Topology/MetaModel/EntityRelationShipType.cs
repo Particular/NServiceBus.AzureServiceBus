@@ -1,6 +1,6 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
-    public enum EntityRelationShipType
+    enum EntityRelationShipTypeInternal
     {
         Forward,
         Subscription

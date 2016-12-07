@@ -4,6 +4,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     interface IConvertBrokeredMessagesToIncomingMessagesInternal
     {
-        IncomingMessageDetails Convert(BrokeredMessage brokeredMessage);
+        IncomingMessageDetailsInternal Convert(BrokeredMessage brokeredMessage);
     }
 }

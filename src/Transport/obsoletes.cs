@@ -46,7 +46,9 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface ITopology { }
+    public interface ITopology
+    {
+    }
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public interface INamespaceManager
@@ -69,13 +71,19 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface ICreateAzureServiceBusSubscriptions { }
+    public interface ICreateAzureServiceBusSubscriptions
+    {
+    }
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface ICreateNamespaceManagers { }
+    public interface ICreateNamespaceManagers
+    {
+    }
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface ITopologySectionManager { }
+    public interface ITopologySectionManager
+    {
+    }
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public interface ICreateMessagingFactories
@@ -108,5 +116,87 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class NamespaceManagerAdapter : INamespaceManager { }
+    public interface IClientEntity
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface IManageMessageReceiverLifeCycle
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface IMessageReceiver : IClientEntity
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface IMessagingFactory : IClientEntity
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface IMessageSender : IClientEntity
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface INotifyIncomingMessages
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface IRouteOutgoingBatches
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class NamespaceManagerAdapter : INamespaceManager
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class EntityInfo
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class IncomingMessageDetails
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public abstract class ReceiveContext
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class BrokeredMessageReceiveContext : ReceiveContext
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class EntityRelationShipInfo
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public enum EntityRelationShipType
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class TopologySection
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class Batch
+    {
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public class BatchedOperation
+    {
+    }
 }

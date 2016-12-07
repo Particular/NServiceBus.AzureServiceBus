@@ -2,10 +2,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     using Microsoft.ServiceBus.Messaging;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class BrokeredMessageReceiveContext : ReceiveContext
+    class BrokeredMessageReceiveContextInternal : ReceiveContextInternal
     {
-        public BrokeredMessageReceiveContext(BrokeredMessage message, EntityInfo entity, ReceiveMode receiveMode)
+        public BrokeredMessageReceiveContextInternal(BrokeredMessage message, EntityInfoInternal entity, ReceiveMode receiveMode)
         {
             IncomingBrokeredMessage = message;
             Entity = entity;
@@ -14,7 +13,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public BrokeredMessage IncomingBrokeredMessage { get; }
 
-        public EntityInfo Entity { get; }
+        public EntityInfoInternal Entity { get; }
 
         // Dispatcher needs to compare this with requested consistency guarantees, cannot do default (postponed) dispatch if there is no completion step (ReceiveAndDelete)
         public ReceiveMode ReceiveMode { get; }

@@ -1,10 +1,9 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class EntityRelationShipInfo
+    class EntityRelationShipInfoInternal
     {
-        public EntityInfo Source { get; set; }
-        public EntityInfo Target { get; set; }
-        public EntityRelationShipType Type { get; set; }
+        public EntityInfoInternal Source { get; set; }
+        public EntityInfoInternal Target { get; set; }
+        public EntityRelationShipTypeInternal Type { get; set; }
     }
 }

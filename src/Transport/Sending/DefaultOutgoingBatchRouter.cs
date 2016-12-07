@@ -34,17 +34,17 @@ namespace NServiceBus.Transport.AzureServiceBus
             maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes);
         }
 
-        public Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContext context, DispatchConsistency consistency)
+        public Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContextInternal context, DispatchConsistency consistency)
         {
             var pendingBatches = new List<Task>();
             foreach (var batch in outgoingBatches)
             {
-                pendingBatches.Add(RouteBatch(batch, context as BrokeredMessageReceiveContext, consistency));
+                pendingBatches.Add(RouteBatch(batch, context as BrokeredMessageReceiveContextInternal, consistency));
             }
             return Task.WhenAll(pendingBatches);
         }
 
-        internal Task RouteBatch(Batch batch, BrokeredMessageReceiveContext context, DispatchConsistency consistency)
+        internal Task RouteBatch(Batch batch, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
         {
             var outgoingBatches = batch.Operations;
 
@@ -83,10 +83,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             return Task.WhenAll(pendingSends);
         }
 
-        RoutingOptions GetRoutingOptions(ReceiveContext receiveContext, DispatchConsistency consistency)
+        RoutingOptions GetRoutingOptions(ReceiveContextInternal receiveContext, DispatchConsistency consistency)
         {
             var sendVia = false;
-            var context = receiveContext as BrokeredMessageReceiveContext;
+            var context = receiveContext as BrokeredMessageReceiveContextInternal;
             if (context?.Recovering == false) // avoid send via when recovering to prevent error message from rolling back
             {
                 sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
@@ -102,7 +102,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        string GetViaEntityPathFor(EntityInfo entity)
+        string GetViaEntityPathFor(EntityInfoInternal entity)
         {
             if (entity?.Type == EntityType.Queue)
             {
@@ -110,7 +110,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             if (entity?.Type == EntityType.Subscription)
             {
-                var topicRelationship = entity.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
+                var topicRelationship = entity.RelationShips.First(r => r.Type == EntityRelationShipTypeInternal.Subscription);
                 return topicRelationship.Target.Path;
             }
 

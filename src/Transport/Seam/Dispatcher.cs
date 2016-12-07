@@ -9,7 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class Dispatcher : IDispatchMessages
     {
-        public Dispatcher(IRouteOutgoingBatches routeOutgoingBatches, IBatcherInternal batcher)
+        public Dispatcher(IRouteOutgoingBatchesInternal routeOutgoingBatches, IBatcherInternal batcher)
         {
             this.routeOutgoingBatches = routeOutgoingBatches;
             this.batcher = batcher;
@@ -19,13 +19,13 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var outgoingBatches = batcher.ToBatches(operations);
 
-            ReceiveContext receiveContext;
+            ReceiveContextInternal receiveContext;
             if (!TryGetReceiveContext(transportTransaction, out receiveContext)) // not in a receive context, so send out immediately
             {
                 return routeOutgoingBatches.RouteBatches(outgoingBatches, null, DispatchConsistency.Default);
             }
 
-            var brokeredMessageReceiveContext = receiveContext as BrokeredMessageReceiveContext;
+            var brokeredMessageReceiveContext = receiveContext as BrokeredMessageReceiveContextInternal;
 
             if (brokeredMessageReceiveContext != null) // apply brokered message specific dispatching rules
             {
@@ -36,7 +36,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext, DispatchConsistency.Default); // otherwise send out immediately
         }
 
-        Task DispatchBatches(IList<Batch> outgoingBatches, BrokeredMessageReceiveContext receiveContext)
+        Task DispatchBatches(IList<Batch> outgoingBatches, BrokeredMessageReceiveContextInternal receiveContext)
         {
             // received brokered message has already been completed, so send everything out immediately
             if (receiveContext.ReceiveMode == ReceiveMode.ReceiveAndDelete)
@@ -49,7 +49,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return DispatchAccordingToIsolationLevel(outgoingBatches, receiveContext);
         }
 
-        async Task DispatchAccordingToIsolationLevel(IList<Batch> outgoingBatches, BrokeredMessageReceiveContext receiveContext)
+        async Task DispatchAccordingToIsolationLevel(IList<Batch> outgoingBatches, BrokeredMessageReceiveContextInternal receiveContext)
         {
             var batchesWithIsolatedDispatchConsistency = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Isolated);
             var batchesWithDefaultConsistency = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Default).ToList();
@@ -58,7 +58,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             await DispatchWithTransactionScopeIfRequired(batchesWithDefaultConsistency, receiveContext, DispatchConsistency.Default).ConfigureAwait(false);
         }
 
-        async Task DispatchWithTransactionScopeIfRequired(IList<Batch> toBeDispatchedOnComplete, BrokeredMessageReceiveContext context, DispatchConsistency consistency)
+        async Task DispatchWithTransactionScopeIfRequired(IList<Batch> toBeDispatchedOnComplete, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
         {
             if (context.CancellationToken.IsCancellationRequested || !toBeDispatchedOnComplete.Any())
                 return;
@@ -68,7 +68,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             
         }
 
-        static bool TryGetReceiveContext(TransportTransaction transportTransaction, out ReceiveContext receiveContext)
+        static bool TryGetReceiveContext(TransportTransaction transportTransaction, out ReceiveContextInternal receiveContext)
         {
 
             if (transportTransaction == null)
@@ -80,7 +80,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return transportTransaction.TryGet(out receiveContext);
         }
 
-        IRouteOutgoingBatches routeOutgoingBatches;
+        IRouteOutgoingBatchesInternal routeOutgoingBatches;
         IBatcherInternal batcher;
     }
 }

@@ -2,8 +2,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     using System.Collections.Generic;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class EntityInfo
+    class EntityInfoInternal
     {
         public string Path { get; set; }
 
@@ -11,16 +10,16 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public RuntimeNamespaceInfo Namespace { get; set; }
 
-        public IList<EntityRelationShipInfo> RelationShips { get; private set; }
+        public IList<EntityRelationShipInfoInternal> RelationShips { get; private set; }
 
         public bool ShouldBeListenedTo { get; set; } = true;
 
-        public EntityInfo()
+        public EntityInfoInternal()
         {
-            RelationShips = new List<EntityRelationShipInfo>();
+            RelationShips = new List<EntityRelationShipInfoInternal>();
         }
 
-        protected bool Equals(EntityInfo other)
+        protected bool Equals(EntityInfoInternal other)
         {
             return string.Equals(Path, other.Path) && Type == other.Type && Equals(Namespace, other.Namespace);
         }
@@ -53,12 +52,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public static bool operator ==(EntityInfo left, EntityInfo right)
+        public static bool operator ==(EntityInfoInternal left, EntityInfoInternal right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(EntityInfo left, EntityInfo right)
+        public static bool operator !=(EntityInfoInternal left, EntityInfoInternal right)
         {
             return !Equals(left, right);
         }

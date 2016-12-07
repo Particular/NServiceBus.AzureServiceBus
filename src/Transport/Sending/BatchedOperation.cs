@@ -6,12 +6,11 @@ namespace NServiceBus.Transport.AzureServiceBus
     using DeliveryConstraints;
     using Transport;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class BatchedOperation
+    class BatchedOperationInternal
     {
         int messageSizePaddingPercentage;
 
-        public BatchedOperation(int messageSizePaddingPercentage = 0)
+        public BatchedOperationInternal(int messageSizePaddingPercentage = 0)
         {
             this.messageSizePaddingPercentage = messageSizePaddingPercentage;
         }
