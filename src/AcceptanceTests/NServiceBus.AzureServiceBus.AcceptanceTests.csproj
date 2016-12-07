@@ -347,7 +347,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="NServiceBus.snk" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
