@@ -13,10 +13,10 @@
 
     class AzureServiceBusTransportInfrastructure : TransportInfrastructure
     {
-        ITopology topology;
+        ITopologyInternal topology;
         SatelliteTransportAddressCollection satelliteTransportAddresses;
 
-        public AzureServiceBusTransportInfrastructure(ITopology topology, TransportTransactionMode supportedTransactionMode, SatelliteTransportAddressCollection satelliteTransportAddresses)
+        public AzureServiceBusTransportInfrastructure(ITopologyInternal topology, TransportTransactionMode supportedTransactionMode, SatelliteTransportAddressCollection satelliteTransportAddresses)
         {
             this.topology = topology;
             TransactionMode = supportedTransactionMode;
@@ -25,13 +25,7 @@
 
         public override Task Stop()
         {
-            var stoppableTopology = topology as IStoppableTopology;
-            if (stoppableTopology != null)
-            {
-                return stoppableTopology.Stop();
-            }
-
-            return TaskEx.Completed;
+            return topology.Stop();
         }
 
         public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance)

@@ -11,16 +11,16 @@ namespace NServiceBus
     using Transport;
     using Transport.AzureServiceBus;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class ForwardingTopology : ITopology, IStoppableTopology
+    
+    class ForwardingTopologyInternal : ITopologyInternal
     {
-        ILog logger = LogManager.GetLogger(typeof(ForwardingTopology));
+        ILog logger = LogManager.GetLogger("ForwardingTopology");
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
 
-        public ForwardingTopology() : this(new TransportPartsContainer()) { }
+        public ForwardingTopologyInternal() : this(new TransportPartsContainer()) { }
 
-        internal ForwardingTopology(ITransportPartsContainer container)
+        internal ForwardingTopologyInternal(ITransportPartsContainer container)
         {
             this.container = container;
         }

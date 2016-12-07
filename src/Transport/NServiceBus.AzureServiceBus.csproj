@@ -127,7 +127,6 @@
     <Compile Include="Sending\TransactionContainsTooManyMessages.cs" />
     <Compile Include="Sending\MessageTooLargeException.cs" />
     <Compile Include="Sending\Time.cs" />
-    <Compile Include="Topology\IStoppableTopology.cs" />
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Topology\MetaModel\SatelliteTransportAddressCollection.cs" />
     <Compile Include="Utils\AsyncAutoResetEvent.cs" />

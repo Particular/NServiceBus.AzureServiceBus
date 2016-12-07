@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.Settings;
-using NServiceBus.Transport.AzureServiceBus;
 using NServiceBus.TransportTests;
 
 class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfrastructure
@@ -16,17 +15,14 @@ class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfra
         var topologyName = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology", EnvironmentVariableTarget.User);
         topologyName = topologyName ?? Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
 
+        var transportExtension = new TransportExtensions<AzureServiceBusTransport>(settings);
         if (topologyName == "ForwardingTopology")
         {
-#pragma warning disable 618
-            settings.Set<ITopology>(new ForwardingTopology());
-#pragma warning restore 618
+            transportExtension.UseForwardingTopology();
         }
         else
         {
-#pragma warning disable 618
-            settings.Set<ITopology>(new EndpointOrientedTopology());
-#pragma warning restore 618
+            transportExtension.UseEndpointOrientedTopology();
         }
 
         var transport = new AzureServiceBusTransport();
