@@ -4,6 +4,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     interface ICreateMessageSendersInternal
     {
-        Task<IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName);
+        Task<IMessageSenderInternal> Create(string entitypath, string viaEntityPath, string namespaceName);
     }
 }

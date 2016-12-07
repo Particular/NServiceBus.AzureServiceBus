@@ -4,7 +4,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     interface IManageMessagingFactoryLifeCycleInternal
     {
-        IMessagingFactory Get(string namespaceName);
+        IMessagingFactoryInternal Get(string namespaceName);
 
         Task CloseAll();
     }

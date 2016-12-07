@@ -19,7 +19,7 @@
         const string topicPath = "bundle-x";
         const string forwardToQueue = "forwardToQueue";
         const string sqlFilter = "1=1";
-        static SubscriptionMetadata metadata = new ForwardingTopologySubscriptionMetadata
+        static SubscriptionMetadataInternal metadata = new ForwardingTopologySubscriptionMetadata
         {
             Description = "endpoint blah",
             NamespaceInfo = new RuntimeNamespaceInfo("name", AzureServiceBusConnectionString.Value),

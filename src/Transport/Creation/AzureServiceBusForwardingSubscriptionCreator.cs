@@ -36,7 +36,7 @@
             }
         }
 
-        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
+        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
             var meta = metadata as ForwardingTopologySubscriptionMetadata;
             if (meta == null)
@@ -129,7 +129,7 @@
 
         }
 
-        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
+        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
             var meta = metadata as ForwardingTopologySubscriptionMetadata;
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);

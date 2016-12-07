@@ -6,6 +6,6 @@
 
         public IClientSideSubscriptionFilter ClientSideFilter { get; set; }
 
-        public SubscriptionMetadata Metadata { get; set; }
+        public SubscriptionMetadataInternal Metadata { get; set; }
     }
 }

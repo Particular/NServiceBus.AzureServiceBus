@@ -16,7 +16,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.settings = settings;
         }
 
-        public async Task<IMessageReceiver> Create(string entityPath, string namespaceAlias)
+        public async Task<IMessageReceiverInternal> Create(string entityPath, string namespaceAlias)
         {
             var factory = factories.Get(namespaceAlias);
             var receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);

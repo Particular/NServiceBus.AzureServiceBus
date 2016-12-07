@@ -204,7 +204,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             endpointOrientedTopology.Initialize(settings);
 
             // create the topologySectionManager
-            var topologyCreator = (ICreateTopology) container.Resolve(typeof(TopologyCreator));
+            var topologyCreator = (ICreateTopologyInternal) container.Resolve(typeof(TopologyCreator));
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
             container.RegisterSingleton<TopologyOperator>();

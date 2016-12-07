@@ -1,7 +1,6 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class RoutingOptions
+    internal class RoutingOptionsInternal
     {
         public string DestinationEntityPath { get; set; }
         public RuntimeNamespaceInfo DestinationNamespace { get; set; }

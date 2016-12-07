@@ -5,6 +5,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     interface IConvertOutgoingMessagesToBrokeredMessagesInternal
     {
-        IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperation> outgoingOperations, RoutingOptions routingOptions);
+        IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperationInternal> outgoingOperations, RoutingOptionsInternal routingOptions);
     }
 }

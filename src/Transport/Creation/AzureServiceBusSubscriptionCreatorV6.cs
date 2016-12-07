@@ -16,7 +16,7 @@
             creator = new AzureServiceBusSubscriptionCreator(settings);
         }
 
-        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo = null)
+        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo = null)
         {
             var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardTo).ConfigureAwait(false);
 
@@ -29,7 +29,7 @@
             return subscriptionDescription;
         }
 
-        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
+        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
             var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName);
 

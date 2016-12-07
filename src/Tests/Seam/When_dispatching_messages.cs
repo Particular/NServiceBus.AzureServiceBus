@@ -90,7 +90,7 @@
 
         class FakeBatcher : IBatcherInternal
         {
-            public IList<Batch> ToBatches(TransportOperations operations)
+            public IList<BatchInternal> ToBatches(TransportOperations operations)
             {
                 // we don't care about incoming operations as we'll fake batcher and return pre-canned batches
 
@@ -99,13 +99,13 @@
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
 
 
-                var batch1 = new Batch
+                var batch1 = new BatchInternal
                 {
-                    Destinations = new TopologySection
+                    Destinations = new TopologySectionInternal
                     {
-                        Entities = new List<EntityInfo>
+                        Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue",
@@ -118,14 +118,14 @@
                         }
                     },
                     RequiredDispatchConsistency = DispatchConsistency.Default,
-                    Operations = new List<BatchedOperation>
+                    Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
                         },
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -133,13 +133,13 @@
                     }
                 };
 
-                var batch2 = new Batch
+                var batch2 = new BatchInternal
                 {
-                    Destinations = new TopologySection
+                    Destinations = new TopologySectionInternal
                     {
-                        Entities = new List<EntityInfo>
+                        Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue2",
@@ -152,14 +152,14 @@
                         }
                     },
                     RequiredDispatchConsistency = DispatchConsistency.Default,
-                    Operations = new List<BatchedOperation>
+                    Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-3", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
                         },
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-4", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -167,7 +167,7 @@
                     }
                 };
 
-                return new List<Batch>
+                return new List<BatchInternal>
                 {
                     batch1,
                     batch2

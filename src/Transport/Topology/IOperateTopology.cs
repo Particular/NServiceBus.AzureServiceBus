@@ -13,22 +13,21 @@
     /// So is the list of notifiers etc...
     /// etc..
     /// </summary>
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface IOperateTopology
+    interface IOperateTopologyInternal
     {
         //invoked for static parts of the topology
 
-        void Start(TopologySection topology, int maximumConcurrency);
+        void Start(TopologySectionInternal topology, int maximumConcurrency);
         Task Stop();
 
         //invoked whenever subscriptions are added or removed
 
-        void Start(IEnumerable<EntityInfo> subscriptions);
-        Task Stop(IEnumerable<EntityInfo> subscriptions);
+        void Start(IEnumerable<EntityInfoInternal> subscriptions);
+        Task Stop(IEnumerable<EntityInfoInternal> subscriptions);
 
         // callback when there is a new message available, or an error occurs
 
-        void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func);
+        void OnIncomingMessage(Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> func);
 
         void OnError(Func<Exception, Task> func);
 

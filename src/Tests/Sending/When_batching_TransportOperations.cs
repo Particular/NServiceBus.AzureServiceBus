@@ -119,51 +119,49 @@
     {
     }
 
-#pragma warning disable 618
-    public class FakeTopolySectionManager : ITopologySectionManagerInternal
+    class FakeTopolySectionManager : ITopologySectionManagerInternal
     {
-        public TopologySection DetermineReceiveResources(string inputQueue)
+        public TopologySectionInternal DetermineReceiveResources(string inputQueue)
         {
             throw new NotImplementedException();
         }
 
-        public TopologySection DetermineResourcesToCreate(QueueBindings queueBindings)
+        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
         {
             throw new NotImplementedException();
         }
 
-        public TopologySection DeterminePublishDestination(Type eventType)
+        public TopologySectionInternal DeterminePublishDestination(Type eventType)
         {
-            return new TopologySection
+            return new TopologySectionInternal
             {
                 Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
-                Entities = new List<EntityInfo> { new EntityInfo() }
+                Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
             };
         }
 
-        public TopologySection DetermineSendDestination(string destination)
+        public TopologySectionInternal DetermineSendDestination(string destination)
         {
-            return new TopologySection
+            return new TopologySectionInternal
             {
                 Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
-                Entities = new List<EntityInfo> { new EntityInfo() }
+                Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
             };
 
         }
 
-        public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
+        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
         {
-            return new TopologySection
+            return new TopologySectionInternal
             {
                 Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
-                Entities = new List<EntityInfo> { new EntityInfo() }
+                Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
             };
         }
 
-        public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
+        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
         {
             throw new NotImplementedException();
         }
-#pragma warning restore 618
     }
 }

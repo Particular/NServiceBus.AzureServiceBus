@@ -18,12 +18,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.settings = settings;
         }
 
-        public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperation> outgoingMessages, RoutingOptions routingOptions)
+        public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperationInternal> outgoingMessages, RoutingOptionsInternal routingOptions)
         {
             return outgoingMessages.Select(x => Convert(x, routingOptions));
         }
 
-        internal BrokeredMessage Convert(BatchedOperation outgoingOperation, RoutingOptions routingOptions)
+        internal BrokeredMessage Convert(BatchedOperationInternal outgoingOperation, RoutingOptionsInternal routingOptions)
         {
             var outgoingMessage = outgoingOperation.Message;
             var brokeredMessage = CreateBrokeredMessage(outgoingMessage);
@@ -51,7 +51,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize] = estimatedSize;
         }
 
-        void SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(BrokeredMessage brokeredMessage, RoutingOptions routingOptions)
+        void SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(BrokeredMessage brokeredMessage, RoutingOptionsInternal routingOptions)
         {
             if (routingOptions.SendVia && routingOptions.ViaPartitionKey != null)
             {
@@ -129,7 +129,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        void ApplyDeliveryConstraints(BrokeredMessage brokeredMessage, BatchedOperation operation)
+        void ApplyDeliveryConstraints(BrokeredMessage brokeredMessage, BatchedOperationInternal operation)
         {
             DateTime? scheduledEnqueueTime = null;
 

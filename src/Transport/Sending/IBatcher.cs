@@ -5,6 +5,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     interface IBatcherInternal
     {
-        IList<Batch> ToBatches(TransportOperations operations);
+        IList<BatchInternal> ToBatches(TransportOperations operations);
     }
 }

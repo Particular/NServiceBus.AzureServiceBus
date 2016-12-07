@@ -40,12 +40,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         }
 
 #pragma warning disable 618
-        class InterceptingCreator : ICreateNamespaceManagers
+        class InterceptingCreator : ICreateNamespaceManagersInternal
         {
             public bool HasBeenInvoked;
             public int InvocationCount;
 
-            public INamespaceManager Create(string namespaceName)
+            public INamespaceManagerInternal Create(string namespaceName)
             {
                 HasBeenInvoked = true;
                 InvocationCount++;
@@ -54,7 +54,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             }
         }
 
-        class InterceptedManager : INamespaceManager
+        class InterceptedManager : INamespaceManagerInternal
         {
             public NamespaceManagerSettings Settings
             {

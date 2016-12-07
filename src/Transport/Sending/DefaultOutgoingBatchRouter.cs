@@ -10,11 +10,11 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Settings;
     using Transport;
 
-    class DefaultOutgoingBatchRouter : IRouteOutgoingBatches
+    class DefaultOutgoingBatchRouter : IRouteOutgoingBatchesInternal
     {
         ILog logger = LogManager.GetLogger<DefaultOutgoingBatchRouter>();
         IConvertOutgoingMessagesToBrokeredMessagesInternal outgoingMessageConverter;
-        IManageMessageSenderLifeCycle senders;
+        IManageMessageSenderLifeCycleInternal senders;
         ReadOnlySettings settings;
         IHandleOversizedBrokeredMessages oversizedMessageHandler;
 
@@ -22,7 +22,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         TimeSpan backOffTimeOnThrottle;
         int maximuMessageSizeInKilobytes;
 
-        public DefaultOutgoingBatchRouter(IConvertOutgoingMessagesToBrokeredMessagesInternal outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings, IHandleOversizedBrokeredMessages oversizedMessageHandler)
+        public DefaultOutgoingBatchRouter(IConvertOutgoingMessagesToBrokeredMessagesInternal outgoingMessageConverter, IManageMessageSenderLifeCycleInternal senders, ReadOnlySettings settings, IHandleOversizedBrokeredMessages oversizedMessageHandler)
         {
             this.outgoingMessageConverter = outgoingMessageConverter;
             this.senders = senders;
@@ -34,7 +34,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes);
         }
 
-        public Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContextInternal context, DispatchConsistency consistency)
+        public Task RouteBatches(IEnumerable<BatchInternal> outgoingBatches, ReceiveContextInternal context, DispatchConsistency consistency)
         {
             var pendingBatches = new List<Task>();
             foreach (var batch in outgoingBatches)
@@ -44,7 +44,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return Task.WhenAll(pendingBatches);
         }
 
-        internal Task RouteBatch(Batch batch, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
+        internal Task RouteBatch(BatchInternal batch, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
         {
             var outgoingBatches = batch.Operations;
 
@@ -83,7 +83,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return Task.WhenAll(pendingSends);
         }
 
-        RoutingOptions GetRoutingOptions(ReceiveContextInternal receiveContext, DispatchConsistency consistency)
+        RoutingOptionsInternal GetRoutingOptions(ReceiveContextInternal receiveContext, DispatchConsistency consistency)
         {
             var sendVia = false;
             var context = receiveContext as BrokeredMessageReceiveContextInternal;
@@ -93,7 +93,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 sendVia &= settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType) == TransportType.NetMessaging;
                 sendVia &= consistency != DispatchConsistency.Isolated;
             }
-            return new RoutingOptions
+            return new RoutingOptionsInternal
             {
                 SendVia = sendVia,
                 ViaEntityPath = GetViaEntityPathFor(context?.Entity),
@@ -117,7 +117,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return null;
         }
 
-        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend,bool suppressTransaction)
+        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSenderInternal messageSender, IList<IMessageSenderInternal> fallbacks, IList<BrokeredMessage> messagesToSend,bool suppressTransaction)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             catch (Exception exception)
             {
-                
+
                 // ASB team promissed to fix the issue with MessagingEntityNotFoundException (missing entity path) - verify that
                 var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", messagesToSend.Select(x => x.MessageId));
                 logger.Error(message, exception);
@@ -179,7 +179,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend)
+        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSenderInternal messageSender, IEnumerable<BrokeredMessage> messagesToSend)
         {
             var chunk = new List<BrokeredMessage>();
             long batchSize = 0;

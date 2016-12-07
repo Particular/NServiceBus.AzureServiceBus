@@ -93,19 +93,19 @@ namespace NServiceBus.Transport.AzureServiceBus
         /// For the main input queue, cache and re-use the same topology operator.
         /// For satellite input queues, create a new topology operator.
         /// </summary>
-        IOperateTopology DetermineTopologyOperator(string pushSettingsInputQueue)
+        IOperateTopologyInternal DetermineTopologyOperator(string pushSettingsInputQueue)
         {
             if (satelliteTransportAddresses.Contains(pushSettingsInputQueue))
             {
                 return new TopologyOperator(container);
             }
 
-            return container.Resolve<IOperateTopology>();
+            return container.Resolve<IOperateTopologyInternal>();
         }
 
         readonly ITransportPartsContainer container;
         ITopologySectionManagerInternal topologySectionManager;
-        IOperateTopology topologyOperator;
+        IOperateTopologyInternal topologyOperator;
         Func<MessageContext, Task> messagePump;
         RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));

@@ -5,17 +5,17 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessageReceiverLifeCycleManager : IManageMessageReceiverLifeCycle
     {
-        ICreateMessageReceivers receiveFactory;
+        ICreateMessageReceiversInternal receiveFactory;
         int numberOfReceiversPerEntity;
         ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>> MessageReceivers = new ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>>();
 
-        public MessageReceiverLifeCycleManager(ICreateMessageReceivers receiveFactory, ReadOnlySettings settings)
+        public MessageReceiverLifeCycleManager(ICreateMessageReceiversInternal receiveFactory, ReadOnlySettings settings)
         {
             this.receiveFactory = receiveFactory;
             numberOfReceiversPerEntity = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
         }
 
-        public IMessageReceiver Get(string entityPath, string namespaceAlias)
+        public IMessageReceiverInternal Get(string entityPath, string namespaceAlias)
         {
             var buffer = MessageReceivers.GetOrAdd(entityPath + namespaceAlias, s =>
             {
@@ -49,7 +49,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         class EntityClientEntry
         {
             internal object Mutex = new object();
-            internal IMessageReceiver ClientEntity;
+            internal IMessageReceiverInternal ClientEntity;
         }
     }
 }

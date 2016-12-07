@@ -36,7 +36,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext, DispatchConsistency.Default); // otherwise send out immediately
         }
 
-        Task DispatchBatches(IList<Batch> outgoingBatches, BrokeredMessageReceiveContextInternal receiveContext)
+        Task DispatchBatches(IList<BatchInternal> outgoingBatches, BrokeredMessageReceiveContextInternal receiveContext)
         {
             // received brokered message has already been completed, so send everything out immediately
             if (receiveContext.ReceiveMode == ReceiveMode.ReceiveAndDelete)
@@ -49,7 +49,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return DispatchAccordingToIsolationLevel(outgoingBatches, receiveContext);
         }
 
-        async Task DispatchAccordingToIsolationLevel(IList<Batch> outgoingBatches, BrokeredMessageReceiveContextInternal receiveContext)
+        async Task DispatchAccordingToIsolationLevel(IList<BatchInternal> outgoingBatches, BrokeredMessageReceiveContextInternal receiveContext)
         {
             var batchesWithIsolatedDispatchConsistency = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Isolated);
             var batchesWithDefaultConsistency = outgoingBatches.Where(t => t.RequiredDispatchConsistency == DispatchConsistency.Default).ToList();
@@ -58,14 +58,14 @@ namespace NServiceBus.Transport.AzureServiceBus
             await DispatchWithTransactionScopeIfRequired(batchesWithDefaultConsistency, receiveContext, DispatchConsistency.Default).ConfigureAwait(false);
         }
 
-        async Task DispatchWithTransactionScopeIfRequired(IList<Batch> toBeDispatchedOnComplete, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
+        async Task DispatchWithTransactionScopeIfRequired(IList<BatchInternal> toBeDispatchedOnComplete, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
         {
             if (context.CancellationToken.IsCancellationRequested || !toBeDispatchedOnComplete.Any())
                 return;
 
             await routeOutgoingBatches.RouteBatches(toBeDispatchedOnComplete, context, consistency).ConfigureAwait(false);
-            
-            
+
+
         }
 
         static bool TryGetReceiveContext(TransportTransaction transportTransaction, out ReceiveContextInternal receiveContext)

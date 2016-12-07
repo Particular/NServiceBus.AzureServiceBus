@@ -6,7 +6,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Threading.Tasks;
     using Logging;
 
-    class TopologyOperator : IOperateTopology, IDisposable
+    class TopologyOperator : IOperateTopologyInternal, IDisposable
     {
         public TopologyOperator(ITransportPartsContainer container)
         {
@@ -18,7 +18,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             // Injected
         }
 
-        public void Start(TopologySection topologySection, int maximumConcurrency)
+        public void Start(TopologySectionInternal topologySection, int maximumConcurrency)
         {
             maxConcurrency = maximumConcurrency;
             topology = topologySection;
@@ -40,7 +40,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return StopNotifiersForAsync(topology.Entities);
         }
 
-        public void Start(IEnumerable<EntityInfo> subscriptions)
+        public void Start(IEnumerable<EntityInfoInternal> subscriptions)
         {
             if (!running) // cannot start subscribers before the notifier itself is started
             {
@@ -52,12 +52,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public Task Stop(IEnumerable<EntityInfo> subscriptions)
+        public Task Stop(IEnumerable<EntityInfoInternal> subscriptions)
         {
             return StopNotifiersForAsync(subscriptions);
         }
 
-        public void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func)
+        public void OnIncomingMessage(Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> func)
         {
             onMessage = func;
         }
@@ -72,7 +72,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             onProcessingFailure = func;
         }
 
-        void StartNotifiersFor(IEnumerable<EntityInfo> entities)
+        void StartNotifiersFor(IEnumerable<EntityInfoInternal> entities)
         {
             foreach (var entity in entities)
             {
@@ -97,21 +97,21 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        INotifyIncomingMessages CreateNotifier(EntityType type)
+        INotifyIncomingMessagesInternal CreateNotifier(EntityType type)
         {
             if (type == EntityType.Queue || type == EntityType.Subscription)
             {
-                return (INotifyIncomingMessages) container.Resolve(typeof(MessageReceiverNotifier));
+                return (INotifyIncomingMessagesInternal) container.Resolve(typeof(MessageReceiverNotifier));
             }
 
             throw new NotSupportedException("Entity type " + type + " not supported");
         }
 
-        async Task StopNotifiersForAsync(IEnumerable<EntityInfo> entities)
+        async Task StopNotifiersForAsync(IEnumerable<EntityInfoInternal> entities)
         {
             foreach (var entity in entities)
             {
-                INotifyIncomingMessages notifier;
+                INotifyIncomingMessagesInternal notifier;
                 notifiers.TryGetValue(entity, out notifier);
 
                 if (notifier == null || !notifier.IsRunning)
@@ -129,13 +129,13 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         ITransportPartsContainer container;
 
-        TopologySection topology;
+        TopologySectionInternal topology;
 
-        Func<IncomingMessageDetails, ReceiveContext, Task> onMessage;
+        Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> onMessage;
         Func<Exception, Task> onError;
         Func<ErrorContext, Task<ErrorHandleResult>> onProcessingFailure;
 
-        ConcurrentDictionary<EntityInfo, INotifyIncomingMessages> notifiers = new ConcurrentDictionary<EntityInfo, INotifyIncomingMessages>();
+        ConcurrentDictionary<EntityInfoInternal, INotifyIncomingMessagesInternal> notifiers = new ConcurrentDictionary<EntityInfoInternal, INotifyIncomingMessagesInternal>();
 
         bool running;
         List<Action> pendingStartOperations = new List<Action>();

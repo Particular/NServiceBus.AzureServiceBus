@@ -66,7 +66,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
@@ -93,10 +93,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales.events" && ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring));
         }
 
-#pragma warning disable 618
-        static TopologySection DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)
+        static TopologySectionInternal DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)
         {
-            var topology = new EndpointOrientedTopology(container);
+            var topology = new EndpointOrientedTopologyInternal(container);
 
             topology.Initialize(settings);
 
@@ -105,6 +104,5 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
             return definition;
         }
-#pragma warning restore 618
     }
 }

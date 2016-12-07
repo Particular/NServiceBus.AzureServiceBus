@@ -38,7 +38,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             fullPath = entity.Path;
             if (entity.Type == EntityType.Subscription)
             {
-                var topic = entity.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
+                var topic = entity.RelationShips.First(r => r.Type == EntityRelationShipTypeInternal.Subscription);
                 fullPath = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, entity.Path);
             }
 

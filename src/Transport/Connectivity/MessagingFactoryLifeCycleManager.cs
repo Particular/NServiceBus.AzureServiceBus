@@ -18,7 +18,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             numberOfFactoriesPerNamespace = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);
         }
 
-        public IMessagingFactory Get(string namespaceName)
+        public IMessagingFactoryInternal Get(string namespaceName)
         {
             var buffer = MessagingFactories.GetOrAdd(namespaceName, s =>
             {
@@ -32,7 +32,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     {
                         Factory = factory
                     });
-                    
+
                 }
                 b.Put(factories.ToArray());
                 return b;
@@ -73,7 +73,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         class FactoryEntry
         {
             internal object Mutex = new object();
-            internal IMessagingFactory Factory;
+            internal IMessagingFactoryInternal Factory;
         }
     }
 }

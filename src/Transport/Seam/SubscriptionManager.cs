@@ -8,10 +8,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     class SubscriptionManager : IManageSubscriptions
     {
         ITopologySectionManagerInternal topologySectionManager; // responsible for providing the metadata about the subscription (what in case of EH?)
-        IOperateTopology topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
-        ICreateTopology topologyCreator;
+        IOperateTopologyInternal topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
+        ICreateTopologyInternal topologyCreator;
 
-        public SubscriptionManager(ITopologySectionManagerInternal topologySectionManager, IOperateTopology topologyOperator, ICreateTopology topologyCreator)
+        public SubscriptionManager(ITopologySectionManagerInternal topologySectionManager, IOperateTopologyInternal topologyOperator, ICreateTopologyInternal topologyCreator)
         {
             this.topologySectionManager = topologySectionManager;
             this.topologyOperator = topologyOperator;
@@ -30,11 +30,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var section = topologySectionManager.DetermineResourcesToUnsubscribeFrom(eventType);
             await topologyOperator.Stop(section.Entities).ConfigureAwait(false);
 
-            var topologyCreatorThatCanDeleteSubscriptions = (topologyCreator as ITearDownTopology);
-            if (topologyCreatorThatCanDeleteSubscriptions != null)
-            {
-                await topologyCreatorThatCanDeleteSubscriptions.TearDown(section).ConfigureAwait(false);
-            }
+            await topologyCreator.TearDown(section).ConfigureAwait(false);
         }
     }
 }

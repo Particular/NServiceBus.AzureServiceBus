@@ -53,7 +53,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public IMessagingFactory Create(string namespaceName)
+        public IMessagingFactoryInternal Create(string namespaceName)
         {
             var namespaceManager = namespaceManagers.Get(namespaceName);
             var factorySettings = settingsFactory(namespaceName);

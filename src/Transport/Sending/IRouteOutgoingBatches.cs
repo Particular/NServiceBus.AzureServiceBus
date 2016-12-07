@@ -6,6 +6,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     interface IRouteOutgoingBatchesInternal
     {
-        Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContextInternal receiveContext, DispatchConsistency consistency);
+        Task RouteBatches(IEnumerable<BatchInternal> outgoingBatches, ReceiveContextInternal receiveContext, DispatchConsistency consistency);
     }
 }

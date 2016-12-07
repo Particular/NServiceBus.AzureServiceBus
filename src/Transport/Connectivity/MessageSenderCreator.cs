@@ -16,7 +16,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         }
 
 
-        public async Task<IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName)
+        public async Task<IMessageSenderInternal> Create(string entitypath, string viaEntityPath, string namespaceName)
         {
             var factory = factories.Get(namespaceName);
 

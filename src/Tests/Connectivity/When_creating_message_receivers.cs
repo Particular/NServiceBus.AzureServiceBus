@@ -54,14 +54,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedMessagingFactoryFactory : IManageMessagingFactoryLifeCycleInternal
         {
-            readonly IMessagingFactory factory;
+            readonly IMessagingFactoryInternal factory;
 
-            public InterceptedMessagingFactoryFactory(IMessagingFactory factory)
+            public InterceptedMessagingFactoryFactory(IMessagingFactoryInternal factory)
             {
                 this.factory = factory;
             }
 
-            public IMessagingFactory Get(string namespaceName)
+            public IMessagingFactoryInternal Get(string namespaceName)
             {
                 return factory;
             }
@@ -72,7 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             }
         }
 
-        class InterceptedMessagingFactory : IMessagingFactory
+        class InterceptedMessagingFactory : IMessagingFactoryInternal
         {
             public bool IsInvoked;
 
@@ -87,19 +87,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 set { throw new NotImplementedException(); }
             }
 
-            public Task<IMessageReceiver> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
+            public Task<IMessageReceiverInternal> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
             {
                 IsInvoked = true;
 
-                return Task.FromResult<IMessageReceiver>(new FakeMessageReceiver() { Mode = receiveMode });
+                return Task.FromResult<IMessageReceiverInternal>(new FakeMessageReceiver() { Mode = receiveMode });
             }
 
-            public Task<IMessageSender> CreateMessageSender(string entitypath)
+            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath)
+            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath, string viaEntityPath)
             {
                 throw new NotImplementedException();
             }
@@ -110,7 +110,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             }
         }
 
-        class FakeMessageReceiver : IMessageReceiver
+        class FakeMessageReceiver : IMessageReceiverInternal
         {
             public bool IsClosed => false;
 

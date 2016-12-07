@@ -81,12 +81,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
-            var topology = new EndpointOrientedTopology(container);
+            var topology = new EndpointOrientedTopologyInternal(container);
 
             topology.Initialize(settings);
 
             // create the topologySectionManager
-            var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
+            var topologyCreator = (ICreateTopologyInternal)container.Resolve(typeof(TopologyCreator));
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
             container.RegisterSingleton<TopologyOperator>();

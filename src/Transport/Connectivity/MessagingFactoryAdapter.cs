@@ -4,7 +4,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
 
-    class MessagingFactoryAdapter : IMessagingFactory
+    class MessagingFactoryAdapter : IMessagingFactoryInternal
     {
         MessagingFactory factory;
 
@@ -21,17 +21,17 @@ namespace NServiceBus.Transport.AzureServiceBus
             set { factory.RetryPolicy = value; }
         }
 
-        public async Task<IMessageReceiver> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
+        public async Task<IMessageReceiverInternal> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
         {
             return new MessageReceiverAdapter(await factory.CreateMessageReceiverAsync(entitypath, receiveMode).ConfigureAwait(false));
         }
 
-        public async Task<IMessageSender> CreateMessageSender(string entitypath)
+        public async Task<IMessageSenderInternal> CreateMessageSender(string entitypath)
         {
             return new MessageSenderAdapter(await factory.CreateMessageSenderAsync(entitypath).ConfigureAwait(false));
         }
 
-        public async Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath)
+        public async Task<IMessageSenderInternal> CreateMessageSender(string entitypath, string viaEntityPath)
         {
             return new MessageSenderAdapter(await factory.CreateMessageSenderAsync(entitypath, viaEntityPath).ConfigureAwait(false));
         }

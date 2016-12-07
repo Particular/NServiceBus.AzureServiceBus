@@ -1,6 +1,6 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
-    class ForwardingTopologySubscriptionMetadata : SubscriptionMetadata
+    class ForwardingTopologySubscriptionMetadata : SubscriptionMetadataInternal
     {
         public RuntimeNamespaceInfo NamespaceInfo { get; set; }
         public string SubscribedEventFullName { get; set; }

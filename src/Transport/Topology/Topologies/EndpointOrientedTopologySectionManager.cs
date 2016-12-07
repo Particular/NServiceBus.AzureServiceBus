@@ -194,7 +194,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         Namespace = ns,
                         Type = EntityType.Subscription,
                         Path = subscriptionNameV6,
-                        Metadata = new SubscriptionMetadata
+                        Metadata = new SubscriptionMetadataInternal
                         {
                             Description = endpointName + " subscribed to " + eventType.FullName,
                             SubscriptionNameBasedOnEventWithNamespace = subscriptionName

@@ -17,7 +17,7 @@
     public class When_creating_subscription
     {
         const string topicPath = "topic";
-        static SubscriptionMetadata metadata = new SubscriptionMetadata { Description = "eventname" };
+        static SubscriptionMetadataInternal metadata = new SubscriptionMetadataInternal { Description = "eventname" };
         const string sqlFilter = "1=1";
 
         [OneTimeSetUp]
@@ -355,7 +355,7 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
-            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, new SubscriptionMetadata { Description = "very.logn.name.of.an.event.that.would.exceed.subscription.length" }, sqlFilter, namespaceManager);
+            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, new SubscriptionMetadataInternal { Description = "very.logn.name.of.an.event.that.would.exceed.subscription.length" }, sqlFilter, namespaceManager);
 
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
             Assert.AreEqual("very.logn.name.of.an.event.that.would.exceed.subscription.length", subscriptionDescription.UserMetadata);

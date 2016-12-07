@@ -2,6 +2,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     interface ICreateMessagingFactoriesInternal
     {
-        IMessagingFactory Create(string namespaceName);
+        IMessagingFactoryInternal Create(string namespaceName);
     }
 }

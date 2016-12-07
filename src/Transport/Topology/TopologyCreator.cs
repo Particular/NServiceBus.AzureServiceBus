@@ -3,7 +3,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
 
-    class TopologyCreator : ICreateTopology, ITearDownTopology
+    class TopologyCreator : ICreateTopologyInternal
     {
         ITransportPartsContainer container;
         IManageNamespaceManagerLifeCycleInternal namespaces;
@@ -14,7 +14,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.namespaces = namespaces;
         }
 
-        public async Task Create(TopologySection topology)
+        public async Task Create(TopologySectionInternal topology)
         {
             var queues = topology.Entities.Where(e => e.Type == EntityType.Queue).ToList();
             var topics = topology.Entities.Where(e => e.Type == EntityType.Topic).ToList();
@@ -43,16 +43,16 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var subscriptionCreator = (ICreateAzureServiceBusSubscriptionsInternal) container.Resolve(typeof(ICreateAzureServiceBusSubscriptionsInternal));
                 foreach (var subscription in subscriptions)
                 {
-                    var topic = subscription.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
-                    var forwardTo = subscription.RelationShips.FirstOrDefault(r => r.Type == EntityRelationShipType.Forward);
-                    var sqlFilter = (subscription as SubscriptionInfo)?.BrokerSideFilter.Serialize();
-                    var metadata = (subscription as SubscriptionInfo)?.Metadata ?? new SubscriptionMetadata();
+                    var topic = subscription.RelationShips.First(r => r.Type == EntityRelationShipTypeInternal.Subscription);
+                    var forwardTo = subscription.RelationShips.FirstOrDefault(r => r.Type == EntityRelationShipTypeInternal.Forward);
+                    var sqlFilter = (subscription as SubscriptionInfoInternal)?.BrokerSideFilter.Serialize();
+                    var metadata = (subscription as SubscriptionInfoInternal)?.Metadata ?? new SubscriptionMetadataInternal();
                     await subscriptionCreator.Create(topic.Target.Path, subscription.Path, metadata, sqlFilter, namespaces.Get(subscription.Namespace.Alias), forwardTo?.Target.Path).ConfigureAwait(false);
                 }
             }
         }
 
-        public async Task TearDown(TopologySection topologySection)
+        public async Task TearDown(TopologySectionInternal topologySection)
         {
             var subscriptions = topologySection.Entities.Where(e => e.Type == EntityType.Subscription).ToList();
             if (subscriptions.Any())
@@ -61,10 +61,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 foreach (var subscription in subscriptions)
                 {
-                    var topic = subscription.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
-                    var forwardTo = subscription.RelationShips.FirstOrDefault(r => r.Type == EntityRelationShipType.Forward);
-                    var sqlFilter = (subscription as SubscriptionInfo)?.BrokerSideFilter.Serialize();
-                    var metadata = (subscription as SubscriptionInfo)?.Metadata ?? new SubscriptionMetadata();
+                    var topic = subscription.RelationShips.First(r => r.Type == EntityRelationShipTypeInternal.Subscription);
+                    var forwardTo = subscription.RelationShips.FirstOrDefault(r => r.Type == EntityRelationShipTypeInternal.Forward);
+                    var sqlFilter = (subscription as SubscriptionInfoInternal)?.BrokerSideFilter.Serialize();
+                    var metadata = (subscription as SubscriptionInfoInternal)?.Metadata ?? new SubscriptionMetadataInternal();
 
 
                     await subscriptionCreator.DeleteSubscription(topicPath: topic.Target.Path,

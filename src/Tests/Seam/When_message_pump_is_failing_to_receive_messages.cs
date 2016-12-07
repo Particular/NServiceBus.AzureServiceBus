@@ -50,7 +50,7 @@
 
             pump.Start(new PushRuntimeSettings(1));
 
-            await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetails("id", new Dictionary<string, string>(), new byte[0]), new FakeReceiveContext());
+            await fakeTopologyOperator.onIncomingMessage(new IncomingMessageDetailsInternal("id", new Dictionary<string, string>(), new byte[0]), new FakeReceiveContext());
             var exceptionThrownByMessagePump = new Exception("kaboom");
             await fakeTopologyOperator.onError(exceptionThrownByMessagePump);
 
@@ -61,7 +61,6 @@
             Assert.AreEqual(exceptionThrownByMessagePump, exceptionReceivedByCircuitBreaker, "Exception circuit breaker got should be the same as the one raised by message pump");
         }
 
-#pragma warning disable 618
         class FakeCriticalError : CriticalError
         {
             Func<ICriticalErrorContext, Task> func;
@@ -77,53 +76,53 @@
             }
         }
 
-        class FakeReceiveContext : ReceiveContext
+        class FakeReceiveContext : ReceiveContextInternal
         {
         }
 
         class FakeTopology : ITopologySectionManagerInternal
         {
-            public TopologySection DetermineReceiveResources(string inputQueue)
+            public TopologySectionInternal DetermineReceiveResources(string inputQueue)
             {
-                return new TopologySection
+                return new TopologySectionInternal
                 {
                     Namespaces = new List<RuntimeNamespaceInfo>
                     {
                         new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample)
                     },
-                    Entities = new List<EntityInfo>()
+                    Entities = new List<EntityInfoInternal>()
                 };
             }
 
-            public TopologySection DetermineResourcesToCreate(QueueBindings queueBindings)
+            public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
             {
-                return new TopologySection();
+                return new TopologySectionInternal();
             }
 
-            public TopologySection DeterminePublishDestination(Type eventType)
+            public TopologySectionInternal DeterminePublishDestination(Type eventType)
             {
-                return new TopologySection();
+                return new TopologySectionInternal();
             }
 
-            public TopologySection DetermineSendDestination(string destination)
+            public TopologySectionInternal DetermineSendDestination(string destination)
             {
-                return new TopologySection();
+                return new TopologySectionInternal();
             }
 
-            public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
+            public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
             {
-                return new TopologySection();
+                return new TopologySectionInternal();
             }
 
-            public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
+            public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
             {
-                return new TopologySection();
+                return new TopologySectionInternal();
             }
         }
 
-        class FakeTopologyOperator : IOperateTopology
+        class FakeTopologyOperator : IOperateTopologyInternal
         {
-            public void Start(TopologySection topology, int maximumConcurrency)
+            public void Start(TopologySectionInternal topology, int maximumConcurrency)
             {
             }
 
@@ -132,16 +131,16 @@
                 return TaskEx.Completed;
             }
 
-            public void Start(IEnumerable<EntityInfo> subscriptions)
+            public void Start(IEnumerable<EntityInfoInternal> subscriptions)
             {
             }
 
-            public Task Stop(IEnumerable<EntityInfo> subscriptions)
+            public Task Stop(IEnumerable<EntityInfoInternal> subscriptions)
             {
                 return TaskEx.Completed;
             }
 
-            public void OnIncomingMessage(Func<IncomingMessageDetails, ReceiveContext, Task> func)
+            public void OnIncomingMessage(Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> func)
             {
                 onIncomingMessage = func;
             }
@@ -157,8 +156,7 @@
             }
 
             public Func<Exception, Task> onError;
-            public Func<IncomingMessageDetails, ReceiveContext, Task> onIncomingMessage;
-#pragma warning restore 618
+            public Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> onIncomingMessage;
         }
     }
 }
