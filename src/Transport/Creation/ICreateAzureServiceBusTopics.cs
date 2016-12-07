@@ -3,9 +3,8 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface ICreateAzureServiceBusTopics
+    interface ICreateAzureServiceBusTopicsInternal
     {
-        Task<TopicDescription> Create(string topicPath, INamespaceManager namespaceManager);
+        Task<TopicDescription> Create(string topicPath, INamespaceManagerInternal namespaceManager);
     }
 }

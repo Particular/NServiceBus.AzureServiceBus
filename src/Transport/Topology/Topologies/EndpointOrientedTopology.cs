@@ -9,16 +9,16 @@ namespace NServiceBus
     using Transport;
     using Transport.AzureServiceBus;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class EndpointOrientedTopology : ITopology
+    
+    class EndpointOrientedTopologyInternal : ITopology
     {
-        ILog logger = LogManager.GetLogger(typeof(EndpointOrientedTopology));
+        ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
         ITopologySectionManager topologySectionManager;
         ITransportPartsContainer container;
 
-        public EndpointOrientedTopology() : this(new TransportPartsContainer()){ }
+        public EndpointOrientedTopologyInternal() : this(new TransportPartsContainer()){ }
 
-        internal EndpointOrientedTopology(ITransportPartsContainer container)
+        internal EndpointOrientedTopologyInternal(ITransportPartsContainer container)
         {
             this.container = container;
         }

@@ -8,7 +8,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessagingFactoryCreator : ICreateMessagingFactories
     {
-        public MessagingFactoryCreator(IManageNamespaceManagerLifeCycle namespaceManagers, ReadOnlySettings settings)
+        public MessagingFactoryCreator(IManageNamespaceManagerLifeCycleInternal namespaceManagers, ReadOnlySettings settings)
         {
             this.namespaceManagers = namespaceManagers;
             transportType = settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType);
@@ -74,7 +74,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return new MessagingFactoryAdapter(inner);
         }
 
-        IManageNamespaceManagerLifeCycle namespaceManagers;
+        IManageNamespaceManagerLifeCycleInternal namespaceManagers;
         Func<string, MessagingFactorySettings> settingsFactory;
         RetryPolicy retryPolicy;
         TransportType transportType;

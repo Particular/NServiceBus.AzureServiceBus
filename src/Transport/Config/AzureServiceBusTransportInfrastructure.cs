@@ -5,7 +5,6 @@
     using System.Text;
     using System.Threading.Tasks;
     using DelayedDelivery;
-    using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using Performance.TimeToBeReceived;
     using Routing;

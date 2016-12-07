@@ -7,7 +7,7 @@
     using Logging;
     using Settings;
 
-    class AzureServiceBusTopicCreator : ICreateAzureServiceBusTopics
+    class AzureServiceBusTopicCreator : ICreateAzureServiceBusTopicsInternal
     {
         ReadOnlySettings settings;
         Func<string, ReadOnlySettings, TopicDescription> topicDescriptionFactory;
@@ -37,7 +37,7 @@
             }
         }
 
-        public async Task<TopicDescription> Create(string topicPath, INamespaceManager namespaceManager)
+        public async Task<TopicDescription> Create(string topicPath, INamespaceManagerInternal namespaceManager)
         {
             var topicDescription = topicDescriptionFactory(topicPath, settings);
 
@@ -94,7 +94,7 @@
             return topicDescription;
         }
 
-        async Task<bool> ExistsAsync(string topicPath, INamespaceManager namespaceClient, bool removeCacheEntry = false)
+        async Task<bool> ExistsAsync(string topicPath, INamespaceManagerInternal namespaceClient, bool removeCacheEntry = false)
         {
             var key = topicPath + namespaceClient.Address;
             logger.InfoFormat("Checking existence cache for '{0}'", topicPath);
