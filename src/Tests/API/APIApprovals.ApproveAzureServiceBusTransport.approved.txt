@@ -254,7 +254,6 @@
     }
     public class HierarchyComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
     {
-        public HierarchyComposition(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string GetEntityPath(string entityname, NServiceBus.EntityType entityType) { }
     }
     public class RoundRobinNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
@@ -278,12 +277,10 @@
     }
     public class ThrowOnFailedValidation : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy
     {
-        public ThrowOnFailedValidation(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType) { }
     }
     public class ValidateAndHashIfNeeded : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy
     {
-        public ValidateAndHashIfNeeded(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType) { }
     }
 }

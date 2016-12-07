@@ -32,7 +32,7 @@
 
         Func<string, string> defaultHashing;
 
-        public ValidateAndHashIfNeeded(ReadOnlySettings settings)
+        internal ValidateAndHashIfNeeded(ReadOnlySettings settings)
         {
             this.settings = settings;
 
