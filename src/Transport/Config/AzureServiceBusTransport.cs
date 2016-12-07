@@ -40,7 +40,7 @@
             var configuredTopology = settings.GetOrDefault<ITopologyInternal>();
             if (configuredTopology == null)
             {
-                throw new Exception("Azure Service Bus transport requires a topology to be specified. Use `.UseTopology<ITopology>()` configuration API to specify topology to use.");
+                throw new Exception("Azure Service Bus transport requires a topology to be specified. Use `.UseForwardingTopology()` or `.UseEndpointOrientedTopology()` configuration API to specify topology to use.");
             }
             return configuredTopology;
         }

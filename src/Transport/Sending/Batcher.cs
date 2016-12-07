@@ -5,7 +5,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Settings;
     using Transport;
 
-    class Batcher : IBatcher
+    class Batcher : IBatcherInternal
     {
         ITopologySectionManagerInternal topologySectionManager;
         int messageSizePaddingPercentage;

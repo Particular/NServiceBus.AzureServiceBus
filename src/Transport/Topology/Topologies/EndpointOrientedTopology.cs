@@ -10,7 +10,7 @@ namespace NServiceBus
     using Transport.AzureServiceBus;
 
 
-    class EndpointOrientedTopologyInternal : ITopology
+    class EndpointOrientedTopologyInternal : ITopologyInternal
     {
         ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
         ITopologySectionManagerInternal topologySectionManager;

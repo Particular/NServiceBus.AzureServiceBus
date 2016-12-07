@@ -38,7 +38,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 return false;
             }
-            return Equals((EntityInfo) obj);
+            return Equals((EntityInfoInternal) obj);
         }
 
         public override int GetHashCode()
