@@ -90,7 +90,7 @@
                 throw new InvalidOperationException($"{typeName} does not implement {typeof(IConfigureEndpointTestExecution).Name}.");
             }
 
-            await configurer.Configure(endpointName, config, settings).ConfigureAwait(false);
+            await configurer.Configure(endpointName, config, settings, new PublisherMetadata()).ConfigureAwait(false);
 
             ActiveTestExecutionConfigurer cleaners;
             var cleanerKey = "ConfigureTestExecution." + endpointName;
