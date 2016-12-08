@@ -354,159 +354,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await namespaceManager.DeleteQueue("myqueue");
         }
 
-        [Test]
-        public async Task Should_route_via_active_namespace_first()
-        {
-            // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
-            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
-            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
-
-            // setup the infrastructure
-            var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
-            var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
-            var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
-
-            // create the fallback queue (but not the queue in the primary to emulate that it is down)
-            var creator = new AzureServiceBusQueueCreator(settings);
-            var primaryNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("primary");
-            var fallbackNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("fallback");
-            await creator.Create("myqueue", primaryNamespaceManager);
-            await creator.Create("myqueue", fallbackNamespaceManager);
-
-            // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
-            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
-            var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var batch = new BatchInternal
-            {
-                Destinations = new TopologySectionInternal
-                {
-                    Entities = new List<EntityInfoInternal>
-                    {
-                            new EntityInfoInternal
-                        {
-                            Namespace = @namespace,
-                            Path = "MyQueue",
-                            Type = EntityType.Queue
-                        },
-                            new EntityInfoInternal
-                        {
-                            Namespace = fallback,
-                            Path = "MyQueue",
-                            Type = EntityType.Queue
-                        }
-                    },
-                    Namespaces = new List<RuntimeNamespaceInfo>
-                    {
-                        @namespace,
-                        fallback
-                    }
-                },
-                RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperationInternal>
-                {
-                        new BatchedOperationInternal
-                    {
-                        Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
-                        DeliveryConstraints = new List<DeliveryConstraint>()
-                    },
-                }
-            };
-
-            // perform the test
-            await router.RouteBatch(batch, null, DispatchConsistency.Default);
-
-            //validate
-            var queueOnPrimaryNamespace = await primaryNamespaceManager.GetQueue("myqueue");
-            Assert.IsTrue(queueOnPrimaryNamespace.MessageCount > 0, "expected to have messages in the primary queue, but there were no messages");
-
-            var queueOnSecondaryNamespace = await fallbackNamespaceManager.GetQueue("myqueue");
-            Assert.IsTrue(queueOnSecondaryNamespace.MessageCount == 0, "expected NOT to have messages in the secondary queue, but there were no messages");
-
-            //cleanup
-            await primaryNamespaceManager.DeleteQueue("myqueue");
-            await fallbackNamespaceManager.DeleteQueue("myqueue");
-        }
-
-        [Test]
-        public async Task Can_route_via_fallback_namespace()
-        {
-            // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
-            namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
-            namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
-
-            // setup the infrastructure
-            var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
-            var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
-            var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
-
-            // create the fallback queue (but not the queue in the primary to emulate that it is down)
-            var creator = new AzureServiceBusQueueCreator(settings);
-            var fallbackNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("fallback");
-            await creator.Create("myqueue", fallbackNamespaceManager);
-
-            // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
-            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
-            var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var batch = new BatchInternal
-            {
-                Destinations = new TopologySectionInternal
-                {
-                    Entities = new List<EntityInfoInternal>
-                    {
-                            new EntityInfoInternal
-                        {
-                            Namespace = @namespace,
-                            Path = "MyQueue",
-                            Type = EntityType.Queue
-                        },
-                            new EntityInfoInternal
-                        {
-                            Namespace = fallback,
-                            Path = "MyQueue",
-                            Type = EntityType.Queue
-                        }
-                    },
-                    Namespaces = new List<RuntimeNamespaceInfo>
-                    {
-                        @namespace,
-                        fallback
-                    }
-                },
-                RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperationInternal>
-                {
-                        new BatchedOperationInternal
-                    {
-                        Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
-                        DeliveryConstraints = new List<DeliveryConstraint>()
-                    },
-                }
-            };
-
-            // perform the test
-            await router.RouteBatch(batch, null, DispatchConsistency.Default);
-
-            //validate
-            var queue = await fallbackNamespaceManager.GetQueue("myqueue");
-            Assert.IsTrue(queue.MessageCount > 0, "expected to have messages in the queue, but there were no messages");
-
-            //cleanup
-            await fallbackNamespaceManager.DeleteQueue("myqueue");
-        }
 
         [Test]
         public async Task Should_invoke_non_throwing_oversized_brokered_message_handler_for_a_message_that_exceeds_maximum_size_only_once_even_if_fallback_namespace_is_set()
@@ -680,7 +527,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         }
 
         [Test]
-        public async Task Should_route_via_active_namespace_first_no_ASB_required()
+        public async Task Should_route_via_active_namespace_first()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -690,44 +537,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
 
             // setup the batch
-            var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
-            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
-            var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var batch = new Batch
-            {
-                Destinations = new TopologySection
-                {
-                    Entities = new List<EntityInfo>
-                    {
-                        new EntityInfo
-                        {
-                            Namespace = @namespace,
-                            Path = "MyQueue",
-                            Type = EntityType.Queue
-                        },
-                        new EntityInfo
-                        {
-                            Namespace = fallback,
-                            Path = "MyQueue",
-                            Type = EntityType.Queue
-                        }
-                    },
-                    Namespaces = new List<RuntimeNamespaceInfo>
-                    {
-                        @namespace,
-                        fallback
-                    }
-                },
-                RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
-                {
-                    new BatchedOperation
-                    {
-                        Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
-                        DeliveryConstraints = new List<DeliveryConstraint>()
-                    },
-                }
-            };
+            var batch = CreateTestBatchTargetingPrimaryAndSecondaryNamespaces();
 
             // perform the test
             await router.RouteBatch(batch, null, DispatchConsistency.Default);
@@ -737,7 +547,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         }
 
         [Test]
-        public async Task Can_route_via_fallback_namespace_no_ASB_required()
+        public async Task Can_route_via_fallback_namespace()
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -747,22 +557,33 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
 
             // setup the batch
+            var batch = CreateTestBatchTargetingPrimaryAndSecondaryNamespaces();
+
+            // perform the test
+            await router.RouteBatch(batch, null, DispatchConsistency.Default);
+
+            Assert.That(messageSenderCreator.Senders["primary"].NumberOfTimeInvoked, Is.EqualTo(0));
+            Assert.That(messageSenderCreator.Senders["fallback"].NumberOfTimeInvoked, Is.EqualTo(1));
+        }
+
+        static BatchInternal CreateTestBatchTargetingPrimaryAndSecondaryNamespaces()
+        {
             var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
             var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var batch = new Batch
+            var batch = new BatchInternal
             {
-                Destinations = new TopologySection
+                Destinations = new TopologySectionInternal
                 {
-                    Entities = new List<EntityInfo>
+                    Entities = new List<EntityInfoInternal>
                     {
-                        new EntityInfo
+                        new EntityInfoInternal
                         {
                             Namespace = @namespace,
                             Path = "MyQueue",
                             Type = EntityType.Queue
                         },
-                        new EntityInfo
+                        new EntityInfoInternal
                         {
                             Namespace = fallback,
                             Path = "MyQueue",
@@ -776,25 +597,20 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                     }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
+                Operations = new List<BatchedOperationInternal>
                 {
-                    new BatchedOperation
+                    new BatchedOperationInternal
                     {
                         Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
                         DeliveryConstraints = new List<DeliveryConstraint>()
                     },
                 }
             };
-
-            // perform the test
-            await router.RouteBatch(batch, null, DispatchConsistency.Default);
-
-            Assert.That(messageSenderCreator.Senders["primary"].NumberOfTimeInvoked, Is.EqualTo(0));
-            Assert.That(messageSenderCreator.Senders["fallback"].NumberOfTimeInvoked, Is.EqualTo(1));
+            return batch;
         }
 
 
-        class FakeICreateMessageSenders : ICreateMessageSenders
+        class FakeICreateMessageSenders : ICreateMessageSendersInternal
         {
             readonly string failOnNamespaceAlias;
             public Dictionary<string, FakeIMessageSender> Senders = new Dictionary<string, FakeIMessageSender>();
@@ -804,7 +620,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                 this.failOnNamespaceAlias = failOnNamespaceAlias;
             }
 
-            public Task<IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName)
+            public Task<IMessageSenderInternal> Create(string entitypath, string viaEntityPath, string namespaceName)
             {
                 FakeIMessageSender fakeIMessageSender;
                 if (!Senders.TryGetValue(namespaceName, out fakeIMessageSender))
@@ -812,11 +628,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                     fakeIMessageSender = new FakeIMessageSender(namespaceName == failOnNamespaceAlias);
                     Senders.Add(namespaceName, fakeIMessageSender);
                 }
-                return Task.FromResult<IMessageSender>(fakeIMessageSender);
+                return Task.FromResult<IMessageSenderInternal>(fakeIMessageSender);
             }
         }
 
-        class FakeIMessageSender : IMessageSender
+        class FakeIMessageSender : IMessageSenderInternal
         {
             readonly bool shouldThrowException;
             public int NumberOfTimeInvoked;
