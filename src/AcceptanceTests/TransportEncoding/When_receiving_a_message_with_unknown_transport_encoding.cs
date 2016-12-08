@@ -42,9 +42,7 @@
                 await Task.Delay(TimeSpan.FromSeconds(10));
 
                 var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-#pragma warning disable 618
-                var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(connectionString));
-#pragma warning restore 618
+                var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(connectionString));
                 var factory = MessagingFactory.CreateAsync(namespaceManager.Address, namespaceManager.Settings.TokenProvider).GetAwaiter().GetResult();
                 var dlqPath = Conventions.EndpointNamingConvention(typeof(Receiver)) + "/$DeadLetterQueue";
                 var receiver = await factory.CreateMessageReceiverAsync(dlqPath, ReceiveMode.ReceiveAndDelete).ConfigureAwait(false);

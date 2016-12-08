@@ -8,8 +8,7 @@ namespace NServiceBus
     {
         ReadOnlySettings settings;
 
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public DiscriminatorBasedIndividualization(ReadOnlySettings settings)
+        internal DiscriminatorBasedIndividualization(ReadOnlySettings settings)
         {
             this.settings = settings;
         }

@@ -37,8 +37,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             Assert.IsTrue(destination.Entities.Single().Path == "sales.events");
         }
 
-#pragma warning disable 618
-        ITopologySectionManager SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
+        ITopologySectionManagerInternal SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
@@ -47,11 +46,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
             extensions.NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
 
-            var topology = new EndpointOrientedTopology(container);
+            var topology = new EndpointOrientedTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            return container.Resolve<ITopologySectionManager>();
+            return container.Resolve<ITopologySectionManagerInternal>();
         }
 
         class SomeMessageType
@@ -71,8 +70,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             Assert.AreEqual(2, destination.Entities.Count(), "active and passive namespace should be returned");
         }
 
-#pragma warning disable 618
-        ITopologySectionManager SetupEndpointOrientedTopologyWithFailoverNamespace(TransportPartsContainer container, string enpointname)
+        ITopologySectionManagerInternal SetupEndpointOrientedTopologyWithFailoverNamespace(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
@@ -83,12 +81,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             extensions.NamespacePartitioning().AddNamespace("namespace2", AzureServiceBusConnectionString.Fallback);
             extensions.NamespacePartitioning().UseStrategy<FailOverNamespacePartitioning>();
 
-            var topology = new EndpointOrientedTopology(container);
+            var topology = new EndpointOrientedTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            return container.Resolve<ITopologySectionManager>();
+            return container.Resolve<ITopologySectionManagerInternal>();
         }
-#pragma warning restore 618
     }
 }

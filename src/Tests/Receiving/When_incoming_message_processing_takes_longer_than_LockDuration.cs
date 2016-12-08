@@ -12,7 +12,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_incoming_message_processing_takes_longer_than_LockDuration
@@ -31,8 +30,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
@@ -41,7 +40,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 
             // create the queue
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("autorenewtimeout", namespaceManager);
 
             var receivedMessages = 0;
@@ -58,7 +57,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // sending messages to the queue is done
 
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
-            notifier.Initialize(new EntityInfo { Path = "autorenewtimeout", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
+            notifier.Initialize(new EntityInfoInternal { Path = "autorenewtimeout", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 async (message, context) =>
                 {
                     if (message.MessageId == messageToSend.MessageId)

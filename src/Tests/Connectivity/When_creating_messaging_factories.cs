@@ -6,7 +6,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_creating_messaging_factories
@@ -18,13 +17,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
-            var lifecycleManager = new MessagingFactoryCreator(new NamespaceManagerLifeCycleManager(new NamespaceManagerCreator(settings)) , settings);
+            var lifecycleManager = new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)) , settings);
 
             var first = lifecycleManager.Create("namespace");
             var second = lifecycleManager.Create("namespace");
 
-            Assert.IsInstanceOf<IMessagingFactory>(first);
-            Assert.IsInstanceOf<IMessagingFactory>(second);
+            Assert.IsInstanceOf<IMessagingFactoryInternal>(first);
+            Assert.IsInstanceOf<IMessagingFactoryInternal>(second);
             Assert.AreNotEqual(first, second);
         }
 

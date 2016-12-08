@@ -8,16 +8,14 @@
     using Transport.AzureServiceBus;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
-
     public class When_executing_task_with_retry
     {
         [Test]
         public void Should_not_retry_if_number_of_retries_is_not_specified()
         {
-            var messageSender = A.Fake<IMessageSender>();
+            var messageSender = A.Fake<IMessageSenderInternal>();
             var message = new BrokeredMessage();
             var numberOfRetries = 0;
             var totalAttempts = 0;
@@ -33,7 +31,7 @@
         [Test]
         public void Should_retry_as_number_of_specified_retries()
         {
-            var messageSender = A.Fake<IMessageSender>();
+            var messageSender = A.Fake<IMessageSenderInternal>();
             var message = new BrokeredMessage();
             var numberOfRetries = 3;
             var totalAttempts = 0;
@@ -49,7 +47,7 @@
         [Test]
         public Task Should_not_throw_for_successful_retry()
         {
-            var messageSender = A.Fake<IMessageSender>();
+            var messageSender = A.Fake<IMessageSenderInternal>();
             var brokeredMessage = new BrokeredMessage();
 
             A.CallTo(() => messageSender.Send(brokeredMessage))

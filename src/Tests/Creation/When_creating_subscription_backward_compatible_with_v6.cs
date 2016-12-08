@@ -10,7 +10,6 @@
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_creating_subscription_backward_compatible_with_v6
@@ -20,7 +19,7 @@
         [OneTimeSetUp]
         public void TopicSetup()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             if (!namespaceManager.TopicExists(topicPath).Result)
             {
                 namespaceManager.CreateTopic(new TopicDescription(topicPath)).Wait();
@@ -30,25 +29,25 @@
         [OneTimeTearDown]
         public void TopicCleanUp()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             namespaceManager.DeleteTopic(topicPath).Wait();
         }
 
         [Test]
         public async Task Should_create_a_subscription_based_on_event_type_full_name_for_an_event_name_reused_across_multiple_namespaces()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(Ns1.ReusedEvent).Name), new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize());
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
             var creator = new AzureServiceBusSubscriptionCreatorV6(settings);
-            var metadata1 = new SubscriptionMetadata
+            var metadata1 = new SubscriptionMetadataInternal
             {
                 SubscriptionNameBasedOnEventWithNamespace = typeof(Ns1.ReusedEvent).FullName,
                 Description = Guid.NewGuid().ToString()
             };
-            var metadata2 = new SubscriptionMetadata
+            var metadata2 = new SubscriptionMetadataInternal
             {
                 SubscriptionNameBasedOnEventWithNamespace = typeof(Ns2.ReusedEvent).FullName,
                 Description = Guid.NewGuid().ToString()

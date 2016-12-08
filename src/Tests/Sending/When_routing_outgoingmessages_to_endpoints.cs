@@ -13,7 +13,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using Transport;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_routing_outgoingmessages_to_endpoints
@@ -28,8 +27,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -37,19 +36,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var batch = new Batch
+            var batch = new BatchInternal
             {
-                Destinations = new TopologySection
+                Destinations = new TopologySectionInternal
                 {
-                    Entities = new List<EntityInfo>
+                    Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue",
@@ -62,9 +61,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
+                Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -93,8 +92,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -102,19 +101,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var batch = new Batch
+            var batch = new BatchInternal
             {
-                Destinations = new TopologySection
+                Destinations = new TopologySectionInternal
                 {
-                    Entities = new List<EntityInfo>
+                    Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue",
@@ -127,15 +126,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
+                Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
                         },
 
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -164,8 +163,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -173,19 +172,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
             var bytes = Enumerable.Range(0, 220 * 1024).Select(x => (byte)(x % 256)).ToArray();
-            var batch = new Batch
+            var batch = new BatchInternal
             {
-                Destinations = new TopologySection
+                Destinations = new TopologySectionInternal
                 {
-                    Entities = new List<EntityInfo>
+                    Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue",
@@ -198,14 +197,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
+                Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
                         },
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -234,8 +233,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -243,20 +242,20 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
-            var batch = new Batch
+            var batch = new BatchInternal
             {
-                Destinations = new TopologySection
+                Destinations = new TopologySectionInternal
                 {
-                    Entities = new List<EntityInfo>
+                    Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue",
@@ -269,9 +268,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
+                Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -298,8 +297,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -307,20 +306,20 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
-            var batch = new Batch
+            var batch = new BatchInternal
             {
-                Destinations = new TopologySection
+                Destinations = new TopologySectionInternal
                 {
-                    Entities = new List<EntityInfo>
+                    Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue",
@@ -333,9 +332,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
+                Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -364,8 +363,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -373,8 +372,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the fallback queue (but not the queue in the primary to emulate that it is down)
             var creator = new AzureServiceBusQueueCreator(settings);
-            var primaryNamespaceManager = namespaceManagerLifeCycleManager.Get("primary");
-            var fallbackNamespaceManager = namespaceManagerLifeCycleManager.Get("fallback");
+            var primaryNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("primary");
+            var fallbackNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("fallback");
             await creator.Create("myqueue", primaryNamespaceManager);
             await creator.Create("myqueue", fallbackNamespaceManager);
 
@@ -382,19 +381,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
             var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var batch = new Batch
+            var batch = new BatchInternal
             {
-                Destinations = new TopologySection
+                Destinations = new TopologySectionInternal
                 {
-                    Entities = new List<EntityInfo>
+                    Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue",
                                 Type = EntityType.Queue
                             },
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = fallback,
                                 Path = "MyQueue",
@@ -408,9 +407,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
+                Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -444,8 +443,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -453,26 +452,26 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the fallback queue (but not the queue in the primary to emulate that it is down)
             var creator = new AzureServiceBusQueueCreator(settings);
-            var fallbackNamespaceManager = namespaceManagerLifeCycleManager.Get("fallback");
+            var fallbackNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("fallback");
             await creator.Create("myqueue", fallbackNamespaceManager);
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
             var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Fallback, mode: NamespaceMode.Passive);
             var bytes = Encoding.UTF8.GetBytes("Whatever");
-            var batch = new Batch
+            var batch = new BatchInternal
             {
-                Destinations = new TopologySection
+                Destinations = new TopologySectionInternal
                 {
-                    Entities = new List<EntityInfo>
+                    Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue",
                                 Type = EntityType.Queue
                             },
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = fallback,
                                 Path = "MyQueue",
@@ -486,9 +485,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
+                Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -520,8 +519,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -529,10 +528,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue & fallback queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("primary");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("primary");
             await creator.Create("myqueue", namespaceManager);
 
-            var fallbackNamespaceManager = namespaceManagerLifeCycleManager.Get("fallback");
+            var fallbackNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("fallback");
             await creator.Create("myqueue", fallbackNamespaceManager);
 
             // setup the batch
@@ -540,13 +539,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var @fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, mode: NamespaceMode.Passive);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
-            var batch = new Batch
+            var batch = new BatchInternal
             {
-                Destinations = new TopologySection
+                Destinations = new TopologySectionInternal
                 {
-                    Entities = new List<EntityInfo>
+                    Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "myqueue",
@@ -560,9 +559,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
+                Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -594,8 +593,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -603,7 +602,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("primary");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("primary");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
@@ -611,13 +610,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, mode: NamespaceMode.Passive);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
-            var batch = new Batch
+            var batch = new BatchInternal
             {
-                Destinations = new TopologySection
+                Destinations = new TopologySectionInternal
                 {
-                    Entities = new List<EntityInfo>
+                    Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue",
@@ -631,9 +630,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
-                Operations = new List<BatchedOperation>
+                Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()

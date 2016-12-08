@@ -78,21 +78,20 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             Assert.AreNotEqual(first, second);
         }
 
-#pragma warning disable 618
-        class InterceptedMessageReceiverCreator : ICreateMessageReceivers
+        class InterceptedMessageReceiverCreator : ICreateMessageReceiversInternal
         {
 
             public int InvocationCount = 0;
 
-            public Task<IMessageReceiver> Create(string entityPath, string namespaceAlias)
+            public Task<IMessageReceiverInternal> Create(string entityPath, string namespaceAlias)
             {
                 InvocationCount++;
-                return Task.FromResult<IMessageReceiver>(new InterceptedMessageReceiver());
+                return Task.FromResult<IMessageReceiverInternal>(new InterceptedMessageReceiver());
             }
 
         }
 
-        class InterceptedMessageReceiver : IMessageReceiver
+        class InterceptedMessageReceiver : IMessageReceiverInternal
         {
             bool isClosed = false;
 
@@ -123,6 +122,5 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 isClosed = true;
             }
         }
-#pragma warning restore 618
     }
 }

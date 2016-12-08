@@ -7,7 +7,7 @@
     using Logging;
     using Settings;
 
-    class AzureServiceBusSubscriptionCreator : ICreateAzureServiceBusSubscriptions, ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
+    class AzureServiceBusSubscriptionCreator : ICreateAzureServiceBusSubscriptionsInternal
     {
         ReadOnlySettings settings;
         Func<string, string, ReadOnlySettings, SubscriptionDescription> subscriptionDescriptionFactory;
@@ -35,7 +35,7 @@
             }
         }
 
-        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo = null)
+        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo = null)
         {
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
 
@@ -102,7 +102,7 @@
 
         }
 
-        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo)
+        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
 
@@ -110,11 +110,7 @@
             {
                 if (await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager, true).ConfigureAwait(false))
                 {
-                    var namespaceManagerAbleToDeleteSubscriptions = namespaceManager as INamespaceManagerAbleToDeleteSubscriptions;
-                    if (namespaceManagerAbleToDeleteSubscriptions != null)
-                    {
-                        await namespaceManagerAbleToDeleteSubscriptions.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
-                    }
+                    await namespaceManager.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
                 }
             }
             catch (MessagingException ex)
@@ -131,7 +127,7 @@
             }
         }
 
-        async Task<bool> ExistsAsync(string topicPath, string subscriptionName, string metadata, INamespaceManager namespaceClient, bool removeCacheEntry = false)
+        async Task<bool> ExistsAsync(string topicPath, string subscriptionName, string metadata, INamespaceManagerInternal namespaceClient, bool removeCacheEntry = false)
         {
             logger.Info($"Checking existence cache for subscription '{subscriptionName}' aka '{metadata}'");
 

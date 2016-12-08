@@ -7,24 +7,24 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Transport;
     using Settings;
 
-    class ForwardingTopologySectionManager : ITopologySectionManager
+    class ForwardingTopologySectionManager : ITopologySectionManagerInternal
     {
         SettingsHolder settings;
-        ITransportPartsContainer container;
+        ITransportPartsContainerInternal container;
 
-        readonly ConcurrentDictionary<Type, TopologySection> subscriptions = new ConcurrentDictionary<Type, TopologySection>();
-        readonly ConcurrentDictionary<string, TopologySection> sendDestinations = new ConcurrentDictionary<string, TopologySection>();
-        readonly ConcurrentDictionary<Type, TopologySection> publishDestinations = new ConcurrentDictionary<Type, TopologySection>();
-        readonly List<EntityInfo> topics = new List<EntityInfo>();
+        readonly ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
+        readonly ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
+        readonly ConcurrentDictionary<Type, TopologySectionInternal> publishDestinations = new ConcurrentDictionary<Type, TopologySectionInternal>();
+        readonly List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
         readonly Random randomGenerator = new Random();
 
-        public ForwardingTopologySectionManager(SettingsHolder settings, ITransportPartsContainer container)
+        public ForwardingTopologySectionManager(SettingsHolder settings, ITransportPartsContainerInternal container)
         {
             this.settings = settings;
             this.container = container;
         }
 
-        public TopologySection DetermineReceiveResources(string inputQueue)
+        public TopologySectionInternal DetermineReceiveResources(string inputQueue)
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
@@ -32,16 +32,16 @@ namespace NServiceBus.Transport.AzureServiceBus
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Receiving).ToArray();
 
             var inputQueuePath = addressingLogic.Apply(inputQueue, EntityType.Queue).Name;
-            var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
+            var entities = namespaces.Select(n => new EntityInfoInternal { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
-            return new TopologySection()
+            return new TopologySectionInternal()
             {
                 Namespaces = namespaces,
                 Entities = entities.ToArray()
             };
         }
 
-        public TopologySection DetermineResourcesToCreate(QueueBindings queueBindings)
+        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
         {
             var endpointName = settings.EndpointName();
 
@@ -51,7 +51,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
             var inputQueuePath = addressingLogic.Apply(endpointName, EntityType.Queue).Name;
-            var inputQueues = namespaces.Select(n => new EntityInfo
+            var inputQueues = namespaces.Select(n => new EntityInfoInternal
             {
                 Path = inputQueuePath,
                 Type = EntityType.Queue,
@@ -65,14 +65,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             foreach (var n in namespaces)
             {
-                inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfo
+                inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfoInternal
                 {
                     Path = addressingLogic.Apply(p, EntityType.Queue).Name,
                     Type = EntityType.Queue,
                     Namespace = n
                 }));
 
-                inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfo
+                inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfoInternal
                 {
                     Path = addressingLogic.Apply(p, EntityType.Queue).Name,
                     Type = EntityType.Queue,
@@ -82,14 +82,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             var entities = inputQueues.Concat(topics).ToArray();
 
-            return new TopologySection
+            return new TopologySectionInternal
             {
                 Namespaces = namespaces,
                 Entities = entities
             };
         }
 
-        public TopologySection DeterminePublishDestination(Type eventType)
+        public TopologySectionInternal DeterminePublishDestination(Type eventType)
         {
             return publishDestinations.GetOrAdd(eventType, t =>
             {
@@ -102,7 +102,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     BuildTopicBundles(namespaces, addressingLogic);
                 }
 
-                return new TopologySection()
+                return new TopologySectionInternal()
                 {
                     Entities = SelectSingleRandomTopicFromBundle(topics),
                     Namespaces = namespaces
@@ -110,7 +110,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             });
         }
 
-        IEnumerable<EntityInfo> SelectSingleRandomTopicFromBundle(List<EntityInfo> entityInfos)
+        IEnumerable<EntityInfoInternal> SelectSingleRandomTopicFromBundle(List<EntityInfoInternal> entityInfos)
         {
             var index = randomGenerator.Next(0, entityInfos.Count);
             var selected = entityInfos[index];
@@ -118,7 +118,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return entityInfos.Where(i => i.Path == selected.Path);
         }
 
-        public TopologySection DetermineSendDestination(string destination)
+        public TopologySectionInternal DetermineSendDestination(string destination)
         {
             return sendDestinations.GetOrAdd(destination, d =>
             {
@@ -148,7 +148,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             {
                                 namespaces = new[]
                                 {
-                                    new RuntimeNamespaceInfo(configured.Alias, configured.ConnectionString, configured.Purpose, NamespaceMode.Active)
+                                    new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose, NamespaceMode.Active)
                                 };
                             }
                         }
@@ -163,14 +163,14 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     throw new Exception($"Could not determine namespace for destination `{d}`.");
                 }
-                var inputQueues = namespaces.Select(n => new EntityInfo
+                var inputQueues = namespaces.Select(n => new EntityInfoInternal
                 {
                     Path = inputQueueAddress.Name,
                     Type = EntityType.Queue,
                     Namespace = n
                 }).ToArray();
 
-                return new TopologySection
+                return new TopologySectionInternal
                 {
                     Namespaces = namespaces,
                     Entities = inputQueues
@@ -179,7 +179,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         }
 
-        public TopologySection DetermineResourcesToSubscribeTo(Type eventType)
+        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
         {
             if (!subscriptions.ContainsKey(eventType))
             {
@@ -189,15 +189,15 @@ namespace NServiceBus.Transport.AzureServiceBus
             return (subscriptions[eventType]);
         }
 
-        public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
+        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
         {
-            TopologySection result;
+            TopologySectionInternal result;
 
             if (!subscriptions.TryRemove(eventtype, out result))
             {
-                result = new TopologySection
+                result = new TopologySectionInternal
                 {
-                    Entities = new List<SubscriptionInfo>(),
+                    Entities = new List<SubscriptionInfoInternal>(),
                     Namespaces = new List<RuntimeNamespaceInfo>()
                 };
             }
@@ -205,7 +205,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return result;
         }
 
-        TopologySection BuildSubscriptionHierarchy(Type eventType)
+        TopologySectionInternal BuildSubscriptionHierarchy(Type eventType)
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var endpointName = settings.EndpointName();
@@ -221,12 +221,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 BuildTopicBundles(namespaces, addressingLogic);
             }
-            var subs = new List<SubscriptionInfo>();
+            var subs = new List<SubscriptionInfoInternal>();
             foreach (var topic in topics)
             {
                 subs.AddRange(namespaces.Select(ns =>
                 {
-                    var sub = new SubscriptionInfo
+                    var sub = new SubscriptionInfoInternal
                     {
                         Namespace = ns,
                         Type = EntityType.Subscription,
@@ -241,27 +241,27 @@ namespace NServiceBus.Transport.AzureServiceBus
                         BrokerSideFilter = new SqlSubscriptionFilter(eventType),
                         ShouldBeListenedTo = false
                     };
-                    sub.RelationShips.Add(new EntityRelationShipInfo
+                    sub.RelationShips.Add(new EntityRelationShipInfoInternal
                     {
                         Source = sub,
                         Target = topic,
-                        Type = EntityRelationShipType.Subscription
+                        Type = EntityRelationShipTypeInternal.Subscription
                     });
-                    sub.RelationShips.Add(new EntityRelationShipInfo
+                    sub.RelationShips.Add(new EntityRelationShipInfoInternal
                     {
                         Source = sub,
-                        Target = new EntityInfo
+                        Target = new EntityInfoInternal
                         {
                             Namespace = ns,
                             Path = sanitizedInputQueuePath,
                             Type = EntityType.Queue
                         },
-                        Type = EntityRelationShipType.Forward
+                        Type = EntityRelationShipTypeInternal.Forward
                     });
                     return sub;
                 }));
             }
-            return new TopologySection()
+            return new TopologySectionInternal()
             {
                 Entities = subs,
                 Namespaces = namespaces
@@ -275,7 +275,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             for (var i = 1; i <= numberOfEntitiesInBundle; i++)
             {
-                topics.AddRange(namespaces.Select(n => new EntityInfo
+                topics.AddRange(namespaces.Select(n => new EntityInfoInternal
                 {
                     Path = addressingLogic.Apply(bundlePrefix + i, EntityType.Topic).Name,
                     Type = EntityType.Topic,

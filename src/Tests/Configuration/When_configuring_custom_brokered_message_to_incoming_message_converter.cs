@@ -2,7 +2,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
     using AzureServiceBus;
-    using Microsoft.ServiceBus.Messaging;
     using NUnit.Framework;
     using Settings;
     using Transport.AzureServiceBus;
@@ -19,26 +18,5 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
             Assert.AreEqual(typeof(DefaultBrokeredMessagesToIncomingMessagesConverter), settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter));
         }
-
-        [Test]
-        public void Should_be_able_to_set_custom_converter()
-        {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-#pragma warning disable 618
-            extensions.UseBrokeredMessageToIncomingMessageConverter<ConvertBrokeredMessagesToIncomingMessages>();
-#pragma warning restore 618
-            Assert.AreEqual(typeof(ConvertBrokeredMessagesToIncomingMessages), settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter));
-        }
-
-#pragma warning disable 618
-        class ConvertBrokeredMessagesToIncomingMessages : IConvertBrokeredMessagesToIncomingMessages
-        {
-            public IncomingMessageDetails Convert(BrokeredMessage brokeredMessage)
-            {
-                throw new NotImplementedException();
-            }
-        }
-#pragma warning restore 618
     }
 }

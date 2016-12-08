@@ -17,7 +17,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using Transport;
     using Transport.AzureServiceBus;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_dispatching_messages_in_receive_context
@@ -49,8 +48,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             topology = await SetupEndpointOrientedTopology(container, SourceQueueName, settings);
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle) container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
-            var creator = (ICreateAzureServiceBusQueues) container.Resolve(typeof(ICreateAzureServiceBusQueues));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycleInternal) container.Resolve(typeof(IManageNamespaceManagerLifeCycleInternal));
+            var creator = (ICreateAzureServiceBusQueuesInternal) container.Resolve(typeof(ICreateAzureServiceBusQueuesInternal));
             namespaceManager = namespaceLifeCycle.Get("namespaceName");
             await creator.Create(DestinationQueueName, namespaceManager);
         }
@@ -191,7 +190,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             }
         }
 
-        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string endpointName, SettingsHolder settings)
+        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(TransportPartsContainer container, string endpointName, SettingsHolder settings)
         {
             container.Register(typeof(SettingsHolder), () => settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
@@ -200,12 +199,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
-            var endpointOrientedTopology = new EndpointOrientedTopology(container);
+            var endpointOrientedTopology = new EndpointOrientedTopologyInternal(container);
             endpointOrientedTopology.Initialize(settings);
 
             // create the topologySectionManager
-            var topologyCreator = (ICreateTopology) container.Resolve(typeof(TopologyCreator));
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var topologyCreator = (ICreateTopologyInternal) container.Resolve(typeof(TopologyCreator));
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
             container.RegisterSingleton<TopologyOperator>();
             return sectionManager;
@@ -239,8 +238,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         IDispatchMessages dispatcher;
         CriticalError criticalError;
         TransportPartsContainer container;
-        ITopologySectionManager topology;
-        INamespaceManager namespaceManager;
+        ITopologySectionManagerInternal topology;
+        INamespaceManagerInternal namespaceManager;
         TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker;
         const string DestinationQueueName = "myqueue";
         const string SourceQueueName = "sales";

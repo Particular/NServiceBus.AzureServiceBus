@@ -5,14 +5,14 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using System.Reflection;
 
-    class TransportPartsContainer : ITransportPartsContainer
+    class TransportPartsContainer : ITransportPartsContainerInternal
     {
         List<Tuple<Type, Func<object>>> funcs = new List<Tuple<Type, Func<object>>>();
 
         public TransportPartsContainer()
         {
-            Register<IRegisterTransportParts>(() => this);
-            Register<IResolveTransportParts>(() => this);
+            Register<IRegisterTransportPartsInternal>(() => this);
+            Register<IResolveTransportPartsInternal>(() => this);
         }
 
         public void Register<T>()
@@ -121,7 +121,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         Func<object> DetermineFunc(Type type)
         {
-            var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
+            var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .OrderByDescending(c => c.GetParameters().Count())
                 .FirstOrDefault();
 
@@ -132,7 +132,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 var args = constructor.GetParameters().Select(p => Resolve(p.ParameterType)).ToArray();
 
-                return Activator.CreateInstance(type, args, null);
+                return Activator.CreateInstance(type, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, args, null);
             };
 
         }

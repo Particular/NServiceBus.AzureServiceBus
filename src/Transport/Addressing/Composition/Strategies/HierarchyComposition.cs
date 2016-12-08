@@ -7,8 +7,8 @@ namespace NServiceBus
     public class HierarchyComposition : ICompositionStrategy
     {
         ReadOnlySettings settings;
-        
-        public HierarchyComposition(ReadOnlySettings settings)
+
+        internal HierarchyComposition(ReadOnlySettings settings)
         {
             this.settings = settings;
         }

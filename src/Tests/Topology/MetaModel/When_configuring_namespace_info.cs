@@ -4,7 +4,6 @@
     using Transport.AzureServiceBus;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_configuring_namespace_info

@@ -2,10 +2,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     using System.Collections.Generic;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class IncomingMessageDetails
+    class IncomingMessageDetailsInternal
     {
-        public IncomingMessageDetails(string messageId, Dictionary<string, string> headers, byte[] body)
+        public IncomingMessageDetailsInternal(string messageId, Dictionary<string, string> headers, byte[] body)
         {
             MessageId = messageId;
             Headers = headers;

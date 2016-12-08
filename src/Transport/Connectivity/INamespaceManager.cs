@@ -6,8 +6,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface INamespaceManager
+    interface INamespaceManagerInternal
     {
         NamespaceManagerSettings Settings { get; }
         Uri Address { get; }
@@ -32,11 +31,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription);
         Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription);
-    }
 
-    // TODO: Move into internalized INamespaceManager in v8
-    interface INamespaceManagerAbleToDeleteSubscriptions
-    {
         Task DeleteSubscription(SubscriptionDescription subscriptionDescription);
     }
 }

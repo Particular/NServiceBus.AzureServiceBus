@@ -8,11 +8,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     static class ObsoleteMessages
     {
-        public const string WillBeInternalized = "Internal contract that shouldn't be exposed.";
+        public const string InternalizedContract = "Internal contract.";
     }
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface ITopology
+    interface ITopologyInternal
     {
         void Initialize(SettingsHolder settings);
         EndpointInstance BindToLocalEndpoint(EndpointInstance instance);
@@ -25,5 +24,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         bool HasNativePubSubSupport { get; }
         bool HasSupportForCentralizedPubSub { get;}
+
+        Task Stop();
     }
 }

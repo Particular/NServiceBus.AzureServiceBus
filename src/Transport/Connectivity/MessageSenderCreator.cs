@@ -4,19 +4,19 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus;
     using Settings;
 
-    class MessageSenderCreator : ICreateMessageSenders
+    class MessageSenderCreator : ICreateMessageSendersInternal
     {
-        IManageMessagingFactoryLifeCycle factories;
+        IManageMessagingFactoryLifeCycleInternal factories;
         ReadOnlySettings settings;
 
-        public MessageSenderCreator(IManageMessagingFactoryLifeCycle factories, ReadOnlySettings settings)
+        public MessageSenderCreator(IManageMessagingFactoryLifeCycleInternal factories, ReadOnlySettings settings)
         {
             this.factories = factories;
             this.settings = settings;
         }
 
 
-        public async Task<IMessageSender> Create(string entitypath, string viaEntityPath, string namespaceName)
+        public async Task<IMessageSenderInternal> Create(string entitypath, string viaEntityPath, string namespaceName)
         {
             var factory = factories.Get(namespaceName);
 

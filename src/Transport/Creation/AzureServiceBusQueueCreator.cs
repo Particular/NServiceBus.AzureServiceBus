@@ -9,7 +9,7 @@
     using Logging;
     using Settings;
 
-    class AzureServiceBusQueueCreator : ICreateAzureServiceBusQueues
+    class AzureServiceBusQueueCreator : ICreateAzureServiceBusQueuesInternal
     {
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
         ReadOnlySettings settings;
@@ -44,7 +44,7 @@
             }
         }
 
-        public async Task<QueueDescription> Create(string queuePath, INamespaceManager namespaceManager)
+        public async Task<QueueDescription> Create(string queuePath, INamespaceManagerInternal namespaceManager)
         {
             var description = descriptionFactory(queuePath, settings);
 
@@ -111,7 +111,7 @@
         }
 
 
-        async Task<bool> ExistsAsync(INamespaceManager namespaceClient, string queuePath, bool removeCacheEntry = false)
+        async Task<bool> ExistsAsync(INamespaceManagerInternal namespaceClient, string queuePath, bool removeCacheEntry = false)
         {
             var key = queuePath + namespaceClient.Address;
             logger.InfoFormat("Checking existence cache for '{0}'", queuePath);

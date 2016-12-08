@@ -12,7 +12,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using Transport;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_receiving_messages
@@ -72,7 +71,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await pump.Stop();
         }
 
-        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
+        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
@@ -81,13 +80,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
-            var topology = new EndpointOrientedTopology(container);
+            var topology = new EndpointOrientedTopologyInternal(container);
 
             topology.Initialize(settings);
 
             // create the topologySectionManager
-            var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var topologyCreator = (ICreateTopologyInternal)container.Resolve(typeof(TopologyCreator));
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
             container.RegisterSingleton<TopologyOperator>();
             return sectionManager;

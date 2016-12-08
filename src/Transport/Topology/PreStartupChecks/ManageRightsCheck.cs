@@ -8,10 +8,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class ManageRightsCheck
     {
-        IManageNamespaceManagerLifeCycle manageNamespaceManagerLifeCycle;
+        IManageNamespaceManagerLifeCycleInternal manageNamespaceManagerLifeCycle;
         ReadOnlySettings settings;
 
-        public ManageRightsCheck(IManageNamespaceManagerLifeCycle manageNamespaceManagerLifeCycle, ReadOnlySettings settings)
+        public ManageRightsCheck(IManageNamespaceManagerLifeCycleInternal manageNamespaceManagerLifeCycle, ReadOnlySettings settings)
         {
             this.manageNamespaceManagerLifeCycle = manageNamespaceManagerLifeCycle;
             this.settings = settings;

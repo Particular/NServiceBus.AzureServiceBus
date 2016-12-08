@@ -11,16 +11,16 @@ namespace NServiceBus
     using Transport;
     using Transport.AzureServiceBus;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class ForwardingTopology : ITopology, IStoppableTopology
+
+    class ForwardingTopologyInternal : ITopologyInternal
     {
-        ILog logger = LogManager.GetLogger(typeof(ForwardingTopology));
-        ITopologySectionManager topologySectionManager;
-        ITransportPartsContainer container;
+        ILog logger = LogManager.GetLogger("ForwardingTopology");
+        ITopologySectionManagerInternal topologySectionManager;
+        ITransportPartsContainerInternal container;
 
-        public ForwardingTopology() : this(new TransportPartsContainer()) { }
+        public ForwardingTopologyInternal() : this(new TransportPartsContainer()) { }
 
-        internal ForwardingTopology(ITransportPartsContainer container)
+        internal ForwardingTopologyInternal(ITransportPartsContainerInternal container)
         {
             this.container = container;
         }
@@ -51,9 +51,9 @@ namespace NServiceBus
         {
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
-            container.Register<ITopologySectionManager>(() => topologySectionManager);
+            container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
             container.RegisterSingleton<NamespaceManagerCreator>();
-            container.RegisterSingleton<NamespaceManagerLifeCycleManager>();
+            container.RegisterSingleton<NamespaceManagerLifeCycleManagerInternal>();
             container.RegisterSingleton<MessagingFactoryCreator>();
             container.RegisterSingleton<MessagingFactoryLifeCycleManager>();
             container.RegisterSingleton<MessageReceiverCreator>();
@@ -130,7 +130,7 @@ namespace NServiceBus
         {
             var settings = container.Resolve<ReadOnlySettings>();
 
-            var manageRightsCheck = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycle>(), settings);
+            var manageRightsCheck = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycleInternal>(), settings);
 
             var results = new List<StartupCheckResult>
             {
@@ -153,7 +153,7 @@ namespace NServiceBus
         public Task Stop()
         {
             logger.Info("Closing messaging factories");
-            var factories = container.Resolve<IManageMessagingFactoryLifeCycle>();
+            var factories = container.Resolve<IManageMessagingFactoryLifeCycleInternal>();
             return factories.CloseAll();
         }
     }

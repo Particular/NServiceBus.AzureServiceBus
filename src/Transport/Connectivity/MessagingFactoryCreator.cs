@@ -6,9 +6,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus.Messaging.Amqp;
     using Settings;
 
-    class MessagingFactoryCreator : ICreateMessagingFactories
+    class MessagingFactoryCreator : ICreateMessagingFactoriesInternal
     {
-        public MessagingFactoryCreator(IManageNamespaceManagerLifeCycle namespaceManagers, ReadOnlySettings settings)
+        public MessagingFactoryCreator(IManageNamespaceManagerLifeCycleInternal namespaceManagers, ReadOnlySettings settings)
         {
             this.namespaceManagers = namespaceManagers;
             transportType = settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType);
@@ -53,7 +53,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public IMessagingFactory Create(string namespaceName)
+        public IMessagingFactoryInternal Create(string namespaceName)
         {
             var namespaceManager = namespaceManagers.Get(namespaceName);
             var factorySettings = settingsFactory(namespaceName);
@@ -74,7 +74,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return new MessagingFactoryAdapter(inner);
         }
 
-        IManageNamespaceManagerLifeCycle namespaceManagers;
+        IManageNamespaceManagerLifeCycleInternal namespaceManagers;
         Func<string, MessagingFactorySettings> settingsFactory;
         RetryPolicy retryPolicy;
         TransportType transportType;

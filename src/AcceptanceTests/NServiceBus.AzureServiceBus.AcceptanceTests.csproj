@@ -36,6 +36,10 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>WorkaroundKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.ServiceBus, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAzure.ServiceBus.3.4.2\lib\net45-full\Microsoft.ServiceBus.dll</HintPath>
@@ -73,9 +77,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Transport\Utils\TaskEx.cs">
-      <Link>TaskEx.cs</Link>
-    </Compile>
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\ApiExtension\When_extending_sendoptions.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\ApiExtension\When_extending_the_publish_api.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Audit\When_auditing.cs" />
@@ -349,6 +350,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="WorkaroundKey.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj">

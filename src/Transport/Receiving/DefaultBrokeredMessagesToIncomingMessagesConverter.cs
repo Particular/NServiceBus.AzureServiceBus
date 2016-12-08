@@ -8,7 +8,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Logging;
     using Settings;
 
-    class DefaultBrokeredMessagesToIncomingMessagesConverter : IConvertBrokeredMessagesToIncomingMessages
+    class DefaultBrokeredMessagesToIncomingMessagesConverter : IConvertBrokeredMessagesToIncomingMessagesInternal
     {
         ILog logger = LogManager.GetLogger<DefaultBrokeredMessagesToIncomingMessagesConverter>();
         ReadOnlySettings settings;
@@ -21,7 +21,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.mapper = mapper;
         }
 
-        public IncomingMessageDetails Convert(BrokeredMessage brokeredMessage)
+        public IncomingMessageDetailsInternal Convert(BrokeredMessage brokeredMessage)
         {
             if (!brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding))
             {
@@ -77,7 +77,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 headers[Headers.TimeToBeReceived] = brokeredMessage.TimeToLive.ToString("c", CultureInfo.InvariantCulture);
             }
 
-            return new IncomingMessageDetails(brokeredMessage.MessageId, headers, body);
+            return new IncomingMessageDetailsInternal(brokeredMessage.MessageId, headers, body);
         }
 
         string GetDefaultTransportEncoding()

@@ -6,7 +6,7 @@
     using Logging;
     using Settings;
 
-    class AzureServiceBusSubscriptionCreatorV6 : ICreateAzureServiceBusSubscriptions, ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
+    class AzureServiceBusSubscriptionCreatorV6 : ICreateAzureServiceBusSubscriptionsInternal
     {
         AzureServiceBusSubscriptionCreator creator;
         ILog logger = LogManager.GetLogger<AzureServiceBusSubscriptionCreatorV6>();
@@ -16,7 +16,7 @@
             creator = new AzureServiceBusSubscriptionCreator(settings);
         }
 
-        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo = null)
+        public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo = null)
         {
             var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardTo).ConfigureAwait(false);
 
@@ -29,16 +29,10 @@
             return subscriptionDescription;
         }
 
-        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo)
+        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
-            var namespaceManagerAbleToDeleteSubscriptions = namespaceManager as INamespaceManagerAbleToDeleteSubscriptions;
-            if (namespaceManagerAbleToDeleteSubscriptions == null)
-            {
-                return;
-            }
-
             var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName);
-            
+
             // check the if the subscription with event name only is the one we should delete, i.e. event with another namespace owns it
             if (!await SubscriptionIsReusedAcrossDifferentNamespaces(subscriptionDescription, sqlFilter, namespaceManager).ConfigureAwait(false))
             {
@@ -47,10 +41,10 @@
             }
 
             // delete subscription based on event name only
-            await namespaceManagerAbleToDeleteSubscriptions.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
+            await namespaceManager.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
         }
 
-        async Task<bool> SubscriptionIsReusedAcrossDifferentNamespaces(SubscriptionDescription subscriptionDescription, string sqlFilter, INamespaceManager namespaceManager)
+        async Task<bool> SubscriptionIsReusedAcrossDifferentNamespaces(SubscriptionDescription subscriptionDescription, string sqlFilter, INamespaceManagerInternal namespaceManager)
         {
             var rules = await namespaceManager.GetRules(subscriptionDescription).ConfigureAwait(false);
             var filter = rules.First().Filter as SqlFilter;

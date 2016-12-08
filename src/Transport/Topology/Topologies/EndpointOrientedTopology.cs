@@ -9,16 +9,16 @@ namespace NServiceBus
     using Transport;
     using Transport.AzureServiceBus;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class EndpointOrientedTopology : ITopology, IStoppableTopology
+
+    class EndpointOrientedTopologyInternal : ITopologyInternal
     {
-        ILog logger = LogManager.GetLogger(typeof(EndpointOrientedTopology));
-        ITopologySectionManager topologySectionManager;
-        ITransportPartsContainer container;
+        ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
+        ITopologySectionManagerInternal topologySectionManager;
+        ITransportPartsContainerInternal container;
 
-        public EndpointOrientedTopology() : this(new TransportPartsContainer()){ }
+        public EndpointOrientedTopologyInternal() : this(new TransportPartsContainer()){ }
 
-        internal EndpointOrientedTopology(ITransportPartsContainer container)
+        internal EndpointOrientedTopologyInternal(ITransportPartsContainerInternal container)
         {
             this.container = container;
         }
@@ -47,9 +47,9 @@ namespace NServiceBus
         {
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
-            container.Register<ITopologySectionManager>(() => topologySectionManager);
+            container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
             container.RegisterSingleton<NamespaceManagerCreator>();
-            container.RegisterSingleton<NamespaceManagerLifeCycleManager>();
+            container.RegisterSingleton<NamespaceManagerLifeCycleManagerInternal>();
             container.RegisterSingleton<MessagingFactoryCreator>();
             container.RegisterSingleton<MessagingFactoryLifeCycleManager>();
             container.RegisterSingleton<MessageReceiverCreator>();
@@ -128,7 +128,7 @@ namespace NServiceBus
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
-            var check = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycle>(), container.Resolve<ReadOnlySettings>());
+            var check = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycleInternal>(), container.Resolve<ReadOnlySettings>());
 
             return check.Run();
         }
@@ -141,7 +141,7 @@ namespace NServiceBus
         public Task Stop()
         {
             logger.Info("Closing messaging factories");
-            var factories = container.Resolve<IManageMessagingFactoryLifeCycle>();
+            var factories = container.Resolve<IManageMessagingFactoryLifeCycleInternal>();
             return factories.CloseAll();
         }
     }

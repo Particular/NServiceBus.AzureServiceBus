@@ -11,7 +11,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_creating_topics
@@ -20,7 +19,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         public async Task Should_use_topic_description_defaults_if_user_does_not_provide_topic_description_values()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             const string topicPath = "mytopic2";
             await namespaceManager.DeleteTopic(topicPath);
 
@@ -46,7 +45,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             const string topicPath = "mytopic3";
             await namespaceManager.DeleteTopic(topicPath);
@@ -69,7 +68,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_AutoDeleteOnIdle_on_the_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -91,7 +90,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_DefaultMessageTimeToLive_on_the_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -113,7 +112,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_DuplicateDetectionHistoryTimeWindow_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -135,7 +134,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_EnableBatchedOperations_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -156,7 +155,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_EnableFilteringMessagesBeforePublishing_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -177,7 +176,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_EnablePartitioning_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             const string topicPath = "mytopic9";
 
             //clean up before test starts
@@ -200,7 +199,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_MaxSizeInMegabytes_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -221,7 +220,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_RequiresDuplicateDetection_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -242,7 +241,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_SupportOrdering_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -263,7 +262,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_correct_defaults()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             var creator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
             const string topicPath = "mytopic13";
             await namespaceManager.DeleteTopic(topicPath);
@@ -290,7 +289,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             const string topicPath = "testtopic";
 
-            var namespaceManager = A.Fake<INamespaceManager>();
+            var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.TopicExists(topicPath)).Returns(Task.FromResult(false));
 
             var topicCreationThrewException = false;
@@ -309,7 +308,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public void Should_throw_TimeoutException_if_creation_of_entity_timed_out_and_topic_was_not_created()
         {
-            var namespaceManager = A.Fake<INamespaceManager>();
+            var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).Returns(Task.FromResult(false));
             A.CallTo(() => namespaceManager.CreateTopic(A<TopicDescription>.Ignored)).Throws<TimeoutException>();
 
@@ -322,7 +321,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public Task Should_not_throw_TimeoutException_if_creation_of_entity_timed_out_and_topic_was_created()
         {
-            var namespaceManager = A.Fake<INamespaceManager>();
+            var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).ReturnsNextFromSequence(Task.FromResult(false), Task.FromResult(true));
             A.CallTo(() => namespaceManager.CreateTopic(A<TopicDescription>.Ignored)).Throws<TimeoutException>();
 
@@ -335,7 +334,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public void Should_throw_for_MessagingException_that_is_not_transient()
         {
-            var namespaceManager = A.Fake<INamespaceManager>();
+            var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).Throws(new MessagingException("boom", false, new Exception("wrapped")));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -347,7 +346,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_be_able_to_update_an_existing_topic_with_new_property_values()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic("existingtopic1");
 
             await namespaceManager.CreateTopic(new TopicDescription("existingtopic1"));
@@ -370,7 +369,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_be_able_to_update_an_existing_topic_with_new_property_values_without_failing_on_readonly_properties()
         {
-            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic("existingtopic2");
 
             await namespaceManager.CreateTopic(new TopicDescription("existingtopic2")
@@ -397,8 +396,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         public async Task Should_create_topic_on_multiple_namespaces()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var namespaceManager1 = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            var namespaceManager2 = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
+            var namespaceManager1 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager2 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
             const string topicPath = "topic-caching-key";
             await namespaceManager1.DeleteTopic(topicPath);
             await namespaceManager2.DeleteTopic(topicPath);

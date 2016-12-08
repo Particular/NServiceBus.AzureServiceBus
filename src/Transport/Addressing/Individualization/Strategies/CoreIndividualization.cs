@@ -5,8 +5,7 @@ namespace NServiceBus
     
     public class CoreIndividualization : IIndividualizationStrategy
     {
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public CoreIndividualization()
+        internal CoreIndividualization()
         {
         }
 

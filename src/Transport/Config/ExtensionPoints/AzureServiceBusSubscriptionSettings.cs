@@ -10,8 +10,7 @@ namespace NServiceBus
     {
         SettingsHolder settings;
 
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public AzureServiceBusSubscriptionSettings(SettingsHolder settings) : base(settings)
+        internal AzureServiceBusSubscriptionSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }

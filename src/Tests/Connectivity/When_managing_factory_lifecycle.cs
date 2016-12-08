@@ -76,12 +76,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             Assert.AreNotEqual(first, second);
         }
 
-#pragma warning disable 618
-        class InterceptedFactoryCreator : ICreateMessagingFactories
+        class InterceptedFactoryCreator : ICreateMessagingFactoriesInternal
         {
             public int InvocationCount = 0;
 
-            public IMessagingFactory Create(string namespaceName)
+            public IMessagingFactoryInternal Create(string namespaceName)
             {
                 InvocationCount++;
 
@@ -89,7 +88,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             }
         }
 
-        class InterceptedFactory : IMessagingFactory
+        class InterceptedFactory : IMessagingFactoryInternal
         {
             bool isClosed;
 
@@ -106,17 +105,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 set { throw new System.NotImplementedException(); }
             }
 
-            public Task<IMessageReceiver> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
+            public Task<IMessageReceiverInternal> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
             {
                 throw new System.NotImplementedException();
             }
 
-            public Task<IMessageSender> CreateMessageSender(string entitypath)
+            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath)
             {
                 throw new System.NotImplementedException();
             }
 
-            public Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath)
+            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath, string viaEntityPath)
             {
                 throw new System.NotImplementedException();
             }
@@ -126,6 +125,5 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 throw new System.NotImplementedException();
             }
         }
-#pragma warning restore 618
     }
 }

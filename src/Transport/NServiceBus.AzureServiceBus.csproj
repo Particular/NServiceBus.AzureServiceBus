@@ -105,7 +105,6 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusNamespaceRoutingSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusSanitizationExtensionPoint.cs" />
     <Compile Include="Config\TransactionModeSettingsExtensions.cs" />
-    <Compile Include="Config\ExtensionPoints\AzureServiceBusTopologySettings.cs" />
     <Compile Include="Config\ExtensionPoints\SizeInMegabytes.cs" />
     <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
     <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
@@ -127,7 +126,6 @@
     <Compile Include="Sending\TransactionContainsTooManyMessages.cs" />
     <Compile Include="Sending\MessageTooLargeException.cs" />
     <Compile Include="Sending\Time.cs" />
-    <Compile Include="Topology\IStoppableTopology.cs" />
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Topology\MetaModel\SatelliteTransportAddressCollection.cs" />
     <Compile Include="Utils\AsyncAutoResetEvent.cs" />

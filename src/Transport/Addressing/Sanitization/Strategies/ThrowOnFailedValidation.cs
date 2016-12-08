@@ -20,7 +20,7 @@ namespace NServiceBus
         Func<string, ValidationResult> defaultSubscriptionNameValidation;
         Func<string, ValidationResult> defaultRuleNameValidation;
 
-        public ThrowOnFailedValidation(ReadOnlySettings settings)
+        internal ThrowOnFailedValidation(ReadOnlySettings settings)
         {
             this.settings = settings;
 

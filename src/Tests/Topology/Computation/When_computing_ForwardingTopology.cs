@@ -7,7 +7,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
     using NUnit.Framework;
     using Transport;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_computing_ForwardingTopology
@@ -27,11 +26,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             // ReSharper disable once RedundantArgumentDefaultValue
@@ -51,11 +50,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == Connectionstring));
@@ -74,11 +73,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings()), "Was expected to fail: " + reasonToFail);
         }
 
@@ -94,18 +93,18 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring && ei.Path.StartsWith("bundle-"));
 
             Assert.That(result.Count(), Is.EqualTo(2));
-            Assert.That(result, Has.Exactly(1).Matches<EntityInfo>(x => x.Path == "bundle-1"));
-            Assert.That(result, Has.Exactly(1).Matches<EntityInfo>(x => x.Path == "bundle-2"));
+            Assert.That(result, Has.Exactly(1).Matches<EntityInfoInternal>(x => x.Path == "bundle-1"));
+            Assert.That(result, Has.Exactly(1).Matches<EntityInfoInternal>(x => x.Path == "bundle-2"));
         }
 
         [Test]
@@ -120,11 +119,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
@@ -145,11 +144,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
@@ -169,10 +168,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));

@@ -37,8 +37,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             Assert.IsTrue(destination.Entities.Single().Path.StartsWith("bundle"));
         }
 
-#pragma warning disable 618
-        ITopologySectionManager SetupForwardingTopology(TransportPartsContainer container, string enpointname)
+        ITopologySectionManagerInternal SetupForwardingTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -46,11 +45,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
             extensions.NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            return container.Resolve<ITopologySectionManager>();
+            return container.Resolve<ITopologySectionManagerInternal>();
         }
 
         class SomeMessageType
@@ -70,8 +69,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             Assert.AreEqual(2, destination.Entities.Count(), "active and passive namespace should be returned");
         }
 
-#pragma warning disable 618
-        ITopologySectionManager SetupForwardingTopologyWithFailoverNamespace(TransportPartsContainer container, string enpointname)
+        ITopologySectionManagerInternal SetupForwardingTopologyWithFailoverNamespace(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             container.Register(typeof(SettingsHolder), () => settings);
@@ -81,12 +79,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             extensions.NamespacePartitioning().AddNamespace("namespace2", AzureServiceBusConnectionString.Fallback);
             extensions.NamespacePartitioning().UseStrategy<FailOverNamespacePartitioning>();
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            return container.Resolve<ITopologySectionManager>();
+            return container.Resolve<ITopologySectionManagerInternal>();
         }
-#pragma warning restore 618
     }
 }

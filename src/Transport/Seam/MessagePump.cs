@@ -11,11 +11,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessagePump : IPushMessages, IDisposable
     {
-        public MessagePump(ITopologySectionManager topologySectionManager, ITransportPartsContainer container, ReadOnlySettings settings) : this(topologySectionManager, container, settings, TimeSpan.FromSeconds(30))
+        public MessagePump(ITopologySectionManagerInternal topologySectionManager, ITransportPartsContainerInternal container, ReadOnlySettings settings) : this(topologySectionManager, container, settings, TimeSpan.FromSeconds(30))
         {
         }
 
-        internal MessagePump(ITopologySectionManager topologySectionManager, ITransportPartsContainer container, ReadOnlySettings settings, TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker)
+        internal MessagePump(ITopologySectionManagerInternal topologySectionManager, ITransportPartsContainerInternal container, ReadOnlySettings settings, TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker)
         {
             this.topologySectionManager = topologySectionManager;
             this.container = container;
@@ -93,19 +93,19 @@ namespace NServiceBus.Transport.AzureServiceBus
         /// For the main input queue, cache and re-use the same topology operator.
         /// For satellite input queues, create a new topology operator.
         /// </summary>
-        IOperateTopology DetermineTopologyOperator(string pushSettingsInputQueue)
+        IOperateTopologyInternal DetermineTopologyOperator(string pushSettingsInputQueue)
         {
             if (satelliteTransportAddresses.Contains(pushSettingsInputQueue))
             {
                 return new TopologyOperator(container);
             }
 
-            return container.Resolve<IOperateTopology>();
+            return container.Resolve<IOperateTopologyInternal>();
         }
 
-        readonly ITransportPartsContainer container;
-        ITopologySectionManager topologySectionManager;
-        IOperateTopology topologyOperator;
+        readonly ITransportPartsContainerInternal container;
+        ITopologySectionManagerInternal topologySectionManager;
+        IOperateTopologyInternal topologyOperator;
         Func<MessageContext, Task> messagePump;
         RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));

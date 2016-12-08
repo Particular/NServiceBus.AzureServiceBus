@@ -9,7 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         static ILog logger = LogManager.GetLogger(typeof(TaskWithRetryExtensions));
 
-        public static async Task RetryOnThrottleAsync(this IMessageSender sender, Func<IMessageSender, Task> action, Func<IMessageSender, Task> retryAction, TimeSpan delay, int maxRetryAttempts, int retryAttempts = 0)
+        public static async Task RetryOnThrottleAsync(this IMessageSenderInternal sender, Func<IMessageSenderInternal, Task> action, Func<IMessageSenderInternal, Task> retryAction, TimeSpan delay, int maxRetryAttempts, int retryAttempts = 0)
         {
             try
             {

@@ -13,7 +13,7 @@
         }
 
         public string Alias => info.Alias;
-        public string ConnectionString => info.ConnectionString;
+        public string ConnectionString => info.Connection;
         public NamespaceMode Mode { get; }
 
         public bool Equals(RuntimeNamespaceInfo other)

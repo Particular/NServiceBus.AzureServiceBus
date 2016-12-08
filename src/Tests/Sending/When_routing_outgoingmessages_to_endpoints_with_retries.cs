@@ -24,7 +24,7 @@
 //            var messageSenderSettings = new AzureServiceBusMessageSenderSettings(settings).BackOffTimeOnThrottle(TimeSpan.Zero);
 //            messageSenderSettings.RetryAttemptsOnThrottle(1);
 //
-//            var topology = A.Fake<ITopologySectionManager>();
+//            var topology = A.Fake<ITopologySectionManagerInternal>();
 //            var clientLifecycleManager = A.Fake<IManageMessageSenderLifeCycle>();
 //            var messageSender = A.Fake<IMessageSender>();
 //

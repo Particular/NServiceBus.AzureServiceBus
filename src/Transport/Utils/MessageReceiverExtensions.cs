@@ -11,7 +11,7 @@
     {
         static ILog Log = LogManager.GetLogger(typeof(MessageReceiverExtensions));
 
-        public static async Task<bool> SafeCompleteBatchAsync(this IMessageReceiver messageReceiver, IEnumerable<Guid> lockTokens)
+        public static async Task<bool> SafeCompleteBatchAsync(this IMessageReceiverInternal messageReceiver, IEnumerable<Guid> lockTokens)
         {
             try
             {

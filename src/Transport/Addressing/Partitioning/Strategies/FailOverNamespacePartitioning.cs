@@ -10,8 +10,7 @@
     {
         NamespaceConfigurations namespaces;
 
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public FailOverNamespacePartitioning(ReadOnlySettings settings)
+        internal FailOverNamespacePartitioning(ReadOnlySettings settings)
         {
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
             {
@@ -37,8 +36,8 @@
             var primary = namespaces.First();
             var secondary = namespaces.Last();
 
-            yield return new RuntimeNamespaceInfo(primary.Alias, primary.ConnectionString, primary.Purpose, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
-            yield return new RuntimeNamespaceInfo(secondary.Alias, secondary.ConnectionString, secondary.Purpose, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
+            yield return new RuntimeNamespaceInfo(primary.Alias, primary.Connection, primary.Purpose, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
+            yield return new RuntimeNamespaceInfo(secondary.Alias, secondary.Connection, secondary.Purpose, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
         }
     }
 }

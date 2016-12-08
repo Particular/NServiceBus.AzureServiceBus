@@ -4,7 +4,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus;
     using Settings;
 
-    class NamespaceManagerCreator : ICreateNamespaceManagers
+    class NamespaceManagerCreator : ICreateNamespaceManagersInternal
     {
         ReadOnlySettings settings;
         Func<string, NamespaceManagerSettings> settingsFactory;
@@ -24,11 +24,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public INamespaceManager Create(string @namespace)
+        public INamespaceManagerInternal Create(string @namespace)
         {
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             var connectionString = @namespace;
-            if (!ConnectionString.IsConnectionString(connectionString))
+            if (!ConnectionStringInternal.IsConnectionString(connectionString))
             {
                 connectionString = namespacesDefinition.GetConnectionString(connectionString);
             }
@@ -60,7 +60,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     manager.Settings.RetryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.NamespaceManagers.RetryPolicy);
                 }
             }
-            return new NamespaceManagerAdapter(manager);
+            return new NamespaceManagerAdapterInternal(manager);
         }
     }
 }

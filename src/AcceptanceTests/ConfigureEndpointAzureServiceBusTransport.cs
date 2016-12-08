@@ -12,6 +12,7 @@ using NServiceBus.AcceptanceTests.Sagas;
 using NServiceBus.AcceptanceTests.Versioning;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
+using NServiceBus.Configuration.AdvanceExtensibility;
 
 
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
@@ -21,6 +22,8 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
         var connectionString = settings.Get<string>("Transport.ConnectionString");
         var topology = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology", EnvironmentVariableTarget.User);
         topology = topology ?? Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
+
+        config.GetSettings().Set("AzureServiceBus.AcceptanceTests.UsedTopology", topology);
 
         var transportConfig = config.UseTransport<AzureServiceBusTransport>();
 

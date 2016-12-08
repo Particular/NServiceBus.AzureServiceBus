@@ -5,18 +5,18 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus.Messaging;
     using Settings;
 
-    class MessageReceiverCreator : ICreateMessageReceivers
+    class MessageReceiverCreator : ICreateMessageReceiversInternal
     {
-        IManageMessagingFactoryLifeCycle factories;
+        IManageMessagingFactoryLifeCycleInternal factories;
         ReadOnlySettings settings;
 
-        public MessageReceiverCreator(IManageMessagingFactoryLifeCycle factories, ReadOnlySettings settings)
+        public MessageReceiverCreator(IManageMessagingFactoryLifeCycleInternal factories, ReadOnlySettings settings)
         {
             this.factories = factories;
             this.settings = settings;
         }
 
-        public async Task<IMessageReceiver> Create(string entityPath, string namespaceAlias)
+        public async Task<IMessageReceiverInternal> Create(string entityPath, string namespaceAlias)
         {
             var factory = factories.Get(namespaceAlias);
             var receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);

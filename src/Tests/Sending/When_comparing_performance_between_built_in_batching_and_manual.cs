@@ -12,7 +12,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_comparing_performance_between_built_in_batching_and_manual
@@ -34,15 +33,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var entityLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
             // create the queue
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
@@ -93,15 +92,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var entityLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
             // create the queue
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test

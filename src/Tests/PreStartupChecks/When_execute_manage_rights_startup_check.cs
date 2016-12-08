@@ -7,7 +7,6 @@
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_execute_manage_rights_startup_check
@@ -24,9 +23,9 @@
             };
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
 
-            var namespaceManager = A.Fake<INamespaceManager>();
+            var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.CanManageEntities()).Returns(Task.FromResult(true));
-            var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycle>();
+            var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycleInternal>();
             A.CallTo(() => manageNamespaceLifeCycle.Get(A<string>.Ignored)).Returns(namespaceManager);
 
             var check = new ManageRightsCheck(manageNamespaceLifeCycle, settings);
@@ -47,11 +46,11 @@
             };
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
 
-            var trueNamespaceManager = A.Fake<INamespaceManager>();
+            var trueNamespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => trueNamespaceManager.CanManageEntities()).Returns(Task.FromResult(true));
-            var falseNamespaceManager = A.Fake<INamespaceManager>();
+            var falseNamespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => falseNamespaceManager.CanManageEntities()).Returns(Task.FromResult(false));
-            var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycle>();
+            var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycleInternal>();
             A.CallTo(() => manageNamespaceLifeCycle.Get("name1")).Returns(trueNamespaceManager);
             A.CallTo(() => manageNamespaceLifeCycle.Get("name2")).Returns(falseNamespaceManager);
 
@@ -74,11 +73,11 @@
             };
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
 
-            var trueNamespaceManager = A.Fake<INamespaceManager>();
+            var trueNamespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => trueNamespaceManager.CanManageEntities()).Returns(Task.FromResult(true));
-            var falseNamespaceManager = A.Fake<INamespaceManager>();
+            var falseNamespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => falseNamespaceManager.CanManageEntities()).Returns(Task.FromResult(false));
-            var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycle>();
+            var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycleInternal>();
             A.CallTo(() => manageNamespaceLifeCycle.Get("name1")).Returns(trueNamespaceManager);
             A.CallTo(() => manageNamespaceLifeCycle.Get("name2")).Returns(falseNamespaceManager);
             A.CallTo(() => manageNamespaceLifeCycle.Get("name3")).Returns(falseNamespaceManager);

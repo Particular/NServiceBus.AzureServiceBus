@@ -10,11 +10,11 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Settings;
     using Transport;
 
-    class DefaultOutgoingBatchRouter : IRouteOutgoingBatches
+    class DefaultOutgoingBatchRouter : IRouteOutgoingBatchesInternal
     {
         ILog logger = LogManager.GetLogger<DefaultOutgoingBatchRouter>();
-        IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter;
-        IManageMessageSenderLifeCycle senders;
+        IConvertOutgoingMessagesToBrokeredMessagesInternal outgoingMessageConverter;
+        IManageMessageSenderLifeCycleInternal senders;
         ReadOnlySettings settings;
         IHandleOversizedBrokeredMessages oversizedMessageHandler;
 
@@ -22,7 +22,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         TimeSpan backOffTimeOnThrottle;
         int maximuMessageSizeInKilobytes;
 
-        public DefaultOutgoingBatchRouter(IConvertOutgoingMessagesToBrokeredMessages outgoingMessageConverter, IManageMessageSenderLifeCycle senders, ReadOnlySettings settings, IHandleOversizedBrokeredMessages oversizedMessageHandler)
+        public DefaultOutgoingBatchRouter(IConvertOutgoingMessagesToBrokeredMessagesInternal outgoingMessageConverter, IManageMessageSenderLifeCycleInternal senders, ReadOnlySettings settings, IHandleOversizedBrokeredMessages oversizedMessageHandler)
         {
             this.outgoingMessageConverter = outgoingMessageConverter;
             this.senders = senders;
@@ -34,17 +34,17 @@ namespace NServiceBus.Transport.AzureServiceBus
             maximuMessageSizeInKilobytes = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes);
         }
 
-        public Task RouteBatches(IEnumerable<Batch> outgoingBatches, ReceiveContext context, DispatchConsistency consistency)
+        public Task RouteBatches(IEnumerable<BatchInternal> outgoingBatches, ReceiveContextInternal context, DispatchConsistency consistency)
         {
             var pendingBatches = new List<Task>();
             foreach (var batch in outgoingBatches)
             {
-                pendingBatches.Add(RouteBatch(batch, context as BrokeredMessageReceiveContext, consistency));
+                pendingBatches.Add(RouteBatch(batch, context as BrokeredMessageReceiveContextInternal, consistency));
             }
             return Task.WhenAll(pendingBatches);
         }
 
-        internal Task RouteBatch(Batch batch, BrokeredMessageReceiveContext context, DispatchConsistency consistency)
+        internal Task RouteBatch(BatchInternal batch, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
         {
             var outgoingBatches = batch.Operations;
 
@@ -83,17 +83,17 @@ namespace NServiceBus.Transport.AzureServiceBus
             return Task.WhenAll(pendingSends);
         }
 
-        RoutingOptions GetRoutingOptions(ReceiveContext receiveContext, DispatchConsistency consistency)
+        RoutingOptionsInternal GetRoutingOptions(ReceiveContextInternal receiveContext, DispatchConsistency consistency)
         {
             var sendVia = false;
-            var context = receiveContext as BrokeredMessageReceiveContext;
+            var context = receiveContext as BrokeredMessageReceiveContextInternal;
             if (context?.Recovering == false) // avoid send via when recovering to prevent error message from rolling back
             {
                 sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
                 sendVia &= settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType) == TransportType.NetMessaging;
                 sendVia &= consistency != DispatchConsistency.Isolated;
             }
-            return new RoutingOptions
+            return new RoutingOptionsInternal
             {
                 SendVia = sendVia,
                 ViaEntityPath = GetViaEntityPathFor(context?.Entity),
@@ -102,7 +102,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        string GetViaEntityPathFor(EntityInfo entity)
+        string GetViaEntityPathFor(EntityInfoInternal entity)
         {
             if (entity?.Type == EntityType.Queue)
             {
@@ -110,14 +110,14 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             if (entity?.Type == EntityType.Subscription)
             {
-                var topicRelationship = entity.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
+                var topicRelationship = entity.RelationShips.First(r => r.Type == EntityRelationShipTypeInternal.Subscription);
                 return topicRelationship.Target.Path;
             }
 
             return null;
         }
 
-        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSender messageSender, IList<IMessageSender> fallbacks, IList<BrokeredMessage> messagesToSend,bool suppressTransaction)
+        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSenderInternal messageSender, IList<IMessageSenderInternal> fallbacks, IList<BrokeredMessage> messagesToSend,bool suppressTransaction)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             catch (Exception exception)
             {
-                
+
                 // ASB team promissed to fix the issue with MessagingEntityNotFoundException (missing entity path) - verify that
                 var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", messagesToSend.Select(x => x.MessageId));
                 logger.Error(message, exception);
@@ -179,7 +179,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSender messageSender, IEnumerable<BrokeredMessage> messagesToSend)
+        async Task RouteBatchWithEnforcedBatchSizeAsync(IMessageSenderInternal messageSender, IEnumerable<BrokeredMessage> messagesToSend)
         {
             var chunk = new List<BrokeredMessage>();
             long batchSize = 0;

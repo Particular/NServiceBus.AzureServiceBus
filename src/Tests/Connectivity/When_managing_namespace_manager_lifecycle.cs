@@ -18,7 +18,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         {
             var creator = new InterceptingCreator();
 
-            var lifecycleManager = new NamespaceManagerLifeCycleManager(creator);
+            var lifecycleManager = new NamespaceManagerLifeCycleManagerInternal(creator);
 
             lifecycleManager.Get(AzureServiceBusConnectionString.Value);
 
@@ -30,7 +30,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         {
             var creator = new InterceptingCreator();
 
-            var lifecycleManager = new NamespaceManagerLifeCycleManager(creator);
+            var lifecycleManager = new NamespaceManagerLifeCycleManagerInternal(creator);
 
             var first = lifecycleManager.Get(AzureServiceBusConnectionString.Value);
             var second = lifecycleManager.Get(AzureServiceBusConnectionString.Value);
@@ -39,13 +39,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             Assert.AreEqual(first, second);
         }
 
-#pragma warning disable 618
-        class InterceptingCreator : ICreateNamespaceManagers
+        class InterceptingCreator : ICreateNamespaceManagersInternal
         {
             public bool HasBeenInvoked;
             public int InvocationCount;
 
-            public INamespaceManager Create(string namespaceName)
+            public INamespaceManagerInternal Create(string namespaceName)
             {
                 HasBeenInvoked = true;
                 InvocationCount++;
@@ -54,7 +53,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             }
         }
 
-        class InterceptedManager : INamespaceManager
+        class InterceptedManager : INamespaceManagerInternal
         {
             public NamespaceManagerSettings Settings
             {
@@ -156,6 +155,5 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 throw new NotImplementedException();
             }
         }
-#pragma warning restore 618
     }
 }

@@ -14,7 +14,6 @@
     using NUnit.Framework;
     using Transport;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_dispatching_messages
@@ -32,8 +31,8 @@
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -41,7 +40,7 @@
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
             await creator.Create("myqueue2", namespaceManager);
 
@@ -69,8 +68,8 @@
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -78,7 +77,7 @@
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings);
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
@@ -88,10 +87,9 @@
             Assert.ThrowsAsync<MessagingEntityNotFoundException>(async () => await dispatcher.Dispatch(new TransportOperations(), new TransportTransaction(), new ContextBag()));
         }
 
-#pragma warning disable 618
-        class FakeBatcher : IBatcher
+        class FakeBatcher : IBatcherInternal
         {
-            public IList<Batch> ToBatches(TransportOperations operations)
+            public IList<BatchInternal> ToBatches(TransportOperations operations)
             {
                 // we don't care about incoming operations as we'll fake batcher and return pre-canned batches
 
@@ -100,13 +98,13 @@
                 var bytes = Encoding.UTF8.GetBytes("Whatever");
 
 
-                var batch1 = new Batch
+                var batch1 = new BatchInternal
                 {
-                    Destinations = new TopologySection
+                    Destinations = new TopologySectionInternal
                     {
-                        Entities = new List<EntityInfo>
+                        Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue",
@@ -119,14 +117,14 @@
                         }
                     },
                     RequiredDispatchConsistency = DispatchConsistency.Default,
-                    Operations = new List<BatchedOperation>
+                    Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
                         },
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-2", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -134,13 +132,13 @@
                     }
                 };
 
-                var batch2 = new Batch
+                var batch2 = new BatchInternal
                 {
-                    Destinations = new TopologySection
+                    Destinations = new TopologySectionInternal
                     {
-                        Entities = new List<EntityInfo>
+                        Entities = new List<EntityInfoInternal>
                         {
-                            new EntityInfo
+                            new EntityInfoInternal
                             {
                                 Namespace = @namespace,
                                 Path = "MyQueue2",
@@ -153,14 +151,14 @@
                         }
                     },
                     RequiredDispatchConsistency = DispatchConsistency.Default,
-                    Operations = new List<BatchedOperation>
+                    Operations = new List<BatchedOperationInternal>
                     {
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-3", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
                         },
-                        new BatchedOperation
+                        new BatchedOperationInternal
                         {
                             Message = new OutgoingMessage("Id-4", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
@@ -168,13 +166,12 @@
                     }
                 };
 
-                return new List<Batch>
+                return new List<BatchInternal>
                 {
                     batch1,
                     batch2
                 };
             }
         }
-#pragma warning restore 618
     }
 }

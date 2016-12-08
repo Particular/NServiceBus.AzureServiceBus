@@ -1,45 +1,23 @@
 namespace NServiceBus
 {
-    using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Configuration.AdvanceExtensibility;
     using Transport.AzureServiceBus;
 
-    public static class AzureServiceBusTransportExtensions
+    public static partial class AzureServiceBusTransportExtensions
     {
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0", ReplacementTypeOrMember = "transport.UseForwardingTopology() or transport.UseEndpointOrientedTopology()")]
-        public static AzureServiceBusTopologySettings<T> UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions) where T : ITopology, new()
-        {
-            var topology = Activator.CreateInstance<T>();
-            return UseTopology(transportExtensions, topology);
-        }
-
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0", ReplacementTypeOrMember = "transport.UseForwardingTopology() or transport.UseEndpointOrientedTopology()")]
-        public static AzureServiceBusTopologySettings<T> UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, Func<T> factory) where T : ITopology
-        {
-            return UseTopology(transportExtensions, factory());
-        }
-
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0", ReplacementTypeOrMember = "transport.UseForwardingTopology() or transport.UseEndpointOrientedTopology()")]
-        public static AzureServiceBusTopologySettings<T> UseTopology<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions, T topology) where T : ITopology
-        {
-            var settings = transportExtensions.GetSettings();
-            settings.Set<ITopology>(topology);
-            return new AzureServiceBusTopologySettings<T>(settings);
-        }
-
         public static AzureServiceBusForwardingTopologySettings UseForwardingTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();
-            settings.Set<ITopology>(new ForwardingTopology());
+            settings.Set<ITopologyInternal>(new ForwardingTopologyInternal());
             return new AzureServiceBusForwardingTopologySettings(settings);
         }
 
         public static AzureServiceBusEndpointOrientedTopologySettings UseEndpointOrientedTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();
-            settings.Set<ITopology>(new EndpointOrientedTopology());
+            settings.Set<ITopologyInternal>(new EndpointOrientedTopologyInternal());
             return new AzureServiceBusEndpointOrientedTopologySettings(settings);
         }
 
@@ -51,26 +29,6 @@ namespace NServiceBus
         {
             var settings = transportExtensions.GetSettings();
             settings.Set(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType, type);
-        }
-
-        /// <summary>
-        /// Provide custom implementation to convert brokered message to incoming message
-        /// </summary>
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public static void UseBrokeredMessageToIncomingMessageConverter<T>(this TransportExtensions<AzureServiceBusTransport>  transportExtensions) where T : IConvertBrokeredMessagesToIncomingMessages
-        {
-            var settings = transportExtensions.GetSettings();
-            settings.Set(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter, typeof(T));
-        }
-
-        /// <summary>
-        /// Provide custom implementation to convert outgoing message to brokered message
-        /// </summary>
-        [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public static void UseOutgoingMessageToBrokeredMessageConverter<T>(this TransportExtensions<AzureServiceBusTransport> transportExtensions) where T : IConvertOutgoingMessagesToBrokeredMessages
-        {
-            var settings = transportExtensions.GetSettings();
-            settings.Set(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter, typeof(T));
         }
 
         /// <summary>
@@ -213,7 +171,6 @@ namespace NServiceBus
             return new AzureServiceBusCompositionSettings(transportExtensions.GetSettings());
         }
 
-
         /// <summary>
         /// Access to entities path/name sanitization configuration.
         /// </summary>
@@ -221,7 +178,6 @@ namespace NServiceBus
         {
             return new AzureServiceBusSanitizationSettings(transportExtensions.GetSettings());
         }
-
 
         /// <summary>
         /// Access to input queue individualization configuration.

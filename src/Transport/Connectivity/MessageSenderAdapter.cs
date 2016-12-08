@@ -5,7 +5,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
 
-    class MessageSenderAdapter : IMessageSender
+    class MessageSenderAdapter : IMessageSenderInternal
     {
         MessageSender sender;
 

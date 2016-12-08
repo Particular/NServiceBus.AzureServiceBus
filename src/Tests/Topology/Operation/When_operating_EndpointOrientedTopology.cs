@@ -12,7 +12,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
     using NUnit.Framework;
     using Transport;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_operating_EndpointOrientedTopology
@@ -31,7 +30,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -88,7 +87,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
 
             var error = new AsyncAutoResetEvent(false);
 
@@ -127,7 +126,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await topologyOperator.Stop();
         }
 
-   
+
         [Test]
         public async Task Completes_incoming_message_when_successfully_received()
         {
@@ -142,7 +141,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -183,7 +182,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
 
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycleInternal)container.Resolve(typeof(IManageNamespaceManagerLifeCycleInternal));
             var namespaceManager = namespaceLifeCycle.Get("namespace");
             var queueDescription = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(0, queueDescription.MessageCount);
@@ -205,7 +204,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var topology = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopology)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
 
             var completed = new AsyncAutoResetEvent(false);
             var error = new AsyncAutoResetEvent(false);
@@ -244,7 +243,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
 
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycle)container.Resolve(typeof(IManageNamespaceManagerLifeCycle));
+            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycleInternal)container.Resolve(typeof(IManageNamespaceManagerLifeCycleInternal));
             var namespaceManager = namespaceLifeCycle.Get("namespace");
             var queueDescription = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(1, queueDescription.MessageCount);
@@ -252,7 +251,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await topologyOperator.Stop();
         }
 
-        async Task<ITopologySectionManager> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
+        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
         {
             var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
@@ -261,13 +260,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
             extensions.NamespacePartitioning().AddNamespace("namespace", AzureServiceBusConnectionString.Value);
 
-            var topology = new EndpointOrientedTopology(container);
+            var topology = new EndpointOrientedTopologyInternal(container);
             topology.Initialize(settings);
 
             // create the topologySectionManager
-            var topologyCreator = (ICreateTopology)container.Resolve(typeof(TopologyCreator));
+            var topologyCreator = (ICreateTopologyInternal)container.Resolve(typeof(TopologyCreator));
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
             return sectionManager;
         }

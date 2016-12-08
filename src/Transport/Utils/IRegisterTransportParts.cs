@@ -2,8 +2,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface IRegisterTransportParts
+    interface IRegisterTransportPartsInternal
     {
         void Register<T>();
         void Register(Type t);

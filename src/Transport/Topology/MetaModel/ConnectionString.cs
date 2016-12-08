@@ -4,8 +4,7 @@
     using System.Collections.Concurrent;
     using System.Text.RegularExpressions;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class ConnectionString : IEquatable<ConnectionString>
+    class ConnectionStringInternal : IEquatable<ConnectionStringInternal>
     {
         static readonly string Sample = "Endpoint=sb://[namespace name].servicebus.windows.net;SharedAccessKeyName=[shared access key name];SharedAccessKey=[shared access key]";
         static string Pattern = "^Endpoint=sb://(?<namespaceName>[A-Za-z][A-Za-z0-9-]{4,48}[A-Za-z0-9]).servicebus.windows.net/?;SharedAccessKeyName=(?<sharedAccessPolicyName>[\\w\\W]+);SharedAccessKey=(?<sharedAccessPolicyValue>[\\w\\W]+)$";
@@ -16,7 +15,7 @@
         public string SharedAccessPolicyName { get; }
         public string SharedAccessPolicyValue { get; }
 
-        public ConnectionString(string value)
+        public ConnectionStringInternal(string value)
         {
             if (!Regex.IsMatch(value, Pattern, RegexOptions.IgnoreCase))
             {
@@ -32,7 +31,7 @@
             SharedAccessPolicyValue = Regex.Match(value, Pattern).Groups["sharedAccessPolicyValue"].Value;
         }
 
-        public bool Equals(ConnectionString other)
+        public bool Equals(ConnectionStringInternal other)
         {
             return other != null && (
                 string.Equals(NamespaceName, other.NamespaceName, StringComparison.OrdinalIgnoreCase) &&
@@ -42,7 +41,7 @@
 
         public override bool Equals(object obj)
         {
-            var target = obj as ConnectionString;
+            var target = obj as ConnectionStringInternal;
             return Equals(target);
         }
 
@@ -59,20 +58,20 @@
             return value;
         }
 
-        static ConcurrentDictionary<string, Tuple<bool, ConnectionString>> _parsingResults = new ConcurrentDictionary<string, Tuple<bool, ConnectionString>>();
-        public static bool TryParse(string value, out ConnectionString connectionString)
+        static ConcurrentDictionary<string, Tuple<bool, ConnectionStringInternal>> _parsingResults = new ConcurrentDictionary<string, Tuple<bool, ConnectionStringInternal>>();
+        public static bool TryParse(string value, out ConnectionStringInternal connectionString)
         {
             var t = _parsingResults.GetOrAdd(value, s =>
             {
                 try
                 {
                     var result = Regex.IsMatch(value, Pattern, RegexOptions.IgnoreCase);
-                    var c = result ? new ConnectionString(value) : null;
-                    return new Tuple<bool, ConnectionString>(result, c);
+                    var c = result ? new ConnectionStringInternal(value) : null;
+                    return new Tuple<bool, ConnectionStringInternal>(result, c);
                 }
                 catch (ArgumentException)
                 {
-                    return new Tuple<bool, ConnectionString>(false, null);
+                    return new Tuple<bool, ConnectionStringInternal>(false, null);
                 }
             });
 
@@ -82,16 +81,16 @@
 
         public static bool IsConnectionString(string value)
         {
-            ConnectionString sampler;
+            ConnectionStringInternal sampler;
             return TryParse(value, out sampler);
         }
 
-        public static implicit operator string(ConnectionString connectionString)
+        public static implicit operator string(ConnectionStringInternal connectionString)
         {
             return connectionString.ToString();
         }
 
-        public static bool operator ==(ConnectionString connectionString1, ConnectionString connectionString2)
+        public static bool operator ==(ConnectionStringInternal connectionString1, ConnectionStringInternal connectionString2)
         {
             if (ReferenceEquals(connectionString1, null) && ReferenceEquals(connectionString2, null)) return true;
             if (ReferenceEquals(connectionString1, null) || ReferenceEquals(connectionString2, null)) return false;
@@ -99,7 +98,7 @@
             return connectionString1.Equals(connectionString2);
         }
 
-        public static bool operator !=(ConnectionString connectionString1, ConnectionString connectionString2)
+        public static bool operator !=(ConnectionStringInternal connectionString1, ConnectionStringInternal connectionString2)
         {
             return !(connectionString1 == connectionString2);
         }

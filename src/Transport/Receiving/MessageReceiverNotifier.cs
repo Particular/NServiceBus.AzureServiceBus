@@ -12,9 +12,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     using NServiceBus.AzureServiceBus;
     using Settings;
 
-    class MessageReceiverNotifier : INotifyIncomingMessages
+    class MessageReceiverNotifier : INotifyIncomingMessagesInternal
     {
-        public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
+        public MessageReceiverNotifier(IManageMessageReceiverLifeCycleInternal clientEntities, IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter, ReadOnlySettings settings)
         {
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
@@ -26,7 +26,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public int RefCount { get; set; }
 
-        public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
+        public void Initialize(EntityInfoInternal entity, Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
         {
             receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
 
@@ -38,7 +38,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             fullPath = entity.Path;
             if (entity.Type == EntityType.Subscription)
             {
-                var topic = entity.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
+                var topic = entity.RelationShips.First(r => r.Type == EntityRelationShipTypeInternal.Subscription);
                 fullPath = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, entity.Path);
             }
 
@@ -54,7 +54,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 logger.InfoFormat("The maximum concurrency on this message receiver instance has been adjusted to '{0}', because the total maximum concurrency '{1}' wasn't divisable by the number of clients '{2}'", maxConcurrentCalls, maximumConcurrency, numberOfClients);
             }
 
-            internalReceivers = new IMessageReceiver[numberOfClients];
+            internalReceivers = new IMessageReceiverInternal[numberOfClients];
             onMessageOptions = new OnMessageOptions[numberOfClients];
             completion = new MultiProducerConcurrentCompletion<Guid>(1000, TimeSpan.FromSeconds(1), 6, numberOfClients);
         }
@@ -173,12 +173,12 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         static Task CompletionCallback(List<Guid> lockTokens, int slotNumber, object state, CancellationToken token)
         {
-            var receivers = (IMessageReceiver[]) state;
+            var receivers = (IMessageReceiverInternal[]) state;
             var receiver = receivers[slotNumber];
             return receiver.SafeCompleteBatchAsync(lockTokens);
         }
 
-        Task ReceiveMessage(IMessageReceiver internalReceiver, BrokeredMessage message, int slotNumber, ConcurrentDictionary<Task, Task> pipelineInvocations)
+        Task ReceiveMessage(IMessageReceiverInternal internalReceiver, BrokeredMessage message, int slotNumber, ConcurrentDictionary<Task, Task> pipelineInvocations)
         {
             var processTask = ProcessMessage(internalReceiver, message, slotNumber);
             pipelineInvocations.TryAdd(processTask, processTask);
@@ -191,7 +191,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return processTask;
         }
 
-        async Task ProcessMessage(IMessageReceiver internalReceiver, BrokeredMessage message, int slotNumber)
+        async Task ProcessMessage(IMessageReceiverInternal internalReceiver, BrokeredMessage message, int slotNumber)
         {
             if (stopping)
             {
@@ -201,7 +201,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             try
             {
-                IncomingMessageDetails incomingMessage;
+                IncomingMessageDetailsInternal incomingMessage;
                 try
                 {
                     incomingMessage = brokeredMessageConverter.Convert(message);
@@ -212,7 +212,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     return;
                 }
 
-                var context = new BrokeredMessageReceiveContext(message, entity, internalReceiver.Mode);
+                var context = new BrokeredMessageReceiveContextInternal(message, entity, internalReceiver.Mode);
                 try
                 {
                     var scope = wrapInScope ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
@@ -257,7 +257,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        Task HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContext context, bool canBeBatched, int slotNumber)
+        Task HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContextInternal context, bool canBeBatched, int slotNumber)
         {
             if (context.CancellationToken.IsCancellationRequested)
             {
@@ -318,17 +318,17 @@ namespace NServiceBus.Transport.AzureServiceBus
             return TaskEx.Completed;
         }
 
-        IManageMessageReceiverLifeCycle clientEntities;
-        IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter;
+        IManageMessageReceiverLifeCycleInternal clientEntities;
+        IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter;
         ReadOnlySettings settings;
-        IMessageReceiver[] internalReceivers;
+        IMessageReceiverInternal[] internalReceivers;
         ReceiveMode receiveMode;
         OnMessageOptions[] onMessageOptions;
-        Func<IncomingMessageDetails, ReceiveContext, Task> incomingCallback;
+        Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
         ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
         string fullPath;
-        EntityInfo entity;
+        EntityInfoInternal entity;
         volatile bool stopping;
         volatile bool isRunning;
         Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;

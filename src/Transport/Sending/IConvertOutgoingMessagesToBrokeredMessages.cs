@@ -3,9 +3,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Generic;
     using Microsoft.ServiceBus.Messaging;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface IConvertOutgoingMessagesToBrokeredMessages
+    interface IConvertOutgoingMessagesToBrokeredMessagesInternal
     {
-        IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperation> outgoingOperations, RoutingOptions routingOptions);
+        IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperationInternal> outgoingOperations, RoutingOptionsInternal routingOptions);
     }
 }

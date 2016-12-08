@@ -2,11 +2,10 @@
 {
     using System.Collections.Generic;
 
-    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class TopologySection
+    class TopologySectionInternal
     {
         public IEnumerable<RuntimeNamespaceInfo> Namespaces { get; set; }
-        public IEnumerable<EntityInfo> Entities { get; set; }
-        public IEnumerable<EntityRelationShipInfo> Relationships { get; set; }
+        public IEnumerable<EntityInfoInternal> Entities { get; set; }
+        public IEnumerable<EntityRelationShipInfoInternal> Relationships { get; set; }
     }
 }

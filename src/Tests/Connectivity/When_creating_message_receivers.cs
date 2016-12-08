@@ -11,7 +11,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_creating_message_receivers
@@ -28,7 +27,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             var receiver = await creator.Create("myqueue", AzureServiceBusConnectionString.Value);
 
             Assert.IsTrue(factory.IsInvoked);
-            Assert.IsInstanceOf<IMessageReceiver>(receiver);
+            Assert.IsInstanceOf<IMessageReceiverInternal>(receiver);
         }
 
         [Test]
@@ -53,17 +52,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             Assert.AreEqual(1000, receiver.PrefetchCount);
         }
 
-#pragma warning disable 618
-        class InterceptedMessagingFactoryFactory : IManageMessagingFactoryLifeCycle
+        class InterceptedMessagingFactoryFactory : IManageMessagingFactoryLifeCycleInternal
         {
-            readonly IMessagingFactory factory;
+            readonly IMessagingFactoryInternal factory;
 
-            public InterceptedMessagingFactoryFactory(IMessagingFactory factory)
+            public InterceptedMessagingFactoryFactory(IMessagingFactoryInternal factory)
             {
                 this.factory = factory;
             }
 
-            public IMessagingFactory Get(string namespaceName)
+            public IMessagingFactoryInternal Get(string namespaceName)
             {
                 return factory;
             }
@@ -74,7 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             }
         }
 
-        class InterceptedMessagingFactory : IMessagingFactory
+        class InterceptedMessagingFactory : IMessagingFactoryInternal
         {
             public bool IsInvoked;
 
@@ -89,19 +87,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 set { throw new NotImplementedException(); }
             }
 
-            public Task<IMessageReceiver> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
+            public Task<IMessageReceiverInternal> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
             {
                 IsInvoked = true;
 
-                return Task.FromResult<IMessageReceiver>(new FakeMessageReceiver() { Mode = receiveMode });
+                return Task.FromResult<IMessageReceiverInternal>(new FakeMessageReceiver() { Mode = receiveMode });
             }
 
-            public Task<IMessageSender> CreateMessageSender(string entitypath)
+            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IMessageSender> CreateMessageSender(string entitypath, string viaEntityPath)
+            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath, string viaEntityPath)
             {
                 throw new NotImplementedException();
             }
@@ -112,7 +110,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             }
         }
 
-        class FakeMessageReceiver : IMessageReceiver
+        class FakeMessageReceiver : IMessageReceiverInternal
         {
             public bool IsClosed => false;
 
@@ -137,6 +135,5 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 throw new NotImplementedException();
             }
         }
-#pragma warning restore 618
     }
 }

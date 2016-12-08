@@ -7,7 +7,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
     using NUnit.Framework;
     using Transport;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_computing_EndpointOrientedTopology
@@ -66,11 +65,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopology(container);
+            var topology = new ForwardingTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings()), "Was expected to fail: " + reasonToFail);
         }
 
@@ -93,18 +92,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales.events" && ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring));
         }
 
-#pragma warning disable 618
-        static TopologySection DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)
+        static TopologySectionInternal DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)
         {
-            var topology = new EndpointOrientedTopology(container);
+            var topology = new EndpointOrientedTopologyInternal(container);
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManager>();
+            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
 
             var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
             return definition;
         }
-#pragma warning restore 618
     }
 }

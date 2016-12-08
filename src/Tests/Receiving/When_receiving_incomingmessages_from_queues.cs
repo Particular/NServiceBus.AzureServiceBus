@@ -10,7 +10,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_receiving_incomingmessages_from_queues
@@ -25,8 +24,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
@@ -35,13 +34,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 
             // create the queue
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
-            notifier.Initialize(new EntityInfo { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, 10);
+            notifier.Initialize(new EntityInfoInternal { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -60,8 +59,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
@@ -70,13 +69,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 
             // create the queue
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
 
-            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, 10);
+            notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -99,8 +98,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var namespaceManagerLifeCycleManager = new NamespaceManagerLifeCycleManager(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
+            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
@@ -110,7 +109,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 
             // create the queue
-            var namespaceManager = namespaceManagerLifeCycleManager.Get("namespace");
+            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // put a message on the queue
@@ -126,7 +125,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             Exception ex = null;
             var received = false;
 
-            notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) =>
+            notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) =>
             {
                 received = true;
 
