@@ -39,7 +39,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     var transport = config.UseTransport<AzureServiceBusTransport>();
                     transport.MessageSenders().MessageSizePaddingPercentage(0);
                     transport.UseNamespaceAliasesInsteadOfConnectionStrings();
-                    config.SendFailedMessagesTo(ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<ErrorSpy>());
+                    config.SendFailedMessagesTo(AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(ErrorSpy)));
                 });
             }
 
