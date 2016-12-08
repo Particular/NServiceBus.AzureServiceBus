@@ -56,21 +56,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\IConfigureTransportInfrastructure.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\NServiceBusTransportTest.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\TransportConfigurationResult.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\TypeScanner.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_failure_happens_after_send.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_message_is_available.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_on_error_throws.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_on_message_throws.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_on_message_throws_after_delayed_retry.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_on_message_throws_after_immediate_retry.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_requesting_immediate_retry.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_scope_dispose_throws.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_sending_from_on_error.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_user_aborts_processing.cs" />
-    <Compile Include="App_Packages\NSB.TransportTests.6.0.0\When_using_non_durable_delivery.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\IConfigureTransportInfrastructure.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\NServiceBusTransportTest.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\TransportConfigurationResult.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\TypeScanner.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_failure_happens_after_send.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_message_is_available.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_on_error_throws.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_on_message_throws.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_on_message_throws_after_delayed_retry.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_on_message_throws_after_immediate_retry.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_requesting_immediate_retry.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_scope_dispose_throws.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_sending_from_on_error.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_transaction_level_TransactionScope.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_user_aborts_processing.cs" />
+    <Compile Include="App_Packages\NSB.TransportTests.6.1.0-rc0001\When_using_non_durable_delivery.cs" />
     <Compile Include="ConfigureAzureServiceBusTransportInfrastructure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
