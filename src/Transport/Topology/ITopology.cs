@@ -6,11 +6,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Settings;
     using Transport;
 
-    static class ObsoleteMessages
-    {
-        public const string InternalizedContract = "Internal contract.";
-    }
-
     interface ITopologyInternal
     {
         void Initialize(SettingsHolder settings);

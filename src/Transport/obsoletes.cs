@@ -5,6 +5,11 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    static class ObsoleteMessages
+    {
+        public const string InternalizedContract = "Internal contract.";
+    }
+
     [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public class ForwardingTopology : ITopology { }
 
