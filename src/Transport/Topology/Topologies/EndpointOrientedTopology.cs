@@ -29,6 +29,7 @@ namespace NServiceBus
 
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
+        public TopologySettings Settings { get; } = new TopologySettings();
 
         public void Initialize(SettingsHolder settings)
         {
@@ -51,6 +52,10 @@ namespace NServiceBus
         {
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
+
+            // TODO: necessary evil for now...
+            container.Register<TopologyQueueSettings>(() => Settings.QueueSettings);
+
             container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
 
             namespaceManagerCreator = new NamespaceManagerCreator(settings);

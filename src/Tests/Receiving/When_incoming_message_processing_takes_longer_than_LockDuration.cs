@@ -22,11 +22,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            settings.Set<TopologySettings>(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
-
+            
             // set lock duration on a queue to 5 seconds and emulate message processing that takes longer than that, but less than AutoRenewTimeout
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration, TimeSpan.FromSeconds(2));
+            settings.Get<TopologySettings>().QueueSettings.LockDuration = TimeSpan.FromSeconds(2);
             settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout, TimeSpan.FromSeconds(5));
 
             // setup the infrastructure
@@ -36,7 +37,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
-            var creator = new AzureServiceBusQueueCreator(settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 

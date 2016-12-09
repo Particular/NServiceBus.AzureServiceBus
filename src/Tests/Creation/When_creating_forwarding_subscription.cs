@@ -266,7 +266,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var queueCreator = new AzureServiceBusQueueCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
+            var queueCreator = new AzureServiceBusQueueCreator(new TopologyQueueSettings(), new DefaultConfigurationValues().Apply(new SettingsHolder()));
             var queueToForwardTo = await queueCreator.Create("forwardto", namespaceManager);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());

@@ -12,41 +12,41 @@
     class AzureServiceBusQueueCreator : ICreateAzureServiceBusQueuesInternal
     {
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
-        ReadOnlySettings settings;
-        Func<string, ReadOnlySettings, QueueDescription> descriptionFactory;
+        TopologyQueueSettings queueSettings;
         ILog logger = LogManager.GetLogger(typeof(AzureServiceBusQueueCreator));
         IReadOnlyCollection<string> systemQueueAddresses;
+        int numberOfImmediateRetries;
 
-        public AzureServiceBusQueueCreator(ReadOnlySettings settings)
+        public AzureServiceBusQueueCreator(TopologyQueueSettings queueSettings, ReadOnlySettings settings)
         {
-            this.settings = settings;
+            this.queueSettings = queueSettings;
+            // TODO: remove ReadOnlySettings when the rest of setting is available
             systemQueueAddresses = settings.GetOrDefault<QueueBindings>()?.SendingAddresses ?? new List<string>();
-
-            if(!this.settings.TryGet(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, out descriptionFactory))
-            {
-                descriptionFactory = (queuePath, setting) => new QueueDescription(queuePath)
-                {
-                    LockDuration = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration),
-                    MaxSizeInMegabytes = setting.GetOrDefault<long>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxSizeInMegabytes),
-                    RequiresDuplicateDetection = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresDuplicateDetection),
-                    DefaultMessageTimeToLive = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.DefaultMessageTimeToLive),
-                    EnableDeadLetteringOnMessageExpiration = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration),
-                    DuplicateDetectionHistoryTimeWindow = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow),
-                    MaxDeliveryCount = IsSystemQueue(queuePath) ? 10 : setting.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount),
-                    EnableBatchedOperations = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableBatchedOperations),
-                    EnablePartitioning = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning),
-                    SupportOrdering = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering),
-                    AutoDeleteOnIdle = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Queues.AutoDeleteOnIdle),
-
-                    EnableExpress = setting.GetConditional<bool>(queuePath, WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress),
-                    ForwardDeadLetteredMessagesTo = setting.GetConditional<string>(queuePath, WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo),
-                };
-            }
+            numberOfImmediateRetries = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries);
+            numberOfImmediateRetries = numberOfImmediateRetries > 0 ? numberOfImmediateRetries + 1 : queueSettings.MaxDeliveryCount;
         }
 
         public async Task<QueueDescription> Create(string queuePath, INamespaceManagerInternal namespaceManager)
         {
-            var description = descriptionFactory(queuePath, settings);
+            var description = new QueueDescription(queuePath)
+            {
+               LockDuration = queueSettings.LockDuration,
+               MaxSizeInMegabytes = queueSettings.MaxSizeInMegabytes,
+               RequiresDuplicateDetection = queueSettings.RequiresDuplicateDetection,
+               DefaultMessageTimeToLive = queueSettings.DefaultMessageTimeToLive,
+               EnableDeadLetteringOnMessageExpiration = queueSettings.EnableDeadLetteringOnMessageExpiration,
+               DuplicateDetectionHistoryTimeWindow = queueSettings.DuplicateDetectionHistoryTimeWindow,
+               MaxDeliveryCount = IsSystemQueue(queuePath) ? 10 : numberOfImmediateRetries,
+               EnableBatchedOperations = queueSettings.EnableBatchedOperations,
+               EnablePartitioning = queueSettings.EnablePartitioning,
+               SupportOrdering = queueSettings.SupportOrdering,
+               AutoDeleteOnIdle = queueSettings.AutoDeleteOnIdle,
+               
+               EnableExpress = queueSettings.EnableExpress,
+               ForwardDeadLetteredMessagesTo = queueSettings.ForwardDeadLetteredMessagesTo
+            };
+
+            queueSettings.DescriptionFactory(description);
 
             try
             {
@@ -109,7 +109,6 @@
         {
             return systemQueueAddresses.Any(address => address.Equals(queuePath, StringComparison.OrdinalIgnoreCase));
         }
-
 
         async Task<bool> ExistsAsync(INamespaceManagerInternal namespaceClient, string queuePath, bool removeCacheEntry = false)
         {

@@ -21,6 +21,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            settings.Set<TopologySettings>(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
@@ -38,7 +39,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var entityLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var creator = new AzureServiceBusQueueCreator(settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             // create the queue
             var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
@@ -80,6 +81,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            settings.Set<TopologySettings>(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
@@ -97,7 +99,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var entityLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
-            var creator = new AzureServiceBusQueueCreator(settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             // create the queue
             var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
