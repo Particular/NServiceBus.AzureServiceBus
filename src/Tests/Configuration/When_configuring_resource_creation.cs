@@ -12,19 +12,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
     public class When_configuring_resource_creation
     {
         [Test]
-        public void Should_be_able_to_set_topic_description_factory_method()
-        {
-            var settings = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            Func<string, ReadOnlySettings, TopicDescription> registeredFactory = (name, s) => new TopicDescription(name);
-
-            var connectivitySettings = extensions.Topics().DescriptionFactory(registeredFactory);
-
-            Assert.AreEqual(registeredFactory, connectivitySettings.GetSettings().Get<Func<string, ReadOnlySettings, TopicDescription>>(WellKnownConfigurationKeys.Topology.Resources.Topics.DescriptionFactory));
-        }
-
-        [Test]
         public void Should_be_able_to_set_subscription_description_factory_method()
         {
             var settings = new SettingsHolder();

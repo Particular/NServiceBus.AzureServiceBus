@@ -288,7 +288,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
+            var topicCreator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
             var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
 
 
@@ -315,7 +315,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var topicCreator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
+            var topicCreator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
             var notUsedEntity = await topicCreator.Create("topic2forward2", namespaceManager);
 
 

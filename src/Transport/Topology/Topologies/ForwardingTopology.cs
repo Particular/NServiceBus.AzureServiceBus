@@ -18,6 +18,7 @@ namespace NServiceBus
         ITopologySectionManagerInternal topologySectionManager;
         ITransportPartsContainerInternal container;
         AzureServiceBusQueueCreator queueCreator;
+        AzureServiceBusTopicCreator topicCreator;
         NamespaceManagerCreator namespaceManagerCreator;
         NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
         MessagingFactoryCreator messagingFactoryAdapterCreator;
@@ -41,6 +42,7 @@ namespace NServiceBus
             ApplyDefaults(settings);
             InitializeContainer(settings);
             queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
+            topicCreator = new AzureServiceBusTopicCreator(Settings.TopicSettings);
         }
 
         void ApplyDefaults(SettingsHolder settings)
@@ -74,7 +76,7 @@ namespace NServiceBus
             container.RegisterSingleton<MessageSenderCreator>();
             container.RegisterSingleton<MessageSenderLifeCycleManager>();
             container.Register<AzureServiceBusQueueCreator>(() => queueCreator);
-            container.RegisterSingleton<AzureServiceBusTopicCreator>();
+            container.Register<AzureServiceBusTopicCreator>(() => topicCreator);
             container.RegisterSingleton<AzureServiceBusForwardingSubscriptionCreator>();
 
             container.RegisterSingleton<DefaultConnectionStringToNamespaceAliasMapper>();

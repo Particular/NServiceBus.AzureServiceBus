@@ -2,13 +2,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 {
     using System;
     using System.Threading.Tasks;
-    using AzureServiceBus;
     using FakeItEasy;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
     using Transport.AzureServiceBus;
-    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -18,12 +16,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_use_topic_description_defaults_if_user_does_not_provide_topic_description_values()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             const string topicPath = "mytopic2";
             await namespaceManager.DeleteTopic(topicPath);
 
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var creator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
             var topicDescription = await creator.Create(topicPath, namespaceManager);
 
             Assert.IsTrue(await namespaceManager.TopicExists(topicPath));
@@ -39,46 +36,40 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             Assert.IsFalse(topicDescription.SupportOrdering);
         }
 
-
         [Test]
         public async Task Should_use_topic_description_provided_by_user()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
             const string topicPath = "mytopic3";
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic(topicPath);
 
-            var topicDescriptionToUse = new TopicDescription(topicPath)
+            var userProvidedTopicDescriptionWasUsed = false;
+
+            var topologyTopicSettings = new TopologyTopicSettings
             {
-                AutoDeleteOnIdle = TimeSpan.MaxValue
+                DescriptionFactory = td => { userProvidedTopicDescriptionWasUsed = true; }
             };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
 
-            extensions.Topics().DescriptionFactory((path, s) => topicDescriptionToUse);
-
-            var creator = new AzureServiceBusTopicCreator(settings);
-
-            var description = await creator.Create(topicPath, namespaceManager);
+            await creator.Create(topicPath, namespaceManager);
 
             Assert.IsTrue(await namespaceManager.TopicExists(topicPath));
-            Assert.AreEqual(topicDescriptionToUse, description);
+            Assert.IsTrue(userProvidedTopicDescriptionWasUsed);
         }
 
         [Test]
         public async Task Should_set_AutoDeleteOnIdle_on_the_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             var autoDeleteTime = TimeSpan.FromDays(1);
-            extensions.Topics().AutoDeleteOnIdle(autoDeleteTime);
 
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var topologyTopicSettings = new TopologyTopicSettings
+            {
+                AutoDeleteOnIdle = autoDeleteTime
+            };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
 
             const string topicPath = "mytopic4";
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic(topicPath);
 
             await creator.Create(topicPath, namespaceManager);
@@ -90,16 +81,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_DefaultMessageTimeToLive_on_the_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             var timeToLive = TimeSpan.FromDays(1);
-            extensions.Topics().DefaultMessageTimeToLive(timeToLive);
+            var topologyTopicSettings = new TopologyTopicSettings
+            {
+                DefaultMessageTimeToLive = timeToLive
+            };
 
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
             const string topicPath = "mytopic5";
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic(topicPath);
 
             await creator.Create(topicPath, namespaceManager);
@@ -112,16 +102,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_DuplicateDetectionHistoryTimeWindow_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             var duplicateDetectionTime = TimeSpan.FromDays(1);
-            extensions.Topics().DuplicateDetectionHistoryTimeWindow(duplicateDetectionTime);
 
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var topologyTopicSettings = new TopologyTopicSettings
+            {
+                DuplicateDetectionHistoryTimeWindow = duplicateDetectionTime
+            };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
             const string topicPath = "mytopic6";
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic(topicPath);
 
             await creator.Create(topicPath, namespaceManager);
@@ -134,15 +123,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_EnableBatchedOperations_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.Topics().EnableBatchedOperations(false);
-
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var topologyTopicSettings = new TopologyTopicSettings
+            {
+                EnableBatchedOperations = false
+            };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
             const string topicPath = "mytopic7";
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic(topicPath);
 
             await creator.Create(topicPath, namespaceManager);
@@ -155,15 +142,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_EnableFilteringMessagesBeforePublishing_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.Topics().EnableFilteringMessagesBeforePublishing(true);
-
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var topologyTopicSettings = new TopologyTopicSettings
+            {
+                EnableFilteringMessagesBeforePublishing = true
+            };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
             const string topicPath = "mytopic8";
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic(topicPath);
 
             await creator.Create(topicPath, namespaceManager);
@@ -182,12 +167,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             //clean up before test starts
             await namespaceManager.DeleteTopic(topicPath);
 
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.Topics().EnablePartitioning(true);
-
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var topologyTopicSettings = new TopologyTopicSettings
+            {
+                EnablePartitioning = true
+            };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
 
             await creator.Create(topicPath, namespaceManager);
 
@@ -199,15 +183,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_MaxSizeInMegabytes_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.Topics().MaxSizeInMegabytes(SizeInMegabytes.Size4096);
-
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var topologyTopicSettings = new TopologyTopicSettings
+            {
+                MaxSizeInMegabytes = SizeInMegabytes.Size4096
+            };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
             const string topicPath = "mytopic10";
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic(topicPath);
 
             await creator.Create(topicPath, namespaceManager);
@@ -220,15 +202,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_RequiresDuplicateDetection_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.Topics().RequiresDuplicateDetection(true);
-
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var topologyTopicSettings = new TopologyTopicSettings
+            {
+                RequiresDuplicateDetection = true
+            };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
             const string topicPath = "mytopic11";
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic(topicPath);
 
             await creator.Create(topicPath, namespaceManager);
@@ -241,15 +221,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_SupportOrdering_on_created_entity()
         {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.Topics().SupportOrdering(true);
-
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var topologyTopicSettings = new TopologyTopicSettings
+            {
+                SupportOrdering = true
+            };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
             const string topicPath = "mytopic12";
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic(topicPath);
 
             await creator.Create(topicPath, namespaceManager);
@@ -262,9 +240,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Should_set_correct_defaults()
         {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            var creator = new AzureServiceBusTopicCreator(new DefaultConfigurationValues().Apply(new SettingsHolder()));
+            var creator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
             const string topicPath = "mytopic13";
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.DeleteTopic(topicPath);
 
             await creator.Create(topicPath, namespaceManager);
@@ -273,12 +251,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             Assert.AreEqual(TimeSpan.MaxValue, foundTopic.AutoDeleteOnIdle);
             Assert.AreEqual(TimeSpan.MaxValue, foundTopic.DefaultMessageTimeToLive);
-            Assert.AreEqual(TimeSpan.FromMilliseconds(600000), foundTopic.DuplicateDetectionHistoryTimeWindow);
+            Assert.AreEqual(TimeSpan.FromMinutes(10), foundTopic.DuplicateDetectionHistoryTimeWindow);
             Assert.IsTrue(foundTopic.EnableBatchedOperations);
             Assert.IsFalse(foundTopic.EnableExpress);
             Assert.IsFalse(foundTopic.EnableFilteringMessagesBeforePublishing);
             Assert.IsFalse(foundTopic.EnablePartitioning);
-            Assert.AreEqual(1024, foundTopic.MaxSizeInMegabytes);
+            Assert.AreEqual((long)SizeInMegabytes.Size1024, foundTopic.MaxSizeInMegabytes);
             Assert.IsFalse(foundTopic.RequiresDuplicateDetection);
             Assert.IsFalse(foundTopic.SupportOrdering);
         }
@@ -297,8 +275,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
                 .Invokes(() => topicCreationThrewException = true)
                 .Throws(() => new MessagingEntityAlreadyExistsException("blah"));
 
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var creator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
 
             await creator.Create(topicPath, namespaceManager);
 
@@ -312,8 +289,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).Returns(Task.FromResult(false));
             A.CallTo(() => namespaceManager.CreateTopic(A<TopicDescription>.Ignored)).Throws<TimeoutException>();
 
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var creator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
 
             Assert.ThrowsAsync<TimeoutException>(async () => await creator.Create("faketopic", namespaceManager));
         }
@@ -325,8 +301,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).ReturnsNextFromSequence(Task.FromResult(false), Task.FromResult(true));
             A.CallTo(() => namespaceManager.CreateTopic(A<TopicDescription>.Ignored)).Throws<TimeoutException>();
 
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var creator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
 
             return creator.Create("faketopic", namespaceManager);
         }
@@ -337,8 +312,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = A.Fake<INamespaceManagerInternal>();
             A.CallTo(() => namespaceManager.TopicExists(A<string>.Ignored)).Throws(new MessagingException("boom", false, new Exception("wrapped")));
 
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var creator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
 
             Assert.ThrowsAsync<MessagingException>(async () => await creator.Create("faketopic", namespaceManager));
         }
@@ -351,15 +325,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             await namespaceManager.CreateTopic(new TopicDescription("existingtopic1"));
 
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Topics().DescriptionFactory((topicPath, readOnlySettings) => new TopicDescription(topicPath)
+            var topologyTopicSettings = new TopologyTopicSettings
             {
                 AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
                 EnableExpress = true
-            });
-
-            var creator = new AzureServiceBusTopicCreator(settings);
+            };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
             await creator.Create("existingtopic1", namespaceManager);
 
             var topicDescription = await namespaceManager.GetTopic("existingtopic1");
@@ -379,30 +350,26 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
                 EnablePartitioning = true
             });
 
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Topics().DescriptionFactory((queuePath, readOnlySettings) => new TopicDescription(queuePath)
+            var topologyTopicSettings = new TopologyTopicSettings
             {
-                MaxSizeInMegabytes = 1024,
+                MaxSizeInMegabytes = SizeInMegabytes.Size3072,
                 RequiresDuplicateDetection = false,
                 EnablePartitioning = false
-            });
-
-            var creator = new AzureServiceBusTopicCreator(settings);
+            };
+            var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
             Assert.ThrowsAsync<ArgumentException>(async () => await creator.Create("existingtopic2", namespaceManager));
         }
 
         [Test]
         public async Task Should_create_topic_on_multiple_namespaces()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespaceManager1 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             var namespaceManager2 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
             const string topicPath = "topic-caching-key";
             await namespaceManager1.DeleteTopic(topicPath);
             await namespaceManager2.DeleteTopic(topicPath);
 
-            var creator = new AzureServiceBusTopicCreator(settings);
+            var creator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
             await creator.Create(topicPath, namespaceManager1);
             await creator.Create(topicPath, namespaceManager2);
 
