@@ -15,6 +15,7 @@ namespace NServiceBus
         ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
         ITopologySectionManagerInternal topologySectionManager;
         ITransportPartsContainerInternal container;
+        AzureServiceBusQueueCreator queueCreator;
         NamespaceManagerCreator namespaceManagerCreator;
         NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
         MessagingFactoryCreator messagingFactoryAdapterCreator;
@@ -35,6 +36,7 @@ namespace NServiceBus
         {
             ApplyDefaults(settings);
             InitializeContainer(settings);
+            queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
         }
 
         void ApplyDefaults(SettingsHolder settings)
@@ -53,9 +55,6 @@ namespace NServiceBus
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
 
-            // TODO: necessary evil for now...
-            container.Register<TopologyQueueSettings>(() => Settings.QueueSettings);
-
             container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
 
             namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -68,7 +67,7 @@ namespace NServiceBus
             container.RegisterSingleton<MessageReceiverLifeCycleManager>();
             container.RegisterSingleton<MessageSenderCreator>();
             container.RegisterSingleton<MessageSenderLifeCycleManager>();
-            container.RegisterSingleton<AzureServiceBusQueueCreator>();
+            container.Register<AzureServiceBusQueueCreator>(() => queueCreator);
             container.RegisterSingleton<AzureServiceBusTopicCreator>();
             container.RegisterSingleton<AzureServiceBusSubscriptionCreatorV6>();
 

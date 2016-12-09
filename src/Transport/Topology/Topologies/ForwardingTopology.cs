@@ -60,9 +60,6 @@ namespace NServiceBus
         {
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
-            
-            // TODO: necessary evil for now...
-            container.Register<TopologyQueueSettings>(() => Settings.QueueSettings);
 
             container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
 
