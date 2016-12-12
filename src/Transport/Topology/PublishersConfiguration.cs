@@ -48,7 +48,7 @@
             if (!HasPublishersFor(type))
             {
                 throw new InvalidOperationException($"No publishers configured for `{type.FullName}`{Environment.NewLine}" +
-                                                    $"Register mappings via `endpointConfiguration.UseTransport<AzureServiceBusTransport>().UseTopology<EndpointOrientedTopology>().RegisterPublisher(\"endpointname\", typeof({type.FullName}))`");
+                                                    $"Register mappings via `endpointConfiguration.UseTransport<AzureServiceBusTransport>().UseEndpointOrientedTopology().RegisterPublisher(\"endpointname\", typeof({type.FullName}))`");
             }
 
             return new ReadOnlyCollection<string>(publishers[type]);
