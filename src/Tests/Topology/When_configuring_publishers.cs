@@ -25,7 +25,7 @@
         {
             var exception = Assert.Throws<InvalidOperationException>(() => configuration.GetPublishersFor(typeof(MyType)));
             StringAssert.Contains($"No publishers configured for `{typeof(MyType).FullName}`", exception.Message);
-            StringAssert.Contains($"Register mappings via `endpointConfiguration.UseTransport<AzureServiceBusTransport>().UseTopology<EndpointOrientedTopology>().RegisterPublisher(\"endpointname\", typeof({typeof(MyType).FullName}))`", exception.Message);
+            StringAssert.Contains($"Register mappings via `endpointConfiguration.UseTransport<AzureServiceBusTransport>().UseEndpointOrientedTopology().RegisterPublisher(\"endpointname\", typeof({typeof(MyType).FullName}))`", exception.Message);
         }
 
         [Test]
