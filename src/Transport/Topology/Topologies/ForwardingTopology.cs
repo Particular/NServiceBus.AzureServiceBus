@@ -17,6 +17,8 @@ namespace NServiceBus
         ILog logger = LogManager.GetLogger("ForwardingTopology");
         ITopologySectionManagerInternal topologySectionManager;
         ITransportPartsContainerInternal container;
+        NamespaceManagerCreator namespaceManagerCreator;
+        NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
 
         public ForwardingTopologyInternal() : this(new TransportPartsContainer()) { }
 
@@ -52,8 +54,11 @@ namespace NServiceBus
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
             container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
-            container.RegisterSingleton<NamespaceManagerCreator>();
-            container.RegisterSingleton<NamespaceManagerLifeCycleManagerInternal>();
+
+            namespaceManagerCreator = new NamespaceManagerCreator(settings);
+            namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            container.Register<IManageNamespaceManagerLifeCycleInternal>(() => namespaceManagerLifeCycleManagerInternal);
+
             container.RegisterSingleton<MessagingFactoryCreator>();
             container.RegisterSingleton<MessagingFactoryLifeCycleManager>();
             container.RegisterSingleton<MessageReceiverCreator>();
