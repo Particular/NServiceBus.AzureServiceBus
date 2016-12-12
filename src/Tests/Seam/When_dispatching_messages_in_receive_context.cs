@@ -50,7 +50,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             topology = await SetupEndpointOrientedTopology(container, SourceQueueName, settings);
 
             // create the destination queue
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycleInternal) container.Resolve(typeof(IManageNamespaceManagerLifeCycleInternal));
+            var namespaceLifeCycle = new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings));
             var creator = (ICreateAzureServiceBusQueuesInternal) container.Resolve(typeof(ICreateAzureServiceBusQueuesInternal));
             namespaceManager = namespaceLifeCycle.Get("namespaceName");
             await creator.Create(DestinationQueueName, namespaceManager);

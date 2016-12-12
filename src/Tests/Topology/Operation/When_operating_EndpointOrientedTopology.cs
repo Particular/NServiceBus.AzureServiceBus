@@ -26,8 +26,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             // setting up the environment
             var container = new TransportPartsContainer();
+            var settings = new SettingsHolder();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
@@ -83,8 +84,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             // setting up the environment
             var container = new TransportPartsContainer();
+            var settings = new SettingsHolder();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
@@ -137,8 +139,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             // setting up the environment
             var container = new TransportPartsContainer();
+            var settings = new SettingsHolder();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
@@ -182,7 +185,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
 
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycleInternal)container.Resolve(typeof(IManageNamespaceManagerLifeCycleInternal));
+            var namespaceLifeCycle = new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings));
             var namespaceManager = namespaceLifeCycle.Get("namespace");
             var queueDescription = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(0, queueDescription.MessageCount);
@@ -200,8 +203,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             // setting up the environment
             var container = new TransportPartsContainer();
+            var settings = new SettingsHolder();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+            var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
 
             // setup the operator
             var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
@@ -243,7 +247,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
 
-            var namespaceLifeCycle = (IManageNamespaceManagerLifeCycleInternal)container.Resolve(typeof(IManageNamespaceManagerLifeCycleInternal));
+            var namespaceLifeCycle = new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings));
             var namespaceManager = namespaceLifeCycle.Get("namespace");
             var queueDescription = await namespaceManager.GetQueue("sales");
             Assert.AreEqual(1, queueDescription.MessageCount);
@@ -251,9 +255,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await topologyOperator.Stop();
         }
 
-        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
+        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(SettingsHolder settings, TransportPartsContainer container, string enpointname)
         {
-            var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);

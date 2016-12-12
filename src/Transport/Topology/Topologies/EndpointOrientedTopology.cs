@@ -17,6 +17,8 @@ namespace NServiceBus
         ITransportPartsContainerInternal container;
         NamespaceManagerCreator namespaceManagerCreator;
         NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
+        MessagingFactoryCreator messagingFactoryAdapterCreator;
+        MessagingFactoryLifeCycleManager messagingFactoryLifeCycleManager;
 
         public EndpointOrientedTopologyInternal() : this(new TransportPartsContainer()){ }
 
@@ -53,10 +55,10 @@ namespace NServiceBus
 
             namespaceManagerCreator = new NamespaceManagerCreator(settings);
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            container.Register<IManageNamespaceManagerLifeCycleInternal>(() => namespaceManagerLifeCycleManagerInternal);
+            messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, settings);
+            messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryAdapterCreator, settings);
+            container.Register<IManageMessagingFactoryLifeCycleInternal>(() => messagingFactoryLifeCycleManager);
 
-            container.RegisterSingleton<MessagingFactoryCreator>();
-            container.RegisterSingleton<MessagingFactoryLifeCycleManager>();
             container.RegisterSingleton<MessageReceiverCreator>();
             container.RegisterSingleton<MessageReceiverLifeCycleManager>();
             container.RegisterSingleton<MessageSenderCreator>();
@@ -72,7 +74,7 @@ namespace NServiceBus
             var batchedOperationsToBrokeredMessagesConverterType = settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter);
             container.Register(batchedOperationsToBrokeredMessagesConverterType);
 
-            container.Register<TopologyCreator>();
+            container.Register<TopologyCreator>(() => new TopologyCreator(container, namespaceManagerLifeCycleManagerInternal));
             container.Register<Batcher>();
 
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
@@ -132,7 +134,7 @@ namespace NServiceBus
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
-            var check = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycleInternal>(), container.Resolve<ReadOnlySettings>());
+            var check = new ManageRightsCheck(namespaceManagerLifeCycleManagerInternal, container.Resolve<ReadOnlySettings>());
 
             return check.Run();
         }
