@@ -11,14 +11,17 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessagePump : IPushMessages, IDisposable
     {
-        public MessagePump(ITopologySectionManagerInternal topologySectionManager, ITransportPartsContainerInternal container, ReadOnlySettings settings) : this(topologySectionManager, container, settings, TimeSpan.FromSeconds(30))
+        public MessagePump(IOperateTopologyInternal defaultOperator, IManageMessageReceiverLifeCycleInternal clientEntities, IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter, ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings) : this(defaultOperator, clientEntities, brokeredMessageConverter, topologySectionManager, settings, TimeSpan.FromSeconds(30))
         {
         }
 
-        internal MessagePump(ITopologySectionManagerInternal topologySectionManager, ITransportPartsContainerInternal container, ReadOnlySettings settings, TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker)
+        internal MessagePump(IOperateTopologyInternal defaultOperator, IManageMessageReceiverLifeCycleInternal clientEntities, IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter, ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings, TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker)
         {
+            this.defaultOperator = defaultOperator;
+            this.clientEntities = clientEntities;
+            this.brokeredMessageConverter = brokeredMessageConverter;
             this.topologySectionManager = topologySectionManager;
-            this.container = container;
+            this.settings = settings;
             satelliteTransportAddresses = settings.Get<SatelliteTransportAddressCollection>();
             timeToWaitBeforeTriggering = timeToWaitBeforeTriggeringTheCircuitBreaker;
         }
@@ -97,13 +100,14 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (satelliteTransportAddresses.Contains(pushSettingsInputQueue))
             {
-                return new TopologyOperator(container);
+                return new TopologyOperator(clientEntities, brokeredMessageConverter, settings);
             }
 
-            return container.Resolve<IOperateTopologyInternal>();
+            return defaultOperator;
         }
 
-        readonly ITransportPartsContainerInternal container;
+        readonly IManageMessageReceiverLifeCycleInternal clientEntities;
+        readonly IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter;
         ITopologySectionManagerInternal topologySectionManager;
         IOperateTopologyInternal topologyOperator;
         Func<MessageContext, Task> messagePump;
@@ -113,5 +117,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         SatelliteTransportAddressCollection satelliteTransportAddresses;
         SemaphoreSlim throttler;
         TimeSpan timeToWaitBeforeTriggering;
+        ReadOnlySettings settings;
+        IOperateTopologyInternal defaultOperator;
     }
 }

@@ -38,7 +38,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
 
             timeToWaitBeforeTriggeringTheCircuitBreaker = TimeSpan.FromSeconds(5);
-            pump = new MessagePump(topology, container, settings, timeToWaitBeforeTriggeringTheCircuitBreaker);
+            var clientEntities = container.Resolve<IManageMessageReceiverLifeCycleInternal>();
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings));
+            pump = new MessagePump(new TopologyOperator(clientEntities, converter, settings), clientEntities, converter, topology, settings, timeToWaitBeforeTriggeringTheCircuitBreaker);
         }
 
         async Task SetupAsync(TransportPartsContainer container, SettingsHolder settings)

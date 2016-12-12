@@ -29,10 +29,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topology = await SetupEndpointOrientedTopology(container, "sales");
+            var topologySectionManagerInternal = await SetupEndpointOrientedTopology(container, "sales");
 
             // setup the operator
-            var pump = new MessagePump(topology, container, settings);
+            var clientEntities = container.Resolve<IManageMessageReceiverLifeCycleInternal>();
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings));
+
+            var pump = new MessagePump(new TopologyOperator(clientEntities, converter, settings), clientEntities, converter, topologySectionManagerInternal, settings);
 
             var completed = new AsyncAutoResetEvent(false);
             //var error = new AsyncAutoResetEvent(false);

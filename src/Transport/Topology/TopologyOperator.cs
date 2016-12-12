@@ -5,12 +5,15 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Logging;
+    using Settings;
 
     class TopologyOperator : IOperateTopologyInternal, IDisposable
     {
-        public TopologyOperator(ITransportPartsContainerInternal container)
+        public TopologyOperator(IManageMessageReceiverLifeCycleInternal clientEntities, IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter, ReadOnlySettings settings)
         {
-            this.container = container;
+            readOnlySettings = settings;
+            this.brokeredMessageConverter = brokeredMessageConverter;
+            messageReceiverLifeCycle = clientEntities;
         }
 
         public void Dispose()
@@ -101,7 +104,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (type == EntityType.Queue || type == EntityType.Subscription)
             {
-                return (INotifyIncomingMessagesInternal) container.Resolve(typeof(MessageReceiverNotifier));
+                return new MessageReceiverNotifier(messageReceiverLifeCycle, brokeredMessageConverter, readOnlySettings);
             }
 
             throw new NotSupportedException("Entity type " + type + " not supported");
@@ -127,8 +130,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        ITransportPartsContainerInternal container;
-
         TopologySectionInternal topology;
 
         Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> onMessage;
@@ -142,5 +143,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
 
         int maxConcurrency;
+        IManageMessageReceiverLifeCycleInternal messageReceiverLifeCycle;
+        IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter;
+        ReadOnlySettings readOnlySettings;
     }
 }
