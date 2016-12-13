@@ -44,7 +44,7 @@
                 return TaskEx.Completed;
             });
 
-            var pump = new MessagePump(new FakeTopology(), container, settings, TimeSpan.FromSeconds(1));
+            var pump = new MessagePump(fakeTopologyOperator, null, null, new FakeTopologyManager(), settings, TimeSpan.FromSeconds(1));
             await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
             pump.Start(new PushRuntimeSettings(1));
@@ -79,7 +79,7 @@
         {
         }
 
-        class FakeTopology : ITopologySectionManagerInternal
+        class FakeTopologyManager : ITopologySectionManagerInternal
         {
             public TopologySectionInternal DetermineReceiveResources(string inputQueue)
             {

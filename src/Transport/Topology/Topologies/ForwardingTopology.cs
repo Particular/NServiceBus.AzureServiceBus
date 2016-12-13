@@ -84,7 +84,6 @@ namespace NServiceBus
 
             container.RegisterSingleton<DefaultOutgoingBatchRouter>();
             container.RegisterSingleton<TopologyOperator>();
-            container.Register<MessageReceiverNotifier>();
             container.RegisterSingleton<SubscriptionManager>();
             container.RegisterSingleton<TransportResourcesCreator>();
             container.RegisterSingleton<Dispatcher>();
