@@ -46,7 +46,7 @@
                ForwardDeadLetteredMessagesTo = queueSettings.ForwardDeadLetteredMessagesTo
             };
 
-            queueSettings.DescriptionFactory(description);
+            queueSettings.DescriptionCustomizer(description);
 
             try
             {

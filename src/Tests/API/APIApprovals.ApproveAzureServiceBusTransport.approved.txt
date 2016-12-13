@@ -97,8 +97,11 @@ namespace NServiceBus
     {
         public NServiceBus.AzureServiceBusQueueSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusQueueSettings DefaultMessageTimeToLive(System.TimeSpan defaultMessageTimeToLive) { }
+        public NServiceBus.AzureServiceBusQueueSettings DescriptionCustomizer(System.Action<Microsoft.ServiceBus.Messaging.QueueDescription> customizer) { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<QueueDescription>)` inst" +
+            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
+            "ersion 9.0.0.", true)]
         public NServiceBus.AzureServiceBusQueueSettings DescriptionFactory(System.Func<string, string, NServiceBus.Settings.ReadOnlySettings, Microsoft.ServiceBus.Messaging.QueueDescription> factory) { }
-        public NServiceBus.AzureServiceBusQueueSettings DescriptionFactory(System.Action<Microsoft.ServiceBus.Messaging.QueueDescription> factory) { }
         public NServiceBus.AzureServiceBusQueueSettings DuplicateDetectionHistoryTimeWindow(System.TimeSpan duplicateDetectionHistoryTimeWindow) { }
         public NServiceBus.AzureServiceBusQueueSettings EnableBatchedOperations(bool enableBatchedOperations) { }
         public NServiceBus.AzureServiceBusQueueSettings EnableDeadLetteringOnMessageExpiration(bool enableDeadLetteringOnMessageExpiration) { }
@@ -139,6 +142,9 @@ namespace NServiceBus
     {
         public NServiceBus.AzureServiceBusSubscriptionSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings DefaultMessageTimeToLive(System.TimeSpan expiryTimespan) { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<SubscriptionDescription>" +
+            ")` instead. The member currently throws a NotImplementedException. Will be remov" +
+            "ed in version 9.0.0.", true)]
         public NServiceBus.AzureServiceBusSubscriptionSettings DescriptionFactory(System.Func<string, string, NServiceBus.Settings.ReadOnlySettings, Microsoft.ServiceBus.Messaging.SubscriptionDescription> factory) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings DescriptionFactory(System.Action<Microsoft.ServiceBus.Messaging.SubscriptionDescription> factory) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings EnableBatchedOperations(bool enableBatchedOperations) { }
@@ -153,6 +159,9 @@ namespace NServiceBus
     {
         public NServiceBus.AzureServiceBusTopicSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusTopicSettings DefaultMessageTimeToLive(System.TimeSpan timeToLive) { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<TopicDescription>)` inst" +
+            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
+            "ersion 9.0.0.", true)]
         public NServiceBus.AzureServiceBusTopicSettings DescriptionFactory(System.Func<string, string, NServiceBus.Settings.ReadOnlySettings, Microsoft.ServiceBus.Messaging.TopicDescription> factory) { }
         public NServiceBus.AzureServiceBusTopicSettings DescriptionFactory(System.Action<Microsoft.ServiceBus.Messaging.TopicDescription> factory) { }
         public NServiceBus.AzureServiceBusTopicSettings DuplicateDetectionHistoryTimeWindow(System.TimeSpan duplicateDetectionHistoryTimeWindow) { }

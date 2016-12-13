@@ -25,7 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var userQueueDescriptionFactoryWasInvoked = false;
-            extensions.Queues().DescriptionFactory(qd => userQueueDescriptionFactoryWasInvoked = true);
+            extensions.Queues().DescriptionCustomizer(qd => userQueueDescriptionFactoryWasInvoked = true);
 
             var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
 
@@ -458,7 +458,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Queues().DescriptionFactory(qd =>
+            extensions.Queues().DescriptionCustomizer(qd =>
             {
                 qd.AutoDeleteOnIdle = TimeSpan.FromMinutes(100);
                 qd.EnableExpress = true;
@@ -490,7 +490,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Queues().DescriptionFactory(qd =>
+            extensions.Queues().DescriptionCustomizer(qd =>
             {
                 qd.LockDuration = TimeSpan.FromSeconds(50);
                 qd.RequiresDuplicateDetection = false;

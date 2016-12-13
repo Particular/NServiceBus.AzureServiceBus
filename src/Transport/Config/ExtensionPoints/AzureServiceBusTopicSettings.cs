@@ -6,19 +6,13 @@
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class AzureServiceBusTopicSettings : ExposeSettings
+    public partial class AzureServiceBusTopicSettings : ExposeSettings
     {
         TopologyTopicSettings topicSettings;
 
         internal AzureServiceBusTopicSettings(SettingsHolder settings) : base(settings)
         {
             topicSettings = settings.Get<ITopologyInternal>().Settings.TopicSettings;
-        }
-
-        // TODO: needs to be obsoleted with guidance
-        public AzureServiceBusTopicSettings DescriptionFactory(Func<string, string, ReadOnlySettings, TopicDescription> factory)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

@@ -6,19 +6,13 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class AzureServiceBusSubscriptionSettings : ExposeSettings
+    public partial class AzureServiceBusSubscriptionSettings : ExposeSettings
     {
         TopologySubscriptionSettings subscriptionSettings;
 
         internal AzureServiceBusSubscriptionSettings(SettingsHolder settings) : base(settings)
         {
             subscriptionSettings = settings.Get<ITopologyInternal>().Settings.SubscriptionSettings;
-        }
-
-        // TODO: needs to be obsoleted with guidance
-        public AzureServiceBusSubscriptionSettings DescriptionFactory(Func<string, string, ReadOnlySettings, SubscriptionDescription> factory)
-        {
-           throw new NotImplementedException();
         }
 
         /// <summary>

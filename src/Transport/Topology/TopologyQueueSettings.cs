@@ -6,7 +6,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     class TopologyQueueSettings
     {
         // TODO: no longer a factory but a Modifier?
-        public Action<QueueDescription> DescriptionFactory { get; set; } = description => { };
+        public Action<QueueDescription> DescriptionCustomizer { get; set; } = description => { };
         public bool SupportOrdering { get; set; } = false;
         public TimeSpan LockDuration { get; set; } = TimeSpan.FromSeconds(30);
         public SizeInMegabytes MaxSizeInMegabytes { get; set; } = SizeInMegabytes.Size1024;

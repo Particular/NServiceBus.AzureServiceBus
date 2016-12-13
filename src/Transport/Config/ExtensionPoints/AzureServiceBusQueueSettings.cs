@@ -6,7 +6,7 @@
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class AzureServiceBusQueueSettings : ExposeSettings
+    public partial class AzureServiceBusQueueSettings : ExposeSettings
     {
         TopologyQueueSettings queueSettings;
 
@@ -15,18 +15,12 @@
             queueSettings = settings.Get<ITopologyInternal>().Settings.QueueSettings;
         }
 
-        // TODO: needs to be obsoleted with guidance
-        public AzureServiceBusQueueSettings DescriptionFactory(Func<string, string, ReadOnlySettings, QueueDescription> factory)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
-        /// Customize queue creation by providing <see cref="QueueDescription"/>.
+        /// Customize queue creation.
         /// </summary>
-        public AzureServiceBusQueueSettings DescriptionFactory(Action<QueueDescription> factory)
+        public AzureServiceBusQueueSettings DescriptionCustomizer(Action<QueueDescription> customizer)
         {
-            queueSettings.DescriptionFactory = factory;
+            queueSettings.DescriptionCustomizer = customizer;
 
             return this;
         }
