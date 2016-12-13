@@ -47,7 +47,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             var topologyTopicSettings = new TopologyTopicSettings
             {
-                DescriptionFactory = td => { userProvidedTopicDescriptionWasUsed = true; }
+                DescriptionCustomizer = td => { userProvidedTopicDescriptionWasUsed = true; }
             };
             var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
 

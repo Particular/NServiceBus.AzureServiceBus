@@ -20,7 +20,7 @@ namespace NServiceBus
         /// </summary>
         public AzureServiceBusSubscriptionSettings DescriptionFactory(Action<SubscriptionDescription> factory)
         {
-            subscriptionSettings.DescriptionFactory = factory;
+            subscriptionSettings.DescriptionCustomizer = factory;
 
             return this;
         }

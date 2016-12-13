@@ -156,7 +156,7 @@
 
             extensions.Topics().DescriptionFactory(registeredFactory);
 
-            Assert.AreEqual(registeredFactory, fakeTopology.Settings.TopicSettings.DescriptionFactory);
+            Assert.AreEqual(registeredFactory, fakeTopology.Settings.TopicSettings.DescriptionCustomizer);
         }
 
     }

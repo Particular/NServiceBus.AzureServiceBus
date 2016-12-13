@@ -36,7 +36,7 @@
                 MaxDeliveryCount = numberOfImmediateRetries
             };
 
-            subscriptionSettings.DescriptionFactory(subscriptionDescription);
+            subscriptionSettings.DescriptionCustomizer(subscriptionDescription);
 
             if (!string.IsNullOrWhiteSpace(forwardTo))
             {

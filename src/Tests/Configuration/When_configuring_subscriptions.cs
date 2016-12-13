@@ -20,7 +20,7 @@
 
             extensions.Subscriptions().DescriptionFactory(registeredFactory);
 
-            Assert.AreEqual(registeredFactory, topology.Settings.SubscriptionSettings.DescriptionFactory);
+            Assert.AreEqual(registeredFactory, topology.Settings.SubscriptionSettings.DescriptionCustomizer);
         }
 
         [Test]

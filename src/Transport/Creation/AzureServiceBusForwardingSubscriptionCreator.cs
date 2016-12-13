@@ -44,7 +44,7 @@
                 MaxDeliveryCount = numberOfImmediateRetries
             };
 
-            subscriptionSettings.DescriptionFactory(subscriptionDescription);
+            subscriptionSettings.DescriptionCustomizer(subscriptionDescription);
 
             subscriptionDescription.ForwardTo = forwardTo;
             subscriptionDescription.UserMetadata = metadata.Description;

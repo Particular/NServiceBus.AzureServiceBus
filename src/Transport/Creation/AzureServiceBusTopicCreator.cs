@@ -33,7 +33,7 @@
                 EnableFilteringMessagesBeforePublishing = topicSettings.EnableFilteringMessagesBeforePublishing
             };
 
-            topicSettings.DescriptionFactory(topicDescription);
+            topicSettings.DescriptionCustomizer(topicDescription);
 
             try
             {

@@ -20,7 +20,7 @@
         /// </summary>
         public AzureServiceBusTopicSettings DescriptionFactory(Action<TopicDescription> factory)
         {
-            topicSettings.DescriptionFactory = factory;
+            topicSettings.DescriptionCustomizer = factory;
 
             return this;
         }
