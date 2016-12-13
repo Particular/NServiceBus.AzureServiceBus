@@ -41,7 +41,7 @@
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
 
-            var creator = new AzureServiceBusSubscriptionCreatorV6(settings);
+            var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings(), settings);
             var metadata1 = new SubscriptionMetadataInternal
             {
                 SubscriptionNameBasedOnEventWithNamespace = typeof(Ns1.ReusedEvent).FullName,

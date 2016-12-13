@@ -5,6 +5,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class TopologyQueueSettings
     {
+        // TODO: no longer a factory but a Modifier?
         public Action<QueueDescription> DescriptionFactory { get; set; } = description => { };
         public bool SupportOrdering { get; set; } = false;
         public TimeSpan LockDuration { get; set; } = TimeSpan.FromSeconds(30);
@@ -18,8 +19,10 @@ namespace NServiceBus.Transport.AzureServiceBus
         public bool EnablePartitioning { get; set; } = false;
         public TimeSpan AutoDeleteOnIdle { get; set; } = TimeSpan.MaxValue;
         public bool EnableExpress { get; set; } = false;
+        // TODO: no longer relevant since factory is replace with Modifier
         public Func<string, bool> EnableExpressCondition { get; set; } = name => true;
         public string ForwardDeadLetteredMessagesTo { get; set; } = null;
+        // TODO: no longer relevant since factory is replace with Modifier
         public Func<string, bool> ForwardDeadLetteredMessagesToCondition { get; set; } = name => true;
     }
 }

@@ -1,8 +1,7 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
-    using Transport.AzureServiceBus;
-    using NServiceBus.Configuration.AdvanceExtensibility;
+    using Microsoft.ServiceBus.Messaging;
     using Settings;
     using NUnit.Framework;
 
@@ -11,108 +10,131 @@
     public class When_configuring_subscriptions
     {
         [Test]
+        public void Should_be_able_to_set_subscription_description_factory_method()
+        {
+            var settings = new SettingsHolder();
+            var topology = new FakeTopology(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            Action<SubscriptionDescription> registeredFactory = sd => { };
+
+            extensions.Subscriptions().DescriptionFactory(registeredFactory);
+
+            Assert.AreEqual(registeredFactory, topology.Settings.SubscriptionSettings.DescriptionFactory);
+        }
+
+        [Test]
         public void Should_be_able_to_set_AutoDeleteOnIdle()
         {
             var settings = new SettingsHolder();
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var idlePeriod = TimeSpan.FromDays(10);
-            var topicSettings = extensions.Subscriptions().AutoDeleteOnIdle(idlePeriod);
+            extensions.Subscriptions().AutoDeleteOnIdle(idlePeriod);
 
-            Assert.AreEqual(idlePeriod, topicSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.AutoDeleteOnIdle));
+            Assert.AreEqual(idlePeriod, topology.Settings.SubscriptionSettings.AutoDeleteOnIdle);
         }
 
         [Test]
         public void Should_be_able_to_set_DefaultMessageTimeToLive()
         {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
+            var settings = new SettingsHolder();
+            var topology = new FakeTopology(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var expiryTimespan = TimeSpan.FromDays(1);
-            var subscriptionSettings = extensions.Subscriptions().DefaultMessageTimeToLive(expiryTimespan);
+            extensions.Subscriptions().DefaultMessageTimeToLive(expiryTimespan);
 
-            Assert.AreEqual(expiryTimespan, subscriptionSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DefaultMessageTimeToLive));
+            Assert.AreEqual(expiryTimespan, topology.Settings.SubscriptionSettings.DefaultMessageTimeToLive);
         }
 
         [Test]
         public void Should_be_able_to_set_EnableBatchedOperations()
         {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
+            var settings = new SettingsHolder();
+            var topology = new FakeTopology(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var subscriptionSettings = extensions.Subscriptions().EnableBatchedOperations(true);
+            extensions.Subscriptions().EnableBatchedOperations(true);
 
-            Assert.IsTrue(subscriptionSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableBatchedOperations));
+            Assert.IsTrue(topology.Settings.SubscriptionSettings.EnableBatchedOperations);
         }
 
         [Test]
         public void Should_be_able_to_set_EnableDeadLetteringOnFilterEvaluationExceptions()
         {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
+            var settings = new SettingsHolder();
+            var topology = new FakeTopology(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var subscriptionSettings = extensions.Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
+            extensions.Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
 
-            Assert.IsTrue(subscriptionSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnFilterEvaluationExceptions));
+            Assert.IsTrue(topology.Settings.SubscriptionSettings.EnableDeadLetteringOnFilterEvaluationExceptions);
         }
 
         [Test]
         public void Should_be_able_to_set_EnableDeadLetteringOnMessageExpiration()
         {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
+            var settings = new SettingsHolder();
+            var topology = new FakeTopology(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var subscriptionSettings = extensions.Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
+           extensions.Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
 
-            Assert.IsTrue(subscriptionSettings.GetSettings().Get<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnMessageExpiration));
+            Assert.IsTrue(topology.Settings.SubscriptionSettings.EnableDeadLetteringOnMessageExpiration);
         }
 
         [Test]
         public void Should_be_able_to_set_ForwardDeadLetteredMessagesTo()
         {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
+            var settings = new SettingsHolder();
+            var topology = new FakeTopology(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var subscriptionSettings = extensions.Subscriptions().ForwardDeadLetteredMessagesTo("deadletteredmessages");
+            extensions.Subscriptions().ForwardDeadLetteredMessagesTo("deadletteredmessages");
 
-            Assert.AreEqual("deadletteredmessages", subscriptionSettings.GetSettings().Get<string>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo));
+            Assert.AreEqual("deadletteredmessages", topology.Settings.SubscriptionSettings.ForwardDeadLetteredMessagesTo);
         }
 
         [Test]
         public void Should_be_able_to_set_ForwardDeadLetteredMessagesTo_conditionally()
         {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
+            var settings = new SettingsHolder();
+            var topology = new FakeTopology(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, bool> condition = n => n != "deadletteredmessages";
-            var subscriptionSettings = extensions.Subscriptions().ForwardDeadLetteredMessagesTo(condition, "deadletteredmessages");
+            extensions.Subscriptions().ForwardDeadLetteredMessagesTo(condition, "deadletteredmessages");
 
-            Assert.AreEqual("deadletteredmessages", subscriptionSettings.GetSettings().Get<string>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo));
-            Assert.AreEqual(condition, subscriptionSettings.GetSettings().Get<Func<string, bool>>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition));
+            Assert.AreEqual("deadletteredmessages", topology.Settings.SubscriptionSettings.ForwardDeadLetteredMessagesTo);
+            Assert.AreEqual(condition, topology.Settings.SubscriptionSettings.ForwardDeadLetteredMessagesToCondition);
         }
 
         [Test]
         public void Should_be_able_to_set_LockDuration()
         {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
+            var settings = new SettingsHolder();
+            var topology = new FakeTopology(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var lockDuration = TimeSpan.FromDays(1);
-            var subscriptionSettings = extensions.Subscriptions().LockDuration(lockDuration);
+            extensions.Subscriptions().LockDuration(lockDuration);
 
-            Assert.AreEqual(lockDuration, subscriptionSettings.GetSettings().Get<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.LockDuration));
+            Assert.AreEqual(lockDuration, topology.Settings.SubscriptionSettings.LockDuration);
         }
 
         [Test]
         public void Should_be_able_to_set_MaxDeliveryCount()
         {
-            var setting = new SettingsHolder();
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(setting);
+            var settings = new SettingsHolder();
+            var topology = new FakeTopology(settings);
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             const int selectedMaxDeliveryCount = 6;
-            var subscriptionSettings = extensions.Subscriptions().MaxDeliveryCount(selectedMaxDeliveryCount);
+            extensions.Subscriptions().MaxDeliveryCount(selectedMaxDeliveryCount);
 
-            Assert.AreEqual(selectedMaxDeliveryCount, subscriptionSettings.GetSettings().Get<int>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.MaxDeliveryCount));
+            Assert.AreEqual(selectedMaxDeliveryCount, topology.Settings.SubscriptionSettings.MaxDeliveryCount);
         }
     }
 }

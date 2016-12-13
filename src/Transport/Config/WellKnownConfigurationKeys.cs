@@ -7,67 +7,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             public const string Publishers = "AzureServiceBus.Settings.Topology.Publishers";
 
-            public static class Resources
-            {
-//                public static class Queues
-//                {
-//                    public const string DescriptionFactory = "AzureServiceBus.Settings.Topology.Resources.Queues.DescriptionFactory";
-//                    public const string SupportOrdering = "AzureServiceBus.Settings.Topology.Resources.Queues.SupportOrdering";
-//                    public const string LockDuration = "AzureServiceBus.Settings.Topology.Resources.Queues.LockDuration";
-//                    public const string MaxSizeInMegabytes = "AzureServiceBus.Settings.Topology.Resources.Queues.MaxSizeInMegabytes";
-//                    public const string RequiresDuplicateDetection = "AzureServiceBus.Settings.Topology.Resources.Queues.RequiresDuplicateDetection";
-//                    public const string DefaultMessageTimeToLive = "AzureServiceBus.Settings.Topology.Resources.Queues.DefaultMessageTimeToLive";
-//                    public const string EnableDeadLetteringOnMessageExpiration = "AzureServiceBus.Settings.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration";
-//                    public const string DuplicateDetectionHistoryTimeWindow = "AzureServiceBus.Settings.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow";
-//                    public const string MaxDeliveryCount = "AzureServiceBus.Settings.Topology.Resources.Queues.MaxDeliveryCount";
-//                    public const string EnableBatchedOperations = "AzureServiceBus.Settings.Topology.Resources.Queues.EnableBatchedOperations";
-//                    public const string EnablePartitioning = "AzureServiceBus.Settings.Topology.Resources.Queues.EnablePartitioning";
-//                    public const string AutoDeleteOnIdle = "AzureServiceBus.Settings.Topology.Resources.Queues.AutoDeleteOnIdle";
-//
-//                    public const string EnableExpress = "AzureServiceBus.Settings.Topology.Resources.Queues.EnableExpress";
-//                    public const string EnableExpressCondition = "AzureServiceBus.Settings.Topology.Resources.Queues.EnableExpressCondition";
-//
-//                    public const string ForwardDeadLetteredMessagesToCondition = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardDeadLetteredMessagesToCondition";
-//                    public const string ForwardDeadLetteredMessagesTo = "AzureServiceBus.Settings.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo";
-//                }
-
-//                public static class Topics
-//                {
-//                    public const string DescriptionFactory = "AzureServiceBus.Settings.Topology.Resources.Topics.DescriptionFactory";
-//
-//                    public const string AutoDeleteOnIdle = "AzureServiceBus.Settings.Topology.Resources.Topics.AutoDeleteOnIdle";
-//                    public const string DefaultMessageTimeToLive = "AzureServiceBus.Settings.Topology.Resources.Topics.DefaultMessageTimeToLive";
-//                    public const string DuplicateDetectionHistoryTimeWindow = "AzureServiceBus.Settings.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow";
-//                    public const string EnableBatchedOperations = "AzureServiceBus.Settings.Topology.Resources.Topics.EnableBatchedOperations";
-//                    public const string EnableFilteringMessagesBeforePublishing = "AzureServiceBus.Settings.Topology.Resources.Topics.EnableFilteringMessagesBeforePublishing";
-//                    public const string EnablePartitioning = "AzureServiceBus.Settings.Topology.Resources.Topics.EnablePartitioning";
-//                    public const string MaxSizeInMegabytes = "AzureServiceBus.Settings.Topology.Resources.Topics.MaxSizeInMegabytes";
-//                    public const string RequiresDuplicateDetection = "AzureServiceBus.Settings.Topology.Resources.Topics.RequiresDuplicateDetection";
-//                    public const string SupportOrdering = "AzureServiceBus.Settings.Topology.Resources.Topics.SupportOrdering";
-//
-//                    public const string EnableExpress = "AzureServiceBus.Settings.Topology.Resources.Topics.EnableExpress";
-//                    public const string EnableExpressCondition = "AzureServiceBus.Settings.Topology.Resources.Topics.EnableExpressCondition";
-//                }
-
-                public static class Subscriptions
-                {
-                    public const string DescriptionFactory = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.DescriptionFactory";
-
-                    public const string AutoDeleteOnIdle = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.AutoDeleteOnIdle";
-                    public const string DefaultMessageTimeToLive = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.DefaultMessageTimeToLive";
-                    public const string EnableBatchedOperations = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.EnableBatchedOperations";
-                    public const string EnableDeadLetteringOnFilterEvaluationExceptions = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.EnableDeadLetteringOnFilterEvaluationExceptions";
-                    public const string EnableDeadLetteringOnMessageExpiration = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.EnableDeadLetteringOnMessageExpiration";
-                    public const string LockDuration = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.LockDuration";
-                    public const string MaxDeliveryCount = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.MaxDeliveryCount";
-
-                    public const string ForwardDeadLetteredMessagesTo = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo";
-                    public const string ForwardDeadLetteredMessagesToCondition = "AzureServiceBus.Settings.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesToCondition";
-                }
-
-
-            }
-
             public static class Addressing
             {
                 public const string UseNamespaceAliasesInsteadOfConnectionStrings = "AzureServiceBus.Settings.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings";

@@ -68,6 +68,7 @@
         public void Should_be_able_to_extend_topic_settings()
         {
             var settings = new SettingsHolder();
+            settings.Set<ITopologyInternal>(new ForwardingTopologyInternal(null));
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var topicsSettings = extensions.Topics();
@@ -79,6 +80,7 @@
         public void Should_be_able_to_extend_subscription_settings()
         {
             var settings = new SettingsHolder();
+            settings.Set<ITopologyInternal>(new ForwardingTopologyInternal(null));
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var subscriptionSettings = extensions.Subscriptions();

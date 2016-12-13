@@ -15,6 +15,12 @@
             topicSettings = settings.Get<ITopologyInternal>().Settings.TopicSettings;
         }
 
+        // TODO: needs to be obsoleted with guidance
+        public AzureServiceBusTopicSettings DescriptionFactory(Func<string, string, ReadOnlySettings, TopicDescription> factory)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Customize topic creation by providing <see cref="TopicDescription"/>.
         /// </summary>
@@ -83,6 +89,7 @@
         /// <summary>
         /// <remarks> Default is false.</remarks>
         /// </summary>
+        // TODO: needs to be deprecated
         public AzureServiceBusTopicSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
         {
             topicSettings.EnableExpress = enableExpress;

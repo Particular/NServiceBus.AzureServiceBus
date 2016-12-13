@@ -4,5 +4,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         public TopologyQueueSettings QueueSettings { get; set; } = new TopologyQueueSettings();
         public TopologyTopicSettings TopicSettings { get; set; } = new TopologyTopicSettings();
+        public TopologySubscriptionSettings SubscriptionSettings { get; set; } = new TopologySubscriptionSettings();
     }
 }

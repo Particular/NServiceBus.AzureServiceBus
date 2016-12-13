@@ -116,10 +116,9 @@
             var fakeTopology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            const long maxTopicSizeInMB = 2048;
             extensions.Topics().MaxSizeInMegabytes(SizeInMegabytes.Size2048);
 
-            Assert.AreEqual(maxTopicSizeInMB, fakeTopology.Settings.TopicSettings.MaxSizeInMegabytes);
+            Assert.AreEqual(SizeInMegabytes.Size2048, fakeTopology.Settings.TopicSettings.MaxSizeInMegabytes);
         }
 
         [Test]

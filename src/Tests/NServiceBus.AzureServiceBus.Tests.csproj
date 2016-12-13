@@ -125,7 +125,6 @@
     <Compile Include="Configuration\When_configuring_namespace_partitioning.cs" />
     <Compile Include="Configuration\When_configuring_publishers.cs" />
     <Compile Include="Configuration\When_configuring_queues.cs" />
-    <Compile Include="Configuration\When_configuring_resource_creation.cs" />
     <Compile Include="Configuration\When_configuring_sanitization_strategy.cs" />
     <Compile Include="Configuration\When_configuring_subscriptions.cs" />
     <Compile Include="Configuration\When_configuring_topics.cs" />

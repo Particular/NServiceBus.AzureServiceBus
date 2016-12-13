@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using AzureServiceBus;
+    using Configuration;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
@@ -42,7 +43,7 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(new TopologySubscriptionSettings(), settings);
             const string subscriptionName = "sub1";
             var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
 
@@ -66,23 +67,24 @@
         public async Task Should_properly_set_use_subscription_description_provided_by_user()
         {
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             const string subscriptionName = "sub2";
-            var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName)
+            
+            var userCustomizationsWhereInvoked = false;
+            extensions.Subscriptions().DescriptionFactory(_ =>
             {
-                LockDuration = TimeSpan.FromMinutes(3)
-            };
+                userCustomizationsWhereInvoked = true;
+            });
 
-            extensions.Subscriptions().DescriptionFactory((x, y, z) => subscriptionDescription);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
-
-            var foundDescription = await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
 
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
-            Assert.AreEqual(subscriptionDescription, foundDescription);
+            Assert.IsTrue(userCustomizationsWhereInvoked);
 
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
@@ -93,12 +95,13 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var autoDeleteTime = TimeSpan.FromDays(1);
             extensions.Subscriptions().AutoDeleteOnIdle(autoDeleteTime);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
 
             const string subscriptionName = "sub3";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
@@ -118,9 +121,10 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var timeToLive = TimeSpan.FromDays(10);
+            var topology = new FakeTopology(settings);
             extensions.Subscriptions().DefaultMessageTimeToLive(timeToLive);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
 
             const string subscriptionName = "sub4";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
@@ -138,11 +142,12 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Subscriptions().EnableBatchedOperations(false);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
 
             const string subscriptionName = "sub5";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
@@ -160,11 +165,12 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
 
             const string subscriptionName = "sub6";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
@@ -182,11 +188,12 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
 
             const string subscriptionName = "sub7";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
@@ -204,12 +211,13 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var lockDuration = TimeSpan.FromMinutes(2);
             extensions.Subscriptions().LockDuration(lockDuration);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
 
             const string subscriptionName = "sub8";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
@@ -227,12 +235,13 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             const int deliveryCount = 10;
             extensions.Subscriptions().MaxDeliveryCount(deliveryCount);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
 
             const string subscriptionName = "sub9";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
@@ -253,7 +262,7 @@
             var queueToForwardTo = await queueCreator.Create("forwardto", namespaceManager);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(new TopologySubscriptionSettings(), settings);
 
             const string subscriptionName = "sub15";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, queueToForwardTo.Path);
@@ -274,13 +283,13 @@
             var topicCreator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
             var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
 
-
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Subscriptions().ForwardDeadLetteredMessagesTo(topicToForwardTo.Path);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
 
             const string subscriptionName = "sub13";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
@@ -303,11 +312,12 @@
 
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "sub14", topicToForwardTo.Path);
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
 
             const string subscriptionName = "sub14";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
@@ -333,7 +343,7 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(new TopologySubscriptionSettings(), settings);
             var subscriptionDescription = await creator.Create(topicPath, subscriptionName, metadata, filter, namespaceManager);
             var rules = await namespaceManager.GetRules(subscriptionDescription);
             var foundFilter = rules.First().Filter as SqlFilter;
@@ -353,11 +363,11 @@
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
-            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, new SubscriptionMetadataInternal { Description = "very.logn.name.of.an.event.that.would.exceed.subscription.length" }, sqlFilter, namespaceManager);
+            var creator = new AzureServiceBusSubscriptionCreator(new TopologySubscriptionSettings(), settings);
+            var subscriptionDescription = await creator.Create(topicPath, subscriptionName, new SubscriptionMetadataInternal { Description = "very.long.name.of.an.event.that.would.exceed.subscription.length" }, sqlFilter, namespaceManager);
 
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
-            Assert.AreEqual("very.logn.name.of.an.event.that.would.exceed.subscription.length", subscriptionDescription.UserMetadata);
+            Assert.AreEqual("very.long.name.of.an.event.that.would.exceed.subscription.length", subscriptionDescription.UserMetadata);
 
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
@@ -371,14 +381,15 @@
             await namespaceManager.CreateSubscription(new SubscriptionDescription("sometopic1", "existingsubscription1"), sqlFilter);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
+            extensions.Subscriptions().DescriptionFactory(description =>
             {
-                AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
-                EnableDeadLetteringOnMessageExpiration = true,
+                description.AutoDeleteOnIdle = TimeSpan.FromMinutes(100);
+                description.EnableDeadLetteringOnMessageExpiration = true;
             });
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
             await creator.Create("sometopic1", "existingsubscription1", metadata, sqlFilter, namespaceManager);
 
             var subscriptionDescription = await namespaceManager.GetSubscription("sometopic1", "existingsubscription1");
@@ -400,14 +411,15 @@
             }, "1=1");
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Subscriptions().DescriptionFactory((topic, sub, readOnlySettings) => new SubscriptionDescription(topic, sub)
+            extensions.Subscriptions().DescriptionFactory(description =>
             {
-                EnableDeadLetteringOnFilterEvaluationExceptions = false,
-                RequiresSession = false
+                description.EnableDeadLetteringOnFilterEvaluationExceptions = false;
+                description.RequiresSession = false;
             });
 
-            var creator = new AzureServiceBusSubscriptionCreator(settings);
+            var creator = new AzureServiceBusSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
             Assert.ThrowsAsync<ArgumentException>(async () => await creator.Create("sometopic2", "existingsubscription2", metadata, sqlFilter, namespaceManager));
 
             //cleanup

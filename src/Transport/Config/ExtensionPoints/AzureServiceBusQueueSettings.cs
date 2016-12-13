@@ -15,6 +15,12 @@
             queueSettings = settings.Get<ITopologyInternal>().Settings.QueueSettings;
         }
 
+        // TODO: needs to be obsoleted with guidance
+        public AzureServiceBusQueueSettings DescriptionFactory(Func<string, string, ReadOnlySettings, QueueDescription> factory)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Customize queue creation by providing <see cref="QueueDescription"/>.
         /// </summary>
@@ -36,6 +42,7 @@
         /// <summary>
         /// <remarks> Default is set not to forward.</remarks>
         /// </summary>
+        // TODO: needs to be deprecated
         public AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(Func<string, bool> condition, string forwardDeadLetteredMessagesTo)
         {
             queueSettings.ForwardDeadLetteredMessagesTo = forwardDeadLetteredMessagesTo;
@@ -57,6 +64,7 @@
         /// <summary>
         /// <remarks> Default is false.</remarks>
         /// </summary>
+        // TODO: needs to be deprecated
         public AzureServiceBusQueueSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
         {
             queueSettings.EnableExpress = enableExpress;
