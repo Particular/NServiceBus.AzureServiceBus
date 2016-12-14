@@ -54,15 +54,9 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
 
             topologyConfiguration.RegisterPublisher(typeof(When_base_event_from_2_publishers.DerivedEvent1), Conventions.EndpointNamingConvention(typeof(When_base_event_from_2_publishers.Publisher1)));
             topologyConfiguration.RegisterPublisher(typeof(When_base_event_from_2_publishers.DerivedEvent1), Conventions.EndpointNamingConvention(typeof(When_base_event_from_2_publishers.Publisher2)));
-            // Polymorphic receive only works if we explicitly disable auto subscription
-            if(endpointName == Conventions.EndpointNamingConvention(typeof(When_base_event_from_2_publishers.Subscriber1)))
-                config.DisableFeature<AutoSubscribe>();
 
             topologyConfiguration.RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent1), Conventions.EndpointNamingConvention(typeof(When_multi_subscribing_to_a_polymorphic_event.Publisher1)));
             topologyConfiguration.RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent2), Conventions.EndpointNamingConvention(typeof(When_multi_subscribing_to_a_polymorphic_event.Publisher2)));
-            // Polymorphic receive only works if we explicitly disable auto subscription
-            if (endpointName == Conventions.EndpointNamingConvention(typeof(When_multi_subscribing_to_a_polymorphic_event.Subscriber)))
-                config.DisableFeature<AutoSubscribe>();
 
             topologyConfiguration.RegisterPublisher(typeof(When_publishing_to_scaled_out_subscribers.MyEvent), Conventions.EndpointNamingConvention(typeof(When_publishing_to_scaled_out_subscribers.Publisher)));
             topologyConfiguration.RegisterPublisher(typeof(When_unsubscribing_from_event.Event), Conventions.EndpointNamingConvention(typeof(When_unsubscribing_from_event.Publisher)));
