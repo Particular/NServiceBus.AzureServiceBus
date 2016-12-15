@@ -25,8 +25,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
-            // set lock duration on a queue to 20 seconds and emulate message processing that takes longer than that, but less than AutoRenewTimeout
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration, TimeSpan.FromSeconds(20));
+            // set lock duration on a queue to 5 seconds and emulate message processing that takes longer than that, but less than AutoRenewTimeout
+            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration, TimeSpan.FromSeconds(2));
+            settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout, TimeSpan.FromSeconds(5));
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -67,17 +68,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                         {
                             Assert.Fail("Callback should only receive one message once, but it did more than that.");
                         }
-                        await Task.Delay(TimeSpan.FromSeconds(30));
+                        await Task.Delay(TimeSpan.FromSeconds(5), cts.Token);
                         completed.Set();
                     }
-                }, null, null, 10);
+                }, null, null, 1);
 
 
             var sw = new Stopwatch();
             sw.Start();
             notifier.Start();
             await completed.WaitAsync(cts.Token).IgnoreCancellation();
-            await Task.Delay(TimeSpan.FromSeconds(10));
             sw.Stop();
 
             await notifier.Stop();
