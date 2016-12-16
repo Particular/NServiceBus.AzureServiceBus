@@ -109,8 +109,6 @@
     <Compile Include="API\APIApprovals.cs" />
     <Compile Include="App_Packages\ApiApprover.6.0.0\PublicApiApprover.cs" />
     <Compile Include="App_Packages\PublicApiGenerator.6.0.0\ApiGenerator.cs" />
-    <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiApprover.cs" />
-    <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiGenerator.cs" />
     <Compile Include="Configuration\FakeTopology.cs" />
     <Compile Include="Configuration\When_configuring.cs" />
     <Compile Include="Configuration\When_configuring_composition.cs" />
