@@ -36,11 +36,11 @@
             }
         }
 
-        private class Context : ScenarioContext
+        class Context : ScenarioContext
         {
         }
 
-        private class MyEndpoint : EndpointConfigurationBuilder
+        class MyEndpoint : EndpointConfigurationBuilder
         {
             public MyEndpoint()
             {
@@ -49,7 +49,7 @@
         }
 
         [Serializable]
-        private class OversizedRequest : IMessage
+        class OversizedRequest : IMessage
         {
             public OversizedRequest()
             {
