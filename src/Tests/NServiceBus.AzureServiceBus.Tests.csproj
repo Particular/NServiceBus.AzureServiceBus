@@ -107,8 +107,8 @@
     <Compile Include="Addressing\Sanitization\When_sanitizing_entity_names_using_ThrowOnFailedValidation_sanitization.cs" />
     <Compile Include="Addressing\When_apply_addressing_logic.cs" />
     <Compile Include="API\APIApprovals.cs" />
-    <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiApprover.cs" />
-    <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiGenerator.cs" />
+    <Compile Include="App_Packages\ApiApprover.6.0.0\PublicApiApprover.cs" />
+    <Compile Include="App_Packages\PublicApiGenerator.6.0.0\ApiGenerator.cs" />
     <Compile Include="Configuration\When_configuring.cs" />
     <Compile Include="Configuration\When_configuring_composition.cs" />
     <Compile Include="Configuration\When_configuring_connectivity.cs" />

@@ -28,13 +28,13 @@
             }
         }
 
-        private class Context : ScenarioContext
+        class Context : ScenarioContext
         {
             public string MessageIdReceived { get; set; }
             public bool GotRequest { get; set; }
         }
 
-        private class MyEndpoint : EndpointConfigurationBuilder
+        class MyEndpoint : EndpointConfigurationBuilder
         {
             public MyEndpoint()
             {
@@ -43,7 +43,7 @@
         }
 
         [Serializable]
-        private class OversizedRequest : IMessage
+        class OversizedRequest : IMessage
         {
             public OversizedRequest()
             {

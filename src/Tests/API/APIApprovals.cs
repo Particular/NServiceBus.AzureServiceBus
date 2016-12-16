@@ -2,11 +2,10 @@
 {
     using System.IO;
     using System.Runtime.CompilerServices;
-    using ApiApprover;
     using ApprovalTests;
     using ApprovalTests.Reporters;
-    using Mono.Cecil;
     using NUnit.Framework;
+    using PublicApiGenerator;
 
     [TestFixture]
     public class APIApprovals
@@ -17,9 +16,7 @@
         public void ApproveAzureServiceBusTransport()
         {
             Directory.SetCurrentDirectory(TestContext.CurrentContext.TestDirectory);
-            var assemblyPath = Path.GetFullPath(typeof(AzureServiceBusTransport).Assembly.Location);
-            var asm = AssemblyDefinition.ReadAssembly(assemblyPath);
-            var publicApi = PublicApiGenerator.CreatePublicApiForAssembly(asm, definition => true, false);
+            var publicApi = ApiGenerator.GeneratePublicApi(typeof(AzureServiceBusTransport).Assembly);
             Approvals.Verify(publicApi);
         }
     }

@@ -11,8 +11,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public MessagingFactoryCreator(IManageNamespaceManagerLifeCycleInternal namespaceManagers, ReadOnlySettings settings)
         {
             this.namespaceManagers = namespaceManagers;
-            transportType = settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType);
-            batchFlushInterval = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval);
+            var transportType = settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType);
+            var batchFlushInterval = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.BatchFlushInterval);
 
             if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessagingFactories.RetryPolicy))
             {
@@ -77,7 +77,5 @@ namespace NServiceBus.Transport.AzureServiceBus
         IManageNamespaceManagerLifeCycleInternal namespaceManagers;
         Func<string, MessagingFactorySettings> settingsFactory;
         RetryPolicy retryPolicy;
-        TransportType transportType;
-        TimeSpan batchFlushInterval;
     }
 }
