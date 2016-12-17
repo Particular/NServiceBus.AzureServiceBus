@@ -11,9 +11,9 @@
         AzureServiceBusSubscriptionCreator creator;
         ILog logger = LogManager.GetLogger<AzureServiceBusSubscriptionCreatorV6>();
 
-        public AzureServiceBusSubscriptionCreatorV6(ReadOnlySettings settings)
+        public AzureServiceBusSubscriptionCreatorV6(TopologySubscriptionSettings subscriptionSettings, ReadOnlySettings settings)
         {
-            creator = new AzureServiceBusSubscriptionCreator(settings);
+            creator = new AzureServiceBusSubscriptionCreator(subscriptionSettings, settings);
         }
 
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo = null)

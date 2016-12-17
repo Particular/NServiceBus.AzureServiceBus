@@ -5,41 +5,35 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
-    using Settings;
 
     class AzureServiceBusTopicCreator : ICreateAzureServiceBusTopicsInternal
     {
-        ReadOnlySettings settings;
-        Func<string, ReadOnlySettings, TopicDescription> topicDescriptionFactory;
+        TopologyTopicSettings topicSettings;
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
         ILog logger = LogManager.GetLogger<AzureServiceBusTopicCreator>();
 
-        public AzureServiceBusTopicCreator(ReadOnlySettings settings)
+        public AzureServiceBusTopicCreator(TopologyTopicSettings topicSettings)
         {
-            this.settings = settings;
-
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Resources.Topics.DescriptionFactory, out topicDescriptionFactory))
-            {
-                topicDescriptionFactory = (topicPath, setting) => new TopicDescription(topicPath)
-                {
-                    AutoDeleteOnIdle = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.AutoDeleteOnIdle),
-                    DefaultMessageTimeToLive = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.DefaultMessageTimeToLive),
-                    DuplicateDetectionHistoryTimeWindow = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Topics.DuplicateDetectionHistoryTimeWindow),
-                    EnableBatchedOperations = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableBatchedOperations),
-                    EnableFilteringMessagesBeforePublishing = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnableFilteringMessagesBeforePublishing),
-                    EnablePartitioning = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.EnablePartitioning),
-                    MaxSizeInMegabytes = setting.GetOrDefault<long>(WellKnownConfigurationKeys.Topology.Resources.Topics.MaxSizeInMegabytes),
-                    RequiresDuplicateDetection = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.RequiresDuplicateDetection),
-                    SupportOrdering = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Topics.SupportOrdering),
-
-                    EnableExpress = setting.GetConditional<bool>(topicPath, WellKnownConfigurationKeys.Topology.Resources.Topics.EnableExpress),
-                };
-            }
+            this.topicSettings = topicSettings;
         }
 
         public async Task<TopicDescription> Create(string topicPath, INamespaceManagerInternal namespaceManager)
         {
-            var topicDescription = topicDescriptionFactory(topicPath, settings);
+            var topicDescription = new TopicDescription(topicPath)
+            {
+                SupportOrdering = topicSettings.SupportOrdering,
+                MaxSizeInMegabytes = topicSettings.MaxSizeInMegabytes,
+                DefaultMessageTimeToLive = topicSettings.DefaultMessageTimeToLive,
+                RequiresDuplicateDetection = topicSettings.RequiresDuplicateDetection,
+                DuplicateDetectionHistoryTimeWindow = topicSettings.DuplicateDetectionHistoryTimeWindow,
+                EnableBatchedOperations = topicSettings.EnableBatchedOperations,
+                EnablePartitioning = topicSettings.EnablePartitioning,
+                AutoDeleteOnIdle = topicSettings.AutoDeleteOnIdle,
+                EnableExpress = topicSettings.EnableExpress,
+                EnableFilteringMessagesBeforePublishing = topicSettings.EnableFilteringMessagesBeforePublishing
+            };
+
+            topicSettings.DescriptionCustomizer(topicDescription);
 
             try
             {

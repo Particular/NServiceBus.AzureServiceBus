@@ -2,12 +2,14 @@
 {
     using System;
     using System.Reflection;
+    using Microsoft.ServiceBus.Messaging;
     using Settings;
     using Transport.AzureServiceBus;
 
     static class ObsoleteMessages
     {
         public const string InternalizedContract = "Internal contract.";
+        public const string ReplaceWithNewAPI = "Replaced with new API.";
     }
 
     [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
@@ -84,6 +86,33 @@
     {
         public AzureServiceBusTopologySettings(SettingsHolder settings) : base(settings)
         {
+        }
+    }
+
+    public partial class AzureServiceBusQueueSettings
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "DescriptionCustomizer(Action<QueueDescription>)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusQueueSettings DescriptionFactory(Func<string, string, ReadOnlySettings, QueueDescription> factory)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class AzureServiceBusTopicSettings
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "DescriptionCustomizer(Action<TopicDescription>)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusTopicSettings DescriptionFactory(Func<string, string, ReadOnlySettings, TopicDescription> factory)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class AzureServiceBusSubscriptionSettings
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "DescriptionCustomizer(Action<SubscriptionDescription>)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusSubscriptionSettings DescriptionFactory(Func<string, string, ReadOnlySettings, SubscriptionDescription> factory)
+        {
+            throw new NotImplementedException();
         }
     }
 }

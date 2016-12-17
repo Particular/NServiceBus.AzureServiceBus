@@ -10,30 +10,18 @@
 
     class AzureServiceBusForwardingSubscriptionCreator : ICreateAzureServiceBusSubscriptionsInternal
     {
-        ReadOnlySettings settings;
-        Func<string, string, ReadOnlySettings, SubscriptionDescription> subscriptionDescriptionFactory;
+        TopologySubscriptionSettings subscriptionSettings;
+        int numberOfImmediateRetries;
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
         ILog logger = LogManager.GetLogger<AzureServiceBusSubscriptionCreator>();
 
-        public AzureServiceBusForwardingSubscriptionCreator(ReadOnlySettings settings)
+        public AzureServiceBusForwardingSubscriptionCreator(TopologySubscriptionSettings subscriptionSettings, ReadOnlySettings settings)
         {
-            this.settings = settings;
+            this.subscriptionSettings = subscriptionSettings;
 
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DescriptionFactory, out subscriptionDescriptionFactory))
-            {
-                subscriptionDescriptionFactory = (topicPath, subscriptionName, setting) => new SubscriptionDescription(topicPath, subscriptionName)
-                {
-                    AutoDeleteOnIdle = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.AutoDeleteOnIdle),
-                    DefaultMessageTimeToLive = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.DefaultMessageTimeToLive),
-                    EnableBatchedOperations = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableBatchedOperations),
-                    EnableDeadLetteringOnFilterEvaluationExceptions = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnFilterEvaluationExceptions),
-                    EnableDeadLetteringOnMessageExpiration = setting.GetOrDefault<bool>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.EnableDeadLetteringOnMessageExpiration),
-                    LockDuration = setting.GetOrDefault<TimeSpan>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.LockDuration),
-                    MaxDeliveryCount = setting.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Resources.Subscriptions.MaxDeliveryCount),
-
-                    ForwardDeadLetteredMessagesTo = setting.GetConditional<string>(subscriptionName, WellKnownConfigurationKeys.Topology.Resources.Subscriptions.ForwardDeadLetteredMessagesTo)
-                };
-            }
+            // TODO: remove ReadOnlySettings when the rest of setting is available
+            numberOfImmediateRetries = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries);
+            numberOfImmediateRetries = numberOfImmediateRetries > 0 ? numberOfImmediateRetries + 1 : subscriptionSettings.MaxDeliveryCount;
         }
 
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
@@ -43,8 +31,20 @@
             {
                 throw new InvalidOperationException($"Cannot create subscription `{subscriptionName}` for topic `{topicPath}` without namespace inforation required.");
             }
+            
+            var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName)
+            {
+                EnableBatchedOperations = subscriptionSettings.EnableBatchedOperations,
+                AutoDeleteOnIdle = subscriptionSettings.AutoDeleteOnIdle,
+                DefaultMessageTimeToLive = subscriptionSettings.DefaultMessageTimeToLive,
+                EnableDeadLetteringOnFilterEvaluationExceptions = subscriptionSettings.EnableDeadLetteringOnFilterEvaluationExceptions,
+                EnableDeadLetteringOnMessageExpiration = subscriptionSettings.EnableDeadLetteringOnMessageExpiration,
+                ForwardDeadLetteredMessagesTo = subscriptionSettings.ForwardDeadLetteredMessagesTo,
+                LockDuration = subscriptionSettings.LockDuration,
+                MaxDeliveryCount = numberOfImmediateRetries
+            };
 
-            var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
+            subscriptionSettings.DescriptionCustomizer(subscriptionDescription);
 
             subscriptionDescription.ForwardTo = forwardTo;
             subscriptionDescription.UserMetadata = metadata.Description;
@@ -132,7 +132,8 @@
         public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
             var meta = metadata as ForwardingTopologySubscriptionMetadata;
-            var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
+//            var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
+            var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName);
 
             try
             {
@@ -151,7 +152,7 @@
                     if (!remainingRules.Any())
                     {
                         await namespaceManager.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
-                        logger.Debug($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' was removed as part of unsubscribe since events are subscribed to.");
+                        logger.Debug($"Subscription '{metadata.Description}' created as '{subscriptionDescription.Name}' was removed as part of unsubscribe since events are subscribed to.");
                     }
                 }
             }

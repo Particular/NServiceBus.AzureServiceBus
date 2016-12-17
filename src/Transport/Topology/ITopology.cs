@@ -21,5 +21,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         bool HasSupportForCentralizedPubSub { get;}
 
         Task Stop();
+
+        TopologySettings Settings { get; }
     }
 }

@@ -17,6 +17,8 @@ namespace NServiceBus
         ILog logger = LogManager.GetLogger("ForwardingTopology");
         ITopologySectionManagerInternal topologySectionManager;
         ITransportPartsContainerInternal container;
+        AzureServiceBusQueueCreator queueCreator;
+        AzureServiceBusTopicCreator topicCreator;
         NamespaceManagerCreator namespaceManagerCreator;
         NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
         MessagingFactoryCreator messagingFactoryAdapterCreator;
@@ -29,13 +31,18 @@ namespace NServiceBus
             this.container = container;
         }
 
+
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
+        public TopologySettings Settings { get; } = new TopologySettings();
+
 
         public void Initialize(SettingsHolder settings)
         {
             ApplyDefaults(settings);
             InitializeContainer(settings);
+            queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
+            topicCreator = new AzureServiceBusTopicCreator(Settings.TopicSettings);
         }
 
         void ApplyDefaults(SettingsHolder settings)
@@ -55,6 +62,7 @@ namespace NServiceBus
         {
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
+
             container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
 
             namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -67,8 +75,8 @@ namespace NServiceBus
             container.RegisterSingleton<MessageReceiverLifeCycleManager>();
             container.RegisterSingleton<MessageSenderCreator>();
             container.RegisterSingleton<MessageSenderLifeCycleManager>();
-            container.RegisterSingleton<AzureServiceBusQueueCreator>();
-            container.RegisterSingleton<AzureServiceBusTopicCreator>();
+            container.Register<AzureServiceBusQueueCreator>(() => queueCreator);
+            container.Register<AzureServiceBusTopicCreator>(() => topicCreator);
             container.RegisterSingleton<AzureServiceBusForwardingSubscriptionCreator>();
 
             container.RegisterSingleton<DefaultConnectionStringToNamespaceAliasMapper>();

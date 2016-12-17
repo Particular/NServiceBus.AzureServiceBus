@@ -6,21 +6,21 @@
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class AzureServiceBusQueueSettings : ExposeSettings
+    public partial class AzureServiceBusQueueSettings : ExposeSettings
     {
-        SettingsHolder settings;
+        TopologyQueueSettings queueSettings;
 
         internal AzureServiceBusQueueSettings(SettingsHolder settings) : base(settings)
         {
-            this.settings = settings;
+            queueSettings = settings.Get<ITopologyInternal>().Settings.QueueSettings;
         }
 
         /// <summary>
-        /// Customize queue creation by providing <see cref="QueueDescription"/>.
+        /// Customize queue creation.
         /// </summary>
-        public AzureServiceBusQueueSettings DescriptionFactory(Func<string, ReadOnlySettings, QueueDescription> factory)
+        public AzureServiceBusQueueSettings DescriptionCustomizer(Action<QueueDescription> customizer)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.DescriptionFactory, factory);
+            queueSettings.DescriptionCustomizer = customizer;
 
             return this;
         }
@@ -36,10 +36,11 @@
         /// <summary>
         /// <remarks> Default is set not to forward.</remarks>
         /// </summary>
+        // TODO: needs to be deprecated
         public AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(Func<string, bool> condition, string forwardDeadLetteredMessagesTo)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesToCondition, condition);
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.ForwardDeadLetteredMessagesTo, forwardDeadLetteredMessagesTo);
+            queueSettings.ForwardDeadLetteredMessagesTo = forwardDeadLetteredMessagesTo;
+            queueSettings.ForwardDeadLetteredMessagesToCondition = condition;
 
             return this;
         }
@@ -49,7 +50,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings EnableExpress(bool enableExpress)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress, enableExpress);
+            queueSettings.EnableExpress = enableExpress;
 
             return this;
         }
@@ -57,10 +58,11 @@
         /// <summary>
         /// <remarks> Default is false.</remarks>
         /// </summary>
+        // TODO: needs to be deprecated
         public AzureServiceBusQueueSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpressCondition, condition);
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableExpress, enableExpress);
+            queueSettings.EnableExpress = enableExpress;
+            queueSettings.EnableExpressCondition = condition;
 
             return this;
         }
@@ -70,7 +72,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings AutoDeleteOnIdle(TimeSpan autoDeleteOnIdle)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.AutoDeleteOnIdle, autoDeleteOnIdle);
+            queueSettings.AutoDeleteOnIdle = autoDeleteOnIdle;
 
             return this;
         }
@@ -81,7 +83,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings EnablePartitioning(bool enablePartitioning)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnablePartitioning, enablePartitioning);
+            queueSettings.EnablePartitioning = enablePartitioning;
 
             return this;
         }
@@ -91,7 +93,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings EnableBatchedOperations(bool enableBatchedOperations)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableBatchedOperations, enableBatchedOperations);
+            queueSettings.EnableBatchedOperations = enableBatchedOperations;
 
             return this;
         }
@@ -101,7 +103,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings MaxDeliveryCount(int maxDeliveryCount)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxDeliveryCount, maxDeliveryCount);
+            queueSettings.MaxDeliveryCount = maxDeliveryCount;
 
             return this;
         }
@@ -111,7 +113,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings DuplicateDetectionHistoryTimeWindow(TimeSpan duplicateDetectionHistoryTimeWindow)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.DuplicateDetectionHistoryTimeWindow, duplicateDetectionHistoryTimeWindow);
+            queueSettings.DuplicateDetectionHistoryTimeWindow = duplicateDetectionHistoryTimeWindow;
 
             return this;
         }
@@ -121,7 +123,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings EnableDeadLetteringOnMessageExpiration(bool enableDeadLetteringOnMessageExpiration)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.EnableDeadLetteringOnMessageExpiration, enableDeadLetteringOnMessageExpiration);
+            queueSettings.EnableDeadLetteringOnMessageExpiration = enableDeadLetteringOnMessageExpiration;
 
             return this;
         }
@@ -131,7 +133,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings DefaultMessageTimeToLive(TimeSpan defaultMessageTimeToLive)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.DefaultMessageTimeToLive, defaultMessageTimeToLive);
+            queueSettings.DefaultMessageTimeToLive = defaultMessageTimeToLive;
 
             return this;
         }
@@ -141,7 +143,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings RequiresDuplicateDetection(bool requiresDuplicateDetection)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.RequiresDuplicateDetection, requiresDuplicateDetection);
+            queueSettings.RequiresDuplicateDetection = requiresDuplicateDetection;
 
             return this;
         }
@@ -152,7 +154,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings MaxSizeInMegabytes(SizeInMegabytes maxSizeInMegabytes)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.MaxSizeInMegabytes, (long)maxSizeInMegabytes);
+            queueSettings.MaxSizeInMegabytes = maxSizeInMegabytes;
 
             return this;
         }
@@ -162,7 +164,7 @@
         /// </summary>
         public AzureServiceBusQueueSettings LockDuration(TimeSpan duration)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.LockDuration, duration);
+            queueSettings.LockDuration = duration;
 
             return this;
         }
@@ -170,9 +172,9 @@
         /// <summary>
         /// <remarks> Default is false.</remarks>
         /// </summary>
-        public AzureServiceBusQueueSettings SupportOrdering(bool supported)
+        public AzureServiceBusQueueSettings SupportOrdering(bool supportOrdering)
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Resources.Queues.SupportOrdering, supported);
+            queueSettings.SupportOrdering = supportOrdering;
 
             return this;
         }

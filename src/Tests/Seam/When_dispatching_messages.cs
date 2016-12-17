@@ -26,6 +26,7 @@
 
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            settings.Set<TopologySettings>(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
@@ -39,7 +40,7 @@
             var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
 
             // create the queue
-            var creator = new AzureServiceBusQueueCreator(settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
             var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
             await creator.Create("myqueue2", namespaceManager);
@@ -63,6 +64,7 @@
 
             // default settings
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            settings.Set<TopologySettings>(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
@@ -76,7 +78,7 @@
             var router = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), clientLifecycleManager, settings, new ThrowOnOversizedBrokeredMessages());
 
             // create the queue
-            var creator = new AzureServiceBusQueueCreator(settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
             var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 

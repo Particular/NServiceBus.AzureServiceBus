@@ -109,6 +109,7 @@
     <Compile Include="API\APIApprovals.cs" />
     <Compile Include="App_Packages\ApiApprover.6.0.0\PublicApiApprover.cs" />
     <Compile Include="App_Packages\PublicApiGenerator.6.0.0\ApiGenerator.cs" />
+    <Compile Include="Configuration\FakeTopology.cs" />
     <Compile Include="Configuration\When_configuring.cs" />
     <Compile Include="Configuration\When_configuring_composition.cs" />
     <Compile Include="Configuration\When_configuring_connectivity.cs" />
@@ -122,7 +123,6 @@
     <Compile Include="Configuration\When_configuring_namespace_partitioning.cs" />
     <Compile Include="Configuration\When_configuring_publishers.cs" />
     <Compile Include="Configuration\When_configuring_queues.cs" />
-    <Compile Include="Configuration\When_configuring_resource_creation.cs" />
     <Compile Include="Configuration\When_configuring_sanitization_strategy.cs" />
     <Compile Include="Configuration\When_configuring_subscriptions.cs" />
     <Compile Include="Configuration\When_configuring_topics.cs" />

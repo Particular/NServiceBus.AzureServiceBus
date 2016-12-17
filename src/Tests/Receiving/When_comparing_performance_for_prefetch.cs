@@ -38,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
-            var creator = new AzureServiceBusQueueCreator(settings);
+            var creator = new AzureServiceBusQueueCreator(new TopologyQueueSettings(), settings);
 
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 
@@ -79,7 +79,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                         completed.Set();
                     }
                     return TaskEx.Completed;
-                }, null, null, 10);
+                }, null, null, 32);
 
 
             var sw = new Stopwatch();
