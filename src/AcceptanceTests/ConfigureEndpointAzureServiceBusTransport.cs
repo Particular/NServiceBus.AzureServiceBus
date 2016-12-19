@@ -8,7 +8,6 @@ using NServiceBus.AcceptanceTests.Routing.NativePublishSubscribe;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
 using NServiceBus.Configuration.AdvanceExtensibility;
-using NServiceBus.Features;
 using Conventions = NServiceBus.AcceptanceTesting.Customization.Conventions;
 
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
