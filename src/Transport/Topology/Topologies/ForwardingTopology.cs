@@ -23,6 +23,10 @@ namespace NServiceBus
         NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
         MessagingFactoryCreator messagingFactoryAdapterCreator;
         MessagingFactoryLifeCycleManager messagingFactoryLifeCycleManager;
+        MessageReceiverCreator receiverCreator;
+        MessageReceiverLifeCycleManager messageReceiverLifeCycleManager;
+        MessageSenderCreator senderCreator;
+        MessageSenderLifeCycleManager senderLifeCycleManager;
 
         public ForwardingTopologyInternal() : this(new TransportPartsContainer()) { }
 
@@ -69,12 +73,15 @@ namespace NServiceBus
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
             messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, settings);
             messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryAdapterCreator, settings);
-            container.Register<IManageMessagingFactoryLifeCycleInternal>(() => messagingFactoryLifeCycleManager);
 
-            container.RegisterSingleton<MessageReceiverCreator>();
-            container.RegisterSingleton<MessageReceiverLifeCycleManager>();
-            container.RegisterSingleton<MessageSenderCreator>();
-            container.RegisterSingleton<MessageSenderLifeCycleManager>();
+            receiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
+            messageReceiverLifeCycleManager = new MessageReceiverLifeCycleManager(receiverCreator, settings);
+            senderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
+            senderLifeCycleManager = new MessageSenderLifeCycleManager(senderCreator, settings);
+
+            container.Register<IManageMessageReceiverLifeCycleInternal>(() => messageReceiverLifeCycleManager);
+            container.Register<IManageMessageSenderLifeCycleInternal>(() => senderLifeCycleManager);
+
             container.Register<AzureServiceBusQueueCreator>(() => queueCreator);
             container.Register<AzureServiceBusTopicCreator>(() => topicCreator);
             container.RegisterSingleton<AzureServiceBusForwardingSubscriptionCreator>();
@@ -167,8 +174,7 @@ namespace NServiceBus
         public Task Stop()
         {
             logger.Info("Closing messaging factories");
-            var factories = container.Resolve<IManageMessagingFactoryLifeCycleInternal>();
-            return factories.CloseAll();
+            return messagingFactoryLifeCycleManager.CloseAll();
         }
     }
 }

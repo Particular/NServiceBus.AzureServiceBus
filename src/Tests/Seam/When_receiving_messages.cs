@@ -29,10 +29,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setting up the environment
             var container = new TransportPartsContainer();
 
-            var topologySectionManagerInternal = await SetupEndpointOrientedTopology(container, "sales");
+            var topologySectionManagerInternal = await SetupEndpointOrientedTopology(container, settings, "sales");
 
             // setup the operator
-            var clientEntities = container.Resolve<IManageMessageReceiverLifeCycleInternal>();
+            var clientEntities = new MessageReceiverLifeCycleManager(new MessageReceiverCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings), settings);
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings));
 
             var pump = new MessagePump(new TopologyOperator(clientEntities, converter, settings), clientEntities, converter, topologySectionManagerInternal, settings);
@@ -60,7 +60,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             pump.Start(new PushRuntimeSettings(1));
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var senderFactory = new MessageSenderCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings);
             var sender = await senderFactory.Create("sales", null, "namespaceName");
             await sender.Send(new BrokeredMessage());
 
@@ -74,18 +74,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await pump.Stop();
         }
 
-        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(TransportPartsContainer container, string enpointname)
+        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(TransportPartsContainer container, SettingsHolder settings, string enpointname)
         {
-            var settings = new SettingsHolder();
             settings.Set<Conventions>(new Conventions());
-            container.Register(typeof(SettingsHolder), () => settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
-            extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
-
             var topology = new EndpointOrientedTopologyInternal(container);
 
             topology.Initialize(settings);
+
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
+            extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
 
             // create the topologySectionManager
             var topologyCreator = (ICreateTopologyInternal)container.Resolve(typeof(TopologyCreator));
