@@ -67,19 +67,6 @@
 
             class DetermineWhatTopologyIsUsed : Feature
             {
-                //                public Context Context { get; set; }
-                //
-                //                public ReadOnlySettings Settings { get; set; }
-                //
-                //                public Task Start(IMessageSession session)
-                //                {
-                //                    Context.IsForwardingTopology = Settings.Get<ITopology>() is ForwardingTopology;
-                //                    return Task.FromResult(0);
-                //                }
-                //
-                //                public Task Stop(IMessageSession session)
-                //                {
-                //                    return Task.FromResult(0);
                 protected override void Setup(FeatureConfigurationContext context)
                 {
                     context.RegisterStartupTask(builder => new TaskToDetermineCurrentTopology(builder.Build<Context>(), builder.Build<ReadOnlySettings>()));
