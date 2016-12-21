@@ -42,7 +42,7 @@
         {
             public Endpoint()
             {
-                EndpointSetup<DefaultServer>()
+                EndpointSetup<DefaultServer>(endpointConfiguration => endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>())
                     .AddMapping<MyEvent>(typeof(Endpoint));
             }
 
