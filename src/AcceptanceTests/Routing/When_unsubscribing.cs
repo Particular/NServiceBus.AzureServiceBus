@@ -24,10 +24,18 @@
 
             var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
+            var endpointName = ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<Endpoint>();
 
-            if (!context.IsForwardingTopology)
+            if (context.IsForwardingTopology)
             {
-                var endpointName = ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<Endpoint>();
+                var isSubscriptionFound = await namespaceManager.SubscriptionExistsAsync("bundle-1", $"{endpointName}");
+                Assert.IsFalse(isSubscriptionFound, "Subscription under 'bundle-1' should have been deleted, but it wasn't.");
+
+                isSubscriptionFound = await namespaceManager.SubscriptionExistsAsync("bundle-2", $"{endpointName}");
+                Assert.IsFalse(isSubscriptionFound, "Subscription under 'bundle-2' should have been deleted, but it wasn't.");
+            }
+            else // EndpointOrientedTopology
+            {
                 var isSubscriptionFound = await namespaceManager.SubscriptionExistsAsync(endpointName + ".events", $"{endpointName}.{nameof(MyEvent)}");
                 Assert.IsFalse(isSubscriptionFound, "Subscription should have been deleted, but it wasn't.");
             }
