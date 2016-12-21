@@ -332,6 +332,7 @@
     <Compile Include="Routing\When_scaling_out_senders_that_uses_callbacks.cs" />
     <Compile Include="Routing\When_sending_to_specific_namespace.cs" />
     <Compile Include="Routing\When_subscribing_to_a_derived_polymorphic_event_with_forwarding_topology.cs" />
+    <Compile Include="Routing\When_unsubscribing_from_one_of_the_events_for_ForwardingTopology.cs" />
     <Compile Include="Routing\When_unsubscribing.cs" />
     <Compile Include="Routing\When_using_single_namespace.cs" />
     <Compile Include="Sending\When_sending_more_than_100_messages_in_a_transaction.cs" />
