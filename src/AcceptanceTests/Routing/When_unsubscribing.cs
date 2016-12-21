@@ -28,10 +28,10 @@
 
             if (context.IsForwardingTopology)
             {
-                var isSubscriptionFound = await namespaceManager.SubscriptionExistsAsync("bundle-1", $"{endpointName}");
+                var isSubscriptionFound = await namespaceManager.SubscriptionExistsAsync("bundle-1", endpointName);
                 Assert.IsFalse(isSubscriptionFound, "Subscription under 'bundle-1' should have been deleted, but it wasn't.");
 
-                isSubscriptionFound = await namespaceManager.SubscriptionExistsAsync("bundle-2", $"{endpointName}");
+                isSubscriptionFound = await namespaceManager.SubscriptionExistsAsync("bundle-2", endpointName);
                 Assert.IsFalse(isSubscriptionFound, "Subscription under 'bundle-2' should have been deleted, but it wasn't.");
             }
             else // EndpointOrientedTopology
