@@ -135,6 +135,46 @@
 
         }
 
+        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo)
+        {
+            var meta = metadata as ForwardingTopologySubscriptionMetadata;
+            var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
+
+            try
+            {
+                if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
+                {
+                    if (await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager, removeCacheEntry:true).ConfigureAwait(false))
+                    {
+                        var ruleDescription = new RuleDescription
+                        {
+                            Filter = new SqlFilter(sqlFilter),
+                            Name = metadata.SubscriptionNameBasedOnEventWithNamespace
+                        };
+                        logger.Info($"Removing subscription rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
+                        var subscriptionClient = SubscriptionClient.CreateFromConnectionString(meta.NamespaceInfo.ConnectionString, topicPath, subscriptionName);
+                        await subscriptionClient.RemoveRuleAsync(ruleDescription.Name).ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    logger.Info($"'{WellKnownConfigurationKeys.Core.CreateTopology}' is set to false, skipping the deletion of subscription '{subscriptionDescription.Name}' aka '{meta?.SubscribedEventFullName}'");
+                }
+            }
+            catch (MessagingException ex)
+            {
+                var loggedMessage = $"{(ex.IsTransient ? "Transient" : "Non transient")} {ex.GetType().Name} occured on subscription '{subscriptionDescription.Name}' deletion for topic '{subscriptionDescription.TopicPath}'";
+
+                if (!ex.IsTransient)
+                {
+                    logger.Fatal(loggedMessage, ex);
+                    throw;
+                }
+
+                logger.Info(loggedMessage, ex);
+            }
+        }
+
         async Task<bool> ExistsAsync(string topicPath, string subscriptionName, string metadata, INamespaceManager namespaceClient, bool removeCacheEntry = false)
         {
             logger.Info($"Checking existence cache for subscription '{subscriptionName}' aka '{metadata}'");

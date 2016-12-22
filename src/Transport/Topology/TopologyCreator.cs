@@ -3,7 +3,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
 
-    class TopologyCreator : ICreateTopology
+    class TopologyCreator : ICreateTopology, ITearDownTopology
     {
         ITransportPartsContainer container;
         IManageNamespaceManagerLifeCycle namespaces;
@@ -48,6 +48,37 @@ namespace NServiceBus.Transport.AzureServiceBus
                     var sqlFilter = (subscription as SubscriptionInfo)?.BrokerSideFilter.Serialize();
                     var metadata = (subscription as SubscriptionInfo)?.Metadata ?? new SubscriptionMetadata();
                     await subscriptionCreator.Create(topic.Target.Path, subscription.Path, metadata, sqlFilter, namespaces.Get(subscription.Namespace.Alias), forwardTo?.Target.Path).ConfigureAwait(false);
+                }
+            }
+        }
+
+        public async Task TearDown(TopologySection topologySection)
+        {
+            var subscriptions = topologySection.Entities.Where(e => e.Type == EntityType.Subscription).ToList();
+            if (subscriptions.Any())
+            {
+                var subscriptionCreator = (ICreateAzureServiceBusSubscriptions)container.Resolve(typeof(ICreateAzureServiceBusSubscriptions));
+
+                var subscriptionCreatorAbleToDeleteSubscriptions = subscriptionCreator as ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions;
+                if (subscriptionCreatorAbleToDeleteSubscriptions == null)
+                {
+                    return;
+                }
+
+                foreach (var subscription in subscriptions)
+                {
+                    var topic = subscription.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
+                    var forwardTo = subscription.RelationShips.FirstOrDefault(r => r.Type == EntityRelationShipType.Forward);
+                    var sqlFilter = (subscription as SubscriptionInfo)?.BrokerSideFilter.Serialize();
+                    var metadata = (subscription as SubscriptionInfo)?.Metadata ?? new SubscriptionMetadata();
+
+
+                    await subscriptionCreatorAbleToDeleteSubscriptions.DeleteSubscription(topicPath: topic.Target.Path, 
+                        subscriptionName: subscription.Path, 
+                        metadata: metadata, 
+                        sqlFilter: sqlFilter, 
+                        namespaceManager: namespaces.Get(subscription.Namespace.Alias), 
+                        forwardTo: forwardTo?.Target.Path).ConfigureAwait(false);
                 }
             }
         }
