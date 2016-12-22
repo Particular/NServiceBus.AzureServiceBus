@@ -45,6 +45,10 @@
                 rules = await namespaceManager.GetRulesAsync("bundle-2", endpointName);
                 Assert.That(rules.Any(rule => rule.Name == ruleName), Is.False);
             }
+            else
+            {
+                Assert.Ignore("Not applicable to EndpointOrientedTopology");
+            }
         }
 
         public class Context : ScenarioContext
