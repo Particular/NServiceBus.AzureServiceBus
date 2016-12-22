@@ -7,7 +7,7 @@
     using Logging;
     using Settings;
 
-    class AzureServiceBusSubscriptionCreator : ICreateAzureServiceBusSubscriptions
+    class AzureServiceBusSubscriptionCreator : ICreateAzureServiceBusSubscriptions, ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
     {
         ReadOnlySettings settings;
         Func<string, string, ReadOnlySettings, SubscriptionDescription> subscriptionDescriptionFactory;
