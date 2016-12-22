@@ -79,7 +79,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                         completed.Set();
                     }
                     return TaskEx.Completed;
-                }, null, null, Environment.ProcessorCount);
+                }, null, null, 32);
 
 
             var sw = new Stopwatch();
