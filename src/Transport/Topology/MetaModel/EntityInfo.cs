@@ -1,7 +1,6 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public class EntityInfo
@@ -23,17 +22,12 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         protected bool Equals(EntityInfo other)
         {
-            if (Type == EntityType.Subscription)
-            {
-                var entity = RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
-                var otherEntity = other.RelationShips.First(r => r.Type == EntityRelationShipType.Subscription);
-                var targetPathEquals = string.Equals(entity.Target.Path, otherEntity.Target.Path);
-                if (!targetPathEquals)
-                {
-                    return false;
-                }
-            }
-            return string.Equals(Path, other.Path) && Type == other.Type && Equals(Namespace, other.Namespace);
+            return string.Equals(Path, other.Path) && Type == other.Type && Equals(Namespace, other.Namespace) && DerivedEqual(other);
+        }
+
+        internal virtual bool DerivedEqual(EntityInfo other)
+        {
+            return true;
         }
 
         public override bool Equals(object obj)
