@@ -60,7 +60,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var senderFactory = new MessageSenderCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings);
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
@@ -115,7 +115,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var senderFactory = new MessageSenderCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings);
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
@@ -173,7 +173,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var senderFactory = new MessageSenderCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings);
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 
@@ -235,7 +235,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
-            var senderFactory = (MessageSenderCreator)container.Resolve(typeof(MessageSenderCreator));
+            var senderFactory = new MessageSenderCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings);
             var sender = await senderFactory.Create("sales", null, "namespace");
             await sender.Send(new BrokeredMessage());
 

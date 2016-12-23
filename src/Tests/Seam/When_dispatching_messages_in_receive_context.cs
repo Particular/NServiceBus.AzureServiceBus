@@ -27,7 +27,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             completed = new AsyncAutoResetEvent(false);
             container = new TransportPartsContainer();
-            var settings = new SettingsHolder();
+            settings = new SettingsHolder();
             criticalError = new CriticalError(ctx => TaskEx.Completed);
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -38,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
 
             timeToWaitBeforeTriggeringTheCircuitBreaker = TimeSpan.FromSeconds(5);
-            var clientEntities = container.Resolve<IManageMessageReceiverLifeCycleInternal>();
+            var clientEntities = new MessageReceiverLifeCycleManager(new MessageReceiverCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings), settings);
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings));
             pump = new MessagePump(new TopologyOperator(clientEntities, converter, settings), clientEntities, converter, topology, settings, timeToWaitBeforeTriggeringTheCircuitBreaker);
         }
@@ -215,7 +215,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         async Task SendEmptyMessageToLocalTestQueue()
         {
             // send message to local queue
-            var senderFactory = (MessageSenderCreator) container.Resolve(typeof(MessageSenderCreator));
+            var senderFactory = new MessageSenderCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings);
             var sender = await senderFactory.Create(SourceQueueName, null, "namespaceName");
             await sender.Send(new BrokeredMessage
             {
@@ -243,6 +243,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         ITopologySectionManagerInternal topology;
         INamespaceManagerInternal namespaceManager;
         TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker;
+        SettingsHolder settings;
         const string DestinationQueueName = "myqueue";
         const string SourceQueueName = "sales";
     }
