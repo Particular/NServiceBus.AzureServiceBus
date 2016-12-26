@@ -29,7 +29,8 @@
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
             var rawEndpointName = ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<Endpoint>();
             var endpointName = MD5HashBuilder.Build(rawEndpointName);
-            var ruleName = MD5HashBuilder.Build(typeof(MyEvent).FullName);
+            var sanitizedEventFullName = typeof(MyOtherEvent).FullName.Replace("+", string.Empty);
+            var otherRuleName = MD5HashBuilder.Build(sanitizedEventFullName);
 
             if (context.IsForwardingTopology)
             {
@@ -40,10 +41,10 @@
                 Assert.IsTrue(isSubscriptionFound, "Subscription under 'bundle-2' should have been found, but it wasn't.");
 
                 var rules = await namespaceManager.GetRulesAsync("bundle-1", endpointName);
-                Assert.That(rules.Any(rule => rule.Name == ruleName), Is.False);
+                CollectionAssert.AreEquivalent(new[] { otherRuleName }, rules.Select(r => r.Name));
 
                 rules = await namespaceManager.GetRulesAsync("bundle-2", endpointName);
-                Assert.That(rules.Any(rule => rule.Name == ruleName), Is.False);
+                CollectionAssert.AreEquivalent(new [] { otherRuleName }, rules.Select(r => r.Name));
             }
             else
             {
