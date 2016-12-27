@@ -7,7 +7,7 @@
     using Logging;
     using Settings;
 
-    class AzureServiceBusSubscriptionCreator : ICreateAzureServiceBusSubscriptions
+    class AzureServiceBusSubscriptionCreator : ICreateAzureServiceBusSubscriptions, ICreateAzureServiceBusSubscriptionsAbleToDeleteSubscriptions
     {
         ReadOnlySettings settings;
         Func<string, string, ReadOnlySettings, SubscriptionDescription> subscriptionDescriptionFactory;
@@ -107,6 +107,42 @@
 
             return subscriptionDescription;
 
+        }
+
+        public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadata metadata, string sqlFilter, INamespaceManager namespaceManager, string forwardTo)
+        {
+            var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
+
+            try
+            {
+                if (settings.Get<bool>(WellKnownConfigurationKeys.Core.CreateTopology))
+                {
+                    if (await ExistsAsync(topicPath, subscriptionName, metadata.Description, namespaceManager, true).ConfigureAwait(false))
+                    {
+                        var namespaceManagerAbleToDeleteSubscriptions = namespaceManager as INamespaceManagerAbleToDeleteSubscriptions;
+                        if (namespaceManagerAbleToDeleteSubscriptions != null)
+                        {
+                            await namespaceManagerAbleToDeleteSubscriptions.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
+                        }
+                    }
+                }
+                else
+                {
+                    logger.Info($"'{WellKnownConfigurationKeys.Core.CreateTopology}' is set to false, skipping the deletion of subscription '{subscriptionDescription.Name}' aka '{subscriptionDescription.TopicPath}'");
+                }
+            }
+            catch (MessagingException ex)
+            {
+                var loggedMessage = $"{(ex.IsTransient ? "Transient" : "Non transient")} {ex.GetType().Name} occured on subscription '{subscriptionDescription.Name}' creation for topic '{subscriptionDescription.TopicPath}'";
+
+                if (!ex.IsTransient)
+                {
+                    logger.Fatal(loggedMessage, ex);
+                    throw;
+                }
+
+                logger.Info(loggedMessage, ex);
+            }
         }
 
         async Task<bool> ExistsAsync(string topicPath, string subscriptionName, string metadata, INamespaceManager namespaceClient, bool removeCacheEntry = false)
