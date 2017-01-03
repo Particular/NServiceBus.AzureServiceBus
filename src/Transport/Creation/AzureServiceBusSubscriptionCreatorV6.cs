@@ -33,15 +33,15 @@
         {
             var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName);
 
-            // check the if the subscription with event name only is the one we should delete, i.e. event with another namespace owns it
-            if (!await SubscriptionIsReusedAcrossDifferentNamespaces(subscriptionDescription, sqlFilter, namespaceManager).ConfigureAwait(false))
+            // Check subscription with event name only is the one we should delete. If it's reused, then we need to use event full name.
+            if (await SubscriptionIsReusedAcrossDifferentNamespaces(subscriptionDescription, sqlFilter, namespaceManager).ConfigureAwait(false))
             {
                 logger.Debug("Deleting subscription using event type full name");
                 subscriptionDescription = new SubscriptionDescription(topicPath, metadata.SubscriptionNameBasedOnEventWithNamespace);
             }
 
             // delete subscription based on event name only
-            await namespaceManager.DeleteSubscription(subscriptionDescription).ConfigureAwait(false);
+            await creator.DeleteSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name, metadata, sqlFilter, namespaceManager, forwardTo).ConfigureAwait(false);
         }
 
         async Task<bool> SubscriptionIsReusedAcrossDifferentNamespaces(SubscriptionDescription subscriptionDescription, string sqlFilter, INamespaceManagerInternal namespaceManager)
