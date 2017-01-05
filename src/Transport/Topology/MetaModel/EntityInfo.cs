@@ -22,12 +22,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         protected bool Equals(EntityInfo other)
         {
-            return string.Equals(Path, other.Path) && Type == other.Type && Equals(Namespace, other.Namespace) && DerivedEqual(other);
-        }
-
-        internal virtual bool DerivedEqual(EntityInfo other)
-        {
-            return true;
+            return string.Equals(Path, other.Path) && Type == other.Type && Equals(Namespace, other.Namespace);
         }
 
         public override bool Equals(object obj)
