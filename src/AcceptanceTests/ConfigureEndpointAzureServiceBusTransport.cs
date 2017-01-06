@@ -14,7 +14,6 @@ using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routin
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
 using NServiceBus.Configuration.AdvanceExtensibility;
 
-
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
 {
     public Task Configure(string endpointName, EndpointConfiguration config, RunSettings settings)
@@ -75,7 +74,10 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 .RegisterPublisher(typeof(When_publishing_an_interface_with_unobtrusive.MyEvent), NameForEndpoint<When_publishing_an_interface_with_unobtrusive.Publisher>())
                 .RegisterPublisher(typeof(When_publishing_to_scaled_out_subscribers.MyEvent), NameForEndpoint<When_publishing_to_scaled_out_subscribers.Publisher>())
                 .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent1), NameForEndpoint<When_multi_subscribing_to_a_polymorphic_event.Publisher1>())
-                .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent2), NameForEndpoint<When_multi_subscribing_to_a_polymorphic_event.Publisher2>());
+                .RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent2), NameForEndpoint<When_multi_subscribing_to_a_polymorphic_event.Publisher2>())
+                .RegisterPublisher(typeof(When_unsubscribing.MyEvent), NameForEndpoint<When_unsubscribing.Endpoint>())
+                .RegisterPublisher(typeof(When_unsubscribing_from_one_of_the_events_for_ForwardingTopology.MyEvent), NameForEndpoint<When_unsubscribing_from_one_of_the_events_for_ForwardingTopology.Endpoint>())
+                .RegisterPublisher(typeof(When_unsubscribing_from_one_of_the_events_for_ForwardingTopology.MyOtherEvent), NameForEndpoint<When_unsubscribing_from_one_of_the_events_for_ForwardingTopology.Endpoint>());
         }
 
         transportConfig.Sanitization()
