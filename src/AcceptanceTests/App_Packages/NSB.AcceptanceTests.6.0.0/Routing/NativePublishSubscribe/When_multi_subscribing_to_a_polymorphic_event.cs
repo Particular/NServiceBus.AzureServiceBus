@@ -8,7 +8,7 @@
 
     public class When_multi_subscribing_to_a_polymorphic_event : NServiceBusAcceptanceTest
     {
-        [Test, Explicit("Polymorphic events will only work for ForwardingTopology, but since can't filter it out, disabling entirely.")]
+        [Test]
         public Task Both_events_should_be_delivered()
         {
             return Scenario.Define<Context>()
