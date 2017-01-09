@@ -205,7 +205,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     sub.RelationShips.Add(new EntityRelationShipInfoInternal
                     {
                         Source = sub,
-                        Target = topics.First(t => t.Namespace == ns),
+                        Target = topics.First(t => t.Path == path && t.Namespace == ns),
                         Type = EntityRelationShipTypeInternal.Subscription
                     });
                     return sub;
