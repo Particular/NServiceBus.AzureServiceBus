@@ -678,6 +678,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public NServiceBus.Transport.AzureServiceBus.IBrokerSideSubscriptionFilter BrokerSideFilter { get; set; }
         public NServiceBus.Transport.AzureServiceBus.IClientSideSubscriptionFilter ClientSideFilter { get; set; }
         public NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata Metadata { get; set; }
+        public override bool Equals(object obj) { }
+        public override int GetHashCode() { }
     }
     public class SubscriptionMetadata
     {
