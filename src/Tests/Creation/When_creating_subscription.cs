@@ -385,6 +385,9 @@
         public async Task Should_be_able_to_update_an_existing_subscription_with_new_property_values()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            //cleanup
+            await namespaceManager.DeleteTopic("sometopic1");
+
             await namespaceManager.CreateTopic(new TopicDescription("sometopic1"));
             await namespaceManager.CreateSubscription(new SubscriptionDescription("sometopic1", "existingsubscription1"), sqlFilter);
 
@@ -392,7 +395,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
             {
-                AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
+                LockDuration = TimeSpan.FromSeconds(100),
                 EnableDeadLetteringOnMessageExpiration = true,
             });
 
@@ -400,10 +403,7 @@
             await creator.Create("sometopic1", "existingsubscription1", metadata, sqlFilter, namespaceManager);
 
             var subscriptionDescription = await namespaceManager.GetSubscription("sometopic1", "existingsubscription1");
-            Assert.AreEqual(TimeSpan.FromMinutes(100), subscriptionDescription.AutoDeleteOnIdle);
-
-            //cleanup
-            await namespaceManager.DeleteTopic("sometopic1");
+            Assert.AreEqual(TimeSpan.FromSeconds(100), subscriptionDescription.LockDuration);
         }
 
         [Test]
