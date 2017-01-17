@@ -45,7 +45,7 @@
             const string subscriptionName = "mysubscription1";
             //make sure there is no leftover from previous test
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
 
@@ -76,7 +76,7 @@
             Assert.IsNull(subscriptionDescription.ForwardDeadLetteredMessagesTo);
             Assert.IsNull(subscriptionDescription.ForwardTo);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
 
@@ -102,7 +102,7 @@
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
             Assert.AreEqual(subscriptionDescription, foundDescription);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -124,7 +124,7 @@
 
             Assert.AreEqual(autoDeleteTime, foundDescription.AutoDeleteOnIdle);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -147,7 +147,7 @@
 
             Assert.AreEqual(timeToLive, foundDescription.DefaultMessageTimeToLive);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -169,7 +169,7 @@
 
             Assert.IsFalse(foundDescription.EnableBatchedOperations);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -191,7 +191,7 @@
 
             Assert.IsTrue(foundDescription.EnableDeadLetteringOnFilterEvaluationExceptions);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -213,7 +213,7 @@
 
             Assert.IsTrue(foundDescription.EnableDeadLetteringOnMessageExpiration);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -236,7 +236,7 @@
 
             Assert.AreEqual(lockDuration, foundDescription.LockDuration);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -259,7 +259,7 @@
 
             Assert.AreEqual(deliveryCount, foundDescription.MaxDeliveryCount);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -280,7 +280,7 @@
 
             Assert.That(foundDescription.ForwardTo.EndsWith(queueToForwardTo.Path));
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteQueue(queueToForwardTo.Path);
         }
 
@@ -307,7 +307,7 @@
 
             Assert.That(foundDescription.ForwardDeadLetteredMessagesTo.EndsWith(topicToForwardTo.Path));
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
 
@@ -334,7 +334,7 @@
 
             Assert.That(foundDescription.ForwardDeadLetteredMessagesTo.EndsWith(topicToForwardTo.Path));
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
 
@@ -360,7 +360,7 @@
             Assert.IsTrue(rules.Count() == 1, "Subscription should only have 1 rule");
             Assert.AreEqual(filter, foundFilter.SqlExpression, "Rule was expected to have a specific SQL filter, but it didn't");
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
         [Test]
@@ -377,7 +377,7 @@
             Assert.IsTrue(await namespaceManager.SubscriptionExists(topicPath, subscriptionName));
             Assert.AreEqual("very.logn.name.of.an.event.that.would.exceed.subscription.length", subscriptionDescription.UserMetadata);
 
-            await namespaceManager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
 
@@ -385,6 +385,9 @@
         public async Task Should_be_able_to_update_an_existing_subscription_with_new_property_values()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            //cleanup
+            await namespaceManager.DeleteTopic("sometopic1");
+
             await namespaceManager.CreateTopic(new TopicDescription("sometopic1"));
             await namespaceManager.CreateSubscription(new SubscriptionDescription("sometopic1", "existingsubscription1"), sqlFilter);
 
@@ -392,7 +395,7 @@
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
             {
-                AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
+                LockDuration = TimeSpan.FromSeconds(100),
                 EnableDeadLetteringOnMessageExpiration = true,
             });
 
@@ -400,10 +403,7 @@
             await creator.Create("sometopic1", "existingsubscription1", metadata, sqlFilter, namespaceManager);
 
             var subscriptionDescription = await namespaceManager.GetSubscription("sometopic1", "existingsubscription1");
-            Assert.AreEqual(TimeSpan.FromMinutes(100), subscriptionDescription.AutoDeleteOnIdle);
-
-            //cleanup
-            await namespaceManager.DeleteTopic("sometopic1");
+            Assert.AreEqual(TimeSpan.FromSeconds(100), subscriptionDescription.LockDuration);
         }
 
         [Test]

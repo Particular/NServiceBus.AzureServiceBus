@@ -6,7 +6,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
 
-    public class NamespaceManagerAdapter : INamespaceManager
+    public class NamespaceManagerAdapter : INamespaceManager, INamespaceManagerAbleToDeleteSubscriptions
     {
         NamespaceManager manager;
 
@@ -113,9 +113,15 @@ namespace NServiceBus.Transport.AzureServiceBus
             return manager.GetTopicAsync(path);
         }
 
+        // TODO: delete this once NamespaceManagerAdapter is internalized
         public Task DeleteSubscriptionAsync(string topicPath, string subscriptionName)
         {
-            return manager.DeleteSubscriptionAsync(topicPath, subscriptionName);
+            return ((INamespaceManagerAbleToDeleteSubscriptions) this).DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
+        }
+
+        Task INamespaceManagerAbleToDeleteSubscriptions.DeleteSubscription(SubscriptionDescription subscriptionDescription)
+        {
+            return manager.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
         }
     }
 }

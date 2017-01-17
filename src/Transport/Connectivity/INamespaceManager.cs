@@ -32,4 +32,10 @@ namespace NServiceBus.Transport.AzureServiceBus
         Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription);
         Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription);
     }
+
+    // TODO: Move into internalized INamespaceManager in v8
+    interface INamespaceManagerAbleToDeleteSubscriptions
+    {
+        Task DeleteSubscription(SubscriptionDescription subscriptionDescription);
+    }
 }

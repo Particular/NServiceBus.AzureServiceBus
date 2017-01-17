@@ -215,7 +215,7 @@
         public DiscriminatorBasedIndividualization(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Individualize(string endpointName) { }
     }
-    public class EndpointOrientedTopology : NServiceBus.Transport.AzureServiceBus.IStoppableTopology, NServiceBus.Transport.AzureServiceBus.ITopology
+    public class EndpointOrientedTopology : NServiceBus.Transport.AzureServiceBus.ITopology
     {
         public EndpointOrientedTopology() { }
         public bool HasNativePubSubSupport { get; }
@@ -249,7 +249,7 @@
         public FlatComposition() { }
         public string GetEntityPath(string entityname, NServiceBus.EntityType entityType) { }
     }
-    public class ForwardingTopology : NServiceBus.Transport.AzureServiceBus.IStoppableTopology, NServiceBus.Transport.AzureServiceBus.ITopology
+    public class ForwardingTopology : NServiceBus.Transport.AzureServiceBus.ITopology
     {
         public ForwardingTopology() { }
         public bool HasNativePubSubSupport { get; }
@@ -261,7 +261,7 @@
         public System.Func<NServiceBus.Transport.ICreateQueues> GetQueueCreatorFactory() { }
         public System.Func<NServiceBus.Transport.IManageSubscriptions> GetSubscriptionManagerFactory() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
-        public async System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks() { }
+        public System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks() { }
         public System.Threading.Tasks.Task Stop() { }
     }
     public class HierarchyComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
@@ -611,7 +611,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public NamespaceManagerAdapter(Microsoft.ServiceBus.NamespaceManager manager) { }
         public System.Uri Address { get; }
         public Microsoft.ServiceBus.NamespaceManagerSettings Settings { get; }
-        public async System.Threading.Tasks.Task<bool> CanManageEntities() { }
+        public System.Threading.Tasks.Task<bool> CanManageEntities() { }
         public System.Threading.Tasks.Task CreateQueue(Microsoft.ServiceBus.Messaging.QueueDescription description) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, string sqlFilter) { }
         public System.Threading.Tasks.Task<Microsoft.ServiceBus.Messaging.SubscriptionDescription> CreateSubscription(Microsoft.ServiceBus.Messaging.SubscriptionDescription subscriptionDescription, Microsoft.ServiceBus.Messaging.RuleDescription ruleDescription) { }
@@ -678,6 +678,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public NServiceBus.Transport.AzureServiceBus.IBrokerSideSubscriptionFilter BrokerSideFilter { get; set; }
         public NServiceBus.Transport.AzureServiceBus.IClientSideSubscriptionFilter ClientSideFilter { get; set; }
         public NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata Metadata { get; set; }
+        public override bool Equals(object obj) { }
+        public override int GetHashCode() { }
     }
     public class SubscriptionMetadata
     {
