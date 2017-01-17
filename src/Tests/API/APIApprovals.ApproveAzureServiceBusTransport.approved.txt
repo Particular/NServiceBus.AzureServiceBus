@@ -842,6 +842,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             "sion 8.0.0. Will be removed in version 9.0.0.", false)]
         public NServiceBus.Transport.AzureServiceBus.IClientSideSubscriptionFilter ClientSideFilter { get; set; }
         public NServiceBus.Transport.AzureServiceBus.SubscriptionMetadata Metadata { get; set; }
+        public override bool Equals(object obj) { }
+        public override int GetHashCode() { }
     }
     [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
         "sion 8.0.0. Will be removed in version 9.0.0.", false)]
