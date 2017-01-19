@@ -24,7 +24,8 @@
                     {
                         var routing = c.UseTransport(r.GetTransportType()).Routing();
                         routing.DoNotEnforceBestPractices();
-                    })
+                    },
+                    meta => meta.RegisterPublisherFor<MyEvent>(typeof(Endpoint)))
                     .AddMapping<MyEvent>(typeof(Endpoint));
             }
 
