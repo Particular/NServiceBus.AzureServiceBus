@@ -7,7 +7,7 @@
     using Logging;
     using Settings;
 
-    class AzureServiceBusSubscriptionCreator : ICreateAzureServiceBusSubscriptionsInternal
+    class AzureServiceBusSubscriptionCreator
     {
         TopologySubscriptionSettings subscriptionSettings;
         int numberOfImmediateRetries;

@@ -217,8 +217,6 @@
     <Compile Include="Config\WellKnownConfigurationKeys.cs" />
     <Compile Include="Connectivity\ICreateMessageSenders.cs" />
     <Compile Include="Connectivity\ICreateMessagingFactories.cs" />
-    <Compile Include="Creation\ICreateAzureServiceBusQueues.cs" />
-    <Compile Include="Creation\ICreateAzureServiceBusTopics.cs" />
     <Compile Include="Creation\ICreateNamespaceManagers.cs" />
     <Compile Include="Connectivity\MessagingFactoryCreator.cs" />
     <Compile Include="Topology\Topologies\ForwardingTopologySectionManager.cs" />

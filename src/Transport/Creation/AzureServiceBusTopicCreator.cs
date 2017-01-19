@@ -6,7 +6,7 @@
     using Microsoft.ServiceBus.Messaging;
     using Logging;
 
-    class AzureServiceBusTopicCreator : ICreateAzureServiceBusTopicsInternal
+    class AzureServiceBusTopicCreator
     {
         TopologyTopicSettings topicSettings;
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
