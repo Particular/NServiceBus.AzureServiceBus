@@ -51,7 +51,8 @@
         {
             public Endpoint()
             {
-                EndpointSetup<DefaultServer>(endpointConfiguration => endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>())
+                EndpointSetup<DefaultServer>(endpointConfiguration => endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>(),
+                    metadata => metadata.RegisterPublisherFor<MyEvent>(typeof(Endpoint)))
                     .AddMapping<MyEvent>(typeof(Endpoint));
             }
 
