@@ -27,7 +27,7 @@
 
             var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
-            var rawEndpointName = ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<Endpoint>();
+            var rawEndpointName = AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(Endpoint));
             var endpointName = MD5HashBuilder.Build(rawEndpointName);
             var sanitizedEventFullName = typeof(MyOtherEvent).FullName.Replace("+", string.Empty);
             var otherRuleName = MD5HashBuilder.Build(sanitizedEventFullName);

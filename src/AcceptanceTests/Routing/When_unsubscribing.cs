@@ -3,6 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using AcceptanceTesting.Customization;
     using Features;
     using Microsoft.ServiceBus;
     using NUnit.Framework;
@@ -24,7 +25,7 @@
 
             var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
-            var endpointName = ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<Endpoint>();
+            var endpointName = Conventions.EndpointNamingConvention(typeof(Endpoint));
 
             if (context.IsForwardingTopology)
             {
