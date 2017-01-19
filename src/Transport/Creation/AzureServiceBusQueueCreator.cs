@@ -9,7 +9,7 @@
     using Logging;
     using Settings;
 
-    class AzureServiceBusQueueCreator : ICreateAzureServiceBusQueuesInternal
+    class AzureServiceBusQueueCreator
     {
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
         TopologyQueueSettings queueSettings;

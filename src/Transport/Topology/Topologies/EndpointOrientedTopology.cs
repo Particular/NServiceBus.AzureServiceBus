@@ -9,14 +9,13 @@ namespace NServiceBus
     using Transport;
     using Transport.AzureServiceBus;
 
-
     class EndpointOrientedTopologyInternal : ITopologyInternal
     {
         ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
         ITopologySectionManagerInternal topologySectionManager;
         ITransportPartsContainerInternal container;
-        AzureServiceBusQueueCreator queueCreator;
-        AzureServiceBusTopicCreator topicCreator;
+        AzureServiceBusQueueCreator queuesCreator;
+        AzureServiceBusTopicCreator topicsCreator;
         NamespaceManagerCreator namespaceManagerCreator;
         NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
         MessagingFactoryCreator messagingFactoryAdapterCreator;
@@ -25,6 +24,7 @@ namespace NServiceBus
         MessageReceiverLifeCycleManager messageReceiverLifeCycleManager;
         MessageSenderCreator senderCreator;
         MessageSenderLifeCycleManager senderLifeCycleManager;
+        AzureServiceBusSubscriptionCreatorV6 subscriptionsCreator;
 
         public EndpointOrientedTopologyInternal() : this(new TransportPartsContainer()){ }
 
@@ -40,9 +40,11 @@ namespace NServiceBus
         public void Initialize(SettingsHolder settings)
         {
             ApplyDefaults(settings);
+
+            queuesCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
+            topicsCreator = new AzureServiceBusTopicCreator(Settings.TopicSettings);
+
             InitializeContainer(settings);
-            queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
-            topicCreator = new AzureServiceBusTopicCreator(Settings.TopicSettings);
         }
 
         void ApplyDefaults(SettingsHolder settings)
@@ -72,12 +74,10 @@ namespace NServiceBus
             messageReceiverLifeCycleManager = new MessageReceiverLifeCycleManager(receiverCreator, settings);
             senderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             senderLifeCycleManager = new MessageSenderLifeCycleManager(senderCreator, settings);
+            subscriptionsCreator = new AzureServiceBusSubscriptionCreatorV6(Settings.SubscriptionSettings, settings);
 
             container.Register<IManageMessageReceiverLifeCycleInternal>(() => messageReceiverLifeCycleManager);
             container.Register<IManageMessageSenderLifeCycleInternal>(() => senderLifeCycleManager);
-            container.Register<AzureServiceBusQueueCreator>(() => queueCreator);
-            container.Register<AzureServiceBusTopicCreator>(() => topicCreator);
-            container.RegisterSingleton<AzureServiceBusSubscriptionCreatorV6>();
 
             container.RegisterSingleton<DefaultConnectionStringToNamespaceAliasMapper>();
 
@@ -86,7 +86,7 @@ namespace NServiceBus
             var batchedOperationsToBrokeredMessagesConverterType = settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter);
             container.Register(batchedOperationsToBrokeredMessagesConverterType);
 
-            container.Register<TopologyCreator>(() => new TopologyCreator(container, namespaceManagerLifeCycleManagerInternal));
+            container.Register<TopologyCreator>(() => new TopologyCreator(subscriptionsCreator, queuesCreator, topicsCreator, namespaceManagerLifeCycleManagerInternal));
             container.Register<Batcher>();
 
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);

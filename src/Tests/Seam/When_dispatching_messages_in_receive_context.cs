@@ -40,18 +40,32 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             timeToWaitBeforeTriggeringTheCircuitBreaker = TimeSpan.FromSeconds(5);
             var clientEntities = new MessageReceiverLifeCycleManager(new MessageReceiverCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings), settings);
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings));
-            pump = new MessagePump(new TopologyOperator(clientEntities, converter, settings), clientEntities, converter, topology, settings, timeToWaitBeforeTriggeringTheCircuitBreaker);
+            pump = new MessagePump(new TopologyOperator(clientEntities, converter, settings), clientEntities, converter, sectionManager, settings, timeToWaitBeforeTriggeringTheCircuitBreaker);
         }
 
         async Task SetupAsync(TransportPartsContainer container, SettingsHolder settings)
         {
             await TestUtility.Delete(SourceQueueName, DestinationQueueName);
 
-            topology = await SetupEndpointOrientedTopology(container, SourceQueueName, settings);
+            container.Register(typeof(SettingsHolder), () => settings);
+            settings.SetDefault("NServiceBus.Routing.EndpointName", SourceQueueName);
+            settings.Set<Conventions>(new Conventions());
+
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
+
+            var endpointOrientedTopology = new EndpointOrientedTopologyInternal(container);
+            endpointOrientedTopology.Initialize(settings);
+
+            // create the topologySectionManager
+            var topologyCreator = (ICreateTopologyInternal) container.Resolve(typeof(TopologyCreator));
+            sectionManager = container.Resolve<ITopologySectionManagerInternal>();
+            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
+            container.RegisterSingleton<TopologyOperator>();
 
             // create the destination queue
             var namespaceLifeCycle = new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings));
-            var creator = (ICreateAzureServiceBusQueuesInternal) container.Resolve(typeof(ICreateAzureServiceBusQueuesInternal));
+            var creator = new AzureServiceBusQueueCreator(endpointOrientedTopology.Settings.QueueSettings, settings);
             namespaceManager = namespaceLifeCycle.Get("namespaceName");
             await creator.Create(DestinationQueueName, namespaceManager);
         }
@@ -192,26 +206,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             }
         }
 
-        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(TransportPartsContainer container, string endpointName, SettingsHolder settings)
-        {
-            container.Register(typeof(SettingsHolder), () => settings);
-            settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
-            settings.Set<Conventions>(new Conventions());
-
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
-
-            var endpointOrientedTopology = new EndpointOrientedTopologyInternal(container);
-            endpointOrientedTopology.Initialize(settings);
-
-            // create the topologySectionManager
-            var topologyCreator = (ICreateTopologyInternal) container.Resolve(typeof(TopologyCreator));
-            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
-            container.RegisterSingleton<TopologyOperator>();
-            return sectionManager;
-        }
-
         async Task SendEmptyMessageToLocalTestQueue()
         {
             // send message to local queue
@@ -240,7 +234,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         IDispatchMessages dispatcher;
         CriticalError criticalError;
         TransportPartsContainer container;
-        ITopologySectionManagerInternal topology;
+        ITopologySectionManagerInternal sectionManager;
         INamespaceManagerInternal namespaceManager;
         TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker;
         SettingsHolder settings;
