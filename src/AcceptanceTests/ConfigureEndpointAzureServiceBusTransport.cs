@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
-using NServiceBus.AcceptanceTests.BestPractices;
 using NServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AcceptanceTests.Routing.NativePublishSubscribe;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
@@ -48,8 +47,8 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                 }
             }
 
-            topologyConfiguration.RegisterPublisher(typeof(When_sending_events_bestpractices_disabled.MyEvent), Conventions.EndpointNamingConvention(typeof(When_sending_events_bestpractices_disabled.Endpoint)));
-            topologyConfiguration.RegisterPublisher(typeof(When_sending_events_bestpractices_disabled_on_endpoint.MyEvent), Conventions.EndpointNamingConvention(typeof(When_sending_events_bestpractices_disabled_on_endpoint.Endpoint)));
+//            topologyConfiguration.RegisterPublisher(typeof(When_sending_events_bestpractices_disabled.MyEvent), Conventions.EndpointNamingConvention(typeof(When_sending_events_bestpractices_disabled.Endpoint)));
+//            topologyConfiguration.RegisterPublisher(typeof(When_sending_events_bestpractices_disabled_on_endpoint.MyEvent), Conventions.EndpointNamingConvention(typeof(When_sending_events_bestpractices_disabled_on_endpoint.Endpoint)));
 
             topologyConfiguration.RegisterPublisher(typeof(When_base_event_from_2_publishers.DerivedEvent1), Conventions.EndpointNamingConvention(typeof(When_base_event_from_2_publishers.Publisher1)));
             topologyConfiguration.RegisterPublisher(typeof(When_base_event_from_2_publishers.DerivedEvent1), Conventions.EndpointNamingConvention(typeof(When_base_event_from_2_publishers.Publisher2)));
