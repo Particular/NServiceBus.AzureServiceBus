@@ -26,9 +26,10 @@ namespace NServiceBus
         {
             config.GetSettings().SetDefault("SelectedSerializer", new JsonSerializer());
             config.GetSettings().SetDefault("EndpointInstanceDiscriminator", QueueIndividualizer.Discriminator);
+            config.GetSettings().SetDefault("Transactions.IsolationLevel", IsolationLevel.Serializable);
 
             // make sure the transaction stays open a little longer than the long poll.
-            config.Transactions().DefaultTimeout(TimeSpan.FromSeconds(AzureServicebusDefaults.DefaultServerWaitTime * 1.1)).IsolationLevel(IsolationLevel.Serializable);
+            config.Transactions().DefaultTimeout(TimeSpan.FromSeconds(AzureServicebusDefaults.DefaultServerWaitTime*1.1));
 
             config.EnableFeature<AzureServiceBusTransportConfiguration>();
         }
