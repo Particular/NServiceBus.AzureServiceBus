@@ -9,7 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class TopologyOperator : IOperateTopologyInternal, IDisposable
     {
-        public TopologyOperator(IManageMessageReceiverLifeCycleInternal clientEntities, IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter, ReadOnlySettings settings)
+        public TopologyOperator(MessageReceiverLifeCycleManager clientEntities, IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter, ReadOnlySettings settings)
         {
             readOnlySettings = settings;
             this.brokeredMessageConverter = brokeredMessageConverter;
@@ -143,7 +143,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
 
         int maxConcurrency;
-        IManageMessageReceiverLifeCycleInternal messageReceiverLifeCycle;
+        MessageReceiverLifeCycleManager messageReceiverLifeCycle;
         IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter;
         ReadOnlySettings readOnlySettings;
     }

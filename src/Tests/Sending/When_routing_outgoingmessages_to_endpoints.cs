@@ -28,8 +28,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -37,7 +37,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
+            var namespaceManager = namespaceLifecycleManager.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
@@ -94,8 +94,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -103,7 +103,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
+            var namespaceManager = namespaceLifecycleManager.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
@@ -166,8 +166,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -175,7 +175,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
+            var namespaceManager = namespaceLifecycleManager.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
@@ -237,8 +237,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -246,7 +246,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
+            var namespaceManager = namespaceLifecycleManager.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
@@ -302,8 +302,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -311,7 +311,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
+            var namespaceManager = namespaceLifecycleManager.Get("namespace");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch
@@ -369,8 +369,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -378,8 +378,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the fallback queue (but not the queue in the primary to emulate that it is down)
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-            var primaryNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("primary");
-            var fallbackNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("fallback");
+            var primaryNamespaceManager = namespaceLifecycleManager.Get("primary");
+            var fallbackNamespaceManager = namespaceLifecycleManager.Get("fallback");
             await creator.Create("myqueue", primaryNamespaceManager);
             await creator.Create("myqueue", fallbackNamespaceManager);
 
@@ -450,8 +450,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -459,7 +459,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the fallback queue (but not the queue in the primary to emulate that it is down)
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-            var fallbackNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("fallback");
+            var fallbackNamespaceManager = namespaceLifecycleManager.Get("fallback");
             await creator.Create("myqueue", fallbackNamespaceManager);
 
             // setup the batch
@@ -527,8 +527,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -536,10 +536,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue & fallback queue
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("primary");
+            var namespaceManager = namespaceLifecycleManager.Get("primary");
             await creator.Create("myqueue", namespaceManager);
 
-            var fallbackNamespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("fallback");
+            var fallbackNamespaceManager = namespaceLifecycleManager.Get("fallback");
             await creator.Create("myqueue", fallbackNamespaceManager);
 
             // setup the batch
@@ -602,8 +602,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
             var clientLifecycleManager = new MessageSenderLifeCycleManager(messageSenderCreator, settings);
@@ -611,7 +611,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // create the queue
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("primary");
+            var namespaceManager = namespaceLifecycleManager.Get("primary");
             await creator.Create("myqueue", namespaceManager);
 
             // setup the batch

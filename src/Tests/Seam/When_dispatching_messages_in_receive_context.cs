@@ -34,13 +34,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             extensions.SendViaReceiveQueue(true);
 
             SetupAsync(container, settings).GetAwaiter().GetResult();
-
-            dispatcher = (IDispatchMessages) container.Resolve(typeof(IDispatchMessages));
-
-            timeToWaitBeforeTriggeringTheCircuitBreaker = TimeSpan.FromSeconds(5);
-            var clientEntities = new MessageReceiverLifeCycleManager(new MessageReceiverCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings), settings);
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings));
-            pump = new MessagePump(new TopologyOperator(clientEntities, converter, settings), clientEntities, converter, sectionManager, settings, timeToWaitBeforeTriggeringTheCircuitBreaker);
         }
 
         async Task SetupAsync(TransportPartsContainer container, SettingsHolder settings)
@@ -58,16 +51,29 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             endpointOrientedTopology.Initialize(settings);
 
             // create the topologySectionManager
-            var topologyCreator = (ICreateTopologyInternal) container.Resolve(typeof(TopologyCreator));
-            sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
-            container.RegisterSingleton<TopologyOperator>();
+            var namespaceManagerCreator = new NamespaceManagerCreator(settings);
+
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var topologyCreator = new TopologyCreator(new AzureServiceBusSubscriptionCreatorV6(endpointOrientedTopology.Settings.SubscriptionSettings, settings), 
+                new AzureServiceBusQueueCreator(endpointOrientedTopology.Settings.QueueSettings,settings),  new AzureServiceBusTopicCreator(endpointOrientedTopology.Settings.TopicSettings), 
+                namespaceLifecycleManager);
+            var topologySectionManager = new EndpointOrientedTopologySectionManager(settings, container);
+            await topologyCreator.Create(topologySectionManager.DetermineResourcesToCreate(new QueueBindings())).ConfigureAwait(false);
 
             // create the destination queue
-            var namespaceLifeCycle = new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings));
             var creator = new AzureServiceBusQueueCreator(endpointOrientedTopology.Settings.QueueSettings, settings);
-            namespaceManager = namespaceLifeCycle.Get("namespaceName");
-            await creator.Create(DestinationQueueName, namespaceManager);
+            namespaceManager = namespaceLifecycleManager.Get("namespaceName");
+            await creator.Create(DestinationQueueName, namespaceManager).ConfigureAwait(false);
+
+            dispatcher = endpointOrientedTopology.GetDispatcherFactory()();
+
+            timeToWaitBeforeTriggeringTheCircuitBreaker = TimeSpan.FromSeconds(5);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
+            var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
+            var receiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
+            var receiversLifeCycleManager = new MessageReceiverLifeCycleManager(receiverCreator, settings);
+            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings));
+            pump = new MessagePump(new TopologyOperator(receiversLifeCycleManager, converter, settings), receiversLifeCycleManager, converter, topologySectionManager, settings, timeToWaitBeforeTriggeringTheCircuitBreaker);
         }
 
         [Test]
@@ -234,7 +240,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         IDispatchMessages dispatcher;
         CriticalError criticalError;
         TransportPartsContainer container;
-        ITopologySectionManagerInternal sectionManager;
         INamespaceManagerInternal namespaceManager;
         TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker;
         SettingsHolder settings;

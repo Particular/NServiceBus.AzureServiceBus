@@ -14,8 +14,8 @@ namespace NServiceBus
         ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
         ITopologySectionManagerInternal topologySectionManager;
         ITransportPartsContainerInternal container;
-        AzureServiceBusQueueCreator queuesCreator;
-        AzureServiceBusTopicCreator topicsCreator;
+        AzureServiceBusQueueCreator queueCreator;
+        AzureServiceBusTopicCreator topicCreator;
         NamespaceManagerCreator namespaceManagerCreator;
         NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
         MessagingFactoryCreator messagingFactoryAdapterCreator;
@@ -25,6 +25,13 @@ namespace NServiceBus
         MessageSenderCreator senderCreator;
         MessageSenderLifeCycleManager senderLifeCycleManager;
         AzureServiceBusSubscriptionCreatorV6 subscriptionsCreator;
+        IOperateTopologyInternal topologyOperator;
+        TopologyCreator topologyCreator;
+        IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessagesToIncomingMessagesConverter;
+        SettingsHolder settings;
+        IConvertOutgoingMessagesToBrokeredMessagesInternal batchedOperationsToBrokeredMessagesConverter;
+        DefaultOutgoingBatchRouter outgoingBatchRouter;
+        Batcher batcher;
 
         public EndpointOrientedTopologyInternal() : this(new TransportPartsContainer()){ }
 
@@ -39,15 +46,17 @@ namespace NServiceBus
 
         public void Initialize(SettingsHolder settings)
         {
-            ApplyDefaults(settings);
+            this.settings = settings;
 
-            queuesCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
-            topicsCreator = new AzureServiceBusTopicCreator(Settings.TopicSettings);
+            ApplyDefaults();
 
-            InitializeContainer(settings);
+            queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
+            topicCreator = new AzureServiceBusTopicCreator(Settings.TopicSettings);
+
+            InitializeContainer();
         }
 
-        void ApplyDefaults(SettingsHolder settings)
+        void ApplyDefaults()
         {
             new DefaultConfigurationValues().Apply(settings);
             // ensures settings are present/correct
@@ -58,7 +67,7 @@ namespace NServiceBus
             topologySectionManager = new EndpointOrientedTopologySectionManager(settings, container);
         }
 
-        void InitializeContainer(SettingsHolder settings)
+        void InitializeContainer()
         {
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
@@ -76,9 +85,6 @@ namespace NServiceBus
             senderLifeCycleManager = new MessageSenderLifeCycleManager(senderCreator, settings);
             subscriptionsCreator = new AzureServiceBusSubscriptionCreatorV6(Settings.SubscriptionSettings, settings);
 
-            container.Register<IManageMessageReceiverLifeCycleInternal>(() => messageReceiverLifeCycleManager);
-            container.Register<IManageMessageSenderLifeCycleInternal>(() => senderLifeCycleManager);
-
             container.RegisterSingleton<DefaultConnectionStringToNamespaceAliasMapper>();
 
             var brokeredMessagesToIncomingMessagesConverterType = settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter);
@@ -86,18 +92,20 @@ namespace NServiceBus
             var batchedOperationsToBrokeredMessagesConverterType = settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter);
             container.Register(batchedOperationsToBrokeredMessagesConverterType);
 
-            container.Register<TopologyCreator>(() => new TopologyCreator(subscriptionsCreator, queuesCreator, topicsCreator, namespaceManagerLifeCycleManagerInternal));
-            container.Register<Batcher>();
+            brokeredMessagesToIncomingMessagesConverter = container.Resolve<IConvertBrokeredMessagesToIncomingMessagesInternal>();
+            batchedOperationsToBrokeredMessagesConverter = container.Resolve<IConvertOutgoingMessagesToBrokeredMessagesInternal>();
+
+            topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal);
+            container.Register<TopologyCreator>(() => topologyCreator);
 
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
             container.Register<IHandleOversizedBrokeredMessages>(() => oversizedMessageHandler);
 
-            container.RegisterSingleton<DefaultOutgoingBatchRouter>();
-            container.RegisterSingleton<TopologyOperator>();
-            container.RegisterSingleton<SubscriptionManager>();
-            container.RegisterSingleton<TransportResourcesCreator>();
-            container.RegisterSingleton<Dispatcher>();
-            container.Register<MessagePump>();
+            outgoingBatchRouter = new DefaultOutgoingBatchRouter(batchedOperationsToBrokeredMessagesConverter, senderLifeCycleManager, settings, oversizedMessageHandler);
+            batcher = new Batcher(topologySectionManager, settings);
+
+            container.Register<TopologyOperator>(() => new TopologyOperator(messageReceiverLifeCycleManager, brokeredMessagesToIncomingMessagesConverter, settings));
+            topologyOperator = container.Resolve<IOperateTopologyInternal>();
 
             container.Register<AddressingLogic>();
 
@@ -126,27 +134,27 @@ namespace NServiceBus
 
         public Func<ICreateQueues> GetQueueCreatorFactory()
         {
-            return () => container.Resolve<ICreateQueues>();
+            return () => new TransportResourcesCreator(topologyCreator, topologySectionManager);
         }
 
         public Func<IPushMessages> GetMessagePumpFactory()
         {
-            return () => container.Resolve<MessagePump>();
+            return () => new MessagePump(topologyOperator, messageReceiverLifeCycleManager, brokeredMessagesToIncomingMessagesConverter, topologySectionManager, settings);
         }
 
         public Func<IDispatchMessages> GetDispatcherFactory()
         {
-            return () => container.Resolve<IDispatchMessages>();
+            return () => new Dispatcher(outgoingBatchRouter, batcher);
         }
 
         public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
         {
-            return () => container.Resolve<IManageSubscriptions>();
+            return () => new SubscriptionManager(topologySectionManager, topologyOperator, topologyCreator);
         }
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
-            var check = new ManageRightsCheck(namespaceManagerLifeCycleManagerInternal, container.Resolve<ReadOnlySettings>());
+            var check = new ManageRightsCheck(namespaceManagerLifeCycleManagerInternal, settings);
 
             return check.Run();
         }
