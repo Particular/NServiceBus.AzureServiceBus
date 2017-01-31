@@ -5,7 +5,6 @@
     using System.Text;
     using System.Threading.Tasks;
     using DelayedDelivery;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using Performance.TimeToBeReceived;
     using Routing;
     using Transport;
@@ -13,13 +12,11 @@
     class AzureServiceBusTransportInfrastructure : TransportInfrastructure
     {
         ITopologyInternal topology;
-        SatelliteTransportAddressCollection satelliteTransportAddresses;
 
-        public AzureServiceBusTransportInfrastructure(ITopologyInternal topology, TransportTransactionMode supportedTransactionMode, SatelliteTransportAddressCollection satelliteTransportAddresses)
+        public AzureServiceBusTransportInfrastructure(ITopologyInternal topology, TransportTransactionMode supportedTransactionMode)
         {
             this.topology = topology;
             TransactionMode = supportedTransactionMode;
-            this.satelliteTransportAddresses = satelliteTransportAddresses;
         }
 
         public override Task Stop()
@@ -44,9 +41,6 @@
             if (logicalAddress.Qualifier != null)
             {
                 queue.Append("." + logicalAddress.Qualifier);
-
-                // satellite input queue, store it for message pump to be able to determine what pump is for satellites and what is the main pump
-                satelliteTransportAddresses.Add(queue.ToString());
             }
 
             return queue.ToString();

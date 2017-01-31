@@ -6,7 +6,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Extensibility;
     using Logging;
     using NServiceBus.AzureServiceBus;
-    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using Settings;
 
     class MessagePump : IPushMessages, IDisposable
@@ -22,7 +21,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.topologySectionManager = topologySectionManager;
             this.settings = settings;
-            satelliteTransportAddresses = settings.Get<SatelliteTransportAddressCollection>();
+            localAddress = settings.LocalAddress();
             timeToWaitBeforeTriggering = timeToWaitBeforeTriggeringTheCircuitBreaker;
         }
 
@@ -98,7 +97,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         /// </summary>
         IOperateTopologyInternal DetermineTopologyOperator(string pushSettingsInputQueue)
         {
-            if (satelliteTransportAddresses.Contains(pushSettingsInputQueue))
+            if (pushSettingsInputQueue != localAddress)
             {
                 return new TopologyOperator(clientEntities, brokeredMessageConverter, settings);
             }
@@ -114,7 +113,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         RepeatedFailuresOverTimeCircuitBreaker circuitBreaker;
         ILog logger = LogManager.GetLogger(typeof(MessagePump));
         string inputQueue;
-        SatelliteTransportAddressCollection satelliteTransportAddresses;
+        string localAddress;
         SemaphoreSlim throttler;
         TimeSpan timeToWaitBeforeTriggering;
         ReadOnlySettings settings;
