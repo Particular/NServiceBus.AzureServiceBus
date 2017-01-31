@@ -25,6 +25,7 @@
             container.Register<IOperateTopology>(() => fakeTopologyOperator);
 
             var settings = new SettingsHolder();
+            settings.Set("NServiceBus.SharedQueue", "sales");
             new DefaultConfigurationValues().Apply(settings);
             container.Register<ReadOnlySettings>(() => settings);
 

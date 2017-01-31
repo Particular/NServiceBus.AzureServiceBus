@@ -17,6 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var container = new TransportPartsContainer();
             container.Register<TopologyOperator>();
             var settings = new SettingsHolder();
+            settings.Set("NServiceBus.SharedQueue", "sales");
             new DefaultConfigurationValues().Apply(settings);
             container.Register<ReadOnlySettings>(() => settings);
 
