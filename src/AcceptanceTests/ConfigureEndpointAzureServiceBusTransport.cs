@@ -12,7 +12,6 @@ using NServiceBus.AcceptanceTests.Sagas;
 using NServiceBus.AcceptanceTests.Versioning;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
-using When_unsubscribing_from_event = NServiceBus.AcceptanceTests.Routing.MessageDrivenSubscriptions.When_unsubscribing_from_event;
 
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
 {
