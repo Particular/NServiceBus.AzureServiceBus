@@ -90,7 +90,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         /// <summary>
         /// Determine what topology operator to use.
         /// For the main input queue, cache and re-use the same topology operator.
-        /// For satellite input queues, create a new topology operator.
+        /// For other queues (instance specific and satellite input queues) create a new topology operator.
         /// </summary>
         IOperateTopology DetermineTopologyOperator(string pushSettingsInputQueue)
         {
