@@ -29,6 +29,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             completed = new AsyncAutoResetEvent(false);
             container = new TransportPartsContainer();
             var settings = new SettingsHolder();
+            settings.Set("NServiceBus.SharedQueue", SourceQueueName);
             criticalError = new CriticalError(ctx => TaskEx.Completed);
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
