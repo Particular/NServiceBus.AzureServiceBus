@@ -15,6 +15,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         public void Should_throw()
         {
             var settings = new SettingsHolder();
+            settings.Set("NServiceBus.SharedQueue", "sales");
             new DefaultConfigurationValues().Apply(settings);
 
             var pump = new MessagePump(null, null, null, null, settings);

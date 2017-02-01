@@ -24,6 +24,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             await TestUtility.Delete("sales");
 
             var settings = new SettingsHolder();
+            settings.Set("NServiceBus.SharedQueue", "sales");
             new DefaultConfigurationValues().Apply(settings);
 
             // setting up the environment
