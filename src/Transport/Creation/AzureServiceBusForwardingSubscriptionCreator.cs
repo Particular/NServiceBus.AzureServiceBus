@@ -62,7 +62,7 @@
                     await namespaceManager.CreateSubscription(subscriptionDescription, ruleDescription).ConfigureAwait(false);
                     logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' with rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
 
-                    var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
+                    var key = GenerateSubscriptionKey(namespaceManager.Address, subscriptionDescription.TopicPath, subscriptionDescription.Name);
                     await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
                 }
                 else
@@ -174,7 +174,7 @@
         {
             logger.Info($"Checking existence cache for subscription '{subscriptionName}' aka '{metadata}'");
 
-            var key = topicPath + subscriptionName;
+            var key = GenerateSubscriptionKey(namespaceClient.Address, topicPath, subscriptionName);
 
             if (removeCacheEntry)
             {
@@ -208,6 +208,11 @@
                    || existingDescription.MaxDeliveryCount != newDescription.MaxDeliveryCount
                    || existingDescription.EnableBatchedOperations != newDescription.EnableBatchedOperations
                    || existingDescription.ForwardDeadLetteredMessagesTo != newDescription.ForwardDeadLetteredMessagesTo;
+        }
+
+        static string GenerateSubscriptionKey(Uri namespaceAddress, string topicPath, string subscriptionName)
+        {
+            return  namespaceAddress + topicPath + subscriptionName;
         }
     }
 }
