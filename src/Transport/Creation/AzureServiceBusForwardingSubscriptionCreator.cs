@@ -41,7 +41,7 @@
             var meta = metadata as ForwardingTopologySubscriptionMetadata;
             if (meta == null)
             {
-                throw new InvalidOperationException($"Cannot create subscription `{subscriptionName}` for topic `{topicPath}` without namespace inforation required.");
+                throw new InvalidOperationException($"Cannot create subscription `{subscriptionName}` for topic `{topicPath}` without namespace information required.");
             }
 
             var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
@@ -60,7 +60,7 @@
                     };
 
                     await namespaceManager.CreateSubscription(subscriptionDescription, ruleDescription).ConfigureAwait(false);
-                    logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' with rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
+                    logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' with rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}' in namespace {namespaceManager.Address.Host}");
 
                     var key = GenerateSubscriptionKey(namespaceManager.Address, subscriptionDescription.TopicPath, subscriptionDescription.Name);
                     await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
@@ -68,12 +68,12 @@
                 else
                 {
                     logger.Info($"Subscription '{subscriptionDescription.Name}' aka '{subscriptionDescription.UserMetadata}' already exists, skipping creation");
-                    logger.InfoFormat("Checking if subscription '{0}' needs to be updated", subscriptionDescription.Name);
+                    logger.InfoFormat("Checking if subscription '{0}' in namespace {1} needs to be updated", subscriptionDescription.Name, namespaceManager.Address.Host);
 
                     var existingSubscriptionDescription = await namespaceManager.GetSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
                     if (MembersAreNotEqual(existingSubscriptionDescription, subscriptionDescription))
                     {
-                        logger.Info($"Updating subscription '{subscriptionDescription.Name}' with new description");
+                        logger.Info($"Updating subscription '{subscriptionDescription.Name}' in namespace {namespaceManager.Address.Host} with new description");
                         await namespaceManager.UpdateSubscription(subscriptionDescription).ConfigureAwait(false);
                     }
 
@@ -83,7 +83,7 @@
                         Filter = new SqlFilter(sqlFilter),
                         Name = metadata.SubscriptionNameBasedOnEventWithNamespace
                     };
-                    logger.Info($"Adding subscription rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
+                    logger.Info($"Adding subscription rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}' in namespace {namespaceManager.Address.Host}");
                     try
                     {
                         var subscriptionClient = SubscriptionClient.CreateFromConnectionString(meta.NamespaceInfo.ConnectionString, topicPath, subscriptionName);
@@ -98,7 +98,7 @@
             catch (MessagingEntityAlreadyExistsException)
             {
                 // the subscription already exists or another node beat us to it, which is ok
-                logger.Info($"Subscription '{subscriptionDescription.Name}' already exists, another node probably beat us to it");
+                logger.Info($"Subscription '{subscriptionDescription.Name}' in namespace {namespaceManager.Address.Host} already exists, another node probably beat us to it");
             }
             catch (TimeoutException)
             {
@@ -172,7 +172,7 @@
 
         async Task<bool> ExistsAsync(string topicPath, string subscriptionName, string metadata, INamespaceManager namespaceClient, bool removeCacheEntry = false)
         {
-            logger.Info($"Checking existence cache for subscription '{subscriptionName}' aka '{metadata}'");
+            logger.Info($"Checking existence cache for subscription '{subscriptionName}' aka '{metadata}' in namespace {namespaceClient.Address.Host}");
 
             var key = GenerateSubscriptionKey(namespaceClient.Address, topicPath, subscriptionName);
 
@@ -184,11 +184,11 @@
 
             var exists = await rememberExistence.GetOrAdd(key, notFoundKey =>
             {
-                logger.Info($"Checking namespace for existence of subscription '{subscriptionName}' for the topic '{topicPath}'");
+                logger.Info($"Checking namespace {namespaceClient.Address.Host} for existence of subscription '{subscriptionName}' for the topic '{topicPath}'");
                 return namespaceClient.SubscriptionExists(topicPath, subscriptionName);
             }).ConfigureAwait(false);
 
-            logger.Info($"Determined, from cache, that the subscription '{subscriptionName}' {(exists ? "exists" : "does not exist")}");
+            logger.Info($"Determined, from cache, that the subscription '{subscriptionName}' in namespace {namespaceClient.Address.Host} {(exists ? "exists" : "does not exist")}");
 
             return exists;
         }
