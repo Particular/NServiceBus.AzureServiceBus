@@ -427,7 +427,7 @@
         [Test]
         public async Task Should_create_subscription_on_multiple_namespaces()
         {
-            const string subscriptionName = "SomeEvent";
+            const string subscriptionName = "MultipleNamespaceEvent";
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var creator = new AzureServiceBusSubscriptionCreator(settings);

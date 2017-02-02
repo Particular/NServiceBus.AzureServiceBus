@@ -477,7 +477,7 @@
         [Test]
         public async Task Should_create_subscription_on_multiple_namespaces()
         {
-            const string subscriber = "someendpoint";
+            const string subscriber = "MultipleNamespaceSubscriber";
 
             var namespaceManager1 = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             var namespaceManager2 = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
