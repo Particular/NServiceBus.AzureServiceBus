@@ -53,23 +53,25 @@
                 if (!await ExistsAsync(namespaceManager, description.Path).ConfigureAwait(false))
                 {
                     await namespaceManager.CreateQueue(description).ConfigureAwait(false);
-                    logger.InfoFormat("Queue '{0}' created", description.Path);
+                    logger.InfoFormat("Queue '{0}' created in namespace {1}", description.Path, namespaceManager.Address.Host);
 
-                    await rememberExistence.AddOrUpdate(description.Path, s => Task.FromResult(true), (s, b) => Task.FromResult(true)).ConfigureAwait(false);
+                    var key = GenerateQueueKey(namespaceManager, queuePath);
+
+                    await rememberExistence.AddOrUpdate(key, s => Task.FromResult(true), (s, b) => Task.FromResult(true)).ConfigureAwait(false);
                 }
                 else
                 {
-                    logger.InfoFormat("Queue '{0}' already exists, skipping creation", description.Path);
-                    logger.InfoFormat("Checking if queue '{0}' needs to be updated", description.Path);
+                    logger.InfoFormat("Queue '{0}' in namespace {1} already exists, skipping creation", description.Path, namespaceManager.Address.Host);
+                    logger.InfoFormat("Checking if queue '{0}' in namespace {1} needs to be updated", description.Path, namespaceManager.Address.Host);
                     if (IsSystemQueue(description.Path))
                     {
-                        logger.InfoFormat("Queue '{0}' is a shared queue and should not be updated", description.Path);
+                        logger.InfoFormat("Queue '{0}' in {1} is a shared queue and should not be updated", description.Path, namespaceManager.Address.Host);
                         return description;
                     }
                     var existingDescription = await namespaceManager.GetQueue(description.Path).ConfigureAwait(false);
                     if (MembersAreNotEqual(existingDescription, description))
                     {
-                        logger.InfoFormat("Updating queue '{0}' with new description", description.Path);
+                        logger.InfoFormat("Updating queue '{0}' in namespace {1} with new description", description.Path, namespaceManager.Address.Host);
                         await namespaceManager.UpdateQueue(description).ConfigureAwait(false);
                     }
                 }
@@ -77,11 +79,11 @@
             catch (MessagingEntityAlreadyExistsException)
             {
                 // the queue already exists or another node beat us to it, which is ok
-                logger.InfoFormat("Queue '{0}' already exists, another node probably beat us to it", description.Path);
+                logger.InfoFormat("Queue '{0}' in namespace {1} already exists, another node probably beat us to it", description.Path, namespaceManager.Address.Host);
             }
             catch (TimeoutException)
             {
-                logger.InfoFormat("Timeout occurred on queue creation for '{0}' going to validate if it doesn't exist", description.Path);
+                logger.InfoFormat("Timeout occurred on queue creation for '{0}' in namespace {1} going to validate if it doesn't exist", description.Path, namespaceManager.Address.Host);
 
                 // there is a chance that the timeout occurred, but the topic was still created, check again
                 if (!await ExistsAsync(namespaceManager, description.Path, removeCacheEntry: true).ConfigureAwait(false))
@@ -89,17 +91,17 @@
                     throw;
                 }
 
-                logger.InfoFormat("Looks like queue '{0}' exists anyway", description.Path);
+                logger.InfoFormat("Looks like queue '{0}' in namespace {1} exists anyway", description.Path, namespaceManager.Address.Host);
             }
             catch (MessagingException ex)
             {
                 if (!ex.IsTransient)
                 {
-                    logger.Fatal(string.Format("{1} {2} occurred on queue creation {0}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
+                    logger.Fatal(string.Format("{1} {2} occurred on queue creation {0} in namespace {3}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name, namespaceManager.Address.Host), ex);
                     throw;
                 }
 
-                logger.Info(string.Format("{1} {2} occurred on queue creation {0}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
+                logger.Info(string.Format("{1} {2} occurred on queue creation {0} in namespace {3}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name, namespaceManager.Address.Host), ex);
             }
 
             return description;
@@ -113,8 +115,8 @@
 
         async Task<bool> ExistsAsync(INamespaceManager namespaceClient, string queuePath, bool removeCacheEntry = false)
         {
-            var key = queuePath + namespaceClient.Address;
-            logger.InfoFormat("Checking existence cache for '{0}'", queuePath);
+            var key = GenerateQueueKey(namespaceClient, queuePath);
+            logger.InfoFormat("Checking existence cache for '{0}' in namespace {1}", queuePath, namespaceClient.Address.Host);
 
             if (removeCacheEntry)
             {
@@ -124,11 +126,11 @@
 
             var exists = await rememberExistence.GetOrAdd(key, s =>
             {
-                logger.InfoFormat("Checking namespace for existence of the queue '{0}'", queuePath);
+                logger.InfoFormat("Checking namespace for existence of the queue '{0}' in namespace {1}", queuePath, namespaceClient.Address.Host);
                 return namespaceClient.QueueExists(queuePath);
             }).ConfigureAwait(false);
 
-            logger.InfoFormat("Determined, from cache, that the queue '{0}' {1}", queuePath, exists ? "exists" : "does not exist");
+            logger.InfoFormat("Determined, from cache, that the queue '{0}' in namespace {2} {1}", queuePath, exists ? "exists" : "does not exist", namespaceClient.Address.Host);
 
             return exists;
         }
@@ -159,6 +161,11 @@
                    || existingDescription.SupportOrdering != newDescription.SupportOrdering
                    || existingDescription.EnableExpress != newDescription.EnableExpress
                    || existingDescription.ForwardDeadLetteredMessagesTo != newDescription.ForwardDeadLetteredMessagesTo;
+        }
+
+        static string GenerateQueueKey(INamespaceManager namespaceClient, string queuePath)
+        {
+            return queuePath + namespaceClient.Address;
         }
     }
 }
