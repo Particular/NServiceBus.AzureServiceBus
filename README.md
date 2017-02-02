@@ -1,5 +1,3 @@
-[![NuGet](https://img.shields.io/nuget/v/NServiceBus.Azure.Transports.WindowsAzureServiceBus.svg)](https://www.nuget.org/packages/NServiceBus.Azure.Transports.WindowsAzureServiceBus) [![ASB](https://img.shields.io/badge/docs-ASB_Transport-brightgreen.svg?style=flat)](https://docs.particular.net/nservicebus/azure-service-bus/)
-
 # Azure ServiceBus Transport for NServiceBus
 
 The Azure ServiceBus transport for NServiceBus enables the use of the Azure Service Bus Brokered Messaging service as the underlying transport used by NServiceBus. 
@@ -7,7 +5,8 @@ The Azure ServiceBus transport for NServiceBus enables the use of the Azure Serv
 
 ## Documentation
 
-[Azure Transport](http://docs.particular.net/nservicebus/windows-azure-transport)
+[Azure Service Bus Transport](https://docs.particular.net/nservicebus/azure-service-bus/)
+
 [Samples](http://docs.particular.net/samples/azure/)
 
 
@@ -22,10 +21,13 @@ Follow these steps to run the acceptance tests locally:
 * Add a new environment variable `AzureServiceBusTransport.ConnectionString` containing a connection string to your Azure Service Bus namespace
 * Add a new environment variable `AzureServiceBusTransport.Topology` with the value `ForwardingTopology` or `EndpointOrientedTopology`
 
-
 ## Running the Unit Tests
 
 * Add a new environment variable `AzureServiceBus.ConnectionString`containing a connection string to your Azure Service Bus namespace (could be same as for acceptance tests)
 * Add a new environment variable `AzureServiceBus.ConnectionString.Fallback` containing a connection string to your Azure Service Bus fallback namespace
+
+
+## Maintainers
+The following team is responsible for this repository: @Particular/azure-maintainers
 
 
