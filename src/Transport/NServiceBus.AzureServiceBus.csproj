@@ -130,7 +130,6 @@
     <Compile Include="Topology\TopologySettings.cs" />
     <Compile Include="Topology\TopologySubscriptionSettings.cs" />
     <Compile Include="Topology\TopologyTopicSettings.cs" />
-    <Compile Include="Utils\AsyncAutoResetEvent.cs" />
     <Compile Include="Utils\MessageReceiverExtensions.cs" />
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />
