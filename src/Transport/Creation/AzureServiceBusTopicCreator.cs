@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using NServiceBus.AzureServiceBus;
 
     class AzureServiceBusTopicCreator
     {
@@ -41,7 +42,7 @@
                 {
                     await namespaceManager.CreateTopic(topicDescription).ConfigureAwait(false);
                     logger.InfoFormat("Topic '{0}' created", topicDescription.Path);
-                    await rememberExistence.AddOrUpdate(topicDescription.Path, notFoundTopicPath => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
+                    await rememberExistence.AddOrUpdate(topicDescription.Path, notFoundTopicPath => TaskEx.CompletedTrue, (updateTopicPath, previousValue) => TaskEx.CompletedTrue).ConfigureAwait(false);
                 }
                 else
                 {
