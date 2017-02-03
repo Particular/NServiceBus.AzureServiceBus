@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using NServiceBus.AzureServiceBus;
     using Settings;
 
     class AzureServiceBusTopicCreator : ICreateAzureServiceBusTopics
@@ -46,7 +47,7 @@
                 if (!await ExistsAsync(topicPath, namespaceManager).ConfigureAwait(false))
                 {
                     await namespaceManager.CreateTopic(topicDescription).ConfigureAwait(false);
-                    logger.InfoFormat("Topic '{0}' in namespace {1} created", topicDescription.Path, namespaceManager.Address.Host);
+                    logger.InfoFormat("Topic '{0}' in namespace '{1}' created.", topicDescription.Path, namespaceManager.Address);
 
                     var key = GenerateTopicKey(topicPath, namespaceManager);
 
@@ -54,12 +55,12 @@
                 }
                 else
                 {
-                    logger.InfoFormat("Topic '{0}' in namespace {1} already exists, skipping creation", topicDescription.Path, namespaceManager.Address.Host);
-                    logger.InfoFormat("Checking if topic '{0}' in namespace {1} needs to be updated", topicDescription.Path, namespaceManager.Address.Host);
+                    logger.InfoFormat("Topic '{0}' in namespace '{1}' already exists, skipping creation.", topicDescription.Path, namespaceManager.Address);
+                    logger.InfoFormat("Checking if topic '{0}' in namespace '{1}' needs to be updated.", topicDescription.Path, namespaceManager.Address);
                     var existingTopicDescription = await namespaceManager.GetTopic(topicDescription.Path).ConfigureAwait(false);
                     if (MembersAreNotEqual(existingTopicDescription, topicDescription))
                     {
-                        logger.InfoFormat("Updating topic '{0}' in namespace {1} with new description", topicDescription.Path, namespaceManager.Address.Host);
+                        logger.InfoFormat("Updating topic '{0}' in namespace '{1}' with new description.", topicDescription.Path, namespaceManager.Address);
                         await namespaceManager.UpdateTopic(topicDescription).ConfigureAwait(false);
                     }
                 }
@@ -67,11 +68,11 @@
             catch (MessagingEntityAlreadyExistsException)
             {
                 // the topic already exists or another node beat us to it, which is ok
-                logger.InfoFormat("Topic '{0}' in namespace {1} already exists, another node probably beat us to it", topicDescription.Path, namespaceManager.Address.Host);
+                logger.InfoFormat("Topic '{0}' in namespace '{1}' already exists, another node probably beat us to it.", topicDescription.Path, namespaceManager.Address);
             }
             catch (TimeoutException)
             {
-                logger.InfoFormat("Timeout occurred on topic creation for '{0}' in namespace {1} going to validate if it doesn't exist", topicDescription.Path, namespaceManager.Address.Host);
+                logger.InfoFormat("Timeout occurred on topic creation for '{0}' in namespace '{1}' going to validate if it doesn't exist.", topicDescription.Path, namespaceManager.Address);
 
                 // there is a chance that the timeout occurred, but the topic was still created, check again
                 if (!await ExistsAsync(topicDescription.Path, namespaceManager, removeCacheEntry: true).ConfigureAwait(false))
@@ -79,11 +80,11 @@
                     throw;
                 }
 
-                logger.InfoFormat("Looks like topic '{0}' in namespace {1} exists anyway", topicDescription.Path, namespaceManager.Address.Host);
+                logger.InfoFormat("Looks like topic '{0}' in namespace '{1}' exists anyway.", topicDescription.Path, namespaceManager.Address);
             }
             catch (MessagingException ex)
             {
-                var loggedMessage = string.Format("{1} {2} occurred on topic creation {0} in namespace {3}", topicDescription.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name, namespaceManager.Address.Host);
+                var loggedMessage = string.Format("{1} {2} occurred on topic creation '{0}' in namespace {3}.", topicDescription.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name, namespaceManager.Address);
 
                 if (!ex.IsTransient)
                 {
@@ -100,7 +101,7 @@
         async Task<bool> ExistsAsync(string topicPath, INamespaceManager namespaceClient, bool removeCacheEntry = false)
         {
             var key = GenerateTopicKey(topicPath, namespaceClient);
-            logger.InfoFormat("Checking existence cache for '{0}' in namespace {1}", topicPath, namespaceClient.Address.Host);
+            logger.InfoFormat("Checking existence cache for '{0}' in namespace '{1}'.", topicPath, namespaceClient.Address);
 
             if (removeCacheEntry)
             {
@@ -110,11 +111,11 @@
 
             var exists = await rememberExistence.GetOrAdd(key, notFoundTopicPath =>
             {
-                logger.InfoFormat("Checking namespace for existence of the topic '{0}' in namespace {1}", topicPath, namespaceClient.Address.Host);
+                logger.InfoFormat("Checking namespace for existence of the topic '{0}' in namespace '{1}'.", topicPath, namespaceClient.Address);
                 return namespaceClient.TopicExists(topicPath);
             }).ConfigureAwait(false);
 
-            logger.InfoFormat("Determined, from cache, that the topic '{0}' in namespace {2} {1}", topicPath, exists ? "exists" : "does not exist", namespaceClient.Address.Host);
+            logger.InfoFormat("Determined, from cache, that the topic '{0}' in namespace '{2}' {1}.", topicPath, exists ? "exists" : "does not exist", namespaceClient.Address);
 
             return exists;
         }
