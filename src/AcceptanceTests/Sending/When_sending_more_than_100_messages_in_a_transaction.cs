@@ -39,7 +39,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     var transport = config.UseTransport<AzureServiceBusTransport>();
                     transport.MessageSenders().MessageSizePaddingPercentage(0);
                     transport.UseNamespaceAliasesInsteadOfConnectionStrings();
-                    config.SendFailedMessagesTo(ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<ErrorSpy>());
+                    config.SendFailedMessagesTo(AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(ErrorSpy)));
                 });
             }
 
@@ -54,7 +54,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                         var sendOptions = new SendOptions();
                         // slim down messages as much as possible
                         sendOptions.SetMessageId("0");
+#pragma warning disable 618
                         sendOptions.SetCorrelationId("0");
+#pragma warning restore 618
                         sendOptions.SetHeader("NServiceBus.RelatedTo", string.Empty);
                         sendOptions.SetHeader("NServiceBus.ConversationId", string.Empty);
                         sendOptions.RouteToThisEndpoint();

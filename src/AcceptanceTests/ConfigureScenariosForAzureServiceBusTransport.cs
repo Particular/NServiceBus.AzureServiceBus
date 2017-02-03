@@ -11,6 +11,5 @@ public class ConfigureScenariosForAzureServiceBusTransport : IConfigureSupported
         typeof(AllTransportsWithMessageDrivenPubSub),
         typeof(AllTransportsWithoutNativeDeferral),
         typeof(AllNativeMultiQueueTransactionTransports),
-        typeof(AllTransportsWithoutNativeDeferralAndWithAtomicSendAndReceive)
     };
 }

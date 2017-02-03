@@ -65,7 +65,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
 
             var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
-            
+
             var ctx = new AzureServiceBusTransportConfigContext();
             ctx.Callback = (endpointName, extensions) =>
             {
@@ -140,11 +140,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             }
         }
 
-        class MyRequest : IMessage
+        public class MyRequest : IMessage
         {
         }
 
-        class MyResponse : IMessage
+        public class MyResponse : IMessage
         {
         }
 

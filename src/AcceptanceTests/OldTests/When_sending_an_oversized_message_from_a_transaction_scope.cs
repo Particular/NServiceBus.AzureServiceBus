@@ -1,7 +1,6 @@
 ﻿namespace NServiceBus.AcceptanceTests.WindowsAzureServiceBus
 {
     using System;
-    using System.Threading.Tasks;
     using System.Transactions;
     using EndpointTemplates;
     using AcceptanceTesting;
@@ -11,29 +10,21 @@
     public class When_sending_an_oversized_message_from_a_transaction_scope : NServiceBusAcceptanceTest
     {
         [Test]
-        public async Task Should_throw_message_too_large_exception()
+        public void Should_throw_message_too_large_exception()
         {
-            try
+            Assert.ThrowsAsync<MessageTooLargeException>(async () =>
             {
                 await Scenario.Define<Context>()
-                   .WithEndpoint<MyEndpoint>(b => b.When(async bus =>
-                   {
-                       using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew))
-                       {
-                           await bus.SendLocal(new OversizedRequest());
-                           scope.Complete();
-                       }
-                   }))
-                   .Run();
-            }
-            catch (AggregateException ex)
-            {
-                var interesting = ex.InnerException.InnerException;
-                if (!(interesting is MessageTooLargeException))
-                {
-                    throw;
-                }
-            }
+                    .WithEndpoint<MyEndpoint>(b => b.When(async bus =>
+                    {
+                        using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew))
+                        {
+                            await bus.SendLocal(new OversizedRequest());
+                            scope.Complete();
+                        }
+                    }))
+                    .Run();
+            });
         }
 
         class Context : ScenarioContext
@@ -49,7 +40,7 @@
         }
 
         [Serializable]
-        class OversizedRequest : IMessage
+        public class OversizedRequest : IMessage
         {
             public OversizedRequest()
             {

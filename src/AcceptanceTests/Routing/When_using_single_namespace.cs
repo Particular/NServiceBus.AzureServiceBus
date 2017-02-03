@@ -45,7 +45,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
             Assert.IsTrue(context.ReplyToContainsNamespaceName, "context.ReplyToContainsNamespaceName");
         }
-      
+
 
         public class SourceEndpoint : EndpointConfigurationBuilder
         {
@@ -87,11 +87,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             }
         }
 
-        class MyRequest : IMessage
+        public class MyRequest : IMessage
         {
         }
 
-        class MyResponse : IMessage
+        public class MyResponse : IMessage
         {
         }
 

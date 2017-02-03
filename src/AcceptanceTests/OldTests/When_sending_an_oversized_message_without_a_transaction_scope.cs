@@ -1,31 +1,22 @@
 ﻿namespace NServiceBus.AcceptanceTests.WindowsAzureServiceBus
 {
     using System;
-    using System.Threading.Tasks;
     using EndpointTemplates;
     using AcceptanceTesting;
     using Transport.AzureServiceBus;
     using NUnit.Framework;
 
     public class When_sending_an_oversized_message_without_a_transaction_scope : NServiceBusAcceptanceTest
-    {  
+    {
         [Test]
-        public async Task Should_throw_message_too_large_exception()
+        public void Should_throw_message_too_large_exception()
         {
-            try
+            Assert.ThrowsAsync<MessageTooLargeException>(async () =>
             {
                 await Scenario.Define<Context>()
-                   .WithEndpoint<MyEndpoint>(b => b.When(async bus => await bus.SendLocal(new OversizedRequest())))
-                   .Run();
-            }
-            catch (AggregateException ex)
-            {
-                var interesting = ex.InnerException.InnerException;
-                if (!(interesting is MessageTooLargeException))
-                {
-                    throw;
-                }
-            }
+                    .WithEndpoint<MyEndpoint>(b => b.When(async bus => await bus.SendLocal(new OversizedRequest())))
+                    .Run();
+            });
         }
 
         class Context : ScenarioContext
@@ -43,7 +34,7 @@
         }
 
         [Serializable]
-        class OversizedRequest : IMessage
+        public class OversizedRequest : IMessage
         {
             public OversizedRequest()
             {
