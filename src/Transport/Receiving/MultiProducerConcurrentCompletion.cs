@@ -89,7 +89,7 @@
 
             if (incrementedCounter > batchSize)
             {
-                syncEvent.Set();
+                batchSizeReached.TrySetResult(true);
             }
         }
 
@@ -150,7 +150,14 @@
             {
                 try
                 {
-                    await Task.WhenAny(Task.Delay(pushInterval, token), syncEvent.WaitAsync(token)).ConfigureAwait(false);
+                    await Task.WhenAny(Task.Delay(pushInterval, token), batchSizeReached.Task).ConfigureAwait(false);
+                    /* This will always successfully complete the batchSizeReached task completion source
+                     * The benefit of this is that we don't need a cancellation token registration since during
+                     * completion phase the Task.Delay will be cancelled anyway, Task.WhenAny will return and then the batchSizeReached
+                     * task completion source is successfully completed.
+                    */
+                    batchSizeReached.TrySetResult(true); 
+                    batchSizeReached = new TaskCompletionSource<bool>();
                     await PushInBatches().ConfigureAwait(false);
                 }
                 catch (Exception)
@@ -231,7 +238,7 @@
         Func<List<TItem>, int, object, CancellationToken, Task> pump;
         Task timer;
         CancellationTokenSource tokenSource;
-        AsyncAutoResetEvent syncEvent = new AsyncAutoResetEvent(false);
+        TaskCompletionSource<bool> batchSizeReached = new TaskCompletionSource<bool>();
         bool started;
         object state;
         int maxConcurrency;
