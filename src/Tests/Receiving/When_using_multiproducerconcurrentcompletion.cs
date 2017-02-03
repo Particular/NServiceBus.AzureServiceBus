@@ -197,6 +197,36 @@
             Assert.AreEqual(1, Flatten(pushedItems).Sum(i => i));
         }
 
+        [Test]
+        public async Task Complete_works_even_when_push_interval_and_batch_size_not_reached()
+        {
+            var receivedItems = new ConcurrentQueue<List<int>>[4]
+            {
+                new ConcurrentQueue<List<int>>(),
+                new ConcurrentQueue<List<int>>(),
+                new ConcurrentQueue<List<int>>(),
+                new ConcurrentQueue<List<int>>(),
+            };
+
+            // choose insanely high batchSize and pushInterval to force the loop hanging
+            var completion = new MultiProducerConcurrentCompletion<int>(batchSize: 10000, pushInterval: TimeSpan.FromDays(1), maxConcurrency: 4, numberOfSlots: 4);
+
+            completion.Start((items, slot, state, token) =>
+            {
+                receivedItems[slot].Enqueue(new List<int>(items)); // take a copy
+                return Task.FromResult(0);
+            });
+
+            var numberOfItems = await PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(completion);
+
+            await completion.Complete();
+
+            var sumOfAllElementsSeenSoFar = Flatten(receivedItems).Sum(i => i);
+
+            Assert.AreEqual(TriangularNumber(numberOfItems), sumOfAllElementsSeenSoFar);
+            Assert.AreEqual(TriangularNumber(numberOfItems), Flatten(receivedItems).Sum(i => i), "Dispatcher complete brought more items than expected");
+        }
+
         static async Task<int> PushConcurrentlyTwoThousandItemsInPackagesOfFiveHundredIntoFourSlots(MultiProducerConcurrentCompletion<int> completion)
         {
             var t1 = Task.Run(() => Parallel.For(1, 500, i =>

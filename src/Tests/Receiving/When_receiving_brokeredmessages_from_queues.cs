@@ -44,8 +44,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // perform the test
             var receiver = await messageReceiverCreator.Create("myqueue", "namespace");
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+            var completed = new AsyncManualResetEvent(false);
+            var error = new AsyncManualResetEvent(false);
 
             Exception ex = null;
             var received = false;

@@ -129,7 +129,6 @@
     <Compile Include="Sending\Time.cs" />
     <Compile Include="Topology\IStoppableTopology.cs" />
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
-    <Compile Include="Utils\AsyncAutoResetEvent.cs" />
     <Compile Include="Utils\MessageReceiverExtensions.cs" />
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />

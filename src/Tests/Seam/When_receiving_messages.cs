@@ -36,8 +36,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             // setup the operator
             var pump = new MessagePump(topology, container, settings);
 
-            var completed = new AsyncAutoResetEvent(false);
-            //var error = new AsyncAutoResetEvent(false);
+            var completed = new AsyncManualResetEvent(false);
+            //var error = new AsyncManualResetEvent(false);
 
             var received = false;
             Exception ex = null;
