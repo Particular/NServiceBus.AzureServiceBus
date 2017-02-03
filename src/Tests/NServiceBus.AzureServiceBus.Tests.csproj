@@ -109,6 +109,7 @@
     <Compile Include="API\APIApprovals.cs" />
     <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiApprover.cs" />
     <Compile Include="App_Packages\ApiApprover.3.0.1\PublicApiGenerator.cs" />
+    <Compile Include="AsyncManualResetEvent.cs" />
     <Compile Include="Configuration\When_configuring.cs" />
     <Compile Include="Configuration\When_configuring_composition.cs" />
     <Compile Include="Configuration\When_configuring_connectivity.cs" />
@@ -183,7 +184,6 @@
     <Compile Include="Topology\When_configuring_publishers.cs" />
     <Compile Include="Utils\When_getting_items_from_circular_buffer.cs" />
     <Compile Include="Utils\When_putting_items_into_circular_buffer.cs" />
-    <Compile Include="Utils\When_using_async_auto_reset_event.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

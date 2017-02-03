@@ -26,7 +26,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         public void SetUp()
         {
             tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-            completed = new AsyncAutoResetEvent(false);
+            completed = new AsyncManualResetEvent(false);
             container = new TransportPartsContainer();
             var settings = new SettingsHolder();
             settings.Set("NServiceBus.SharedQueue", SourceQueueName);
@@ -235,7 +235,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         }
 
         CancellationTokenSource tokenSource;
-        AsyncAutoResetEvent completed;
+        AsyncManualResetEvent completed;
         MessagePump pump;
         IDispatchMessages dispatcher;
         CriticalError criticalError;

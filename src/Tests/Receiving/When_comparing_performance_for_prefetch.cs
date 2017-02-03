@@ -48,7 +48,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var queue = await creator.Create("myqueue", namespaceManager);
 
             var receivedMessages = 0;
-            var completed = new AsyncAutoResetEvent(false);
+            var completed = new AsyncManualResetEvent(false);
 
             // sending messages to the queue
             var senderFactory = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
