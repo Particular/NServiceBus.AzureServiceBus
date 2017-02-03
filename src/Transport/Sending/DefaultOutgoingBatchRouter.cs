@@ -14,7 +14,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         ILog logger = LogManager.GetLogger<DefaultOutgoingBatchRouter>();
         IConvertOutgoingMessagesToBrokeredMessagesInternal outgoingMessageConverter;
-        IManageMessageSenderLifeCycleInternal senders;
+        MessageSenderLifeCycleManager sendersLifeCycleManager;
         ReadOnlySettings settings;
         IHandleOversizedBrokeredMessages oversizedMessageHandler;
 
@@ -22,10 +22,10 @@ namespace NServiceBus.Transport.AzureServiceBus
         TimeSpan backOffTimeOnThrottle;
         int maximuMessageSizeInKilobytes;
 
-        public DefaultOutgoingBatchRouter(IConvertOutgoingMessagesToBrokeredMessagesInternal outgoingMessageConverter, IManageMessageSenderLifeCycleInternal senders, ReadOnlySettings settings, IHandleOversizedBrokeredMessages oversizedMessageHandler)
+        public DefaultOutgoingBatchRouter(IConvertOutgoingMessagesToBrokeredMessagesInternal outgoingMessageConverter, MessageSenderLifeCycleManager sendersLifeCycleManager, ReadOnlySettings settings, IHandleOversizedBrokeredMessages oversizedMessageHandler)
         {
             this.outgoingMessageConverter = outgoingMessageConverter;
-            this.senders = senders;
+            this.sendersLifeCycleManager = sendersLifeCycleManager;
             this.settings = settings;
             this.oversizedMessageHandler = oversizedMessageHandler;
 
@@ -65,13 +65,13 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
 
                 // don't use via on fallback, not supported across namespaces
-                var fallbacks = passiveNamespaces.Select(n => senders.Get(entity.Path, null, n.Alias)).ToList();
+                var fallbacks = passiveNamespaces.Select(n => sendersLifeCycleManager.Get(entity.Path, null, n.Alias)).ToList();
 
                 var ns = entity.Namespace;
                 // only use via if the destination and via namespace are the same
                 var via = routingOptions.SendVia && ns.ConnectionString ==  routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
                 var suppressTransaction = via == null;
-                var messageSender = senders.Get(entity.Path, via, ns.Alias);
+                var messageSender = sendersLifeCycleManager.Get(entity.Path, via, ns.Alias);
 
                 routingOptions.DestinationEntityPath = entity.Path;
                 routingOptions.DestinationNamespace = ns;

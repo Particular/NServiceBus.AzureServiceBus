@@ -32,8 +32,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
-            var NamespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var messagingFactoryCreator = new MessagingFactoryCreator(NamespaceManagerLifeCycleManagerInternal, settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
@@ -42,7 +42,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 
             // create the queue
-            var namespaceManager = NamespaceManagerLifeCycleManagerInternal.Get("namespace");
+            var namespaceManager = namespaceLifecycleManager.Get("namespace");
             await creator.Create("autorenewtimeout", namespaceManager);
 
             var receivedMessages = 0;

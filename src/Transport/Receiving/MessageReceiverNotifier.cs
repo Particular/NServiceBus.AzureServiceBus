@@ -14,7 +14,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessageReceiverNotifier : INotifyIncomingMessagesInternal
     {
-        public MessageReceiverNotifier(IManageMessageReceiverLifeCycleInternal clientEntities, IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter, ReadOnlySettings settings)
+        public MessageReceiverNotifier(MessageReceiverLifeCycleManager clientEntities, IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter, ReadOnlySettings settings)
         {
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
@@ -318,7 +318,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return TaskEx.Completed;
         }
 
-        IManageMessageReceiverLifeCycleInternal clientEntities;
+        MessageReceiverLifeCycleManager clientEntities;
         IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessageConverter;
         ReadOnlySettings settings;
         IMessageReceiverInternal[] internalReceivers;

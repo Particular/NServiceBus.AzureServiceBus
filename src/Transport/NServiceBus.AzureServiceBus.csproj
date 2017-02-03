@@ -107,7 +107,6 @@
     <Compile Include="Config\TransactionModeSettingsExtensions.cs" />
     <Compile Include="Config\ExtensionPoints\SizeInMegabytes.cs" />
     <Compile Include="Connectivity\ICreateMessageReceivers.cs" />
-    <Compile Include="Connectivity\IManageMessageSenderLifeCycle.cs" />
     <Compile Include="Connectivity\MessageSenderLifeCycleManager.cs" />
     <Compile Include="Connectivity\TaskWithRetryExtensions.cs" />
     <Compile Include="Creation\AzureServiceBusForwardingSubscriptionCreator.cs" />
@@ -175,7 +174,6 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessagingFactoriesSettings.cs" />
     <Compile Include="Connectivity\MessageReceiverLifeCycleManager.cs" />
     <Compile Include="Connectivity\IClientEntity.cs" />
-    <Compile Include="Connectivity\IManageMessageReceiverLifeCycle.cs" />
     <Compile Include="Connectivity\IManageMessagingFactoryLifeCycle.cs" />
     <Compile Include="Connectivity\IManageNamespaceManagerLifeCycle.cs" />
     <Compile Include="Connectivity\IMessageReceiver.cs" />
