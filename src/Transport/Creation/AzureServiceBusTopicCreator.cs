@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
-    using NServiceBus.AzureServiceBus;
     using Settings;
 
     class AzureServiceBusTopicCreator : ICreateAzureServiceBusTopics
