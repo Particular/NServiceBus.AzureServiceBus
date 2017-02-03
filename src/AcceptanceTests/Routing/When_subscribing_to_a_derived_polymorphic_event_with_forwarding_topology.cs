@@ -107,9 +107,11 @@
                     // Limit message processing to a single thread to ensure that if duplicate events are sent, they are getting
                     // to the subscriber before stop command
                     busConfiguration.LimitMessageProcessingConcurrencyTo(1);
-                })
-                    .AddMapping<BaseEvent>(typeof(Publisher))
-                    .AddMapping<DerivedEvent>(typeof(Publisher));
+                }, metadata =>
+                {
+                    metadata.RegisterPublisherFor<BaseEvent>(typeof(Publisher));
+                    metadata.RegisterPublisherFor<DerivedEvent>(typeof(Publisher));
+                });
             }
 
             public class MyEventHandler : IHandleMessages<DerivedEvent>, IHandleMessages<BaseEvent>, IHandleMessages<EventWasRaisedSoStopProcessing>

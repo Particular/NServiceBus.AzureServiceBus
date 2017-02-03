@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBus", "Transport\NServiceBus.AzureServiceBus.csproj", "{607C3F29-58D4-4EEC-BFFB-668976CBB5B8}"
 EndProject
@@ -12,14 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{52AA5A83
 		nuget.config = nuget.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBus.Tests", "Tests\NServiceBus.AzureServiceBus.Tests.csproj", "{0A5B4346-3C24-4192-B47C-B35706954907}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NugetPackageDefinition", "NugetPackageDefinition", "{7FC54FB1-D732-49B2-A5F1-3EEE3F9A36F2}"
 	ProjectSection(SolutionItems) = preProject
 		..\packaging\nuget\nservicebus.azureservicebus.nuspec = ..\packaging\nuget\nservicebus.azureservicebus.nuspec
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBus.TransportTests", "TransportTests\NServiceBus.AzureServiceBus.TransportTests.csproj", "{0F5092A6-06C2-4AED-B7A5-29D7AD43222F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,14 +31,6 @@ Global
 		{54FCA3C9-F153-4FDF-A7F6-46595275AE6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54FCA3C9-F153-4FDF-A7F6-46595275AE6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54FCA3C9-F153-4FDF-A7F6-46595275AE6E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A5B4346-3C24-4192-B47C-B35706954907}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A5B4346-3C24-4192-B47C-B35706954907}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A5B4346-3C24-4192-B47C-B35706954907}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A5B4346-3C24-4192-B47C-B35706954907}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0F5092A6-06C2-4AED-B7A5-29D7AD43222F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F5092A6-06C2-4AED-B7A5-29D7AD43222F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F5092A6-06C2-4AED-B7A5-29D7AD43222F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F5092A6-06C2-4AED-B7A5-29D7AD43222F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
