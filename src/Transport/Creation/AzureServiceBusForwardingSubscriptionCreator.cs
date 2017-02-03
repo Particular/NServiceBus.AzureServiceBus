@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using NServiceBus.AzureServiceBus;
     using Settings;
 
     class AzureServiceBusForwardingSubscriptionCreator : ICreateAzureServiceBusSubscriptionsInternal
@@ -31,7 +32,7 @@
             {
                 throw new InvalidOperationException($"Cannot create subscription `{subscriptionName}` for topic `{topicPath}` without namespace inforation required.");
             }
-            
+
             var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName)
             {
                 EnableBatchedOperations = subscriptionSettings.EnableBatchedOperations,
@@ -63,7 +64,7 @@
                     logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}' with rule '{ruleDescription.Name}' for event '{meta.SubscribedEventFullName}'");
 
                     var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
-                    await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
+                    await rememberExistence.AddOrUpdate(key, keyNotFound => TaskEx.CompletedTrue, (updateTopicPath, previousValue) => TaskEx.CompletedTrue).ConfigureAwait(false);
                 }
                 else
                 {

@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using NServiceBus.AzureServiceBus;
     using Settings;
 
     class AzureServiceBusSubscriptionCreator
@@ -53,7 +54,7 @@
                     logger.Info($"Subscription '{subscriptionDescription.UserMetadata}' created as '{subscriptionDescription.Name}'");
 
                     var key = subscriptionDescription.TopicPath + subscriptionDescription.Name;
-                    await rememberExistence.AddOrUpdate(key, keyNotFound => Task.FromResult(true), (updateTopicPath, previousValue) => Task.FromResult(true)).ConfigureAwait(false);
+                    await rememberExistence.AddOrUpdate(key, keyNotFound => TaskEx.CompletedTrue, (updateTopicPath, previousValue) => TaskEx.CompletedTrue).ConfigureAwait(false);
                 }
                 else
                 {

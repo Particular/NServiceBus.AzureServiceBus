@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using NServiceBus.AzureServiceBus;
     using Settings;
 
     class AzureServiceBusQueueCreator
@@ -41,7 +42,7 @@
                EnablePartitioning = queueSettings.EnablePartitioning,
                SupportOrdering = queueSettings.SupportOrdering,
                AutoDeleteOnIdle = queueSettings.AutoDeleteOnIdle,
-               
+
                EnableExpress = queueSettings.EnableExpress,
                ForwardDeadLetteredMessagesTo = queueSettings.ForwardDeadLetteredMessagesTo
             };
@@ -55,7 +56,7 @@
                     await namespaceManager.CreateQueue(description).ConfigureAwait(false);
                     logger.InfoFormat("Queue '{0}' created", description.Path);
 
-                    await rememberExistence.AddOrUpdate(description.Path, s => Task.FromResult(true), (s, b) => Task.FromResult(true)).ConfigureAwait(false);
+                    await rememberExistence.AddOrUpdate(description.Path, s => TaskEx.CompletedTrue, (s, b) => TaskEx.CompletedTrue).ConfigureAwait(false);
                 }
                 else
                 {
