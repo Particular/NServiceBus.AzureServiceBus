@@ -6,9 +6,9 @@
     /// <summary>
     /// Inspired by http://blogs.msdn.com/b/pfxteam/archive/2012/02/11/10266920.aspx
     /// </summary>
-    class AsyncAutoResetEvent
+    class AsyncManualResetEvent
     {
-        public AsyncAutoResetEvent(bool initialState)
+        public AsyncManualResetEvent(bool initialState)
         {
             if (initialState)
             {
@@ -23,20 +23,13 @@
 
         public async Task WaitAsync(CancellationToken cancellationToken)
         {
-            try
+            using (cancellationToken.Register(state =>
             {
-                using (cancellationToken.Register(state =>
-                {
-                    var source = (TaskCompletionSource<bool>)state;
-                    source.TrySetCanceled();
-                }, tcs))
-                {
-                    await tcs.Task.ConfigureAwait(false);
-                }
-            }
-            finally
+                var source = (TaskCompletionSource<bool>)state;
+                source.TrySetCanceled();
+            }, tcs))
             {
-                Reset();
+                await tcs.Task.ConfigureAwait(false);
             }
         }
 

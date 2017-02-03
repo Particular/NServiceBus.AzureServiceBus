@@ -38,8 +38,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             var pump = new MessagePump(new TopologyOperator(clientEntities, converter, settings), clientEntities, converter, topologySectionManagerInternal, settings);
 
-            var completed = new AsyncAutoResetEvent(false);
-            //var error = new AsyncAutoResetEvent(false);
+            var completed = new AsyncManualResetEvent(false);
+            //var error = new AsyncManualResetEvent(false);
 
             var received = false;
             Exception ex = null;

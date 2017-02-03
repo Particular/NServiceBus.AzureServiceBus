@@ -33,8 +33,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             // setup the operator
             var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+            var completed = new AsyncManualResetEvent(false);
+            var error = new AsyncManualResetEvent(false);
 
             var received = false;
             Exception ex = null;
@@ -91,7 +91,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             // setup the operator
             var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
 
-            var error = new AsyncAutoResetEvent(false);
+            var error = new AsyncManualResetEvent(false);
 
             var received = false;
             var errorOccured = false;
@@ -146,8 +146,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             // setup the operator
             var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+            var completed = new AsyncManualResetEvent(false);
+            var error = new AsyncManualResetEvent(false);
 
             var received = false;
             Exception ex = null;
@@ -210,8 +210,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             // setup the operator
             var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
 
-            var completed = new AsyncAutoResetEvent(false);
-            var error = new AsyncAutoResetEvent(false);
+            var completed = new AsyncManualResetEvent(false);
+            var error = new AsyncManualResetEvent(false);
 
             var received = false;
             var errorOccured = false;
