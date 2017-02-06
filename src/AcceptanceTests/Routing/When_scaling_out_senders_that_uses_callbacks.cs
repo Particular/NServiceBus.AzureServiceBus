@@ -33,7 +33,7 @@
                         {
                             var sendOptions = new SendOptions();
                             sendOptions.RouteReplyToThisInstance();
-                            await bus.Send(new MyRequest()
+                            await bus.Send(new MyRequest
                             {
                                 Client = "A"
                             }, sendOptions);
@@ -53,7 +53,7 @@
                         {
                             var sendOptions = new SendOptions();
                             sendOptions.RouteReplyToThisInstance();
-                            await bus.Send(new MyRequest()
+                            await bus.Send(new MyRequest
                             {
                                 Client = "B"
                             }, sendOptions);
@@ -103,7 +103,7 @@
             {
                 public Task Handle(MyRequest message, IMessageHandlerContext context)
                 {
-                    return context.Reply(new MyResponse()
+                    return context.Reply(new MyResponse
                     {
                         Client = message.Client
                     });

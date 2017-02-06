@@ -34,7 +34,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var inputQueuePath = addressingLogic.Apply(inputQueue, EntityType.Queue).Name;
             var entities = namespaces.Select(n => new EntityInfoInternal { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
-            return new TopologySectionInternal()
+            return new TopologySectionInternal
             {
                 Namespaces = namespaces,
                 Entities = entities.ToArray()
@@ -102,7 +102,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     BuildTopicBundles(namespaces, addressingLogic);
                 }
 
-                return new TopologySectionInternal()
+                return new TopologySectionInternal
                 {
                     Entities = SelectSingleRandomTopicFromBundle(topics),
                     Namespaces = namespaces
@@ -186,7 +186,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 subscriptions[eventType] = BuildSubscriptionHierarchy(eventType);
             }
 
-            return (subscriptions[eventType]);
+            return subscriptions[eventType];
         }
 
         public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
@@ -261,7 +261,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     return sub;
                 }));
             }
-            return new TopologySectionInternal()
+            return new TopologySectionInternal
             {
                 Entities = subs,
                 Namespaces = namespaces

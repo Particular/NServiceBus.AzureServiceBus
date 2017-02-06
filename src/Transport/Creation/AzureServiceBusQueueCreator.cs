@@ -96,11 +96,11 @@
             {
                 if (!ex.IsTransient)
                 {
-                    logger.Fatal(string.Format("{1} {2} occurred on queue creation {0}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
+                    logger.Fatal(string.Format("{1} {2} occurred on queue creation {0}", description.Path, ex.IsTransient ? "Transient" : "Non transient", ex.GetType().Name), ex);
                     throw;
                 }
 
-                logger.Info(string.Format("{1} {2} occurred on queue creation {0}", description.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name), ex);
+                logger.Info(string.Format("{1} {2} occurred on queue creation {0}", description.Path, ex.IsTransient ? "Transient" : "Non transient", ex.GetType().Name), ex);
             }
 
             return description;

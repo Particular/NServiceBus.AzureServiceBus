@@ -91,7 +91,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             {
                 IsInvoked = true;
 
-                return Task.FromResult<IMessageReceiverInternal>(new FakeMessageReceiver() { Mode = receiveMode });
+                return Task.FromResult<IMessageReceiverInternal>(new FakeMessageReceiver
+                    { Mode = receiveMode });
             }
 
             public Task<IMessageSenderInternal> CreateMessageSender(string entitypath)

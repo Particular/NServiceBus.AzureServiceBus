@@ -33,10 +33,10 @@
 
         public bool Equals(ConnectionStringInternal other)
         {
-            return other != null && (
+            return other != null && 
                 string.Equals(NamespaceName, other.NamespaceName, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(SharedAccessPolicyName, other.SharedAccessPolicyName, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(SharedAccessPolicyValue, other.SharedAccessPolicyValue));
+                string.Equals(SharedAccessPolicyValue, other.SharedAccessPolicyValue);
         }
 
         public override bool Equals(object obj)

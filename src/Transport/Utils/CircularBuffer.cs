@@ -72,8 +72,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 if (item == null && buffer[bufferIndex] == null)
                     return true;
-                else if ((buffer[bufferIndex] != null) &&
-                         comparer.Equals(buffer[bufferIndex], item))
+                if (buffer[bufferIndex] != null &&
+                    comparer.Equals(buffer[bufferIndex], item))
                     return true;
             }
 
