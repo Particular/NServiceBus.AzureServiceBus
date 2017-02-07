@@ -78,7 +78,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedFactoryCreator : ICreateMessagingFactoriesInternal
         {
-            public int InvocationCount = 0;
+            public int InvocationCount;
 
             public IMessagingFactoryInternal Create(string namespaceName)
             {

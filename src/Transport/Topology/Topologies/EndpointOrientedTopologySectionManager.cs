@@ -29,7 +29,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var inputQueuePath = addressingLogic.Apply(inputQueue, EntityType.Queue).Name;
             var entities = namespaces.Select(n => new EntityInfoInternal { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
-            return new TopologySectionInternal()
+            return new TopologySectionInternal
             {
                 Namespaces = namespaces,
                 Entities = entities.ToArray()
@@ -158,7 +158,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 subscriptions[eventType] = BuildSubscriptionHierarchy(eventType);
             }
 
-            return (subscriptions[eventType]);
+            return subscriptions[eventType];
         }
 
         TopologySectionInternal BuildSubscriptionHierarchy(Type eventType)
@@ -180,7 +180,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             foreach (var topicPath in topicPaths)
             {
                 var path = addressingLogic.Apply(topicPath, EntityType.Topic).Name;
-                topics.AddRange(namespaces.Select(ns => new EntityInfoInternal()
+                topics.AddRange(namespaces.Select(ns => new EntityInfoInternal
                 {
                     Namespace = ns,
                     Type = EntityType.Topic,

@@ -216,7 +216,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
-            var headers = new Dictionary<string, string>()
+            var headers = new Dictionary<string, string>
             {
                 {Headers.ReplyToAddress, "MyQueue"}
             };
@@ -247,7 +247,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             });
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
 
-            var headers = new Dictionary<string, string>()
+            var headers = new Dictionary<string, string>
             {
                 {Headers.ReplyToAddress, "MyQueue"}
             };
@@ -279,7 +279,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             });
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
 
-            var headers = new Dictionary<string, string>()
+            var headers = new Dictionary<string, string>
             {
                 {Headers.ReplyToAddress, "MyQueue"}
             };

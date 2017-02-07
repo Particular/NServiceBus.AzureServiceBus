@@ -92,7 +92,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             public bool IsInvoked { get; private set; }
 
-            public int InvocationCount = 0;
+            public int InvocationCount;
 
             public Action<int> ExceptionToThrow { get; set; }
 

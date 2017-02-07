@@ -28,7 +28,7 @@ class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfra
         var transport = new AzureServiceBusTransport();
         var infrastructure = transport.Initialize(settings, connectionString);
 
-        return new TransportConfigurationResult()
+        return new TransportConfigurationResult
         {
             PurgeInputQueueOnStartup = false,
             TransportInfrastructure = infrastructure

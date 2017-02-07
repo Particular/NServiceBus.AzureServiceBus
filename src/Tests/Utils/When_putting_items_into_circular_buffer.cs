@@ -17,7 +17,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Utils
 
             var buffer = new CircularBuffer<BufferEntry>(numberOfEntries, true); // overflow must be allowed
 
-            Parallel.For(0, numberOfItems, new ParallelOptions() { MaxDegreeOfParallelism = maxDegreeOfParallelism }, item =>
+            Parallel.For(0, numberOfItems, new ParallelOptions
+            {
+                MaxDegreeOfParallelism = maxDegreeOfParallelism
+            }, item =>
             {
                 buffer.Put(new BufferEntry());
             });

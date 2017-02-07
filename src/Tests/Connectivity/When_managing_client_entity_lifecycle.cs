@@ -81,7 +81,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         class InterceptedMessageReceiverCreator : ICreateMessageReceiversInternal
         {
 
-            public int InvocationCount = 0;
+            public int InvocationCount;
 
             public Task<IMessageReceiverInternal> Create(string entityPath, string namespaceAlias)
             {
@@ -93,7 +93,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedMessageReceiver : IMessageReceiverInternal
         {
-            bool isClosed = false;
+            bool isClosed;
 
             public bool IsClosed => isClosed;
 

@@ -43,7 +43,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             else {
                 if (tokenProviderFactory != null)
                 {
-                    var s = new NamespaceManagerSettings()
+                    var s = new NamespaceManagerSettings
                     {
                         TokenProvider = tokenProviderFactory(connectionString)
                     };

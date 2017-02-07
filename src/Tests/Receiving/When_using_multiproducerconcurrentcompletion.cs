@@ -256,7 +256,7 @@
 
         int TriangularNumber(int numberOfItems)
         {
-            return (numberOfItems*(numberOfItems + 1))/2;
+            return numberOfItems*(numberOfItems + 1)/2;
         }
 
         IEnumerable<int> Flatten(ConcurrentQueue<List<int>>[] captured)

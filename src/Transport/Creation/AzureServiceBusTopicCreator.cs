@@ -75,7 +75,7 @@
             }
             catch (MessagingException ex)
             {
-                var loggedMessage = string.Format("{1} {2} occurred on topic creation {0}", topicDescription.Path, (ex.IsTransient ? "Transient" : "Non transient"), ex.GetType().Name);
+                var loggedMessage = string.Format("{1} {2} occurred on topic creation {0}", topicDescription.Path, ex.IsTransient ? "Transient" : "Non transient", ex.GetType().Name);
 
                 if (!ex.IsTransient)
                 {

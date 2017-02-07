@@ -99,7 +99,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             topologyOperator.OnIncomingMessage(async (message, context) =>
             {
                 received = true;
-                await Task.Delay(1).ConfigureAwait(false);
+                await Task.Delay(1, cts.Token).ConfigureAwait(false);
                 throw new Exception("Something went wrong");
             });
             topologyOperator.OnError(exception =>
@@ -183,7 +183,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             Assert.IsTrue(received);
             Assert.IsNull(ex);
 
-            await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
+            await Task.Delay(TimeSpan.FromSeconds(5), cts.Token); // give asb some time to update stats
 
             var namespaceLifeCycle = new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings));
             var namespaceManager = namespaceLifeCycle.Get("namespace");
@@ -219,7 +219,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             topologyOperator.OnIncomingMessage(async (message, context) =>
             {
                 received = true;
-                await Task.Delay(1).ConfigureAwait(false);
+                await Task.Delay(1, cts.Token).ConfigureAwait(false);
                 throw new Exception("Something went wrong");
             });
             topologyOperator.OnError(exception =>
@@ -245,7 +245,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             Assert.IsTrue(received);
             Assert.IsTrue(errorOccured);
 
-            await Task.Delay(TimeSpan.FromSeconds(5)); // give asb some time to update stats
+            await Task.Delay(TimeSpan.FromSeconds(5), cts.Token); // give asb some time to update stats
 
             var namespaceLifeCycle = new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings));
             var namespaceManager = namespaceLifeCycle.Get("namespace");
