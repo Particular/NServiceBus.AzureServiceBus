@@ -38,12 +38,26 @@
             {
                 namespaceManager.CreateQueue(new QueueDescription(forwardToQueue)).GetAwaiter().GetResult();
             }
+
+            namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
+            if (!namespaceManager.TopicExists(topicPath).GetAwaiter().GetResult())
+            {
+                namespaceManager.CreateTopic(new TopicDescription(topicPath)).GetAwaiter().GetResult();
+            }
+            if (!namespaceManager.QueueExists(forwardToQueue).GetAwaiter().GetResult())
+            {
+                namespaceManager.CreateQueue(new QueueDescription(forwardToQueue)).GetAwaiter().GetResult();
+            }
         }
 
         [OneTimeTearDown]
         public void TopicCleanUp()
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            namespaceManager.DeleteTopic(topicPath).GetAwaiter().GetResult();
+            namespaceManager.DeleteQueue(forwardToQueue).GetAwaiter().GetResult();
+
+            namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             namespaceManager.DeleteTopic(topicPath).GetAwaiter().GetResult();
             namespaceManager.DeleteQueue(forwardToQueue).GetAwaiter().GetResult();
         }
@@ -392,7 +406,7 @@
             extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
             {
                 MaxDeliveryCount = 100,
-                EnableDeadLetteringOnMessageExpiration = true,
+                EnableDeadLetteringOnMessageExpiration = true
             });
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
@@ -409,7 +423,7 @@
             await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, "existingendpoint2")
             {
                 EnableDeadLetteringOnFilterEvaluationExceptions = true,
-                RequiresSession = true,
+                RequiresSession = true
             }, "1=1");
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -417,7 +431,7 @@
             extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((topic, sub, readOnlySettings) => new SubscriptionDescription(topic, sub)
             {
                 EnableDeadLetteringOnFilterEvaluationExceptions = false,
-                RequiresSession = false,
+                RequiresSession = false
             });
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
@@ -434,7 +448,7 @@
             extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
             {
                 MaxDeliveryCount = 100,
-                EnableDeadLetteringOnMessageExpiration = true,
+                EnableDeadLetteringOnMessageExpiration = true
             });
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
@@ -477,5 +491,29 @@
             await ((INamespaceManagerAbleToDeleteSubscriptions)namespaceManager).DeleteSubscription(new SubscriptionDescription(topicPath, subscriber));
         }
 
+        [Test]
+        public async Task Should_create_subscription_on_multiple_namespaces()
+        {
+            const string subscriber = "MultipleNamespaceSubscriber";
+
+            var namespaceManager1 = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager2 = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            extensions.UseTopology<ForwardingTopology>().Subscriptions().DescriptionFactory((topic, subName, readOnlySettings) => new SubscriptionDescription(topic, subName)
+            {
+                MaxDeliveryCount = 100,
+                EnableDeadLetteringOnMessageExpiration = true
+            });
+
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings);
+            await creator.Create(topicPath, subscriber, metadata, sqlFilter, namespaceManager1, forwardToQueue);
+            await creator.Create(topicPath, subscriber, metadata, sqlFilter, namespaceManager2, forwardToQueue);
+
+
+            Assert.IsTrue(await namespaceManager1.SubscriptionExists(topicPath, subscriber), "Subscription on Value namespace was not created.");
+            Assert.IsTrue(await namespaceManager2.SubscriptionExists(topicPath, subscriber), "Subscription on Fallback namespace was not created.");
+        }
     }
 }
