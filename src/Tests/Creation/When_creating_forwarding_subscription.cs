@@ -39,12 +39,26 @@
             {
                 namespaceManager.CreateQueue(new QueueDescription(forwardToQueue)).GetAwaiter().GetResult();
             }
+
+            namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
+            if (!namespaceManager.TopicExists(topicPath).GetAwaiter().GetResult())
+            {
+                namespaceManager.CreateTopic(new TopicDescription(topicPath)).GetAwaiter().GetResult();
+            }
+            if (!namespaceManager.QueueExists(forwardToQueue).GetAwaiter().GetResult())
+            {
+                namespaceManager.CreateQueue(new QueueDescription(forwardToQueue)).GetAwaiter().GetResult();
+            }
         }
 
         [OneTimeTearDown]
         public void TopicCleanUp()
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            namespaceManager.DeleteTopic(topicPath).GetAwaiter().GetResult();
+            namespaceManager.DeleteQueue(forwardToQueue).GetAwaiter().GetResult();
+
+            namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             namespaceManager.DeleteTopic(topicPath).GetAwaiter().GetResult();
             namespaceManager.DeleteQueue(forwardToQueue).GetAwaiter().GetResult();
         }
@@ -395,7 +409,7 @@
             await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, "existingendpoint2")
             {
                 EnableDeadLetteringOnFilterEvaluationExceptions = true,
-                RequiresSession = true,
+                RequiresSession = true
             }, "1=1");
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
@@ -463,5 +477,31 @@
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriber));
         }
 
+        [Test]
+        public async Task Should_create_subscription_on_multiple_namespaces()
+        {
+            const string subscriber = "MultipleNamespaceSubscriber";
+
+            var namespaceManager1 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager2 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(new TopologySubscriptionSettings
+            {
+                DescriptionCustomizer = description =>
+                {
+                    description.MaxDeliveryCount = 100;
+                    description.EnableDeadLetteringOnMessageExpiration = true;
+                }
+            }, settings);
+
+            await creator.Create(topicPath, subscriber, metadata, sqlFilter, namespaceManager1, forwardToQueue);
+            await creator.Create(topicPath, subscriber, metadata, sqlFilter, namespaceManager2, forwardToQueue);
+
+
+            Assert.IsTrue(await namespaceManager1.SubscriptionExists(topicPath, subscriber), "Subscription on Value namespace was not created.");
+            Assert.IsTrue(await namespaceManager2.SubscriptionExists(topicPath, subscriber), "Subscription on Fallback namespace was not created.");
+        }
     }
 }

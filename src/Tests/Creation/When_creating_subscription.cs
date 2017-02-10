@@ -28,12 +28,21 @@
             {
                 namespaceManager.CreateTopic(new TopicDescription(topicPath)).GetAwaiter().GetResult();
             }
+
+            namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
+            if (!namespaceManager.TopicExists(topicPath).Result)
+            {
+                namespaceManager.CreateTopic(new TopicDescription(topicPath)).GetAwaiter().GetResult();
+            }
         }
 
         [OneTimeTearDown]
         public void TopicCleanUp()
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            namespaceManager.DeleteTopic(topicPath).GetAwaiter().GetResult();
+
+            namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
             namespaceManager.DeleteTopic(topicPath).GetAwaiter().GetResult();
         }
 
@@ -72,7 +81,7 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             const string subscriptionName = "sub2";
-            
+
             var userCustomizationsWhereInvoked = false;
             extensions.Subscriptions().DescriptionFactory(_ =>
             {
@@ -424,6 +433,24 @@
 
             //cleanup
             await namespaceManager.DeleteTopic("sometopic2");
+        }
+
+        [Test]
+        public async Task Should_create_subscription_on_multiple_namespaces()
+        {
+            const string subscriptionName = "MultipleNamespaceEvent";
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var creator = new AzureServiceBusSubscriptionCreator(new TopologySubscriptionSettings(), settings);
+
+            var namespaceManager1 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            var namespaceManager2 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
+
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager1);
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager2);
+
+            Assert.IsTrue(await namespaceManager1.SubscriptionExists(topicPath, subscriptionName), "Subscription on Value namespace was not created.");
+            Assert.IsTrue(await namespaceManager2.SubscriptionExists(topicPath, subscriptionName), "Subscription on Fallback namespace was not created.");
         }
     }
 }
