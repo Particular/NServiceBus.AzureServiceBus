@@ -80,6 +80,7 @@
                 EndpointSetup<DefaultServer>(c =>
                 {
                     c.DisableFeature<AutoSubscribe>();
+                    c.LimitMessageProcessingConcurrencyTo(1);
                 });
             }
 
@@ -107,6 +108,7 @@
                 EndpointSetup<DefaultServer>(c =>
                 {
                     c.DisableFeature<AutoSubscribe>();
+                    c.LimitMessageProcessingConcurrencyTo(1);
                 });
             }
 
