@@ -133,10 +133,10 @@
                    || existingDescription.EnableFilteringMessagesBeforePublishing != newDescription.EnableFilteringMessagesBeforePublishing;
         }
 
-	    void OverrideImmutableMembers(TopicDescription existingDescription, TopicDescription newDescription)
-	    {
-		    newDescription.RequiresDuplicateDetection = existingDescription.RequiresDuplicateDetection;
-		    newDescription.EnablePartitioning = existingDescription.EnablePartitioning;
-	    }
+        void OverrideImmutableMembers(TopicDescription existingDescription, TopicDescription newDescription)
+        {
+            newDescription.RequiresDuplicateDetection = existingDescription.RequiresDuplicateDetection;
+            newDescription.EnablePartitioning = existingDescription.EnablePartitioning;
+        }
     }
 }
