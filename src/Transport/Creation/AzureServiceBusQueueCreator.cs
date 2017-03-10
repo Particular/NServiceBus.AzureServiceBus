@@ -31,20 +31,20 @@
         {
             var description = new QueueDescription(queuePath)
             {
-                LockDuration = queueSettings.LockDuration,
-                MaxSizeInMegabytes = queueSettings.MaxSizeInMegabytes,
-                RequiresDuplicateDetection = queueSettings.RequiresDuplicateDetection,
-                DefaultMessageTimeToLive = queueSettings.DefaultMessageTimeToLive,
-                EnableDeadLetteringOnMessageExpiration = queueSettings.EnableDeadLetteringOnMessageExpiration,
-                DuplicateDetectionHistoryTimeWindow = queueSettings.DuplicateDetectionHistoryTimeWindow,
-                MaxDeliveryCount = IsSystemQueue(queuePath) ? 10 : numberOfImmediateRetries,
-                EnableBatchedOperations = queueSettings.EnableBatchedOperations,
-                EnablePartitioning = queueSettings.EnablePartitioning,
-                SupportOrdering = queueSettings.SupportOrdering,
-                AutoDeleteOnIdle = queueSettings.AutoDeleteOnIdle,
+               LockDuration = queueSettings.LockDuration,
+               MaxSizeInMegabytes = queueSettings.MaxSizeInMegabytes,
+               RequiresDuplicateDetection = queueSettings.RequiresDuplicateDetection,
+               DefaultMessageTimeToLive = queueSettings.DefaultMessageTimeToLive,
+               EnableDeadLetteringOnMessageExpiration = queueSettings.EnableDeadLetteringOnMessageExpiration,
+               DuplicateDetectionHistoryTimeWindow = queueSettings.DuplicateDetectionHistoryTimeWindow,
+               MaxDeliveryCount = IsSystemQueue(queuePath) ? 10 : numberOfImmediateRetries,
+               EnableBatchedOperations = queueSettings.EnableBatchedOperations,
+               EnablePartitioning = queueSettings.EnablePartitioning,
+               SupportOrdering = queueSettings.SupportOrdering,
+               AutoDeleteOnIdle = queueSettings.AutoDeleteOnIdle,
 
-                EnableExpress = queueSettings.EnableExpress,
-                ForwardDeadLetteredMessagesTo = queueSettings.ForwardDeadLetteredMessagesTo
+               EnableExpress = queueSettings.EnableExpress,
+               ForwardDeadLetteredMessagesTo = queueSettings.ForwardDeadLetteredMessagesTo
             };
 
             queueSettings.DescriptionCustomizer(description);
