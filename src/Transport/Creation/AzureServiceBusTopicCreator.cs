@@ -52,6 +52,7 @@
                     if (MembersAreNotEqual(existingTopicDescription, topicDescription))
                     {
                         logger.InfoFormat("Updating topic '{0}' with new description", topicDescription.Path);
+	                    OverrideImmutableMembers(existingTopicDescription, topicDescription);
                         await namespaceManager.UpdateTopic(topicDescription).ConfigureAwait(false);
                     }
                 }
@@ -132,5 +133,10 @@
                    || existingDescription.EnableFilteringMessagesBeforePublishing != newDescription.EnableFilteringMessagesBeforePublishing;
         }
 
+	    void OverrideImmutableMembers(TopicDescription existingDescription, TopicDescription newDescription)
+	    {
+		    newDescription.RequiresDuplicateDetection = existingDescription.RequiresDuplicateDetection;
+		    newDescription.EnablePartitioning = existingDescription.EnablePartitioning;
+	    }
     }
 }
