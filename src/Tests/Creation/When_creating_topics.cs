@@ -392,22 +392,34 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             await namespaceManager.CreateTopic(new TopicDescription("existingtopic2")
             {
-                MaxSizeInMegabytes = 2048,
+                MaxSizeInMegabytes = SizeInMegabytes.Size2048,
                 RequiresDuplicateDetection = true,
                 EnablePartitioning = true
             });
+
+            var topicDescription = await namespaceManager.GetTopic("existingtopic2");
+
+            // partitioned topics will have a size that is 16x the requested max
+            Assert.AreEqual(2048 * 16, topicDescription.MaxSizeInMegabytes);
+            Assert.IsTrue(topicDescription.EnablePartitioning);
+            Assert.IsTrue(topicDescription.RequiresDuplicateDetection);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Topics().DescriptionFactory((queuePath, readOnlySettings) => new TopicDescription(queuePath)
             {
-                MaxSizeInMegabytes = 1024,
+                MaxSizeInMegabytes = SizeInMegabytes.Size3072,
                 RequiresDuplicateDetection = false,
                 EnablePartitioning = false
             });
 
             var creator = new AzureServiceBusTopicCreator(settings);
-            Assert.ThrowsAsync<ArgumentException>(async () => await creator.Create("existingtopic2", namespaceManager));
+            await creator.Create("existingtopic2", namespaceManager);
+
+            topicDescription = await namespaceManager.GetTopic("existingtopic2");
+            Assert.AreEqual(3072 * 16, topicDescription.MaxSizeInMegabytes);
+            Assert.IsTrue(topicDescription.EnablePartitioning);
+            Assert.IsTrue(topicDescription.RequiresDuplicateDetection);
         }
 
         [Test]

@@ -71,6 +71,7 @@
                         var existingDescription = await namespaceManager.GetQueue(description.Path).ConfigureAwait(false);
                         if (MembersAreNotEqual(existingDescription, description))
                         {
+                            OverrideImmutableMembers(existingDescription, description);
                             logger.InfoFormat("Updating queue '{0}' with new description", description.Path);
                             await namespaceManager.UpdateQueue(description).ConfigureAwait(false);
                         }
@@ -166,6 +167,13 @@
                    || existingDescription.SupportOrdering != newDescription.SupportOrdering
                    || existingDescription.EnableExpress != newDescription.EnableExpress
                    || existingDescription.ForwardDeadLetteredMessagesTo != newDescription.ForwardDeadLetteredMessagesTo;
+        }
+
+        void OverrideImmutableMembers(QueueDescription existingDescription, QueueDescription newDescription)
+        {
+            newDescription.RequiresDuplicateDetection = existingDescription.RequiresDuplicateDetection;
+            newDescription.EnablePartitioning = existingDescription.EnablePartitioning;
+            newDescription.RequiresSession = existingDescription.RequiresSession;
         }
     }
 }
