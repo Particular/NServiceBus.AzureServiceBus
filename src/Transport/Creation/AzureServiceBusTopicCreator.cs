@@ -51,8 +51,8 @@
                     var existingTopicDescription = await namespaceManager.GetTopic(topicDescription.Path).ConfigureAwait(false);
                     if (MembersAreNotEqual(existingTopicDescription, topicDescription))
                     {
-                        logger.InfoFormat("Updating topic '{0}' with new description", topicDescription.Path);
                         OverrideImmutableMembers(existingTopicDescription, topicDescription);
+                        logger.InfoFormat("Updating topic '{0}' with new description", topicDescription.Path);
                         await namespaceManager.UpdateTopic(topicDescription).ConfigureAwait(false);
                     }
                 }
