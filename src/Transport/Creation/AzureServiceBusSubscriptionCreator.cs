@@ -63,6 +63,7 @@
                     var existingSubscriptionDescription = await namespaceManager.GetSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name).ConfigureAwait(false);
                     if (MembersAreNotEqual(existingSubscriptionDescription, subscriptionDescription))
                     {
+                        OverrideImmutableMembers(existingSubscriptionDescription, subscriptionDescription);
                         logger.InfoFormat("Updating subscription '{0}' in namespace '{1}' with new description.", subscriptionDescription.Name, namespaceManager.Address.Host);
                         await namespaceManager.UpdateSubscription(subscriptionDescription).ConfigureAwait(false);
                     }
@@ -170,6 +171,11 @@
         static string GenerateSubscriptionKey(Uri namespaceAddress, string topicPath, string subscriptionName)
         {
             return namespaceAddress + topicPath + subscriptionName;
+        }
+
+        void OverrideImmutableMembers(SubscriptionDescription existingDescription, SubscriptionDescription newDescription)
+        {
+            newDescription.RequiresSession = existingDescription.RequiresSession;
         }
     }
 }
