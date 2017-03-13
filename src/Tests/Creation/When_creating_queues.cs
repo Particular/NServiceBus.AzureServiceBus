@@ -482,24 +482,40 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             await namespaceManager.CreateQueue(new QueueDescription("existingqueue")
             {
                 LockDuration = TimeSpan.FromSeconds(50),
+                MaxSizeInMegabytes = SizeInMegabytes.Size2048,
                 RequiresDuplicateDetection = true,
                 EnablePartitioning = true,
                 RequiresSession = true
             });
+
+            var queueDescription = await namespaceManager.GetQueue("existingqueue");
+
+            // partitioned topics will have a size that is 16x the requested max
+            Assert.AreEqual(2048 * 16, queueDescription.MaxSizeInMegabytes);
+            Assert.AreEqual(TimeSpan.FromSeconds(50), queueDescription.LockDuration);
+            Assert.IsTrue(queueDescription.EnablePartitioning);
+            Assert.IsTrue(queueDescription.RequiresDuplicateDetection);
 
             var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
             var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Queues().DescriptionCustomizer(qd =>
             {
-                qd.LockDuration = TimeSpan.FromSeconds(50);
+                qd.LockDuration = TimeSpan.FromSeconds(70);
+                qd.MaxSizeInMegabytes = SizeInMegabytes.Size3072;
                 qd.RequiresDuplicateDetection = false;
                 qd.EnablePartitioning = false;
                 qd.RequiresSession = false;
             });
 
             var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
-            Assert.ThrowsAsync<ArgumentException>(async () => await creator.Create("existingqueue", namespaceManager));
+            await creator.Create("existingqueue", namespaceManager);
+
+            queueDescription = await namespaceManager.GetQueue("existingqueue");
+            Assert.AreEqual(3072 * 16, queueDescription.MaxSizeInMegabytes);
+            Assert.AreEqual(TimeSpan.FromSeconds(70), queueDescription.LockDuration);
+            Assert.IsTrue(queueDescription.EnablePartitioning);
+            Assert.IsTrue(queueDescription.RequiresDuplicateDetection);
 
             //cleanup
             await namespaceManager.DeleteQueue("existingqueue");
