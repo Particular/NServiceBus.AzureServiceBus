@@ -59,6 +59,7 @@
                     var existingTopicDescription = await namespaceManager.GetTopic(topicDescription.Path).ConfigureAwait(false);
                     if (MembersAreNotEqual(existingTopicDescription, topicDescription))
                     {
+                        OverrideImmutableMembers(existingTopicDescription, topicDescription);
                         logger.InfoFormat("Updating topic '{0}' in namespace '{1}' with new description.", topicDescription.Path, namespaceManager.Address);
                         await namespaceManager.UpdateTopic(topicDescription).ConfigureAwait(false);
                     }
@@ -143,6 +144,12 @@
         static string GenerateTopicKey(string topicPath, INamespaceManager namespaceClient)
         {
             return topicPath + namespaceClient.Address;
+        }
+
+        void OverrideImmutableMembers(TopicDescription existingDescription, TopicDescription newDescription)
+        {
+            newDescription.RequiresDuplicateDetection = existingDescription.RequiresDuplicateDetection;
+            newDescription.EnablePartitioning = existingDescription.EnablePartitioning;
         }
     }
 }
