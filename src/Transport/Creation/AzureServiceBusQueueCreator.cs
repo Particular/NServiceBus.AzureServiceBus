@@ -71,6 +71,7 @@
                     var existingDescription = await namespaceManager.GetQueue(description.Path).ConfigureAwait(false);
                     if (MembersAreNotEqual(existingDescription, description))
                     {
+                        OverrideImmutableMembers(existingDescription, description);
                         logger.InfoFormat("Updating queue '{0}' in namespace '{1}' with new description.", description.Path, namespaceManager.Address.Host);
                         await namespaceManager.UpdateQueue(description).ConfigureAwait(false);
                     }
@@ -166,6 +167,13 @@
         static string GenerateQueueKey(INamespaceManager namespaceClient, string queuePath)
         {
             return queuePath + namespaceClient.Address;
+        }
+
+        void OverrideImmutableMembers(QueueDescription existingDescription, QueueDescription newDescription)
+        {
+            newDescription.RequiresDuplicateDetection = existingDescription.RequiresDuplicateDetection;
+            newDescription.EnablePartitioning = existingDescription.EnablePartitioning;
+            newDescription.RequiresSession = existingDescription.RequiresSession;
         }
     }
 }
