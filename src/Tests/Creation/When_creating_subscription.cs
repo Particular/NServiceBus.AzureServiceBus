@@ -435,7 +435,8 @@
             });
 
             var creator = new AzureServiceBusSubscriptionCreator(settings);
-            Assert.ThrowsAsync<ArgumentException>(async () => await creator.Create("sometopic2", "existingsubscription2", metadata, sqlFilter, namespaceManager));
+            var subscriptionDescription = await creator.Create("sometopic2", "existingsubscription2", metadata, sqlFilter, namespaceManager);
+            Assert.IsTrue(subscriptionDescription.RequiresSession);
 
             //cleanup
             await namespaceManager.DeleteTopic("sometopic2");
