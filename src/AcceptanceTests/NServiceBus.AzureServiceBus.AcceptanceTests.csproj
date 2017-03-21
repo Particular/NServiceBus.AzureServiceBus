@@ -219,12 +219,14 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\MessageDrivenSubscriptions\When_subscribing_to_a_derived_event.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\MessageDrivenSubscriptions\When_subscribing_to_multiple_publishers.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\MessageDrivenSubscriptions\When_subscribing_to_scaled_out_publisher.cs" />
+    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\MessageDrivenSubscriptions\When_unsubscribing_from_event.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\MessageDrivenSubscriptions\When_unsubscribing_to_scaled_out_publisher.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\MessageDrivenSubscriptions\When_using_assembly_level_message_mapping_for_pub_sub.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\MessageDrivenSubscriptions\When_using_autosubscribe_with_missing_routing_information.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\MessageDrivenSubscriptions\When_using_legacy_routing_configuration.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\NativePublishSubscribe\When_multi_subscribing_to_a_polymorphic_event.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\NativePublishSubscribe\When_publishing_to_scaled_out_subscribers.cs" />
+    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\NativePublishSubscribe\When_unsubscribing_from_event.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\SubscriptionBehavior.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\SubscriptionBehaviorExtensions.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Routing\SubscriptionEventArgs.cs" />
