@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using AcceptanceTesting.Customization;
     using EndpointTemplates;
     using NUnit.Framework;
 
@@ -44,8 +45,8 @@
                 {
                     var transport = config.UseTransport<AzureServiceBusTransport>();
                     transport.UseForwardingTopology().NumberOfEntitiesInBundle(1);
-                })
-                .AddMapping<MyEvent>(typeof(Publisher));
+                    transport.Routing().RouteToEndpoint(typeof(MyEvent), typeof(Publisher));
+                });
             }
 
             public class MyEventHandler : IHandleMessages<MyEvent>

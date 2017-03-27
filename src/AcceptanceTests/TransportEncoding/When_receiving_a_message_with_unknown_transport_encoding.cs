@@ -72,11 +72,12 @@
         {
             public Sender()
             {
-                EndpointSetup<DefaultServer>(busConfiguration =>
+                EndpointSetup<DefaultServer>(endpointConfiguration =>
                 {
-                    busConfiguration.UseTransport<AzureServiceBusTransport>().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
-                    busConfiguration.RegisterComponents(components => components.ConfigureComponent<SetTransportEncodingToUnknownMutator>(DependencyLifecycle.InstancePerCall));
-                }).AddMapping<MyMessage>(typeof(Receiver));
+                    endpointConfiguration.UseTransport<AzureServiceBusTransport>().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
+                    endpointConfiguration.RegisterComponents(components => components.ConfigureComponent<SetTransportEncodingToUnknownMutator>(DependencyLifecycle.InstancePerCall));
+                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyMessage), typeof(Receiver));
+                });
             }
 
             class SetTransportEncodingToUnknownMutator : IMutateOutgoingTransportMessages
