@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
+using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
 
@@ -9,9 +9,8 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
 {
     public Task Configure(string endpointName, EndpointConfiguration configuration, RunSettings settings, PublisherMetadata publisherMetadata)
     {
-        var connectionString = settings.Get<string>("Transport.ConnectionString");
-        var topology = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology", EnvironmentVariableTarget.User);
-        topology = topology ?? Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
+        var connectionString = EnvironmentHelper.GetEnvironmentVariable($"{nameof(AzureServiceBusTransport)}.ConnectionString");
+        var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
 
         var transportConfig = configuration.UseTransport<AzureServiceBusTransport>();
 
