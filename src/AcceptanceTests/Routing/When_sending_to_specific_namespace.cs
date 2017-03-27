@@ -8,6 +8,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
+    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
 
     public class When_using_multiple_namespaces : NServiceBusAcceptanceTest
@@ -21,8 +22,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             var ctx = new AzureServiceBusTransportConfigContext();
             ctx.Callback = (endpointName, extensions) =>
             {
-                var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-                var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
+                var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+                var targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
                 extensions.UseNamespaceAliasesInsteadOfConnectionStrings();
 
                 if (endpointName == "UsingMultipleNamespaces.EndpointInTargetNamespace")

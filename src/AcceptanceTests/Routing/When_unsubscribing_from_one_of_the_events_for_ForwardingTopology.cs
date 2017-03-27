@@ -15,6 +15,7 @@
     using NServiceBus.AcceptanceTests;
     using AcceptanceTesting.Customization;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
+    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 
     public class When_unsubscribing_from_one_of_the_events_for_ForwardingTopology : NServiceBusAcceptanceTest
     {
@@ -26,7 +27,7 @@
                 .Done(c => c.EndpointsStarted)
                 .Run();
 
-            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+            var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
             var rawEndpointName = Conventions.EndpointNamingConvention(typeof(Endpoint));
             var endpointName = MD5HashBuilder.Build(rawEndpointName);

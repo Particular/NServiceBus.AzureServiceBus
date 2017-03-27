@@ -1,6 +1,5 @@
 ﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing
 {
-    using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using Features;
@@ -12,6 +11,7 @@
     using NServiceBus.AcceptanceTests;
     using AcceptanceTesting.Customization;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
+    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 
     public class When_unsubscribing : NServiceBusAcceptanceTest
     {
@@ -23,7 +23,7 @@
                 .Done(c => c.EndpointsStarted)
                 .Run();
 
-            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+            var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
             var endpointName = Conventions.EndpointNamingConvention(typeof(Endpoint));
 
