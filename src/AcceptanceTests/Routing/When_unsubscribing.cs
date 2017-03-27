@@ -10,6 +10,7 @@
     using Transport.AzureServiceBus;
     using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
+    using AcceptanceTesting.Customization;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
 
     public class When_unsubscribing : NServiceBusAcceptanceTest
@@ -24,7 +25,7 @@
 
             var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
-            var endpointName = ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<Endpoint>();
+            var endpointName = Conventions.EndpointNamingConvention(typeof(Endpoint));
 
             if (context.IsForwardingTopology)
             {
@@ -50,8 +51,11 @@
         {
             public Endpoint()
             {
-                EndpointSetup<DefaultServer>(endpointConfiguration => endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>())
-                    .AddMapping<MyEvent>(typeof(Endpoint));
+                EndpointSetup<DefaultServer>(endpointConfiguration =>
+                {
+                    endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>();
+                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyEvent), typeof(Endpoint));
+                });
             }
 
             public class Handler : IHandleMessages<MyEvent>
