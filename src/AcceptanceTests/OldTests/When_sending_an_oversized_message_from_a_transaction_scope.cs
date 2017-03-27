@@ -26,13 +26,9 @@
                    }))
                    .Run();
             }
-            catch (AggregateException ex)
+            // ReSharper disable once UnusedVariable
+            catch (Exception ex) when (ex is MessageTooLargeException)
             {
-                var interesting = ex.InnerException.InnerException;
-                if (!(interesting is MessageTooLargeException))
-                {
-                    throw;
-                }
             }
         }
 
