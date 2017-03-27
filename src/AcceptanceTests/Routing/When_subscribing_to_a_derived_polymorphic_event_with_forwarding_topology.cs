@@ -3,6 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using AcceptanceTesting.Customization;
     using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
@@ -60,8 +61,11 @@
 
             public Publisher()
             {
-                EndpointSetup<DefaultPublisher>(endpointConfiguration => endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>())
-                    .AddMapping<EventWasRaisedSoStopProcessing>(typeof(Subscriber));
+                EndpointSetup<DefaultPublisher>(endpointConfiguration =>
+                {
+                    endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>();
+                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(EventWasRaisedSoStopProcessing), typeof(Subscriber));
+                });
             }
 
             class DetermineWhatTopologyIsUsed : Feature
@@ -101,15 +105,16 @@
         {
             public Subscriber()
             {
-                EndpointSetup<DefaultServer>(busConfiguration =>
+                EndpointSetup<DefaultServer>(endpointConfiguration =>
                 {
-                    busConfiguration.DisableFeature<AutoSubscribe>();
+                    endpointConfiguration.DisableFeature<AutoSubscribe>();
                     // Limit message processing to a single thread to ensure that if duplicate events are sent, they are getting
                     // to the subscriber before stop command
-                    busConfiguration.LimitMessageProcessingConcurrencyTo(1);
-                })
-                    .AddMapping<BaseEvent>(typeof(Publisher))
-                    .AddMapping<DerivedEvent>(typeof(Publisher));
+                    endpointConfiguration.LimitMessageProcessingConcurrencyTo(1);
+
+                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(BaseEvent), typeof(Publisher));
+                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(DerivedEvent), typeof(Publisher));
+                });
             }
 
             public class MyEventHandler : IHandleMessages<DerivedEvent>, IHandleMessages<BaseEvent>, IHandleMessages<EventWasRaisedSoStopProcessing>

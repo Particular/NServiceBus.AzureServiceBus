@@ -3,6 +3,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using AcceptanceTesting.Customization;
     using AcceptanceTesting.Support;
     using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
@@ -51,8 +52,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         {
             public SourceEndpoint()
             {
-                EndpointSetup<DefaultServer>()
-                    .AddMapping<MyRequest>(typeof(TargetEndpoint));
+                EndpointSetup<DefaultServer>(endpointConfiguration =>
+                        endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyRequest), typeof(TargetEndpoint)));
             }
 
             class MyResponseHandler : IHandleMessages<MyResponse>
