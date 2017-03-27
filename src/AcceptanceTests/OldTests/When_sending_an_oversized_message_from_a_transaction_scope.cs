@@ -49,7 +49,7 @@
         }
 
         [Serializable]
-        private class OversizedRequest : IMessage
+        public class OversizedRequest : IMessage
         {
             public OversizedRequest()
             {

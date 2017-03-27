@@ -142,11 +142,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             }
         }
 
-        class MyRequest : IMessage
+        public class MyRequest : IMessage
         {
         }
 
-        class MyResponse : IMessage
+        public class MyResponse : IMessage
         {
         }
 
