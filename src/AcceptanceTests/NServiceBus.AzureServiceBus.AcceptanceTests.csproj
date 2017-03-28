@@ -49,7 +49,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NServiceBus.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9fc386479f8a226c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NServiceBus.6.0.0\lib\net452\NServiceBus.Core.dll</HintPath>
+      <HintPath>..\packages\NServiceBus.6.1.2\lib\net452\NServiceBus.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
@@ -120,7 +120,6 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\ConventionEnforcementTests.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Correlation\When_replying_to_received_message_without_correlationid.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Correlation\When_sending_with_no_correlation_id.cs" />
-    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Correlation\When_using_a_custom_correlation_id.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\CriticalError\When_raising_critical_error.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\DataBus\When_sending_databus_properties.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\DataBus\When_sending_databus_properties_with_unobtrusive.cs" />
@@ -288,7 +287,6 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Sagas\When_using_a_received_message_for_timeout.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Sagas\When_using_contain_saga_data.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Sagas\When_using_ReplyToOriginator.cs" />
-    <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\Satellites\When_a_message_is_available.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\ScenarioDescriptors\AllOutboxCapableStorages.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\ScenarioDescriptors\AllTransports.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.0.0\ScenarioDescriptors\Builders.cs" />
@@ -357,6 +355,8 @@
       <Name>NServiceBus.AzureServiceBus</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App_Packages\NSB.AcceptanceTests.6.0.0\Satellites\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
