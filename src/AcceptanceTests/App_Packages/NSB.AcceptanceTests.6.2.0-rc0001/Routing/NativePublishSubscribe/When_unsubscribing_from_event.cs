@@ -9,6 +9,7 @@
     public class When_unsubscribing_from_event : NServiceBusAcceptanceTest
     {
         [Test]
+        [Explicit]
         public async Task ShouldNoLongerReceiveEvent()
         {
             Requires.NativePubSubSupport();
