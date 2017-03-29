@@ -9,6 +9,8 @@
 
     public class When_deferring_a_message : NServiceBusAcceptanceTest
     {
+        public static TimeSpan ExpectedDelay { get; set; } = TimeSpan.FromSeconds(2);
+
         [Test]
         public async Task Should_delay_delivery()
         {
@@ -29,7 +31,7 @@
                 .Done(c => c.WasCalled)
                 .Run();
 
-            Assert.GreaterOrEqual(context.ReceivedAt - context.SentAt, delay);
+            Assert.That(context.ReceivedAt - context.SentAt, Is.EqualTo(delay).Within(1).Seconds);
         }
 
         public class Context : ScenarioContext
