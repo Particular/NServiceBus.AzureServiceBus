@@ -3,10 +3,12 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using AcceptanceTesting.Customization;
     using AcceptanceTesting.Support;
     using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
+    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
 
     public class When_using_single_namespace : NServiceBusAcceptanceTest
@@ -20,7 +22,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             var ctx = new AzureServiceBusTransportConfigContext();
             ctx.Callback = (endpointName, extensions) =>
             {
-                var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+                var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
                 extensions.ConnectionString(connectionString);
                 extensions.UseNamespaceAliasesInsteadOfConnectionStrings();
             };
@@ -51,8 +53,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         {
             public SourceEndpoint()
             {
-                EndpointSetup<DefaultServer>()
-                    .AddMapping<MyRequest>(typeof(TargetEndpoint));
+                EndpointSetup<DefaultServer>(endpointConfiguration =>
+                        endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyRequest), typeof(TargetEndpoint)));
             }
 
             class MyResponseHandler : IHandleMessages<MyResponse>
@@ -87,11 +89,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             }
         }
 
-        class MyRequest : IMessage
+        public class MyRequest : IMessage
         {
         }
 
-        class MyResponse : IMessage
+        public class MyRequestImpl : MyRequest
+        {
+        }
+
+        public class MyResponse : IMessage
         {
         }
 
