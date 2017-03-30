@@ -18,13 +18,8 @@
                    .WithEndpoint<MyEndpoint>(b => b.When(async bus => await bus.SendLocal(new OversizedRequest())))
                    .Run();
             }
-            catch (AggregateException ex)
+            catch (MessageTooLargeException ex) when(ex is MessageTooLargeException)
             {
-                var interesting = ex.InnerException.InnerException;
-                if (!(interesting is MessageTooLargeException))
-                {
-                    throw;
-                }
             }
         }
 
@@ -43,7 +38,7 @@
         }
 
         [Serializable]
-        private class OversizedRequest : IMessage
+        public class OversizedRequest : IMessage
         {
             public OversizedRequest()
             {
