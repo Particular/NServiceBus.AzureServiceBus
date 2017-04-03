@@ -29,7 +29,7 @@
                 .Done(c => c.WasCalled)
                 .Run();
 
-            Assert.GreaterOrEqual(context.ReceivedAt - context.SentAt, delay);
+            Assert.That(context.ReceivedAt - context.SentAt, Is.EqualTo(delay).Within(1).Seconds);
         }
 
         public class Context : ScenarioContext
