@@ -13,7 +13,9 @@
     using Transport.AzureServiceBus;
     using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
+    using AcceptanceTesting.Customization;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
+    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 
     public class When_unsubscribing_from_one_of_the_events_for_ForwardingTopology : NServiceBusAcceptanceTest
     {
@@ -25,9 +27,9 @@
                 .Done(c => c.EndpointsStarted)
                 .Run();
 
-            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+            var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
-            var rawEndpointName = ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<Endpoint>();
+            var rawEndpointName = Conventions.EndpointNamingConvention(typeof(Endpoint));
             var endpointName = MD5HashBuilder.Build(rawEndpointName);
             var sanitizedEventFullName = typeof(MyOtherEvent).FullName.Replace("+", string.Empty);
             var otherRuleName = MD5HashBuilder.Build(sanitizedEventFullName);
@@ -61,9 +63,12 @@
         {
             public Endpoint()
             {
-                EndpointSetup<DefaultServer>(endpointConfiguration => endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>())
-                    .AddMapping<MyEvent>(typeof(Endpoint))
-                    .AddMapping<MyOtherEvent>(typeof(Endpoint));
+                EndpointSetup<DefaultServer>(endpointConfiguration =>
+                {
+                    endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>();
+                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyEvent), typeof(Endpoint));
+                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyOtherEvent), typeof(Endpoint));
+                });
             }
 
             public class Handler : IHandleMessages<MyEvent>, IHandleMessages<MyOtherEvent>

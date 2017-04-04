@@ -7,6 +7,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     using NUnit.Framework;
     using Transport.AzureServiceBus;
     using X;
+    using AcceptanceTesting.Customization;
 
     // When sending more than 100 messages in a batch and using AtomisSendsReceive mode
     public class When_sending_more_than_100_messages_in_a_transaction : NServiceBusAcceptanceTest
@@ -39,7 +40,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     var transport = config.UseTransport<AzureServiceBusTransport>();
                     transport.MessageSenders().MessageSizePaddingPercentage(0);
                     transport.UseNamespaceAliasesInsteadOfConnectionStrings();
-                    config.SendFailedMessagesTo(ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<ErrorSpy>());
+                    config.SendFailedMessagesTo(Conventions.EndpointNamingConvention(typeof(ErrorSpy)));
                 });
             }
 
@@ -54,7 +55,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                         var sendOptions = new SendOptions();
                         // slim down messages as much as possible
                         sendOptions.SetMessageId("0");
-                        sendOptions.SetCorrelationId("0");
                         sendOptions.SetHeader("NServiceBus.RelatedTo", string.Empty);
                         sendOptions.SetHeader("NServiceBus.ConversationId", string.Empty);
                         sendOptions.RouteToThisEndpoint();

@@ -94,7 +94,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                     var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag(DestinationQueueName), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>().ToList()));
 
-                    await dispatcher.Dispatch(transportOperations, context.TransportTransaction, context.Context); // makes sure the context propagates
+                    await dispatcher.Dispatch(transportOperations, context.TransportTransaction, context.Extensions); // makes sure the context propagates
 
                     completed.Set();
                 }, null, criticalError, new PushSettings(SourceQueueName, "error", false, TransportTransactionMode.ReceiveOnly));
@@ -135,7 +135,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                     var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag(DestinationQueueName), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>().ToList()));
 
-                    await dispatcher.Dispatch(transportOperations, context.TransportTransaction, context.Context); // makes sure the context propagates
+                    await dispatcher.Dispatch(transportOperations, context.TransportTransaction, context.Extensions); // makes sure the context propagates
 
                     completed.Set();
                 }, null, criticalError, new PushSettings(SourceQueueName, "error", false, TransportTransactionMode.SendsAtomicWithReceive));
@@ -175,7 +175,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                     var transportOperations = new TransportOperations(new TransportOperation(outgoingMessage, new UnicastAddressTag(DestinationQueueName), DispatchConsistency.Default, Enumerable.Empty<DeliveryConstraint>().ToList()));
 
-                    await dispatcher.Dispatch(transportOperations, context.TransportTransaction, context.Context);
+                    await dispatcher.Dispatch(transportOperations, context.TransportTransaction, context.Extensions);
 
                     // doesn't need interlocked because concurrency is set to 1
                     invocationCount++;

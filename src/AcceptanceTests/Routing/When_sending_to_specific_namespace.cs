@@ -3,10 +3,12 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using AcceptanceTesting.Customization;
     using AcceptanceTesting.Support;
     using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
+    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
 
     public class When_using_multiple_namespaces : NServiceBusAcceptanceTest
@@ -20,8 +22,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             var ctx = new AzureServiceBusTransportConfigContext();
             ctx.Callback = (endpointName, extensions) =>
             {
-                var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-                var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
+                var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+                var targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
                 extensions.UseNamespaceAliasesInsteadOfConnectionStrings();
 
                 if (endpointName == "UsingMultipleNamespaces.EndpointInTargetNamespace")
@@ -105,8 +107,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         {
             public EndpointInSourceNamespace()
             {
-                EndpointSetup<DefaultServer>()
-                    .AddMapping<MyRequest>(typeof(EndpointInTargetNamespace));
+                EndpointSetup<DefaultServer>(endpointConfiguration =>
+                        endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyRequest), typeof(EndpointInTargetNamespace)));
             }
 
             class MyResponseHandler : IHandleMessages<MyResponse>
@@ -140,11 +142,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             }
         }
 
-        class MyRequest : IMessage
+        public class MyRequest : IMessage
         {
         }
 
-        class MyResponse : IMessage
+        public class MyResponse : IMessage
         {
         }
 

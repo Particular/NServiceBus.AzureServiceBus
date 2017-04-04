@@ -11,6 +11,7 @@
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using Transport.AzureServiceBus;
     using MessageMutator;
+    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
 
     public class When_receiving_a_message_with_unknown_transport_encoding : NServiceBusAcceptanceTest
@@ -41,7 +42,7 @@
                 // delay raw receive from the DLQ to allow endpoint (queue) creation
                 await Task.Delay(TimeSpan.FromSeconds(10));
 
-                var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+                var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
                 var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(connectionString));
                 var factory = MessagingFactory.CreateAsync(namespaceManager.Address, namespaceManager.Settings.TokenProvider).GetAwaiter().GetResult();
                 var dlqPath = Conventions.EndpointNamingConvention(typeof(Receiver)) + "/$DeadLetterQueue";
@@ -70,11 +71,12 @@
         {
             public Sender()
             {
-                EndpointSetup<DefaultServer>(busConfiguration =>
+                EndpointSetup<DefaultServer>(endpointConfiguration =>
                 {
-                    busConfiguration.UseTransport<AzureServiceBusTransport>().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
-                    busConfiguration.RegisterComponents(components => components.ConfigureComponent<SetTransportEncodingToUnknownMutator>(DependencyLifecycle.InstancePerCall));
-                }).AddMapping<MyMessage>(typeof(Receiver));
+                    endpointConfiguration.UseTransport<AzureServiceBusTransport>().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
+                    endpointConfiguration.RegisterComponents(components => components.ConfigureComponent<SetTransportEncodingToUnknownMutator>(DependencyLifecycle.InstancePerCall));
+                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyMessage), typeof(Receiver));
+                });
             }
 
             class SetTransportEncodingToUnknownMutator : IMutateOutgoingTransportMessages
