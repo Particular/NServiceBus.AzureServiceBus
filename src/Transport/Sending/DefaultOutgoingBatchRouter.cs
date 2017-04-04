@@ -55,7 +55,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 var routingOptions = GetRoutingOptions(context, consistency);
 
-                if (!string.IsNullOrEmpty(routingOptions.ViaEntityPath))
+                if (routingOptions.SendVia && !string.IsNullOrEmpty(routingOptions.ViaEntityPath))
                 {
                     Logger.DebugFormat("Routing {0} messages to {1} via {2}", outgoingBatches.Count, entity.Path, routingOptions.ViaEntityPath);
                 }
