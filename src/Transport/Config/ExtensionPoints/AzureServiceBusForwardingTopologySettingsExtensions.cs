@@ -3,6 +3,7 @@
     using Configuration.AdvanceExtensibility;
     using Transport.AzureServiceBus;
 
+    [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public static class AzureServiceBusForwardingTopologySettingsExtensions
     {
         [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
@@ -21,6 +22,7 @@
             return topologySettings;
         }
 
+        [ObsoleteEx(Message = "Number of topics in the bundle by default is 2. This setting will be removed in the next major version and number of topics used will be 1.", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public static AzureServiceBusForwardingTopologySettings NumberOfEntitiesInBundle(this AzureServiceBusForwardingTopologySettings topologySettings, int number)
         {
             var settings = topologySettings.GetSettings();
@@ -28,6 +30,7 @@
             return topologySettings;
         }
 
+        [ObsoleteEx(Message = "Bundle prefix will be replaced in the next major version.", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public static AzureServiceBusForwardingTopologySettings BundlePrefix(this AzureServiceBusForwardingTopologySettings topologySettings, string prefix)
         {
             var settings = topologySettings.GetSettings();
