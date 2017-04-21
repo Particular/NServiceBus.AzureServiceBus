@@ -32,7 +32,9 @@
                 EndpointSetup<DefaultServer>(config =>
                 {
                     var transport = config.UseTransport<AzureServiceBusTransport>();
+#pragma warning disable 618
                     transport.UseForwardingTopology().NumberOfEntitiesInBundle(1);
+#pragma warning restore 618
                 });
             }
         }
@@ -44,7 +46,9 @@
                 EndpointSetup<DefaultServer>(config =>
                 {
                     var transport = config.UseTransport<AzureServiceBusTransport>();
+#pragma warning disable 618
                     transport.UseForwardingTopology().NumberOfEntitiesInBundle(1);
+#pragma warning restore 618
                     transport.Routing().RouteToEndpoint(typeof(MyEvent), typeof(Publisher));
                 });
             }
