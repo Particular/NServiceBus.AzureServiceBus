@@ -127,8 +127,11 @@
     <Compile Include="Sending\MessageTooLargeException.cs" />
     <Compile Include="Sending\Time.cs" />
     <Compile Include="Topology\IStoppableTopology.cs" />
+    <Compile Include="Topology\MetaModel\NamespaceBundleConfigurations.cs" />
+    <Compile Include="Topology\MetaModel\NamespaceBunleInfo.cs" />
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Utils\AsyncLazy.cs" />
+    <Compile Include="Topology\PreStartupChecks\NumberOfTopicsInBundleCheck.cs" />
     <Compile Include="Utils\MessageReceiverExtensions.cs" />
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />

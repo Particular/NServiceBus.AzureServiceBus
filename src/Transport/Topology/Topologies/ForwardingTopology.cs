@@ -3,6 +3,7 @@ namespace NServiceBus
     using System;
     using System.Threading.Tasks;
     using AzureServiceBus;
+    using AzureServiceBus.Topology.MetaModel;
     using Logging;
     using Routing;
     using Settings;
@@ -126,6 +127,15 @@ namespace NServiceBus
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
+
+            var manageNamespaceManagerLifeCycle = container.Resolve<IManageNamespaceManagerLifeCycle>();
+            var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            var namespaceBundleConfigurations = settings.Get<NamespaceBundleConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.NamespaceBundle);
+            var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
+            
+            var check = new NumberOfTopicsInBundleCheck(manageNamespaceManagerLifeCycle, namespaceConfigurations, namespaceBundleConfigurations, bundlePrefix);
+            await check.Run().ConfigureAwait(false);
+
             return Task.FromResult(StartupCheckResult.Success);
         }
 

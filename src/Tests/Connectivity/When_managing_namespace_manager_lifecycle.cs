@@ -151,6 +151,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 throw new NotImplementedException();
             }
 
+            public Task<IEnumerable<TopicDescription>> GetTopics(string filter)
+            {
+                throw new NotImplementedException();
+            }
+
             public Task DeleteSubscription(SubscriptionDescription subscriptionDescription)
             {
                 throw new NotImplementedException();
