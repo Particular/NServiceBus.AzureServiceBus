@@ -7,7 +7,7 @@
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
 
-    public class Issue524 : NServiceBusAcceptanceTest
+    public class Issue_524 : NServiceBusAcceptanceTest
     {
         [Test]
         public async Task When_publisher_and_subscriber_bundles_are_miscofigured_Should_not_loose_messages()
