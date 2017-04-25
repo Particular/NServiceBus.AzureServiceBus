@@ -44,16 +44,16 @@
             inner.Add(definition);
         }
 
-        public string GetConnectionString(string name)
+        public string GetConnectionString(string alias)
         {
             try
             {
-                var selected = inner.Single(x => x.Alias.Equals(name, StringComparison.OrdinalIgnoreCase));
+                var selected = inner.Single(x => x.Alias.Equals(alias, StringComparison.OrdinalIgnoreCase));
                 return selected.ConnectionString;
             }
             catch (InvalidOperationException ex)
             {
-                throw new KeyNotFoundException($"Namespace with alias `{name}` hasn't been registered", ex);
+                throw new KeyNotFoundException($"Namespace with alias `{alias}` hasn't been registered", ex);
             }
         }
 
