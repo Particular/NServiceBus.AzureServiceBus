@@ -265,7 +265,7 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.2.0\Versioning\When_multiple_versions_of_a_message_is_published.cs" />
     <Compile Include="ConfigureEndpointAzureServiceBusTransport.cs" />
     <Compile Include="Infrastructure\TestIndependenceBehavior.cs" />
-    <Compile Include="Issues\Issue524.cs" />
+    <Compile Include="Issues\Issue_524.cs" />
     <Compile Include="OldTests\When_sending_a_message_with_no_correlation_id.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_without_a_transaction_scope.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_from_a_transaction_scope.cs" />
