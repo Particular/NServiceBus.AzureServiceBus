@@ -40,11 +40,12 @@
         [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
             "sion 8.0.0. Will be removed in version 9.0.0.", false)]
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> BundlePrefix(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> topologySettings, string prefix) { }
-        [System.ObsoleteAttribute("Bundle prefix will be replaced in the next major version. Will be treated as an e" +
-            "rror from version 8.0.0. Will be removed in version 9.0.0.", false)]
-        public static NServiceBus.AzureServiceBusForwardingTopologySettings BundlePrefix(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, string prefix) { }
         [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
             "sion 8.0.0. Will be removed in version 9.0.0.", false)]
+        public static NServiceBus.AzureServiceBusForwardingTopologySettings BundlePrefix(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, string prefix) { }
+        [System.ObsoleteAttribute("Number of topics in the bundle by default is 2. This setting will be removed in t" +
+            "he next major version and number of topics used will be 1. Will be treated as an" +
+            " error from version 8.0.0. Will be removed in version 9.0.0.", false)]
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> topologySettings, int number) { }
         [System.ObsoleteAttribute("Number of topics in the bundle by default is 2. This setting will be removed in t" +
             "he next major version and number of topics used will be 1. Will be treated as an" +
