@@ -73,7 +73,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                 public const string UseNamespaceAliasesInsteadOfConnectionStrings = "AzureServiceBus.Settings.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings";
                 public const string DefaultNamespaceAlias = "AzureServiceBus.Settings.Topology.Addressing.DefaultNamespaceAlias";
                 public const string Namespaces = "AzureServiceBus.Settings.Topology.Addressing.Namespaces";
-                public const string NamespaceBundle = "AzureServiceBus.Settings.Topology.Addressing.NamespaceBundle";
 
                 public static class Partitioning
                 {
@@ -115,6 +114,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 public const string NumberOfEntitiesInBundle = "AzureServiceBus.Settings.Topology.Bundling.NumberOfEntitiesInBundle";
                 public const string BundlePrefix = "AzureServiceBus.Settings.Topology.Bundling.BundlePrefix";
+                public const string NamespaceBundleConfigurations = "AzureServiceBus.Settings.Topology.Bundling.NamespaceBundleConfigurations";
             }
 
         }

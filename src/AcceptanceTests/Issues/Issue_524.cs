@@ -29,10 +29,7 @@
                 }))
                 .WithEndpoint<Subscriber>(builder => builder.When((session, ctx) =>
                 {
-                    if (ctx.HasNativePubSubSupport)
-                    {
-                        ctx.SubscribedToEvent = true;
-                    }
+                    ctx.SubscribedToEvent = ctx.HasNativePubSubSupport;
                     return Task.FromResult(0);
                 }))
                 .Done(ctx => ctx.EventWasHandled)
@@ -55,6 +52,7 @@
             {
                 EndpointSetup<DefaultServer>(endpointConfiguration =>
                 {
+                    endpointConfiguration.Recoverability().DisableLegacyRetriesSatellite();
                     var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
 #pragma warning disable 618
                     var topology = transport.UseTopology<ForwardingTopology>();
@@ -70,10 +68,7 @@
             {
                 EndpointSetup<DefaultServer>(endpointConfiguration =>
                 {
-                    var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-#pragma warning disable 618
-                    transport.UseTopology<ForwardingTopology>();
-#pragma warning restore 618
+                    endpointConfiguration.Recoverability().DisableLegacyRetriesSatellite();
                 });
             }
 
