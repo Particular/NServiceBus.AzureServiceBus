@@ -109,7 +109,22 @@ namespace NServiceBus
 
         public Func<ICreateQueues> GetQueueCreatorFactory()
         {
+            FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly();
+
             return () => container.Resolve<ICreateQueues>();
+        }
+
+        void FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly()
+        {
+            // Queues are created first, and that causes TopologySectionManager to execute logic for creation of topics as well
+            var settings = container.Resolve<ReadOnlySettings>();
+            var manageNamespaceManagerLifeCycle = container.Resolve<IManageNamespaceManagerLifeCycle>();
+            var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            var namespaceBundleConfigurations = settings.Get<NamespaceBundleConfigurations>(WellKnownConfigurationKeys.Topology.Bundling.NamespaceBundleConfigurations);
+            var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
+
+            var check = new NumberOfTopicsInBundleCheck(manageNamespaceManagerLifeCycle, namespaceConfigurations, namespaceBundleConfigurations, bundlePrefix);
+            check.Run().GetAwaiter().GetResult();
         }
 
         public Func<IPushMessages> GetMessagePumpFactory()
@@ -142,15 +157,6 @@ namespace NServiceBus
             {
                 return StartupCheckResult.Failed(string.Join(Environment.NewLine, results.Select(x => x.ErrorMessage)));
             }
-
-
-            var manageNamespaceManagerLifeCycle = container.Resolve<IManageNamespaceManagerLifeCycle>();
-            var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
-            var namespaceBundleConfigurations = settings.Get<NamespaceBundleConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.NamespaceBundle);
-            var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
-            
-            var check = new NumberOfTopicsInBundleCheck(manageNamespaceManagerLifeCycle, namespaceConfigurations, namespaceBundleConfigurations, bundlePrefix);
-            await check.Run().ConfigureAwait(false);
 
             return StartupCheckResult.Success;
         }
