@@ -2,6 +2,8 @@
 {
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using Microsoft.ServiceBus;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -10,13 +12,15 @@
     public class Issue_524 : NServiceBusAcceptanceTest
     {
         [Test]
-        public async Task When_publisher_and_subscriber_bundles_are_miscofigured_Should_not_loose_messages()
+        public async Task When_publisher_and_subscriber_bundles_are_misconfigured_Should_not_lose_messages()
         {
             var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
             if (topology != "ForwardingTopology")
             {
                 Assert.Inconclusive("The test is designed for ForwardingTopology only.");
             }
+
+            await MimicAnExistingEnvironmentWithAlreadyMisconfiguredBundlesPreCreated();
 
             await Scenario.Define<Context>()
                 .WithEndpoint<Publisher>(builder => builder.When(ctx => ctx.SubscribedToEvent, async session =>
@@ -29,14 +33,34 @@
                 }))
                 .WithEndpoint<Subscriber>(builder => builder.When((session, ctx) =>
                 {
-                    if (ctx.HasNativePubSubSupport)
-                    {
-                        ctx.SubscribedToEvent = true;
-                    }
+                    ctx.SubscribedToEvent = ctx.HasNativePubSubSupport;
                     return Task.FromResult(0);
                 }))
                 .Done(ctx => ctx.EventWasHandled)
                 .Run();
+        }
+
+        static async Task MimicAnExistingEnvironmentWithAlreadyMisconfiguredBundlesPreCreated()
+        {
+            var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
+
+            async Task createTopic(string name)
+            {
+                if (name.Equals("bundle-3"))
+                {
+                    await namespaceManager.DeleteTopicAsync(name);
+                }
+
+                if (!await namespaceManager.TopicExistsAsync(name))
+                {
+                    await namespaceManager.CreateTopicAsync(new TopicDescription(name));
+                }
+            }
+
+            await createTopic("bundle-1");
+            await createTopic("bundle-2");
+            await createTopic("bundle-3");
         }
 
         public class Context : ScenarioContext
@@ -55,6 +79,7 @@
             {
                 EndpointSetup<DefaultServer>(endpointConfiguration =>
                 {
+                    endpointConfiguration.Recoverability().DisableLegacyRetriesSatellite();
                     var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
 #pragma warning disable 618
                     var topology = transport.UseTopology<ForwardingTopology>();
@@ -70,10 +95,7 @@
             {
                 EndpointSetup<DefaultServer>(endpointConfiguration =>
                 {
-                    var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-#pragma warning disable 618
-                    transport.UseTopology<ForwardingTopology>();
-#pragma warning restore 618
+                    endpointConfiguration.Recoverability().DisableLegacyRetriesSatellite();
                 });
             }
 
