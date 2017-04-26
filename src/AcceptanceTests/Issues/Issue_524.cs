@@ -2,6 +2,8 @@
 {
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using Microsoft.ServiceBus;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -17,6 +19,8 @@
             {
                 Assert.Inconclusive("The test is designed for ForwardingTopology only.");
             }
+
+            await MimicAnExistingEnvironmentWithAlreadyMisconfiguredBundlesPreCreated();
 
             await Scenario.Define<Context>()
                 .WithEndpoint<Publisher>(builder => builder.When(ctx => ctx.SubscribedToEvent, async session =>
@@ -34,6 +38,24 @@
                 }))
                 .Done(ctx => ctx.EventWasHandled)
                 .Run();
+        }
+
+        static async Task MimicAnExistingEnvironmentWithAlreadyMisconfiguredBundlesPreCreated()
+        {
+            var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
+
+            async Task createTopic(string name)
+            {
+                if (! await namespaceManager.TopicExistsAsync(name))
+                {
+                    await namespaceManager.CreateTopicAsync(new TopicDescription(name));
+                }
+            }
+
+            await createTopic("bundle-1");
+            await createTopic("bundle-2");
+            await createTopic("bundle-3");
         }
 
         public class Context : ScenarioContext
