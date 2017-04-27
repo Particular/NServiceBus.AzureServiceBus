@@ -109,6 +109,7 @@ namespace NServiceBus
 
         public Func<ICreateQueues> GetQueueCreatorFactory()
         {
+            // this method is ivoked regardless if installers are enabled or disabled AND configurations are locked
             FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly();
 
             return () => container.Resolve<ICreateQueues>();
@@ -116,7 +117,6 @@ namespace NServiceBus
 
         void FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly()
         {
-            // Queues are created first, and that causes TopologySectionManager to execute logic for creation of topics as well
             var settings = container.Resolve<ReadOnlySettings>();
             var manageNamespaceManagerLifeCycle = container.Resolve<IManageNamespaceManagerLifeCycle>();
             var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
