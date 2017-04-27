@@ -2,18 +2,18 @@
 {
     using System;
 
-    class NamespaceBunleInfo : IEquatable<NamespaceBunleInfo>
+    class NamespaceBundleInfo : IEquatable<NamespaceBundleInfo>
     {
         public string Alias { get; }
         public int NumberOfTopicsInBundle { get; }
 
-        public NamespaceBunleInfo(string alias, int numberOfTopicsInBundle)
+        public NamespaceBundleInfo(string alias, int numberOfTopicsInBundle)
         {
             Alias = alias;
             NumberOfTopicsInBundle = numberOfTopicsInBundle;
         }
 
-        public bool Equals(NamespaceBunleInfo other)
+        public bool Equals(NamespaceBundleInfo other)
         {
             return other != null
                    && Alias.Equals(other.Alias, StringComparison.OrdinalIgnoreCase)
@@ -22,7 +22,7 @@
 
         public override bool Equals(object obj)
         {
-            var target = obj as NamespaceBunleInfo;
+            var target = obj as NamespaceBundleInfo;
             return Equals(target);
         }
 
