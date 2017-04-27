@@ -99,7 +99,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return manager.CreateSubscriptionAsync(subscriptionDescription, ruleDescription);
         }
 
-        public Task<IEnumerable<TopicDescription>> GetTopics(string filter)
+        internal Task<IEnumerable<TopicDescription>> GetTopics(string filter)
         {
             return manager.GetTopicsAsync(filter);
         }
