@@ -107,13 +107,10 @@ namespace NServiceBus
 
         public Func<ICreateQueues> GetQueueCreatorFactory()
         {
-            // this method is ivoked regardless if installers are enabled or disabled AND configurations are locked
-            FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly();
-
             return () => container.Resolve<ICreateQueues>();
         }
 
-        void FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly()
+        internal void FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly()
         {
             var settings = container.Resolve<ReadOnlySettings>();
             var manageNamespaceManagerLifeCycle = container.Resolve<IManageNamespaceManagerLifeCycle>();
