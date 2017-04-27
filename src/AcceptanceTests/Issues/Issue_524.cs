@@ -12,7 +12,7 @@
     public class Issue_524 : NServiceBusAcceptanceTest
     {
         [Test]
-        public async Task When_publisher_and_subscriber_bundles_are_miscofigured_Should_not_loose_messages()
+        public async Task When_publisher_and_subscriber_bundles_are_misconfigured_Should_not_lose_messages()
         {
             var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
             if (topology != "ForwardingTopology")
@@ -47,7 +47,12 @@
 
             async Task createTopic(string name)
             {
-                if (! await namespaceManager.TopicExistsAsync(name))
+                if (name.Equals("bundle-3"))
+                {
+                    await namespaceManager.DeleteTopicAsync(name);
+                }
+
+                if (!await namespaceManager.TopicExistsAsync(name))
                 {
                     await namespaceManager.CreateTopicAsync(new TopicDescription(name));
                 }
