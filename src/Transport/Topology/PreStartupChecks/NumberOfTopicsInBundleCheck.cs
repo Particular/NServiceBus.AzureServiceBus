@@ -25,7 +25,13 @@
             {
                 var namespaceManager = manageNamespaceManagerLifeCycle.Get(namespaceConfiguration.Alias);
                 var filter = $"startswith(path, '{bundlePrefix}') eq true";
-                var foundTopics = await namespaceManager.GetTopics(filter).ConfigureAwait(false);
+                var namespaceManagerThatCanQueryAndFilterTopics = namespaceManager as NamespaceManagerAdapter;
+                // if user has provided an implementation of INamespaceManager, skip the checks all together
+                if (namespaceManagerThatCanQueryAndFilterTopics == null)
+                {
+                    return;
+                }
+                var foundTopics = await namespaceManagerThatCanQueryAndFilterTopics.GetTopics(filter).ConfigureAwait(false);
                 namespaceBundleConfigurations.Add(namespaceConfiguration.Alias, foundTopics.Count());
             }
         }

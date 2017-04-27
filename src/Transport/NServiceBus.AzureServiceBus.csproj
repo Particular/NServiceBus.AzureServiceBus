@@ -128,7 +128,7 @@
     <Compile Include="Sending\Time.cs" />
     <Compile Include="Topology\IStoppableTopology.cs" />
     <Compile Include="Topology\MetaModel\NamespaceBundleConfigurations.cs" />
-    <Compile Include="Topology\MetaModel\NamespaceBunleInfo.cs" />
+    <Compile Include="Topology\MetaModel\NamespaceBundleInfo.cs" />
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Utils\AsyncLazy.cs" />
     <Compile Include="Topology\PreStartupChecks\NumberOfTopicsInBundleCheck.cs" />
