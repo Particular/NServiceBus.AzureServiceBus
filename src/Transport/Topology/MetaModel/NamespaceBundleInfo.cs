@@ -30,7 +30,7 @@
         {
             unchecked
             {
-                return ((Alias != null ? Alias.GetHashCode() : 0) * 397) ^ NumberOfTopicsInBundle;
+                return ((Alias?.GetHashCode() ?? 0) * 397) ^ NumberOfTopicsInBundle;
             }
         }
     }
