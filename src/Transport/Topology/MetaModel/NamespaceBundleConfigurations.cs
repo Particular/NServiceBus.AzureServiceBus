@@ -5,40 +5,33 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    class NamespaceBundleConfigurations : IEnumerable<NamespaceBunleInfo>
+    class NamespaceBundleConfigurations : IEnumerable<NamespaceBundleInfo>
     {
-        List<NamespaceBunleInfo> namespaceBundles;
+        List<NamespaceBundleInfo> namespaceBundles;
 
         public NamespaceBundleConfigurations()
         {
-            namespaceBundles = new List<NamespaceBunleInfo>();
+            namespaceBundles = new List<NamespaceBundleInfo>();
         }
 
         public void Add(string namespaceAlias, int numberOfTopicsInBundle)
         {
-            var bunleInfo = namespaceBundles.SingleOrDefault(x => x.Alias.Equals(namespaceAlias, StringComparison.OrdinalIgnoreCase));
-            if (bunleInfo != null && bunleInfo.NumberOfTopicsInBundle < numberOfTopicsInBundle)
+            var bundleInfo = namespaceBundles.SingleOrDefault(x => x.Alias.Equals(namespaceAlias, StringComparison.OrdinalIgnoreCase));
+            if (bundleInfo != null && bundleInfo.NumberOfTopicsInBundle < numberOfTopicsInBundle)
             {
                 throw new Exception($"Duplicate namespace alias `{namespaceAlias}` was added to the {nameof(NamespaceBundleConfigurations)}. Namespace aliases should be unique.");
             }
 
-            namespaceBundles.Add(new NamespaceBunleInfo(namespaceAlias, numberOfTopicsInBundle));
+            namespaceBundles.Add(new NamespaceBundleInfo(namespaceAlias, numberOfTopicsInBundle));
         }
 
         public int GetNumberOfTopicInBundle(string namespaceAlias)
         {
-            try
-            {
-                var selected = namespaceBundles.Single(x => x.Alias.Equals(namespaceAlias, StringComparison.OrdinalIgnoreCase));
-                return selected.NumberOfTopicsInBundle;
-            }
-            catch (InvalidOperationException exception)
-            {
-                throw new KeyNotFoundException($"Namespace with alias `{namespaceAlias}` hasn't been registered", exception);
-            }
+            var selected = namespaceBundles.SingleOrDefault(x => x.Alias.Equals(namespaceAlias, StringComparison.OrdinalIgnoreCase));
+            return selected?.NumberOfTopicsInBundle ?? 0;
         }
 
-        public IEnumerator<NamespaceBunleInfo> GetEnumerator()
+        public IEnumerator<NamespaceBundleInfo> GetEnumerator()
         {
             return namespaceBundles.GetEnumerator();
         }
