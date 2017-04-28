@@ -169,6 +169,7 @@
     <Compile Include="Topology\TypesScanner\When_configuring_a_single_type_scanner.cs" />
     <Compile Include="Topology\MetaModel\When_configuring_entity_address.cs" />
     <Compile Include="Topology\MetaModel\When_configuring_namespace_configurations.cs" />
+    <Compile Include="Topology\MetaModel\When_namespace_bundle_configurations_is_used.cs" />
     <Compile Include="Topology\MetaModel\When_configuring_namespace_info.cs" />
     <Compile Include="Topology\MetaModel\When_mapping_connection_string_to_namespace_alias.cs" />
     <Compile Include="Topology\MetaModel\When_parsing_string_to_connection_string.cs" />
