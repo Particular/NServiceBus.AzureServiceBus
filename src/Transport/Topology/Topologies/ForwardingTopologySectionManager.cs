@@ -115,7 +115,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             const int index = 1;
             var selected = entityInfos[index];
 
-            return entityInfos.Where(i => i.Path == selected.Path);
+            yield return entityInfos.First(i => i.Path == selected.Path);
         }
 
         public TopologySection DetermineSendDestination(string destination)
@@ -186,7 +186,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 subscriptions[eventType] = BuildSubscriptionHierarchy(eventType);
             }
 
-            return (subscriptions[eventType]);
+            return subscriptions[eventType];
         }
 
         public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)

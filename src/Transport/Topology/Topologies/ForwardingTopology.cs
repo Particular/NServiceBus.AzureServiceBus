@@ -112,7 +112,7 @@ namespace NServiceBus
             return () => container.Resolve<ICreateQueues>();
         }
 
-        internal void FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly()
+        internal void FindOutHowManyTopicExistsForBundle()
         {
             var settings = container.Resolve<ReadOnlySettings>();
             var manageNamespaceManagerLifeCycle = container.Resolve<IManageNamespaceManagerLifeCycle>();

@@ -57,7 +57,7 @@
         {
             if (topology is ForwardingTopology t)
             {
-                t.FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly();
+                t.FindOutHowManyTopicExistsForBundle();
             }
 
             return new TransportReceiveInfrastructure(
