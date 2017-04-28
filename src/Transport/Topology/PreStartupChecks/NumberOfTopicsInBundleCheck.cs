@@ -2,14 +2,16 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
+    using Logging;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
 
     class NumberOfTopicsInBundleCheck
     {
-        readonly IManageNamespaceManagerLifeCycle manageNamespaceManagerLifeCycle;
-        readonly NamespaceConfigurations namespaceConfigurations;
-        readonly NamespaceBundleConfigurations namespaceBundleConfigurations;
-        readonly string bundlePrefix;
+        ILog logger = LogManager.GetLogger(typeof(NumberOfTopicsInBundleCheck));
+        IManageNamespaceManagerLifeCycle manageNamespaceManagerLifeCycle;
+        NamespaceConfigurations namespaceConfigurations;
+        NamespaceBundleConfigurations namespaceBundleConfigurations;
+        string bundlePrefix;
 
         public NumberOfTopicsInBundleCheck(IManageNamespaceManagerLifeCycle manageNamespaceManagerLifeCycle, NamespaceConfigurations namespaceConfigurations, NamespaceBundleConfigurations namespaceBundleConfigurations, string bundlePrefix)
         {
@@ -31,6 +33,13 @@
                 {
                     return;
                 }
+                
+                if (!await namespaceManagerThatCanQueryAndFilterTopics.CanManageEntities().ConfigureAwait(false))
+                {
+                    logger.Warn($"Cannot verify number of topics in bundle for namespace with alias `{namespaceConfiguration.Alias}` without connection string with Manage rights.");
+                    return;
+                }
+
                 var foundTopics = await namespaceManagerThatCanQueryAndFilterTopics.GetTopics(filter).ConfigureAwait(false);
                 namespaceBundleConfigurations.Add(namespaceConfiguration.Alias, foundTopics.Count());
             }
