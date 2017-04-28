@@ -1,6 +1,5 @@
 ﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Issues
 {
-    using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using Microsoft.ServiceBus;
@@ -46,7 +45,7 @@
             var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
 
-            var createTopic = new Func<string, Task>(async name =>
+            async Task createTopic(string name)
             {
                 if (name.Equals("bundle-3"))
                 {
@@ -57,7 +56,7 @@
                 {
                     await namespaceManager.CreateTopicAsync(new TopicDescription(name));
                 }
-            });
+            }
 
             await createTopic("bundle-1");
             await createTopic("bundle-2");
