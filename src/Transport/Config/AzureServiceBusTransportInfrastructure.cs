@@ -55,10 +55,8 @@
 
         public override TransportReceiveInfrastructure ConfigureReceiveInfrastructure()
         {
-            if (topology is ForwardingTopology t)
-            {
-                t.FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly();
-            }
+            var t = topology as ForwardingTopology;
+            t?.FindOutHowManyTopicExistsForBundleToEnsureResourcesAreCreatedProperly();
 
             return new TransportReceiveInfrastructure(
                 topology.GetMessagePumpFactory(),
