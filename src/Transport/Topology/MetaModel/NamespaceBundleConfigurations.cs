@@ -28,7 +28,7 @@
         public int GetNumberOfTopicInBundle(string namespaceAlias)
         {
             var selected = namespaceBundles.SingleOrDefault(x => x.Alias.Equals(namespaceAlias, StringComparison.OrdinalIgnoreCase));
-            return selected?.NumberOfTopicsInBundle ?? 0;
+            return selected?.NumberOfTopicsInBundle ?? 1;
         }
 
         public IEnumerator<NamespaceBundleInfo> GetEnumerator()

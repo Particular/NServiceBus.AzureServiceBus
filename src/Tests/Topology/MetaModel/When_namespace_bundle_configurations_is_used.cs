@@ -40,7 +40,7 @@
         public void Should_return_zero_for_a_namespace_that_is_not_found()
         {
             var value = namespaceBundleConfigurations.GetNumberOfTopicInBundle("alias");
-            Assert.That(value, Is.Zero);
+            Assert.That(value, Is.EqualTo(1));
         }
     }
 }
