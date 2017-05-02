@@ -8,6 +8,8 @@
         //TODO: remove when we update to 4.6 and can use Task.CompletedTask
         public static readonly Task Completed = Task.FromResult(0);
 
+        public static readonly Task<bool> CompletedTrue = Task.FromResult(true);
+
         public static void Ignore(this Task task)
         {
         }
