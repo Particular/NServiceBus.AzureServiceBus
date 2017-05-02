@@ -17,18 +17,17 @@
         {
             DefaultConfigurationValues.Apply(settings);
 
-            var topology = GetConfiguredTopology(settings);
-            topology.Initialize(settings);
-
             if (!string.IsNullOrEmpty(connectionString))
             {
                 RegisterConnectionStringAsNamespace(connectionString, settings);
             }
 
             MatchSettingsToConsistencyRequirements(settings);
-
             SetConnectivityMode(settings);
 
+            var topology = GetConfiguredTopology(settings);
+            topology.Initialize(settings);
+            
             return new AzureServiceBusTransportInfrastructure(topology, settings.SupportedTransactionMode());
         }
 
