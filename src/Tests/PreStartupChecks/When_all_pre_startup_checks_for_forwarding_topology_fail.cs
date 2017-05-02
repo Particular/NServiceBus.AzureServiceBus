@@ -19,6 +19,7 @@
             var container = new TransportPartsContainer();
 
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, new NamespaceConfigurations { {"namespace1", ConnectionStringValue.Sample, NamespacePurpose.Partitioning } });
+            settings.SetDefault("NServiceBus.Routing.EndpointName", "someEndpoint");
 
             container.Register(typeof(SettingsHolder), () => settings);
 

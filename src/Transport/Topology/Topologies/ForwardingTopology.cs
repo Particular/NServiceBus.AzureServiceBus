@@ -11,7 +11,6 @@ namespace NServiceBus
     using Transport;
     using Transport.AzureServiceBus;
 
-
     class ForwardingTopologyInternal : ITopologyInternal
     {
         ILog logger = LogManager.GetLogger("ForwardingTopology");
@@ -71,7 +70,6 @@ namespace NServiceBus
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(ThrowOnFailedValidation));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle, 2);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix, "bundle-");
-            topologySectionManager = new ForwardingTopologySectionManager(settings, container);
         }
 
         void InitializeContainer()
@@ -79,6 +77,27 @@ namespace NServiceBus
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
 
+            var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
+            var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+
+            var partitioningStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
+            container.Register(partitioningStrategyType);
+            var partitioningStrategy = container.Resolve<INamespacePartitioningStrategy>();
+
+            var compositionStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
+            container.Register(compositionStrategyType);
+            var compositionStrategy = container.Resolve<ICompositionStrategy>();
+
+            var sanitizationStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
+            container.Register(sanitizationStrategyType);
+            var sanitizationStrategy = container.Resolve<ISanitizationStrategy>();
+
+            var addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
+
+            var numberOfEntitiesInBundle = settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
+            var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
+
+            topologySectionManager = new ForwardingTopologySectionManager(defaultName, namespaceConfigurations, settings.EndpointName(), numberOfEntitiesInBundle, bundlePrefix, partitioningStrategy, addressingLogic);
             container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
 
             namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -105,7 +124,7 @@ namespace NServiceBus
             topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal);
             container.Register<TopologyCreator>(() => topologyCreator);
 
-            var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
+            var oversizedMessageHandler = (IHandleOversizedBrokeredMessages) settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
             container.Register<IHandleOversizedBrokeredMessages>(() => oversizedMessageHandler);
 
             outgoingBatchRouter = new DefaultOutgoingBatchRouter(batchedOperationsToBrokeredMessagesConverter, senderLifeCycleManager, settings, oversizedMessageHandler);
@@ -116,17 +135,8 @@ namespace NServiceBus
 
             container.Register<AddressingLogic>();
 
-            var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
-            container.Register(compositionStrategyType);
-
-            var individualizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
+            var individualizationStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
             container.Register(individualizationStrategyType);
-
-            var partitioningStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
-            container.Register(partitioningStrategyType);
-
-            var sanitizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            container.Register(sanitizationStrategyType);
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)

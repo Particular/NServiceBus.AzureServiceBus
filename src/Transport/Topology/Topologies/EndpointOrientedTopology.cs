@@ -64,7 +64,6 @@ namespace NServiceBus
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(CoreIndividualization));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioning));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(ThrowOnFailedValidation));
-            topologySectionManager = new EndpointOrientedTopologySectionManager(settings, container);
         }
 
         void InitializeContainer()
@@ -72,6 +71,26 @@ namespace NServiceBus
             // runtime components
             container.Register<ReadOnlySettings>(() => settings);
 
+            var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
+            var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            var conventions = settings.Get<Conventions>();
+            var publishersConfiguration = new PublishersConfiguration(conventions, settings);
+            
+            var partitioningStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
+            container.Register(partitioningStrategyType);
+            var partitioningStrategy = container.Resolve<INamespacePartitioningStrategy>();
+
+            var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
+            container.Register(compositionStrategyType);
+            var compositionStrategy = container.Resolve<ICompositionStrategy>();
+
+            var sanitizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
+            container.Register(sanitizationStrategyType);
+            var sanitizationStrategy = container.Resolve<ISanitizationStrategy>();
+
+            var addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
+
+            topologySectionManager = new EndpointOrientedTopologySectionManager(defaultName, namespaceConfigurations, settings.EndpointName(), publishersConfiguration, partitioningStrategy, addressingLogic);
             container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
 
             namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -107,23 +126,8 @@ namespace NServiceBus
             container.Register<TopologyOperator>(() => new TopologyOperator(messageReceiverLifeCycleManager, brokeredMessagesToIncomingMessagesConverter, settings));
             topologyOperator = container.Resolve<IOperateTopologyInternal>();
 
-            container.Register<AddressingLogic>();
-
-            var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
-            container.Register(compositionStrategyType);
-
             var individualizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
             container.Register(individualizationStrategyType);
-
-            var partitioningStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
-            container.Register(partitioningStrategyType);
-
-            var sanitizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            container.Register(sanitizationStrategyType);
-
-            var conventions = settings.Get<Conventions>();
-            var publishersConfiguration = new PublishersConfiguration(conventions, settings);
-            container.Register<PublishersConfiguration>(() => publishersConfiguration);
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)

@@ -17,8 +17,7 @@
         {
             // override core default serialization
             settings.SetDefault(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new JsonSerializer(), new SettingsHolder()));
-
-
+            
             var topology = GetConfiguredTopology(settings);
             topology.Initialize(settings);
 
