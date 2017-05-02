@@ -120,8 +120,6 @@ namespace NServiceBus
             container.Register<TopologyOperator>(() => new TopologyOperator(messageReceiverLifeCycleManager, brokeredMessagesToIncomingMessagesConverter, settings));
             topologyOperator = container.Resolve<IOperateTopologyInternal>();
 
-            container.Register<AddressingLogic>();
-
             var individualizationStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
             container.Register(individualizationStrategyType);
         }
