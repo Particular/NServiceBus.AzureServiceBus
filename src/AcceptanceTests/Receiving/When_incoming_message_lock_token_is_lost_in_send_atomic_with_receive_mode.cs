@@ -3,7 +3,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
-    using MyNamespace;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NUnit.Framework;
@@ -43,8 +42,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     transport.MessageReceivers().AutoRenewTimeout(TimeSpan.Zero);
                     transport.Routing().RouteToEndpoint(typeof(DispatchedMessage), typeof(Receiver));
                     config.LimitMessageProcessingConcurrencyTo(1);
-                    config.Recoverability().Immediate(x => x.NumberOfRetries(0));
-                    config.Recoverability().Delayed(x => x.NumberOfRetries(0));
                     config.Recoverability().DisableLegacyRetriesSatellite();
                 });
             }
@@ -82,11 +79,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                 }
             }
         }
-    }
-
-    namespace MyNamespace
-    {
-        using System;
 
         public class InitialMessage : IMessage
         {
