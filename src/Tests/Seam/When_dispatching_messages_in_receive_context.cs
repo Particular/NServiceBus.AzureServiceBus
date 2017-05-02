@@ -27,7 +27,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             completed = new AsyncManualResetEvent(false);
             container = new TransportPartsContainer();
-            settings = new SettingsHolder();
+            settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set("NServiceBus.SharedQueue", SourceQueueName);
             criticalError = new CriticalError(ctx => TaskEx.Completed);
 

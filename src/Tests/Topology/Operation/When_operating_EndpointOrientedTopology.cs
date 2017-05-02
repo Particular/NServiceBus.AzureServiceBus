@@ -26,7 +26,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             // setting up the environment
             var container = new TransportPartsContainer();
-            var settings = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
 
@@ -84,7 +84,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             // setting up the environment
             var container = new TransportPartsContainer();
-            var settings = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
 
@@ -139,7 +139,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             // setting up the environment
             var container = new TransportPartsContainer();
-            var settings = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
 
@@ -203,7 +203,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             // setting up the environment
             var container = new TransportPartsContainer();
-            var settings = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
 
