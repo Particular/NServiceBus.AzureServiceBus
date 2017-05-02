@@ -34,7 +34,7 @@
                     }
                 }))
                 .Done(c => c.GotEventA && c.GotEventB)
-                .Run(TimeSpan.FromSeconds(300));
+                .Run(TimeSpan.FromSeconds(20));
 
             Assert.True(context.GotEventA);
             Assert.True(context.GotEventB);

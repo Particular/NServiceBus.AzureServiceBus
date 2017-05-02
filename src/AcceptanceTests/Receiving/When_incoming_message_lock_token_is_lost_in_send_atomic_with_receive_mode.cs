@@ -18,7 +18,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<Sender>(builder => builder.When((session, ctx) => session.SendLocal(new InitialMessage())))
                 .WithEndpoint<Receiver>()
-                .Done(ctx => ctx.TimesDispatchedMessageSent > 1)
+                .Done(ctx => ctx.TimesDispatchedMessageSent > 0)
                 .Run();
             
             Assert.That(context.TimesDispatchedMessageReceived, Is.Zero);
