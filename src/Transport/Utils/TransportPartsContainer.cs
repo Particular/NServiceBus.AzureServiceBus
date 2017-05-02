@@ -30,7 +30,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             RegisterSingleton(typeof(T));
         }
 
-        public void RegisterSingleton(Type t)
+        void RegisterSingleton(Type t)
         {
             var i = DetermineFunc(t)();
             Register(t, () => i);
@@ -103,20 +103,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 throw new ApplicationException($"Could not build {typeof(T)}", exception);
             }
-        }
-
-        public IEnumerable<T> ResolveAll<T>()
-        {
-            return funcs.Where(f => f.Item1 == typeof(T))
-                .Select(f => (T)f.Item2())
-                .ToList();
-        }
-
-        public IEnumerable<object> ResolveAll(Type typeToBuild)
-        {
-            return funcs.Where(f => f.Item1 == typeToBuild)
-                .Select(f => f.Item2())
-                .ToList();
         }
 
         Func<object> DetermineFunc(Type type)
