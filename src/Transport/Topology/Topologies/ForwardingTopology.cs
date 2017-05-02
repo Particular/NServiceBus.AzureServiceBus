@@ -4,7 +4,6 @@ namespace NServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using AzureServiceBus;
     using Logging;
     using Routing;
     using Settings;
@@ -42,7 +41,6 @@ namespace NServiceBus
             this.container = container;
         }
 
-
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
         public TopologySettings Settings { get; } = new TopologySettings();
@@ -52,24 +50,13 @@ namespace NServiceBus
         {
             this.settings = settings;
 
-            ApplyDefaults();
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle, 2);
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix, "bundle-");
 
             queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
             topicCreator = new AzureServiceBusTopicCreator(Settings.TopicSettings);
             
             InitializeContainer();
-        }
-
-        void ApplyDefaults()
-        {
-            new DefaultConfigurationValues().Apply(settings);
-            // ensures settings are present/correct
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(FlatComposition));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(CoreIndividualization));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioning));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(ThrowOnFailedValidation));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle, 2);
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix, "bundle-");
         }
 
         void InitializeContainer()

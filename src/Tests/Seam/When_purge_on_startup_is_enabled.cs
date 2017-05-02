@@ -16,7 +16,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         {
             var settings = new SettingsHolder();
             settings.Set("NServiceBus.SharedQueue", "sales");
-            new DefaultConfigurationValues().Apply(settings);
+            DefaultConfigurationValues.Apply(settings);
 
             var pump = new MessagePump(null, null, null, null, settings);
             var criticalError = new CriticalError(ctx => TaskEx.Completed);

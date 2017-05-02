@@ -3,13 +3,18 @@
     using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
+    using Serialization;
     using Settings;
     using Transport.AzureServiceBus;
 
-    class DefaultConfigurationValues
+    static class DefaultConfigurationValues
     {
-        public SettingsHolder Apply(SettingsHolder settings)
+        public static SettingsHolder Apply(SettingsHolder settings)
         {
+            // override core default serialization
+            settings.SetDefault(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new JsonSerializer(), new SettingsHolder()));
+
+            ApplyDefaultsForExtensibility(settings);
             ApplyDefaultsForConnectivity(settings);
             ApplyDefaultValuesForAddressing(settings);
             ApplyDefaultValuesForQueueDescriptions(settings);
@@ -18,28 +23,37 @@
             ApplyDefaultValuesForRules(settings);
             ApplyDefaultValuesForSerialization(settings);
             ApplyDefaultValuesForBrokeredMessageConventions(settings);
+
             return settings;
         }
 
-        void ApplyDefaultValuesForBrokeredMessageConventions(SettingsHolder settings)
+        static void ApplyDefaultsForExtensibility(SettingsHolder settings)
+        {
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(FlatComposition));
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(CoreIndividualization));
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioning));
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(ThrowOnFailedValidation));
+        }
+
+        static void ApplyDefaultValuesForBrokeredMessageConventions(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter, typeof(DefaultBrokeredMessagesToIncomingMessagesConverter));
             settings.SetDefault(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter, typeof(DefaultBatchedOperationsToBrokeredMessagesConverter));
         }
 
-        void ApplyDefaultValuesForSerialization(SettingsHolder settings)
+        static void ApplyDefaultValuesForSerialization(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType, SupportedBrokeredMessageBodyTypes.ByteArray);
         }
 
-        void ApplyDefaultValuesForAddressing(SettingsHolder settings)
+        static void ApplyDefaultValuesForAddressing(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, new NamespaceConfigurations());
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings, false);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias, "default");
         }
 
-        void ApplyDefaultsForConnectivity(SettingsHolder settings)
+        static void ApplyDefaultsForConnectivity(SettingsHolder settings)
         {
             var numberOfLogicalCores = Math.Max(2, Environment.ProcessorCount);
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, numberOfLogicalCores);
@@ -58,7 +72,7 @@
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance, new ThrowOnOversizedBrokeredMessages());
         }
 
-        void ApplyDefaultValuesForQueueDescriptions(SettingsHolder settings)
+        static void ApplyDefaultValuesForQueueDescriptions(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength, 260);
 
@@ -90,7 +104,7 @@
             return maxDeliveryCount;
         }
 
-        void ApplyDefaultValuesForTopics(SettingsHolder settings)
+        static void ApplyDefaultValuesForTopics(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength, 260);
 
@@ -107,7 +121,7 @@
 //            settings.SetDefault(WellKnownConfigurationKeys.Topology.Resources.Topics.SupportOrdering, false);
         }
 
-        void ApplyDefaultValuesForSubscriptions(SettingsHolder settings)
+        static void ApplyDefaultValuesForSubscriptions(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength, 50);
 

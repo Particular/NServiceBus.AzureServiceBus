@@ -25,7 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             var settings = new SettingsHolder();
             settings.Set("NServiceBus.SharedQueue", "sales");
-            new DefaultConfigurationValues().Apply(settings);
+            DefaultConfigurationValues.Apply(settings);
 
             // setting up the environment
             var container = new TransportPartsContainer();

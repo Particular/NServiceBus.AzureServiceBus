@@ -20,7 +20,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public void Should_inject_body_as_byte_array_by_default()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
@@ -43,7 +43,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public void Should_extract_body_as_stream_when_configured()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
@@ -70,7 +70,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public void Should_NOT_copy_the_message_id()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
             var batchedOperation = new BatchedOperationInternal
@@ -88,7 +88,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public void Should_copy_the_headers()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
@@ -113,7 +113,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public void Should_apply_delayed_delivery()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
@@ -139,7 +139,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public void Should_apply_delivery_at_specific_date()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
@@ -163,7 +163,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         [Test]
         public void Should_apply_time_to_live()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
@@ -188,7 +188,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         [Test]
         public void Should_apply_correlationid()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
@@ -212,7 +212,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         [Test]
         public void Should_set_replyto_address()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
@@ -236,7 +236,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         [TestCase(false, "MyQueue@Endpoint=sb://name-x.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key")]
         public void Should_set_replyto_address_with_respect_to_secured_connection_strings_setting(bool shouldSecureConnectionString, string expectedReplyToAddress)
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
@@ -267,7 +267,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         [TestCase(false, "MyQueue@Endpoint=sb://name-y.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key")]
         public void Should_set_replyto_address_to_destination_if_multiple_available_with_respect_to_secured_connection_strings_setting(bool shouldSecureConnectionString, string expectedReplyToAddress)
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
@@ -301,7 +301,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         [Test]
         public void Should_set_ViaPartitionKey_if_partition_key_is_available_and_sending_via_option_is_enabled()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 
             var routingOptions = new RoutingOptionsInternal
@@ -326,7 +326,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public void Should_set_transport_encoding_header(SupportedBrokeredMessageBodyTypes bodyType, string expectedHeaderValue)
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.BrokeredMessageBodyType(bodyType);
@@ -350,7 +350,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public void Should_inject_estimated_message_size_into_headers()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
 

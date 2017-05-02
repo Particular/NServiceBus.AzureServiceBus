@@ -1,10 +1,10 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using AzureServiceBus;
     using Logging;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using Serialization;
     using Settings;
     using Transport;
     using Transport.AzureServiceBus;
@@ -15,9 +15,8 @@
 
         public override TransportInfrastructure Initialize(SettingsHolder settings, string connectionString)
         {
-            // override core default serialization
-            settings.SetDefault(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new JsonSerializer(), new SettingsHolder()));
-            
+            DefaultConfigurationValues.Apply(settings);
+
             var topology = GetConfiguredTopology(settings);
             topology.Initialize(settings);
 

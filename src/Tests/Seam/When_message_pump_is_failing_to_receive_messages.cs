@@ -25,7 +25,7 @@
 
             var settings = new SettingsHolder();
             settings.Set("NServiceBus.SharedQueue", "sales");
-            new DefaultConfigurationValues().Apply(settings);
+            DefaultConfigurationValues.Apply(settings);
             container.Register<ReadOnlySettings>(() => settings);
 
             Exception exceptionReceivedByCircuitBreaker = null;

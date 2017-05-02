@@ -25,7 +25,7 @@
             await TestUtility.Delete("myqueue", "myqueue2");
 
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set<TopologySettings>(new TopologySettings());
             settings.Set("NServiceBus.SharedQueue", "myqueue");
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
@@ -64,7 +64,7 @@
             await TestUtility.Delete("myqueue", "myqueue2");
 
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set<TopologySettings>(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);

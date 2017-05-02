@@ -2,7 +2,6 @@ namespace NServiceBus
 {
     using System;
     using System.Threading.Tasks;
-    using AzureServiceBus;
     using Logging;
     using Routing;
     using Settings;
@@ -48,22 +47,10 @@ namespace NServiceBus
         {
             this.settings = settings;
 
-            ApplyDefaults();
-
             queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
             topicCreator = new AzureServiceBusTopicCreator(Settings.TopicSettings);
 
             InitializeContainer();
-        }
-
-        void ApplyDefaults()
-        {
-            new DefaultConfigurationValues().Apply(settings);
-            // ensures settings are present/correct
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(FlatComposition));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(CoreIndividualization));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioning));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(ThrowOnFailedValidation));
         }
 
         void InitializeContainer()
