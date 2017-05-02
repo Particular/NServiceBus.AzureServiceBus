@@ -33,11 +33,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             settings.Set<Conventions>(new Conventions());
             var topology = new EndpointOrientedTopologyInternal(container);
 
-            topology.Initialize(settings);
-
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
+
+            topology.Initialize(settings);
 
             // create the topologySectionManager
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
