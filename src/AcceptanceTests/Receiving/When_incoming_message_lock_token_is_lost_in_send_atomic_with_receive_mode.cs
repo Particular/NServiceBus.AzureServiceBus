@@ -17,7 +17,7 @@
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<Sender>(builder => builder.When((session, ctx) => session.SendLocal(new InitialMessage())))
                 .WithEndpoint<Receiver>()
-                .Done(ctx => ctx.TimesDispatchedMessageSent > 0)
+                .Done(ctx => ctx.TimesSenderHandlerInvoked > 0)
                 .Run();
 
             Assert.That(context.TimesDispatchedMessageReceived, Is.Zero);
@@ -26,7 +26,7 @@
         public class Context : ScenarioContext
         {
             public int TimesDispatchedMessageReceived { get; set; }
-            public int TimesDispatchedMessageSent { get; set; }
+            public int TimesSenderHandlerInvoked { get; set; }
         }
 
         public class Sender : EndpointConfigurationBuilder
@@ -53,9 +53,12 @@
 
                 public async Task Handle(InitialMessage initialMessage, IMessageHandlerContext context)
                 {
-                    await context.Send(new DispatchedMessage { Id = Context.TestRunId });
-                    await Task.Delay(TimeSpan.FromSeconds(LockDurationOnIncomingMessageInSeconds * 2));
-                    Context.TimesDispatchedMessageSent++;
+                    if (Context.TimesSenderHandlerInvoked == 0)
+                    {
+                        await context.Send(new DispatchedMessage { Id = Context.TestRunId });
+                        await Task.Delay(TimeSpan.FromSeconds(LockDurationOnIncomingMessageInSeconds * 2));
+                    }
+                    Context.TimesSenderHandlerInvoked++;
                 }
             }
         }
