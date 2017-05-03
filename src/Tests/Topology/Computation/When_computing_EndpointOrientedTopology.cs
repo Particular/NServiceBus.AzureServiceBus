@@ -2,6 +2,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 {
     using System;
     using System.Linq;
+    using AzureServiceBus;
     using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
@@ -19,7 +20,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var container = new TransportPartsContainer();
 
-            var settings = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -39,7 +40,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var container = new TransportPartsContainer();
 
-            var settings = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
@@ -58,7 +59,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var container = new TransportPartsContainer();
 
-            var settings = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -79,7 +80,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var container = new TransportPartsContainer();
 
-            var settings = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set<Conventions>(new Conventions());
             container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);

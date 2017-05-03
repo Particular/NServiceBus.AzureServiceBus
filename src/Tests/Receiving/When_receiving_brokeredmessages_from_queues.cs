@@ -19,7 +19,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set<TopologySettings>(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);

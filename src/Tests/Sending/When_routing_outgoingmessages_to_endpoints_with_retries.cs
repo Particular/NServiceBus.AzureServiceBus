@@ -20,7 +20,7 @@
 //        public void Should_use_cloned_original_brokered_messages_on_retries()
 //        {
 //            // default settings
-//            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+//            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 //            var messageSenderSettings = new AzureServiceBusMessageSenderSettings(settings).BackOffTimeOnThrottle(TimeSpan.Zero);
 //            messageSenderSettings.RetryAttemptsOnThrottle(1);
 //

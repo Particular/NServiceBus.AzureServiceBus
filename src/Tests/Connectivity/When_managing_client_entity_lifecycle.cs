@@ -18,7 +18,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Creates_a_pool_of_clients_per_entity()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
 
             var creator = new InterceptedMessageReceiverCreator();
@@ -33,7 +33,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Round_robins_across_instances_in_pool()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var creator = new InterceptedMessageReceiverCreator();
 
@@ -61,7 +61,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Replaces_receivers_when_closed()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 1); // pool size of 1 simplifies the test
 
             var creator = new InterceptedMessageReceiverCreator();

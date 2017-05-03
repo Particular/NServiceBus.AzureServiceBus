@@ -16,7 +16,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Creates_a_pool_of_factories_for_namespace()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);
 
             var creator = new InterceptedFactoryCreator();
@@ -31,7 +31,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Round_robins_across_instances_in_pool()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var creator = new InterceptedFactoryCreator();
 
@@ -59,7 +59,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Replaces_factories_when_closed()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, 1); // pool size of 1 simplifies the test
 
             var creator = new InterceptedFactoryCreator();

@@ -14,7 +14,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void Default_value_should_be_configured()
         {
             var settings = new SettingsHolder();
-            new DefaultConfigurationValues().Apply(settings);
+            DefaultConfigurationValues.Apply(settings);
 
             Assert.AreEqual(typeof(DefaultBrokeredMessagesToIncomingMessagesConverter), settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter));
         }

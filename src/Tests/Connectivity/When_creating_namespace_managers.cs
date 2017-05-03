@@ -13,7 +13,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Creates_new_namespace_managers()
         {
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 

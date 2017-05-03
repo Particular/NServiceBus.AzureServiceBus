@@ -25,7 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             var settings = new SettingsHolder();
             settings.Set("NServiceBus.SharedQueue", "sales");
-            new DefaultConfigurationValues().Apply(settings);
+            DefaultConfigurationValues.Apply(settings);
 
             // setting up the environment
             var container = new TransportPartsContainer();
@@ -33,11 +33,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             settings.Set<Conventions>(new Conventions());
             var topology = new EndpointOrientedTopologyInternal(container);
 
-            topology.Initialize(settings);
-
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace("namespaceName", AzureServiceBusConnectionString.Value);
+
+            topology.Initialize(settings);
 
             // create the topologySectionManager
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -46,7 +46,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topologyCreator = new TopologyCreator(new AzureServiceBusSubscriptionCreatorV6(topology.Settings.SubscriptionSettings, settings), 
                 new AzureServiceBusQueueCreator(topology.Settings.QueueSettings,settings),  new AzureServiceBusTopicCreator(topology.Settings.TopicSettings), 
                 namespaceLifecycleManager);
-            var topologySectionManager = new EndpointOrientedTopologySectionManager(settings, container);
+
+            var topologySectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(topologySectionManager.DetermineResourcesToCreate(new QueueBindings()));
 
             // setup the operator

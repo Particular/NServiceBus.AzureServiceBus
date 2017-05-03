@@ -24,7 +24,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         public void Should_not_change_valid_paths_or_names(string entityPathOrName, EntityType entityType)
         {
             var settings = new SettingsHolder();
-            new DefaultConfigurationValues().Apply(settings);
+            DefaultConfigurationValues.Apply(settings);
             var sanitization = new ThrowOnFailedValidation(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
@@ -39,7 +39,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         public void Should_throw_on_invalid_characters(string entityPathOrName, EntityType entityType)
         {
             var settings = new SettingsHolder();
-            new DefaultConfigurationValues().Apply(settings);
+            DefaultConfigurationValues.Apply(settings);
             var sanitization = new ThrowOnFailedValidation(settings);
 
             Assert.Throws<Exception>(() => sanitization.Sanitize(entityPathOrName, entityType));
@@ -52,7 +52,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         public void Should_throw_on_invalid_length(string entityPathOrName, EntityType entityType)
         {
             var settings = new SettingsHolder();
-            new DefaultConfigurationValues().Apply(settings);
+            DefaultConfigurationValues.Apply(settings);
             var sanitization = new ThrowOnFailedValidation(settings);
 
             Assert.Throws<Exception>(() => sanitization.Sanitize(entityPathOrName, entityType));

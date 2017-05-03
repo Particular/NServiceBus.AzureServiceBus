@@ -27,7 +27,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             completed = new AsyncManualResetEvent(false);
             container = new TransportPartsContainer();
-            settings = new SettingsHolder();
+            settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set("NServiceBus.SharedQueue", SourceQueueName);
             criticalError = new CriticalError(ctx => TaskEx.Completed);
 
@@ -58,7 +58,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var topologyCreator = new TopologyCreator(new AzureServiceBusSubscriptionCreatorV6(endpointOrientedTopology.Settings.SubscriptionSettings, settings), 
                 new AzureServiceBusQueueCreator(endpointOrientedTopology.Settings.QueueSettings,settings),  new AzureServiceBusTopicCreator(endpointOrientedTopology.Settings.TopicSettings), 
                 namespaceLifecycleManager);
-            var topologySectionManager = new EndpointOrientedTopologySectionManager(settings, container);
+
+            var topologySectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(topologySectionManager.DetermineResourcesToCreate(new QueueBindings())).ConfigureAwait(false);
 
             // create the destination queue

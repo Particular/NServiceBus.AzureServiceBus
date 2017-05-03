@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using AzureServiceBus;
     using FakeItEasy;
     using Tests;
     using Transport.AzureServiceBus;
@@ -15,10 +16,11 @@
         [Test]
         public async Task Should_return_error_message_with_all_errors_listed()
         {
-            var settings = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var container = new TransportPartsContainer();
 
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, new NamespaceConfigurations { {"namespace1", ConnectionStringValue.Sample, NamespacePurpose.Partitioning } });
+            settings.SetDefault("NServiceBus.Routing.EndpointName", "someEndpoint");
 
             container.Register(typeof(SettingsHolder), () => settings);
 

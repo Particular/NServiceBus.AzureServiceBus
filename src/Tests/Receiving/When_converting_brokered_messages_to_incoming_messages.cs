@@ -18,7 +18,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_copy_the_message_id()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper(settings, "MyQueue", "MyQueue"));
 
@@ -36,7 +36,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_copy_properties_into_the_headers()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper(settings, "MyQueue", "MyQueue"));
 
@@ -52,7 +52,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_complete_replyto_address_if_not_present_in_headers()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper(settings, "MyQueue", "MappedMyQueue"));
 
@@ -73,7 +73,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_not_complete_replyto_address_if_already_present_in_headers()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper(settings, "OtherQueue", "MappedOtherQueue"));
 
@@ -95,7 +95,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_complete_correlationid_if_not_present_in_headers()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper(settings, "MyQueue", "MyQueue"));
 
@@ -117,7 +117,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_complete_timetobereceived_if_not_present_in_headers()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper(settings, "MyQueue", "MyQueue"));
 
@@ -140,7 +140,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_extract_body_as_byte_array_by_default()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper(settings, "MyQueue", "MyQueue"));
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
@@ -157,7 +157,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_extract_body_as_stream_when_configured()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
 
@@ -183,7 +183,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_extract_body_as_byte_array_when_configured()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper(settings, "MyQueue", "MyQueue"));
 
@@ -202,7 +202,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_throw_for_a_message_without_transport_encoding_header_supplied_and_actual_body_type_other_than_default()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper(settings, "MyQueue", "MyQueue"));
 
@@ -215,7 +215,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_throw_for_a_message_with_unknown_transport_encoding_header_supplied()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new FakeMapper(settings, "MyQueue", "MyQueue"));
 
@@ -229,7 +229,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public void Should_not_propagate_transport_encoding_header_from_brokered_message()
         {
             // default settings
-            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
             var brokeredMessage = new BrokeredMessage(bytes);
