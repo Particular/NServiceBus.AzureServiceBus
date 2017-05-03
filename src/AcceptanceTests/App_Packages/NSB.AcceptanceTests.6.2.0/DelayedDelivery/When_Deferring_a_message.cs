@@ -10,6 +10,7 @@
     public class When_deferring_a_message : NServiceBusAcceptanceTest
     {
         [Test]
+        [Explicit("Flaky test based on time period that is way too short.")]
         public async Task Should_delay_delivery()
         {
             var delay = TimeSpan.FromSeconds(2);

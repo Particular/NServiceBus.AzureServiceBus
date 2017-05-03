@@ -11,6 +11,7 @@
     public class When_deferring_to_non_local : NServiceBusAcceptanceTest
     {
         [Test]
+        [Explicit("Flaky test based on time period that is way too short.")]
         public async Task Message_should_be_received()
         {
             var delay = TimeSpan.FromSeconds(2);
