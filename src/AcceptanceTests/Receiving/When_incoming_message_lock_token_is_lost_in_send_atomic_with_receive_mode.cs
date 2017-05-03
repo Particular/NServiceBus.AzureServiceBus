@@ -39,7 +39,7 @@
                     transport.Queues().LockDuration(TimeSpan.FromSeconds(LockDurationOnIncomingMessageInSeconds));
                     transport.Queues().MaxDeliveryCount(100);
                     transport.MessageReceivers().AutoRenewTimeout(TimeSpan.Zero);
-                    transport.Routing().RouteToEndpoint(typeof(DispatchedMessage), "Receiver");
+                    transport.Routing().RouteToEndpoint(typeof(DispatchedMessage), ConfigureEndpointAzureServiceBusTransport.NameForEndpoint<Receiver>());
                     config.LimitMessageProcessingConcurrencyTo(1);
 #pragma warning disable 618
                     config.Recoverability().DisableLegacyRetriesSatellite();
