@@ -6,7 +6,6 @@
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NUnit.Framework;
-    using AcceptanceTesting.Customization;
 
     public class When_incoming_message_lock_token_is_lost_in_send_atomic_with_receive_mode : NServiceBusAcceptanceTest
     {
