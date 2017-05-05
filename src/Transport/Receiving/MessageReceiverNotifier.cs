@@ -224,8 +224,11 @@ namespace NServiceBus.Transport.AzureServiceBus
                         {
                             await incomingCallback(incomingMessage, context).ConfigureAwait(false);
 
-                            await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
-                            scope?.Complete();
+                            var wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
+                            if (wasCompleted)
+                            {
+                                scope?.Complete();
+                            }
                         }
                     }
                 }
@@ -257,7 +260,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        Task HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContextInternal context, bool canBeBatched, int slotNumber)
+        Task<bool> HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContextInternal context, bool canBeBatched, int slotNumber)
         {
             if (context.CancellationToken.IsCancellationRequested)
             {
@@ -275,32 +278,33 @@ namespace NServiceBus.Transport.AzureServiceBus
                     return context.IncomingBrokeredMessage.SafeCompleteAsync();
                 }
             }
-            return TaskEx.Completed;
+            return TaskEx.CompletedTrue;
         }
 
-        Task AbandonOnCancellation(BrokeredMessage message)
+        Task<bool> AbandonOnCancellation(BrokeredMessage message)
         {
             logger.Debug("Received message is cancelled by the pipeline, abandoning it so we can process it later.");
 
             return AbandonInternal(message);
         }
 
-        Task Abandon(BrokeredMessage message, Exception exception)
+        Task<bool> Abandon(BrokeredMessage message, Exception exception)
         {
             logger.Debug("Exceptions occurred OnComplete", exception);
 
             return AbandonInternal(message);
         }
 
-        async Task AbandonInternal(BrokeredMessage message, IDictionary<string, object> propertiesToModify = null)
+        async Task<bool> AbandonInternal(BrokeredMessage message, IDictionary<string, object> propertiesToModify = null)
         {
-            if (receiveMode == ReceiveMode.ReceiveAndDelete) return;
+            if (receiveMode == ReceiveMode.ReceiveAndDelete) return true;
 
             using (var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
                 logger.DebugFormat("Abandoning brokered message {0}", message.MessageId);
 
-                if (await message.SafeAbandonAsync(propertiesToModify).ConfigureAwait(false))
+                var wasAbandoned = await message.SafeAbandonAsync(propertiesToModify).ConfigureAwait(false);
+                if (wasAbandoned)
                 {
                     logger.DebugFormat("Brokered message {0} abandoned successfully.", message.MessageId);
                 }
@@ -310,7 +314,10 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
 
                 suppressScope.Complete();
+
+                return wasAbandoned;
             }
+           
         }
 
         static Task EmptyErrorCallback(Exception exception)
