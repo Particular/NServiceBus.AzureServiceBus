@@ -63,6 +63,7 @@
             }
         }
 
+
         public class Context : ScenarioContext
         {
             public bool SubscribedToEvent { get; set; }
