@@ -224,10 +224,17 @@ namespace NServiceBus.Transport.AzureServiceBus
                         {
                             await incomingCallback(incomingMessage, context).ConfigureAwait(false);
 
-                            var wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
-                            if (wasCompleted)
+                            if (context.CancellationToken.IsCancellationRequested)
                             {
-                                scope?.Complete();
+                                await AbandonOnCancellation(message).ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                var wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
+                                if (wasCompleted)
+                                {
+                                    scope?.Complete();
+                                }
                             }
                         }
                     }
@@ -262,11 +269,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         Task<bool> HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContextInternal context, bool canBeBatched, int slotNumber)
         {
-            if (context.CancellationToken.IsCancellationRequested)
-            {
-                return AbandonOnCancellation(message);
-            }
-
             if (receiveMode == ReceiveMode.PeekLock)
             {
                 if (canBeBatched)
