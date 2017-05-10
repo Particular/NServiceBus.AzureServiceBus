@@ -22,7 +22,7 @@
         }
     }
 
-    class TestIndependenceSkipBehavior : Behavior<IIncomingPhysicalMessageContext>
+    class TestIndependenceSkipBehavior : IBehavior<ITransportReceiveContext, ITransportReceiveContext>
     {
         string testRunId;
 
@@ -31,16 +31,16 @@
             testRunId = scenarioContext.TestRunId.ToString();
         }
 
-        public override Task Invoke(IIncomingPhysicalMessageContext context, Func<Task> next)
+        public Task Invoke(ITransportReceiveContext context, Func<ITransportReceiveContext, Task> next)
         {
             string runId;
-            if (!context.MessageHeaders.TryGetValue("$AcceptanceTesting.TestRunId", out runId) || runId != testRunId)
+            if (!context.Message.Headers.TryGetValue("$AcceptanceTesting.TestRunId", out runId) || runId != testRunId)
             {
-                Console.WriteLine($"Skipping message {context.MessageId} from previous test run");
+                Console.WriteLine($"Skipping message {context.Message.MessageId} from previous test run");
                 return Task.FromResult(0);
             }
 
-            return next();
+            return next(context);
         }
     }
 }
