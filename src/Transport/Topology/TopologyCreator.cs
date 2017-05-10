@@ -2,20 +2,39 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     using System.Linq;
     using System.Threading.Tasks;
+    using Logging;
+    using NServiceBus.AzureServiceBus.Utils;
+    using Settings;
 
     class TopologyCreator : ICreateTopology, ITearDownTopology
     {
+        static ILog Logger = LogManager.GetLogger<TopologyCreator>();
         ITransportPartsContainer container;
         IManageNamespaceManagerLifeCycle namespaces;
+        AsyncLazy<bool> hasManagedRights;
+        string namespacesWithoutManagedRightsJoined;
 
         public TopologyCreator(ITransportPartsContainer container, IManageNamespaceManagerLifeCycle namespaces)
         {
             this.container = container;
             this.namespaces = namespaces;
+            hasManagedRights = new AsyncLazy<bool>(async () =>
+            {
+                var namespacesWithoutManagedRights = await ManageRightsCheck.Run(namespaces, container.Resolve<ReadOnlySettings>())
+                    .ConfigureAwait(false);
+                namespacesWithoutManagedRightsJoined = string.Join(", ", namespacesWithoutManagedRights.Select(alias => $"`{alias}`"));
+                return namespacesWithoutManagedRights.Count == 0;
+            });
         }
 
         public async Task Create(TopologySection topology)
         {
+            if (!await hasManagedRights)
+            {
+                Logger.Info($"Configured to create topology, but have no manage rights for the following namespace(s): {namespacesWithoutManagedRightsJoined}. Execution will continue and assume the topology is already created.");
+                return;
+            }
+
             var queues = topology.Entities.Where(e => e.Type == EntityType.Queue).ToList();
             var topics = topology.Entities.Where(e => e.Type == EntityType.Topic).ToList();
             var subscriptions = topology.Entities.Where(e => e.Type == EntityType.Subscription).ToList();

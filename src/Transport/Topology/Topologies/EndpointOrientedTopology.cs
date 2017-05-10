@@ -128,9 +128,7 @@ namespace NServiceBus
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
-            var check = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycle>(), container.Resolve<ReadOnlySettings>());
-
-            return check.Run();
+            return Task.FromResult(StartupCheckResult.Success);
         }
 
         public OutboundRoutingPolicy GetOutboundRoutingPolicy()
