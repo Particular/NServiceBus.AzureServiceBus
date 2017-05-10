@@ -1,37 +1,38 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Logging;
     using NServiceBus.AzureServiceBus.Utils;
     using Settings;
 
-    class TopologyCreator : ICreateTopology, ITearDownTopology
+    class TopologyCreator : ICreateTopologyInternal
     {
         static ILog Logger = LogManager.GetLogger<TopologyCreator>();
         ITransportPartsContainer container;
         IManageNamespaceManagerLifeCycle namespaces;
-        AsyncLazy<bool> hasManagedRights;
-        string namespacesWithoutManagedRightsJoined;
+        AsyncLazy<bool> hasManageRights;
+        string namespacesWithoutManageRightsJoined;
 
         public TopologyCreator(ITransportPartsContainer container, IManageNamespaceManagerLifeCycle namespaces)
         {
             this.container = container;
             this.namespaces = namespaces;
-            hasManagedRights = new AsyncLazy<bool>(async () =>
+            hasManageRights = new AsyncLazy<bool>(async () =>
             {
-                var namespacesWithoutManagedRights = await ManageRightsCheck.Run(namespaces, container.Resolve<ReadOnlySettings>())
+                var namespacesWithoutManageRights = await ManageRightsCheck.Run(namespaces, container.Resolve<ReadOnlySettings>())
                     .ConfigureAwait(false);
-                namespacesWithoutManagedRightsJoined = string.Join(", ", namespacesWithoutManagedRights.Select(alias => $"`{alias}`"));
-                return namespacesWithoutManagedRights.Count == 0;
+                namespacesWithoutManageRightsJoined = string.Join(", ", namespacesWithoutManageRights.Select(alias => $"`{alias}`"));
+                return namespacesWithoutManageRights.Count == 0;
             });
         }
 
         public async Task Create(TopologySection topology)
         {
-            if (!await hasManagedRights)
+            if (!await hasManageRights)
             {
-                Logger.Info($"Configured to create topology, but have no manage rights for the following namespace(s): {namespacesWithoutManagedRightsJoined}. Execution will continue and assume the topology is already created.");
+                Logger.Info($"Configured to create topology, but have no manage rights for the following namespace(s): {namespacesWithoutManageRightsJoined}. Execution will continue and assume the topology is already created.");
                 return;
             }
 
@@ -68,6 +69,14 @@ namespace NServiceBus.Transport.AzureServiceBus
                     var metadata = (subscription as SubscriptionInfo)?.Metadata ?? new SubscriptionMetadata();
                     await subscriptionCreator.Create(topic.Target.Path, subscription.Path, metadata, sqlFilter, namespaces.Get(subscription.Namespace.Alias), forwardTo?.Target.Path).ConfigureAwait(false);
                 }
+            }
+        }
+
+        public async Task AssertManagedRights()
+        {
+            if (!await hasManageRights)
+            {
+                throw new UnauthorizedAccessException($"Topology creation requires manage rights, but no manage rights could be found for the following namespace(s): {namespacesWithoutManageRightsJoined}");
             }
         }
 

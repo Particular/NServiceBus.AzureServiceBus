@@ -22,6 +22,12 @@ namespace NServiceBus.Transport.AzureServiceBus
                 return;
             }
 
+            var internalTopology = topologyCreator as ICreateTopologyInternal;
+            if (internalTopology != null)
+            {
+                await internalTopology.AssertManagedRights().ConfigureAwait(false);
+            }
+
             var receiveResources = sections.DetermineResourcesToCreate(queueBindings);
             await topologyCreator.Create(receiveResources).ConfigureAwait(false);
 
