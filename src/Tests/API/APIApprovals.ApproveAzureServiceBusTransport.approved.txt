@@ -334,7 +334,7 @@
         public System.Func<NServiceBus.Transport.ICreateQueues> GetQueueCreatorFactory() { }
         public System.Func<NServiceBus.Transport.IManageSubscriptions> GetSubscriptionManagerFactory() { }
         public void Initialize(NServiceBus.Settings.SettingsHolder settings) { }
-        public async System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks() { }
+        public System.Threading.Tasks.Task<NServiceBus.Transport.StartupCheckResult> RunPreStartupChecks() { }
         public System.Threading.Tasks.Task Stop() { }
     }
     public class HierarchyComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
