@@ -21,7 +21,7 @@
         [TestCase("alias", 3)]
         [TestCase("ALIAS", 3)]
         [TestCase("Alias", 3)]
-        public void Should_throw_if_namespace_alias_is_readded_with_small_number_of_topics_in_bundle(string name, int numberOfTopicsInBundle)
+        public void Should_throw_if_namespace_alias_is_added_again_with_a_smaller_number_of_topics_in_bundle(string name, int numberOfTopicsInBundle)
         {
             namespaceBundleConfigurations.Add(name, 2);
             Assert.Throws<Exception>(() => namespaceBundleConfigurations.Add(name, numberOfTopicsInBundle));

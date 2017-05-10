@@ -1,4 +1,4 @@
-﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Issues
+﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTest
 {
     using System.Threading.Tasks;
     using AcceptanceTesting;
@@ -9,10 +9,10 @@
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
 
-    public class Issue_524 : NServiceBusAcceptanceTest
+    public class When_publisher_and_subscriber_bundles_are_misconfigured : NServiceBusAcceptanceTest
     {
         [Test]
-        public async Task When_publisher_and_subscriber_bundles_are_misconfigured_Should_not_lose_messages()
+        public async Task Should_not_lose_messages()
         {
             var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
             if (topology != "ForwardingTopology")
@@ -23,13 +23,13 @@
             await MimicAnExistingEnvironmentWithAlreadyMisconfiguredBundlesPreCreated();
 
             await Scenario.Define<Context>()
-                .WithEndpoint<Publisher>(builder => builder.When(ctx => ctx.SubscribedToEvent, async session =>
+                .WithEndpoint<Publisher>(builder => builder.When(ctx => ctx.SubscribedToEvent, session =>
                 {
                     var options = new SendOptions();
                     options.RequireImmediateDispatch();
                     options.SetDestination("bundle-3");
                     options.DoNotEnforceBestPractices();
-                    await session.Send(new MyEvent(), options);
+                    return session.Send(new MyEvent(), options);
                 }))
                 .WithEndpoint<Subscriber>(builder => builder.When((session, ctx) =>
                 {
@@ -45,22 +45,22 @@
             var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
 
-            async Task createTopic(string name)
-            {
-                if (name.Equals("bundle-3"))
-                {
-                    await namespaceManager.DeleteTopicAsync(name);
-                }
+            await CreateTopic(namespaceManager, "bundle-1");
+            await CreateTopic(namespaceManager, "bundle-2");
+            await CreateTopic(namespaceManager, "bundle-3");
+        }
 
-                if (!await namespaceManager.TopicExistsAsync(name))
-                {
-                    await namespaceManager.CreateTopicAsync(new TopicDescription(name));
-                }
+        static async Task CreateTopic(NamespaceManager namespaceManager, string name)
+        {
+            if (name.Equals("bundle-3"))
+            {
+                await namespaceManager.DeleteTopicAsync(name);
             }
 
-            await createTopic("bundle-1");
-            await createTopic("bundle-2");
-            await createTopic("bundle-3");
+            if (!await namespaceManager.TopicExistsAsync(name))
+            {
+                await namespaceManager.CreateTopicAsync(new TopicDescription(name));
+            }
         }
 
         public class Context : ScenarioContext
