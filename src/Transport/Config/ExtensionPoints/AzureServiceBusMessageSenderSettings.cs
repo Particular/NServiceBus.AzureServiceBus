@@ -77,7 +77,7 @@ namespace NServiceBus
         /// Behavior for oversized messages.
         /// <remarks>Default is throw an exception using <see cref="ThrowOnOversizedBrokeredMessages"/>.</remarks>
         /// </summary>
-        public AzureServiceBusMessageSenderSettings OversizedBrokeredMessageHandler<T>(T instance) where T : IHandleOversizedBrokeredMessages
+        public AzureServiceBusMessageSenderSettings OversizedBrokeredMessageHandler(IHandleOversizedBrokeredMessages instance)
         {
             settings.Set(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance, instance);
 
