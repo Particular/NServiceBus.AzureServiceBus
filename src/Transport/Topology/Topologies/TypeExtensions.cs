@@ -12,14 +12,13 @@ namespace NServiceBus
         {
             try
             {
-                var constructor = typeToResolve.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                    .OrderByDescending(c => c.GetParameters().Length)
-                    .FirstOrDefault();
+                var defaultConstructor = typeToResolve.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    .FirstOrDefault(c => c.GetParameters().Length == 0);
 
-                if (constructor == null)
-                    return (TReturnedType) Activator.CreateInstance(typeToResolve);
+                if (defaultConstructor != null)
+                    return (TReturnedType) Activator.CreateInstance(typeToResolve, true);
 
-                return (TReturnedType) Activator.CreateInstance(typeToResolve, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, settings);
+                return (TReturnedType) Activator.CreateInstance(typeToResolve, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { settings }, null);
             }
             catch (Exception e)
             {
