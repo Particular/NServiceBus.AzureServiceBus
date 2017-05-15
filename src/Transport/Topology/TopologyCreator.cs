@@ -3,7 +3,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
 
-    class TopologyCreator : ICreateTopologyInternal
+    /// <summary>
+    /// Responsible for creating parts of the topology required by the executing endpoint to run.
+    /// </summary>
+    class TopologyCreator
     {
         public TopologyCreator(ICreateAzureServiceBusSubscriptionsInternal subscriptionsCreator, AzureServiceBusQueueCreator queuesCreator, AzureServiceBusTopicCreator topicsCreator, IManageNamespaceManagerLifeCycleInternal namespaces)
         {
