@@ -30,7 +30,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public async Task Create(TopologySection topology)
         {
-            if (!await hasManageRights)
+            if (!await hasManageRights.Value.ConfigureAwait(false))
             {
                 Logger.Info($"Configured to create topology, but have no manage rights for the following namespace(s): {namespacesWithoutManageRightsJoined}. Execution will continue and assume the topology is already created.");
                 return;
@@ -74,7 +74,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public async Task AssertManagedRights()
         {
-            if (!await hasManageRights)
+            if (!await hasManageRights.Value.ConfigureAwait(false))
             {
                 throw new UnauthorizedAccessException($"Topology creation requires manage rights, but no manage rights could be found for the following namespace(s): {namespacesWithoutManageRightsJoined}");
             }
