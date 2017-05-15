@@ -3,6 +3,7 @@ namespace NServiceBus
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
     using Logging;
     using Routing;
@@ -68,16 +69,13 @@ namespace NServiceBus
             var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
 
             var partitioningStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
-            container.Register(partitioningStrategyType);
-            var partitioningStrategy = container.Resolve<INamespacePartitioningStrategy>();
+            var partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(settings);
 
             var compositionStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
-            container.Register(compositionStrategyType);
-            var compositionStrategy = container.Resolve<ICompositionStrategy>();
+            var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(settings);
 
             var sanitizationStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            container.Register(sanitizationStrategyType);
-            var sanitizationStrategy = container.Resolve<ISanitizationStrategy>();
+            var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(settings);
 
             var addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
 
