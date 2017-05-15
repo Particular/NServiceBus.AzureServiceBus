@@ -33,6 +33,7 @@ namespace NServiceBus
         IConvertOutgoingMessagesToBrokeredMessagesInternal batchedOperationsToBrokeredMessagesConverter;
         DefaultOutgoingBatchRouter outgoingBatchRouter;
         Batcher batcher;
+        IIndividualizationStrategy individualization;
 
         public ForwardingTopologyInternal() : this(new TransportPartsContainer()) { }
 
@@ -68,16 +69,16 @@ namespace NServiceBus
             var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
 
             var partitioningStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
-            container.Register(partitioningStrategyType);
-            var partitioningStrategy = container.Resolve<INamespacePartitioningStrategy>();
+            var partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(settings);
 
             var compositionStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
-            container.Register(compositionStrategyType);
-            var compositionStrategy = container.Resolve<ICompositionStrategy>();
+            var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(settings);
 
             var sanitizationStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            container.Register(sanitizationStrategyType);
-            var sanitizationStrategy = container.Resolve<ISanitizationStrategy>();
+            var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(settings);
+
+            var individualizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
+            individualization = individualizationStrategyType.CreateInstance<IIndividualizationStrategy>(settings);
 
             var addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
 
@@ -111,21 +112,16 @@ namespace NServiceBus
             topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal);
 
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages) settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
-            container.Register<IHandleOversizedBrokeredMessages>(() => oversizedMessageHandler);
 
             outgoingBatchRouter = new DefaultOutgoingBatchRouter(batchedOperationsToBrokeredMessagesConverter, senderLifeCycleManager, settings, oversizedMessageHandler);
             batcher = new Batcher(topologySectionManager, settings);
 
             container.Register<TopologyOperator>(() => new TopologyOperator(messageReceiverLifeCycleManager, brokeredMessagesToIncomingMessagesConverter, settings));
             topologyOperator = container.Resolve<IOperateTopologyInternal>();
-
-            var individualizationStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
-            container.Register(individualizationStrategyType);
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
         {
-            var individualization = container.Resolve<IIndividualizationStrategy>();
             return new EndpointInstance(individualization.Individualize(instance.Endpoint), instance.Discriminator, instance.Properties);
         }
 
