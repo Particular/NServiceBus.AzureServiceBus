@@ -28,9 +28,7 @@ namespace NServiceBus
         AzureServiceBusForwardingSubscriptionCreator subscriptionsCreator;
         IOperateTopologyInternal topologyOperator;
         TopologyCreator topologyCreator;
-        IConvertBrokeredMessagesToIncomingMessagesInternal brokeredMessagesToIncomingMessagesConverter;
         SettingsHolder settings;
-        IConvertOutgoingMessagesToBrokeredMessagesInternal batchedOperationsToBrokeredMessagesConverter;
         DefaultOutgoingBatchRouter outgoingBatchRouter;
         Batcher batcher;
         IIndividualizationStrategy individualization;
@@ -101,22 +99,14 @@ namespace NServiceBus
 
             container.RegisterSingleton<DefaultConnectionStringToNamespaceAliasMapper>();
 
-            var brokeredMessagesToIncomingMessagesConverterType = settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter);
-            container.Register(brokeredMessagesToIncomingMessagesConverterType);
-            var batchedOperationsToBrokeredMessagesConverterType = settings.Get<Type>(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter);
-            container.Register(batchedOperationsToBrokeredMessagesConverterType);
-
-            brokeredMessagesToIncomingMessagesConverter = container.Resolve<IConvertBrokeredMessagesToIncomingMessagesInternal>();
-            batchedOperationsToBrokeredMessagesConverter = container.Resolve<IConvertOutgoingMessagesToBrokeredMessagesInternal>();
-
             topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal);
 
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages) settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
 
-            outgoingBatchRouter = new DefaultOutgoingBatchRouter(batchedOperationsToBrokeredMessagesConverter, senderLifeCycleManager, settings, oversizedMessageHandler);
+            outgoingBatchRouter = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), senderLifeCycleManager, settings, oversizedMessageHandler);
             batcher = new Batcher(topologySectionManager, settings);
 
-            container.Register<TopologyOperator>(() => new TopologyOperator(messageReceiverLifeCycleManager, brokeredMessagesToIncomingMessagesConverter, settings));
+            container.Register<TopologyOperator>(() => new TopologyOperator(messageReceiverLifeCycleManager, new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), settings));
             topologyOperator = container.Resolve<IOperateTopologyInternal>();
         }
 
@@ -132,7 +122,7 @@ namespace NServiceBus
 
         public Func<IPushMessages> GetMessagePumpFactory()
         {
-            return () => new MessagePump(topologyOperator, messageReceiverLifeCycleManager, brokeredMessagesToIncomingMessagesConverter, topologySectionManager, settings);
+            return () => new MessagePump(topologyOperator, messageReceiverLifeCycleManager, new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), topologySectionManager, settings);
         }
 
         public Func<IDispatchMessages> GetDispatcherFactory()

@@ -22,7 +22,6 @@
             ApplyDefaultValuesForSubscriptions(settings);
             ApplyDefaultValuesForRules(settings);
             ApplyDefaultValuesForSerialization(settings);
-            ApplyDefaultValuesForBrokeredMessageConventions(settings);
 
             return settings;
         }
@@ -33,12 +32,6 @@
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(CoreIndividualization));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioning));
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(ThrowOnFailedValidation));
-        }
-
-        static void ApplyDefaultValuesForBrokeredMessageConventions(SettingsHolder settings)
-        {
-            settings.SetDefault(WellKnownConfigurationKeys.BrokeredMessageConventions.ToIncomingMessageConverter, typeof(DefaultBrokeredMessagesToIncomingMessagesConverter));
-            settings.SetDefault(WellKnownConfigurationKeys.BrokeredMessageConventions.FromOutgoingMessageConverter, typeof(DefaultBatchedOperationsToBrokeredMessagesConverter));
         }
 
         static void ApplyDefaultValuesForSerialization(SettingsHolder settings)
