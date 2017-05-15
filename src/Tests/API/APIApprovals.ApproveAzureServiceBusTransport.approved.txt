@@ -65,8 +65,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusMessageSenderSettings BackOffTimeOnThrottle(System.TimeSpan backoffTime) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings MaximuMessageSizeInKilobytes(int sizeInKilobytes) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings MessageSizePaddingPercentage(int percentage) { }
-        public NServiceBus.AzureServiceBusMessageSenderSettings OversizedBrokeredMessageHandler<T>(T instance)
-            where T : NServiceBus.Transport.AzureServiceBus.IHandleOversizedBrokeredMessages { }
+        public NServiceBus.AzureServiceBusMessageSenderSettings OversizedBrokeredMessageHandler(NServiceBus.Transport.AzureServiceBus.IHandleOversizedBrokeredMessages instance) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings RetryAttemptsOnThrottle(int count) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings RetryPolicy(Microsoft.ServiceBus.RetryPolicy retryPolicy) { }
     }
