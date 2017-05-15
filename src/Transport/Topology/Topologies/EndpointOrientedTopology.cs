@@ -102,7 +102,6 @@ namespace NServiceBus
             batchedOperationsToBrokeredMessagesConverter = container.Resolve<IConvertOutgoingMessagesToBrokeredMessagesInternal>();
 
             topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal);
-            container.Register<TopologyCreator>(() => topologyCreator);
 
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
             container.Register<IHandleOversizedBrokeredMessages>(() => oversizedMessageHandler);

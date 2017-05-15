@@ -9,9 +9,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         ITopologySectionManagerInternal topologySectionManager; // responsible for providing the metadata about the subscription (what in case of EH?)
         IOperateTopologyInternal topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
-        ICreateTopologyInternal topologyCreator;
+        TopologyCreator topologyCreator;
 
-        public SubscriptionManager(ITopologySectionManagerInternal topologySectionManager, IOperateTopologyInternal topologyOperator, ICreateTopologyInternal topologyCreator)
+        public SubscriptionManager(ITopologySectionManagerInternal topologySectionManager, IOperateTopologyInternal topologyOperator, TopologyCreator topologyCreator)
         {
             this.topologySectionManager = topologySectionManager;
             this.topologyOperator = topologyOperator;

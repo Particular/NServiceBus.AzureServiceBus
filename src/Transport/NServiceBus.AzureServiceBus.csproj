@@ -222,7 +222,6 @@
     <Compile Include="Topology\MetaModel\EntityType.cs" />
     <Compile Include="Topology\MetaModel\IBrokerSideSubscriptionFilter.cs" />
     <Compile Include="Topology\MetaModel\IClientSideSubscriptionFilter.cs" />
-    <Compile Include="Topology\ICreateTopology.cs" />
     <Compile Include="Topology\IOperateTopology.cs" />
     <Compile Include="Topology\ITopologySectionManager.cs" />
     <Compile Include="Topology\MetaModel\RuntimeNamespaceInfo.cs" />

@@ -6,10 +6,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     class TransportResourcesCreator : ICreateQueues
     {
         ITopologySectionManagerInternal sections;
-        ICreateTopologyInternal topologyCreator;
+        TopologyCreator topologyCreator;
         bool resourcesCreated;
 
-        public TransportResourcesCreator(ICreateTopologyInternal topologyCreator, ITopologySectionManagerInternal sections)
+        public TransportResourcesCreator(TopologyCreator topologyCreator, ITopologySectionManagerInternal sections)
         {
             this.topologyCreator = topologyCreator;
             this.sections = sections;
