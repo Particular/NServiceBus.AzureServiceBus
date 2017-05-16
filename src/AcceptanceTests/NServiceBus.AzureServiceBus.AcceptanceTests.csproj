@@ -270,6 +270,7 @@
     <Compile Include="OldTests\When_sending_an_oversized_message_without_a_transaction_scope.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_from_a_transaction_scope.cs" />
     <Compile Include="Publishing\When_using_a_signle_bundle.cs" />
+    <Compile Include="Receiving\When_receive_operation_is_aborted.cs" />
     <Compile Include="Receiving\When_incoming_message_lock_token_is_lost_in_send_atomic_with_receive_mode.cs" />
     <Compile Include="Routing\AzureServiceBusTransportConfigContext.cs" />
     <Compile Include="Routing\When_scaling_out_senders_that_uses_callbacks.cs" />
