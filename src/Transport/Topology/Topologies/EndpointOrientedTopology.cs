@@ -27,7 +27,7 @@ namespace NServiceBus
         IOperateTopologyInternal topologyOperator;
         TopologyCreator topologyCreator;
         SettingsHolder settings;
-        DefaultOutgoingBatchRouter outgoingBatchRouter;
+        OutgoingBatchRouter outgoingBatchRouter;
         Batcher batcher;
         IIndividualizationStrategy individualization;
 
@@ -94,10 +94,10 @@ namespace NServiceBus
 
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
 
-            outgoingBatchRouter = new DefaultOutgoingBatchRouter(new DefaultBatchedOperationsToBrokeredMessagesConverter(settings), senderLifeCycleManager, settings, oversizedMessageHandler);
+            outgoingBatchRouter = new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(settings), senderLifeCycleManager, settings, oversizedMessageHandler);
             batcher = new Batcher(topologySectionManager, settings);
 
-            container.Register<TopologyOperator>(() => new TopologyOperator(messageReceiverLifeCycleManager, new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), settings));
+            container.Register<TopologyOperator>(() => new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), settings));
             topologyOperator = container.Resolve<IOperateTopologyInternal>();
         }
 
@@ -113,7 +113,7 @@ namespace NServiceBus
 
         public Func<IPushMessages> GetMessagePumpFactory()
         {
-            return () => new MessagePump(topologyOperator, messageReceiverLifeCycleManager, new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), topologySectionManager, settings);
+            return () => new MessagePump(topologyOperator, messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), topologySectionManager, settings);
         }
 
         public Func<IDispatchMessages> GetDispatcherFactory()

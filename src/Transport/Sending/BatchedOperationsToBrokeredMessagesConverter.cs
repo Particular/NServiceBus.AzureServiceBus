@@ -9,11 +9,11 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Settings;
     using Transport;
 
-    class DefaultBatchedOperationsToBrokeredMessagesConverter
+    class BatchedOperationsToBrokeredMessagesConverter
     {
         ReadOnlySettings settings;
 
-        public DefaultBatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings)
+        public BatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings)
         {
             this.settings = settings;
         }

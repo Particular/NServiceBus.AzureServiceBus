@@ -39,7 +39,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
-            var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
+            var brokeredMessageConverter = new BrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 
             // create the queue
             var namespaceManager = namespaceLifecycleManager.Get("namespace");
