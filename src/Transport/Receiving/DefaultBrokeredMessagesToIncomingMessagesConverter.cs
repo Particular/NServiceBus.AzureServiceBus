@@ -8,7 +8,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Logging;
     using Settings;
 
-    class DefaultBrokeredMessagesToIncomingMessagesConverter : IConvertBrokeredMessagesToIncomingMessagesInternal
+    class DefaultBrokeredMessagesToIncomingMessagesConverter
     {
         ILog logger = LogManager.GetLogger<DefaultBrokeredMessagesToIncomingMessagesConverter>();
         ReadOnlySettings settings;

@@ -9,7 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Settings;
     using Transport;
 
-    class DefaultBatchedOperationsToBrokeredMessagesConverter : IConvertOutgoingMessagesToBrokeredMessagesInternal
+    class DefaultBatchedOperationsToBrokeredMessagesConverter
     {
         ReadOnlySettings settings;
 
