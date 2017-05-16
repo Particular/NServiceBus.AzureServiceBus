@@ -8,14 +8,14 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Logging;
     using Settings;
 
-    class DefaultBrokeredMessagesToIncomingMessagesConverter : IConvertBrokeredMessagesToIncomingMessagesInternal
+    class BrokeredMessagesToIncomingMessagesConverter
     {
-        ILog logger = LogManager.GetLogger<DefaultBrokeredMessagesToIncomingMessagesConverter>();
+        ILog logger = LogManager.GetLogger<BrokeredMessagesToIncomingMessagesConverter>();
         ReadOnlySettings settings;
         DefaultConnectionStringToNamespaceAliasMapper mapper;
         static byte[] EmptyBody = new byte[0];
 
-        public DefaultBrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings, DefaultConnectionStringToNamespaceAliasMapper mapper)
+        public BrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings, DefaultConnectionStringToNamespaceAliasMapper mapper)
         {
             this.settings = settings;
             this.mapper = mapper;

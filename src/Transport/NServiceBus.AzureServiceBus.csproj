@@ -186,12 +186,10 @@
     <Compile Include="Creation\AzureServiceBusSubscriptionCreator.cs" />
     <Compile Include="Creation\ICreateAzureServiceBusSubscriptions.cs" />
     <Compile Include="Creation\ReadOnlySettingsExtensions.cs" />
-    <Compile Include="Receiving\DefaultBrokeredMessagesToIncomingMessagesConverter.cs" />
-    <Compile Include="Receiving\IConvertBrokeredMessagesToIncomingMessages.cs" />
-    <Compile Include="Sending\DefaultOutgoingBatchRouter.cs" />
-    <Compile Include="Sending\DefaultBatchedOperationsToBrokeredMessagesConverter.cs" />
+    <Compile Include="Receiving\BrokeredMessagesToIncomingMessagesConverter.cs" />
+    <Compile Include="Sending\OutgoingBatchRouter.cs" />
+    <Compile Include="Sending\BatchedOperationsToBrokeredMessagesConverter.cs" />
     <Compile Include="Sending\IRouteOutgoingBatches.cs" />
-    <Compile Include="Sending\IConvertOutgoingMessagesToBrokeredMessages.cs" />
     <Compile Include="Receiving\INotifyIncomingMessages.cs" />
     <Compile Include="Receiving\MessageReceiverNotifier.cs" />
     <Compile Include="Connectivity\MessagingFactoryAdapter.cs" />

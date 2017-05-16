@@ -22,7 +22,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             // default settings
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
 
@@ -48,7 +48,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             extensions.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
 
@@ -71,7 +71,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var batchedOperation = new BatchedOperationInternal
             {
@@ -90,7 +90,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             // default settings
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var headers = new Dictionary<string, string>
             {
@@ -115,7 +115,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             // default settings
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var now = DateTime.UtcNow;
             Time.UtcNow = () => now;
@@ -141,7 +141,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             // default settings
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var now = DateTime.UtcNow;
             Time.UtcNow = () => now;
@@ -165,7 +165,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var ttl = TimeSpan.FromMinutes(1);
 
@@ -190,7 +190,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var correlationId = "SomeId";
             var headers = new Dictionary<string, string>
@@ -214,7 +214,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var headers = new Dictionary<string, string>
             {
@@ -238,7 +238,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings, shouldSecureConnectionString);
             var namespaces = new NamespaceConfigurations(new List<NamespaceInfo>
@@ -269,7 +269,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings, shouldSecureConnectionString);
             var namespaces = new NamespaceConfigurations(new List<NamespaceInfo>
@@ -302,7 +302,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public void Should_set_ViaPartitionKey_if_partition_key_is_available_and_sending_via_option_is_enabled()
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var routingOptions = new RoutingOptionsInternal
             {
@@ -331,7 +331,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             extensions.BrokeredMessageBodyType(bodyType);
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var bytes = Encoding.UTF8.GetBytes("Whatever");
 
@@ -352,7 +352,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             // default settings
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new DefaultBatchedOperationsToBrokeredMessagesConverter(settings);
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             var body = Encoding.UTF8.GetBytes("Whatever");
             var headers = new Dictionary<string, string> { { "header", "value" } };

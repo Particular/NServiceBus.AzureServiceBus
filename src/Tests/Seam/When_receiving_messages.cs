@@ -55,7 +55,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var messageFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messageFactoryCreator, settings);
             var receiverCreator = new MessageReceiverCreator(messageFactoryLifeCycleManager, settings);
             var receiversLifeCycleManager = new MessageReceiverLifeCycleManager(receiverCreator, settings);
-            var converter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings));
+            var converter = new BrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings));
 
             var pump = new MessagePump(new TopologyOperator(receiversLifeCycleManager, converter, settings), receiversLifeCycleManager, converter, topologySectionManager, settings);
 

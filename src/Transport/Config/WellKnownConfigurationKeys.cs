@@ -109,11 +109,5 @@ namespace NServiceBus.Transport.AzureServiceBus
             public const string BrokeredMessageBodyType = "AzureServiceBus.Serialization.BrokeredMessageBodyType";
 
         }
-
-        public static class BrokeredMessageConventions
-        {
-            public const string ToIncomingMessageConverter = "AzureServiceBus.BrokeredMessageConventions.ToIncomingMessageConverter";
-            public const string FromOutgoingMessageConverter = "AzureServiceBus.BrokeredMessageConventions.FromOutgoingMessageConverter";
-        }
     }
 }
