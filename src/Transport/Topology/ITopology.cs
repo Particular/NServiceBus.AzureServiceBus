@@ -9,6 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     static class ObsoleteMessages
     {
         public const string WillBeInternalized = "Internal contract that shouldn't be exposed.";
+        public const string NumberOfTopicsInTheBundleWillBeRemoved = "Number of topics in the bundle by default is 2. This setting will be removed in the next major version and number of topics used will be 1.";
     }
 
     [ObsoleteEx(Message = ObsoleteMessages.WillBeInternalized, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
