@@ -1,21 +1,41 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Logging;
+    using NServiceBus.AzureServiceBus.Utils;
+    using Settings;
 
-    class TopologyCreator : ICreateTopology, ITearDownTopology
+    class TopologyCreator : ICreateTopologyInternal
     {
+        static ILog Logger = LogManager.GetLogger<TopologyCreator>();
         ITransportPartsContainer container;
         IManageNamespaceManagerLifeCycle namespaces;
+        AsyncLazy<bool> hasManageRights;
+        string namespacesWithoutManageRightsJoined;
 
         public TopologyCreator(ITransportPartsContainer container, IManageNamespaceManagerLifeCycle namespaces)
         {
             this.container = container;
             this.namespaces = namespaces;
+            hasManageRights = new AsyncLazy<bool>(async () =>
+            {
+                var namespacesWithoutManageRights = await ManageRightsCheck.Run(namespaces, container.Resolve<ReadOnlySettings>())
+                    .ConfigureAwait(false);
+                namespacesWithoutManageRightsJoined = string.Join(", ", namespacesWithoutManageRights.Select(alias => $"`{alias}`"));
+                return namespacesWithoutManageRights.Count == 0;
+            });
         }
 
         public async Task Create(TopologySection topology)
         {
+            if (!await hasManageRights.Value.ConfigureAwait(false))
+            {
+                Logger.Info($"Configured to create topology, but have no manage rights for the following namespace(s): {namespacesWithoutManageRightsJoined}. Execution will continue and assume the topology is already created.");
+                return;
+            }
+
             var queues = topology.Entities.Where(e => e.Type == EntityType.Queue).ToList();
             var topics = topology.Entities.Where(e => e.Type == EntityType.Topic).ToList();
             var subscriptions = topology.Entities.Where(e => e.Type == EntityType.Subscription).ToList();
@@ -49,6 +69,14 @@ namespace NServiceBus.Transport.AzureServiceBus
                     var metadata = (subscription as SubscriptionInfo)?.Metadata ?? new SubscriptionMetadata();
                     await subscriptionCreator.Create(topic.Target.Path, subscription.Path, metadata, sqlFilter, namespaces.Get(subscription.Namespace.Alias), forwardTo?.Target.Path).ConfigureAwait(false);
                 }
+            }
+        }
+
+        public async Task AssertManagedRights()
+        {
+            if (!await hasManageRights.Value.ConfigureAwait(false))
+            {
+                throw new UnauthorizedAccessException($"Topology creation requires manage rights, but no manage rights could be found for the following namespace(s): {namespacesWithoutManageRightsJoined}");
             }
         }
 
