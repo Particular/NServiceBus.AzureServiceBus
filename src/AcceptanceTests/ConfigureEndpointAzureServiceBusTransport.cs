@@ -60,6 +60,10 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
             endpointOrientedTopology.RegisterPublisher(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.DerivedEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.Publisher)));
             endpointOrientedTopology.RegisterPublisher(typeof(When_unsubscribing_from_one_of_the_events_for_ForwardingTopology.MyEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_unsubscribing_from_one_of_the_events_for_ForwardingTopology.Endpoint)));
             endpointOrientedTopology.RegisterPublisher(typeof(When_unsubscribing_from_one_of_the_events_for_ForwardingTopology.MyOtherEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_unsubscribing_from_one_of_the_events_for_ForwardingTopology.Endpoint)));
+
+            endpointOrientedTopology.RegisterPublisher(typeof(When_publishing_from_sendonly.MyEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_publishing_from_sendonly.SendOnlyPublisher)));
+            endpointOrientedTopology.RegisterPublisher(typeof(When_subscribing_to_a_base_event.IBaseEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_subscribing_to_a_base_event.Publisher)));
+            endpointOrientedTopology.RegisterPublisher(typeof(When_subscribing_to_a_derived_event.SpecificEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_subscribing_to_a_derived_event.Publisher)));
         }
 
         transportConfig.Sanitization()
