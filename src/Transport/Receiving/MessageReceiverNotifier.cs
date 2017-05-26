@@ -187,7 +187,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var invocations = (ConcurrentDictionary<Task, Task>) state;
                 Task toBeRemoved;
                 invocations.TryRemove(t, out toBeRemoved);
-            }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously);
+            }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously).Ignore();
             return processTask;
         }
 
