@@ -94,7 +94,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var error = new AsyncManualResetEvent(false);
 
             var received = false;
-            var errorOccured = false;
+            var errorOccurred = false;
 
             topologyOperator.OnIncomingMessage(async (message, context) =>
             {
@@ -104,7 +104,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             });
             topologyOperator.OnError(exception =>
             {
-                errorOccured = true;
+                errorOccurred = true;
 
                 error.Set();
 
@@ -123,7 +123,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             // validate
             Assert.IsTrue(received);
-            Assert.IsTrue(errorOccured);
+            Assert.IsTrue(errorOccurred);
 
             await topologyOperator.Stop();
         }
@@ -214,7 +214,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var error = new AsyncManualResetEvent(false);
 
             var received = false;
-            var errorOccured = false;
+            var errorOccurred = false;
 
             topologyOperator.OnIncomingMessage(async (message, context) =>
             {
@@ -224,7 +224,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             });
             topologyOperator.OnError(exception =>
             {
-                errorOccured = true;
+                errorOccurred = true;
 
                 error.Set();
 
@@ -243,7 +243,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
 
             // validate
             Assert.IsTrue(received);
-            Assert.IsTrue(errorOccured);
+            Assert.IsTrue(errorOccurred);
 
             await Task.Delay(TimeSpan.FromSeconds(5), cts.Token); // give asb some time to update stats
 
