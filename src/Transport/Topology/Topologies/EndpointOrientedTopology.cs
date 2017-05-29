@@ -90,7 +90,7 @@ namespace NServiceBus
             senderLifeCycleManager = new MessageSenderLifeCycleManager(senderCreator, settings);
             subscriptionsCreator = new AzureServiceBusSubscriptionCreatorV6(Settings.SubscriptionSettings, settings);
 
-            topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal);
+            topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal, settings);
 
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
 
@@ -128,9 +128,7 @@ namespace NServiceBus
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
-            var check = new ManageRightsCheck(namespaceManagerLifeCycleManagerInternal, settings);
-
-            return check.Run();
+            return Task.FromResult(StartupCheckResult.Success);
         }
 
         public OutboundRoutingPolicy GetOutboundRoutingPolicy()

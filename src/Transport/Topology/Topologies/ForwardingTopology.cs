@@ -1,8 +1,6 @@
 namespace NServiceBus
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Logging;
     using Routing;
@@ -99,7 +97,7 @@ namespace NServiceBus
 
             container.RegisterSingleton<DefaultConnectionStringToNamespaceAliasMapper>();
 
-            topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal);
+            topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal, settings);
 
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages) settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
 
@@ -135,21 +133,9 @@ namespace NServiceBus
             return () => new SubscriptionManager(topologySectionManager, topologyOperator, topologyCreator);
         }
 
-        public async Task<StartupCheckResult> RunPreStartupChecks()
+        public Task<StartupCheckResult> RunPreStartupChecks()
         {
-            var manageRightsCheck = new ManageRightsCheck(namespaceManagerLifeCycleManagerInternal, settings);
-
-            var results = new List<StartupCheckResult>
-            {
-                await manageRightsCheck.Run().ConfigureAwait(false),
-            };
-
-            if (results.Any(x => x.Succeeded == false))
-            {
-                return StartupCheckResult.Failed(string.Join(Environment.NewLine, results.Select(x => x.ErrorMessage)));
-            }
-
-            return StartupCheckResult.Success;
+            return Task.FromResult(StartupCheckResult.Success);
         }
 
         public OutboundRoutingPolicy GetOutboundRoutingPolicy()

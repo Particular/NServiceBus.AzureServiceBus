@@ -124,12 +124,14 @@
     <Compile Include="Sending\TransactionContainsTooManyMessages.cs" />
     <Compile Include="Sending\MessageTooLargeException.cs" />
     <Compile Include="Sending\Time.cs" />
+    <Compile Include="Topology\MetaModel\ManageRightsCheck.cs" />
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Topology\Topologies\TypeExtensions.cs" />
     <Compile Include="Topology\TopologyQueueSettings.cs" />
     <Compile Include="Topology\TopologySettings.cs" />
     <Compile Include="Topology\TopologySubscriptionSettings.cs" />
     <Compile Include="Topology\TopologyTopicSettings.cs" />
+    <Compile Include="Utils\AsyncLazy.cs" />
     <Compile Include="Utils\MessageReceiverExtensions.cs" />
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />
@@ -142,7 +144,6 @@
     <Compile Include="Topology\MetaModel\NamespaceInfo.cs" />
     <Compile Include="Topology\MetaModel\NamespaceConfigurations.cs" />
     <Compile Include="Topology\MetaModel\SubscriptionMetadata.cs" />
-    <Compile Include="Topology\PreStartupChecks\ManageRightsCheck.cs" />
     <Compile Include="Topology\PublishersConfiguration.cs" />
     <Compile Include="Utils\BrokeredMessageHeaders.cs" />
     <Compile Include="Sending\IHandleOversizedBrokeredMessages.cs" />

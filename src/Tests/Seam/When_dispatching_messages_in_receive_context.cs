@@ -57,7 +57,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
             var topologyCreator = new TopologyCreator(new AzureServiceBusSubscriptionCreatorV6(endpointOrientedTopology.Settings.SubscriptionSettings, settings), 
                 new AzureServiceBusQueueCreator(endpointOrientedTopology.Settings.QueueSettings,settings),  new AzureServiceBusTopicCreator(endpointOrientedTopology.Settings.TopicSettings), 
-                namespaceLifecycleManager);
+                namespaceLifecycleManager, settings);
 
             var topologySectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(topologySectionManager.DetermineResourcesToCreate(new QueueBindings())).ConfigureAwait(false);
