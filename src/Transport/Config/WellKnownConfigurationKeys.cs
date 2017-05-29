@@ -114,7 +114,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 public const string NumberOfEntitiesInBundle = "AzureServiceBus.Settings.Topology.Bundling.NumberOfEntitiesInBundle";
                 public const string BundlePrefix = "AzureServiceBus.Settings.Topology.Bundling.BundlePrefix";
-                public const string NamespaceBundleConfigurations = "AzureServiceBus.Settings.Topology.Bundling.NamespaceBundleConfigurations";
             }
 
         }

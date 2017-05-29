@@ -4,7 +4,6 @@
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Settings;
-    using Topology.MetaModel;
     using Transport.AzureServiceBus;
 
     class DefaultConfigurationValues
@@ -36,7 +35,6 @@
         void ApplyDefaultValuesForAddressing(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, new NamespaceConfigurations());
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NamespaceBundleConfigurations, new NamespaceBundleConfigurations());
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings, false);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias, "default");
         }

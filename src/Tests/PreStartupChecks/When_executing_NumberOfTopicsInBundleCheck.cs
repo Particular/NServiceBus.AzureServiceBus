@@ -2,14 +2,12 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using AzureServiceBus.Topology.MetaModel;
     using FakeItEasy;
     using Tests;
     using Transport.AzureServiceBus;
     using Settings;
     using NUnit.Framework;
 
-#pragma warning disable 618
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_executing_NumberOfTopicsInBundleCheck
@@ -26,15 +24,16 @@
             };
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
 
+#pragma warning disable 618
             var namespaceManager = A.Fake<INamespaceManager>();
+#pragma warning restore 618
             A.CallTo(() => namespaceManager.CanManageEntities()).Returns(Task.FromResult(true));
+#pragma warning disable 618
             var manageNamespaceLifeCycle = A.Fake<IManageNamespaceManagerLifeCycle>();
+#pragma warning restore 618
             A.CallTo(() => manageNamespaceLifeCycle.Get(A<string>.Ignored)).Returns(namespaceManager);
 
-            var namespaceBundleConfigurations = new NamespaceBundleConfigurations();
-
-            var check = new NumberOfTopicsInBundleCheck(manageNamespaceLifeCycle, namespaces, namespaceBundleConfigurations, "bundle");
-            await check.Run();
+            var namespaceBundleConfigurations = await NumberOfTopicsInBundleCheck.Run(manageNamespaceLifeCycle, namespaces, "bundle");
 
             Assert.That(namespaceBundleConfigurations.Count(), Is.Zero);
         }
