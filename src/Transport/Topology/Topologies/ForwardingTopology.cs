@@ -1,8 +1,6 @@
 namespace NServiceBus
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using AzureServiceBus;
     using Logging;
@@ -126,23 +124,9 @@ namespace NServiceBus
             return () => container.Resolve<IManageSubscriptions>();
         }
 
-        public async Task<StartupCheckResult> RunPreStartupChecks()
+        public Task<StartupCheckResult> RunPreStartupChecks()
         {
-            var settings = container.Resolve<ReadOnlySettings>();
-
-            var manageRightsCheck = new ManageRightsCheck(container.Resolve<IManageNamespaceManagerLifeCycle>(), settings);
-
-            var results = new List<StartupCheckResult>
-            {
-                await manageRightsCheck.Run().ConfigureAwait(false),
-            };
-
-            if (results.Any(x => x.Succeeded == false))
-            {
-                return StartupCheckResult.Failed(string.Join(Environment.NewLine, results.Select(x => x.ErrorMessage)));
-            }
-
-            return StartupCheckResult.Success;
+            return Task.FromResult(StartupCheckResult.Success);
         }
 
         public OutboundRoutingPolicy GetOutboundRoutingPolicy()
