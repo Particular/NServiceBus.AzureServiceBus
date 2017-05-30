@@ -122,10 +122,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         IEnumerable<EntityInfo> SelectFirstTopicFromBundle(List<EntityInfo> entityInfos)
         {
-            const int index = 1;
-            var selected = entityInfos[index];
-
-            yield return entityInfos.First(i => i.Path == selected.Path);
+            const int index = 0;
+            yield return entityInfos[index];
         }
 
         public TopologySection DetermineSendDestination(string destination)
