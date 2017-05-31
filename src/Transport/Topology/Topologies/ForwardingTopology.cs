@@ -126,6 +126,7 @@ namespace NServiceBus
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
+
             return Task.FromResult(StartupCheckResult.Success);
         }
 
