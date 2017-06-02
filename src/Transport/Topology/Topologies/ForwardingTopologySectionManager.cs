@@ -100,8 +100,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public async Task<TopologySectionInternal> DeterminePublishDestination(Type eventType)
         {
-            TopologySectionInternal destination;
-            if (publishDestinations.TryGetValue(eventType, out destination))
+            if (publishDestinations.TryGetValue(eventType, out var destination))
             {
                 return destination;
             }
@@ -192,9 +191,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType)
         {
-            TopologySectionInternal result;
-
-            if (!subscriptions.TryRemove(eventType, out result))
+            if (!subscriptions.TryRemove(eventType, out var result))
             {
                 result = new TopologySectionInternal
                 {
