@@ -17,7 +17,12 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public async Task CreateQueueIfNecessary(QueueBindings queueBindings, string identity)
         {
-            if (resourcesCreated) return;
+            if (resourcesCreated)
+            {
+                return;
+            }
+
+            await topologyCreator.AssertManagedRights().ConfigureAwait(false);
 
             var receiveResources = sections.DetermineResourcesToCreate(queueBindings);
             await topologyCreator.Create(receiveResources).ConfigureAwait(false);

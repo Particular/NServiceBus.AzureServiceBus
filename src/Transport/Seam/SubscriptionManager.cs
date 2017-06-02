@@ -29,7 +29,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var section = topologySectionManager.DetermineResourcesToUnsubscribeFrom(eventType);
             await topologyOperator.Stop(section.Entities).ConfigureAwait(false);
-
             await topologyCreator.TearDown(section).ConfigureAwait(false);
         }
     }

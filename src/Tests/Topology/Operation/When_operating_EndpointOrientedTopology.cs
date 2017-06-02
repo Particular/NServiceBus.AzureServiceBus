@@ -270,7 +270,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             var topologyCreator = new TopologyCreator(new AzureServiceBusSubscriptionCreatorV6(topology.Settings.SubscriptionSettings, settings), 
                 new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings),
                 new AzureServiceBusTopicCreator(topology.Settings.TopicSettings),
-                new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)));
+                new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), 
+                settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
