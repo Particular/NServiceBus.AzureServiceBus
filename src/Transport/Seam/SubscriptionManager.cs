@@ -20,7 +20,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public async Task Subscribe(Type eventType, ContextBag context)
         {
-            var section = topologySectionManager.DetermineResourcesToSubscribeTo(eventType);
+            var section = await topologySectionManager.DetermineResourcesToSubscribeTo(eventType).ConfigureAwait(false);
             await topologyCreator.Create(section).ConfigureAwait(false);
             topologyOperator.Start(section.Entities);
         }

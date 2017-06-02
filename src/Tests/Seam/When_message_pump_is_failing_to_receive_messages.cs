@@ -94,14 +94,14 @@
                 };
             }
 
-            public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
+            public Task<TopologySectionInternal> DetermineResourcesToCreate(QueueBindings queueBindings)
             {
-                return new TopologySectionInternal();
+                return Task.FromResult(new TopologySectionInternal());
             }
 
-            public TopologySectionInternal DeterminePublishDestination(Type eventType)
+            public Task<TopologySectionInternal> DeterminePublishDestination(Type eventType)
             {
-                return new TopologySectionInternal();
+                return Task.FromResult(new TopologySectionInternal());
             }
 
             public TopologySectionInternal DetermineSendDestination(string destination)
@@ -109,12 +109,12 @@
                 return new TopologySectionInternal();
             }
 
-            public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
+            public Task<TopologySectionInternal> DetermineResourcesToSubscribeTo(Type eventType)
             {
-                return new TopologySectionInternal();
+                return Task.FromResult(new TopologySectionInternal());
             }
 
-            public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
+            public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType)
             {
                 return new TopologySectionInternal();
             }

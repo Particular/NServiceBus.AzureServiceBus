@@ -4,7 +4,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
+    using NServiceBus.AzureServiceBus.Utils;
     using Transport;
 
     class ForwardingTopologySectionManager : ITopologySectionManagerInternal
@@ -13,7 +15,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         readonly ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
         readonly ConcurrentDictionary<Type, TopologySectionInternal> publishDestinations = new ConcurrentDictionary<Type, TopologySectionInternal>();
         readonly List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
-        Lazy<NamespaceBundleConfigurations> namespaceBundleConfigurations;
+        AsyncLazy<NamespaceBundleConfigurations> namespaceBundleConfigurations;
         string endpointName;
         INamespacePartitioningStrategy namespacePartitioningStrategy;
         AddressingLogic addressingLogic;
@@ -32,9 +34,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.namespacePartitioningStrategy = namespacePartitioningStrategy;
             this.endpointName = endpointName;
 
-            namespaceBundleConfigurations = new Lazy<NamespaceBundleConfigurations>(() =>
+            namespaceBundleConfigurations = new AsyncLazy<NamespaceBundleConfigurations>(async () =>
             {
-                var bundleConfigurations = NumberOfTopicsInBundleCheck.Run(namespaceManagerLifeCycleManagerInternal, namespaceConfigurations, bundlePrefix).GetAwaiter().GetResult();
+                var bundleConfigurations = await NumberOfTopicsInBundleCheck.Run(namespaceManagerLifeCycleManagerInternal, namespaceConfigurations, bundlePrefix).ConfigureAwait(false);
                 return bundleConfigurations;
             });
         }
@@ -53,7 +55,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
+        public async Task<TopologySectionInternal> DetermineResourcesToCreate(QueueBindings queueBindings)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
@@ -67,7 +69,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             if (!topics.Any())
             {
-                BuildTopicBundles(namespaces, addressingLogic);
+                await BuildTopicBundles(namespaces, addressingLogic).ConfigureAwait(false);
             }
 
             foreach (var n in namespaces)
@@ -96,22 +98,27 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DeterminePublishDestination(Type eventType)
+        public async Task<TopologySectionInternal> DeterminePublishDestination(Type eventType)
         {
-            return publishDestinations.GetOrAdd(eventType, t =>
+            TopologySectionInternal destination;
+            if (publishDestinations.TryGetValue(eventType, out destination))
             {
-                var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
-                if (!topics.Any())
-                {
-                    BuildTopicBundles(namespaces, addressingLogic);
-                }
+                return destination;
+            }
 
-                return new TopologySectionInternal
-                {
-                    Entities = SelectFirstTopicFromBundle(topics),
-                    Namespaces = namespaces
-                };
-            });
+            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+            if (!topics.Any())
+            {
+                await BuildTopicBundles(namespaces, addressingLogic).ConfigureAwait(false);
+            }
+
+            var newEntry = new TopologySectionInternal
+            {
+                Entities = SelectFirstTopicFromBundle(topics),
+                Namespaces = namespaces
+            };
+            publishDestinations.TryAdd(eventType, newEntry);
+            return newEntry;
         }
 
         IEnumerable<EntityInfoInternal> SelectFirstTopicFromBundle(List<EntityInfoInternal> entityInfos)
@@ -173,21 +180,21 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         }
 
-        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
+        public async Task<TopologySectionInternal> DetermineResourcesToSubscribeTo(Type eventType)
         {
             if (!subscriptions.ContainsKey(eventType))
             {
-                subscriptions[eventType] = BuildSubscriptionHierarchy(eventType);
+                subscriptions[eventType] = await BuildSubscriptionHierarchy(eventType).ConfigureAwait(false);
             }
 
             return subscriptions[eventType];
         }
 
-        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
+        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType)
         {
             TopologySectionInternal result;
 
-            if (!subscriptions.TryRemove(eventtype, out result))
+            if (!subscriptions.TryRemove(eventType, out result))
             {
                 result = new TopologySectionInternal
                 {
@@ -199,7 +206,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return result;
         }
 
-        TopologySectionInternal BuildSubscriptionHierarchy(Type eventType)
+        async Task<TopologySectionInternal> BuildSubscriptionHierarchy(Type eventType)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
@@ -210,7 +217,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             if (!topics.Any())
             {
-                BuildTopicBundles(namespaces, addressingLogic);
+                await BuildTopicBundles(namespaces, addressingLogic).ConfigureAwait(false);
             }
             var subs = new List<SubscriptionInfoInternal>();
             foreach (var topic in topics)
@@ -259,11 +266,13 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        void BuildTopicBundles(RuntimeNamespaceInfo[] namespaces, AddressingLogic addressingLogic)
+        async Task BuildTopicBundles(RuntimeNamespaceInfo[] namespaces, AddressingLogic addressingLogic)
         {
+            var bundleConfigurations = await namespaceBundleConfigurations.Value.ConfigureAwait(false);
+
             foreach (var @namespace in namespaces)
             {
-                var numberOfTopicsFound = namespaceBundleConfigurations.Value.GetNumberOfTopicInBundle(@namespace.Alias);
+                var numberOfTopicsFound = bundleConfigurations.GetNumberOfTopicInBundle(@namespace.Alias);
                 var numberOfTopicsToCreate = Math.Max(numberOfEntitiesInBundle, numberOfTopicsFound);
                 for (var i = 1; i <= numberOfTopicsToCreate; i++)
                 {

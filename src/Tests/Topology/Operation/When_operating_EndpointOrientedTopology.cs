@@ -274,7 +274,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
                 settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
+            await topologyCreator.Create(await sectionManager.DetermineResourcesToCreate(new QueueBindings()));
             return sectionManager;
         }
     }

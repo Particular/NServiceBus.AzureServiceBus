@@ -48,7 +48,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 namespaceLifecycleManager, settings);
 
             var topologySectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            await topologyCreator.Create(topologySectionManager.DetermineResourcesToCreate(new QueueBindings()));
+            await topologyCreator.Create(await topologySectionManager.DetermineResourcesToCreate(new QueueBindings()));
 
             // setup the operator
             var messageFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);

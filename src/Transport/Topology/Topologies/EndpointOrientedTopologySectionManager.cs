@@ -4,6 +4,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Transport;
 
     class EndpointOrientedTopologySectionManager : ITopologySectionManagerInternal
@@ -40,7 +41,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
+        public Task<TopologySectionInternal> DetermineResourcesToCreate(QueueBindings queueBindings)
         {
             // computes the topologySectionManager
 
@@ -70,27 +71,26 @@ namespace NServiceBus.Transport.AzureServiceBus
                     Namespace = n
                 }));
             }
-
-
-            return new TopologySectionInternal
+            
+            return Task.FromResult(new TopologySectionInternal
             {
                 Namespaces = namespaces,
                 Entities = entities.ToArray()
-            };
+            });
         }
 
-        public TopologySectionInternal DeterminePublishDestination(Type eventType)
+        public Task<TopologySectionInternal> DeterminePublishDestination(Type eventType)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
 
             var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
             var topics = namespaces.Select(n => new EntityInfoInternal { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
 
-            return new TopologySectionInternal
+            return Task.FromResult(new TopologySectionInternal
             {
                 Namespaces = namespaces,
                 Entities = topics
-            };
+            });
         }
 
         public TopologySectionInternal DetermineSendDestination(string destination)
@@ -137,14 +137,14 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
+        public Task<TopologySectionInternal> DetermineResourcesToSubscribeTo(Type eventType)
         {
             if (!subscriptions.ContainsKey(eventType))
             {
                 subscriptions[eventType] = BuildSubscriptionHierarchy(eventType);
             }
 
-            return subscriptions[eventType];
+            return Task.FromResult(subscriptions[eventType]);
         }
 
         TopologySectionInternal BuildSubscriptionHierarchy(Type eventType)
@@ -209,11 +209,11 @@ namespace NServiceBus.Transport.AzureServiceBus
                 .ToList();
         }
 
-        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
+        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType)
         {
             TopologySectionInternal result;
 
-            if (!subscriptions.TryRemove(eventtype, out result))
+            if (!subscriptions.TryRemove(eventType, out result))
             {
                 result = new TopologySectionInternal
                 {

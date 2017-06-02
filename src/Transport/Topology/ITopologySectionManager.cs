@@ -1,17 +1,18 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using Transport;
 
     interface ITopologySectionManagerInternal
     {
         TopologySectionInternal DetermineReceiveResources(string inputQueue);
-        TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings);
+        Task<TopologySectionInternal> DetermineResourcesToCreate(QueueBindings queueBindings);
 
-        TopologySectionInternal DeterminePublishDestination(Type eventType);
+        Task<TopologySectionInternal> DeterminePublishDestination(Type eventType);
         TopologySectionInternal DetermineSendDestination(string destination);
 
-        TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType);
-        TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype);
+        Task<TopologySectionInternal> DetermineResourcesToSubscribeTo(Type eventType);
+        TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType);
     }
 }
