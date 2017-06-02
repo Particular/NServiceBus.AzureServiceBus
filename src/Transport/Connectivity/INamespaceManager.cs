@@ -31,6 +31,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription);
         Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription);
+        // TODO: enable back on the interface once internalized in v8
+        //Task<IEnumerable<TopicDescription>> GetTopics(string filter);
 
         Task DeleteSubscription(SubscriptionDescription subscriptionDescription);
     }

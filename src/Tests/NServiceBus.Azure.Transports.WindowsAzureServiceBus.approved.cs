@@ -31,16 +31,21 @@ namespace NServiceBus
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> topologySettings, System.Reflection.Assembly assembly, string publisherName) { }
     }
     public class AzureServiceBusForwardingTopologySettings : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> { }
+    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public class static AzureServiceBusForwardingTopologySettingsExtensions
     {
-        public static NServiceBus.AzureServiceBusForwardingTopologySettings BundlePrefix(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, string prefix) { }
         [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
             " removed in version 9.0.0.", true)]
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> BundlePrefix(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> topologySettings, string prefix) { }
-        public static NServiceBus.AzureServiceBusForwardingTopologySettings NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, int number) { }
+        [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
+            " removed in version 9.0.0.", true)]
+        public static NServiceBus.AzureServiceBusForwardingTopologySettings BundlePrefix(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, string prefix) { }
         [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
             " removed in version 9.0.0.", true)]
         public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> topologySettings, int number) { }
+        [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
+            " removed in version 9.0.0.", true)]
+        public static NServiceBus.AzureServiceBusForwardingTopologySettings NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, int number) { }
     }
     public class static AzureServiceBusHierarchyCompositionSettingsExtensions
     {
