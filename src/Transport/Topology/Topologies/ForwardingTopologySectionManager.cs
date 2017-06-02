@@ -117,8 +117,8 @@ namespace NServiceBus.Transport.AzureServiceBus
                 Entities = SelectFirstTopicFromBundle(topics),
                 Namespaces = namespaces
             };
-            publishDestinations.TryAdd(eventType, newEntry);
-            return newEntry;
+            
+            return publishDestinations.GetOrAdd(eventType, newEntry);
         }
 
         IEnumerable<EntityInfoInternal> SelectFirstTopicFromBundle(List<EntityInfoInternal> entityInfos)
