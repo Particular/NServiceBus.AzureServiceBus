@@ -4,6 +4,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using Transport;
     using Settings;
 
@@ -16,12 +17,21 @@ namespace NServiceBus.Transport.AzureServiceBus
         readonly ConcurrentDictionary<string, TopologySection> sendDestinations = new ConcurrentDictionary<string, TopologySection>();
         readonly ConcurrentDictionary<Type, TopologySection> publishDestinations = new ConcurrentDictionary<Type, TopologySection>();
         readonly List<EntityInfo> topics = new List<EntityInfo>();
-        readonly Random randomGenerator = new Random();
+        Lazy<NamespaceBundleConfigurations> namespaceBundleConfigurations;
 
         public ForwardingTopologySectionManager(SettingsHolder settings, ITransportPartsContainer container)
         {
             this.settings = settings;
             this.container = container;
+
+            namespaceBundleConfigurations = new Lazy<NamespaceBundleConfigurations>(() =>
+            {
+                var manageNamespaceManagerLifeCycle = container.Resolve<IManageNamespaceManagerLifeCycle>();
+                var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+                var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
+                var bundleConfigurations = NumberOfTopicsInBundleCheck.Run(manageNamespaceManagerLifeCycle, namespaceConfigurations, bundlePrefix).GetAwaiter().GetResult();
+                return bundleConfigurations;
+            });
         }
 
         public TopologySection DetermineReceiveResources(string inputQueue)
@@ -45,8 +55,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var endpointName = settings.EndpointName();
 
-            var partitioningStrategy = (INamespacePartitioningStrategy) container.Resolve(typeof(INamespacePartitioningStrategy));
-            var addressingLogic = (AddressingLogic) container.Resolve(typeof(AddressingLogic));
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
+            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
 
             var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
@@ -102,28 +112,26 @@ namespace NServiceBus.Transport.AzureServiceBus
                     BuildTopicBundles(namespaces, addressingLogic);
                 }
 
-                return new TopologySection()
+                return new TopologySection
                 {
-                    Entities = SelectSingleRandomTopicFromBundle(topics),
+                    Entities = SelectFirstTopicFromBundle(topics),
                     Namespaces = namespaces
                 };
             });
         }
 
-        IEnumerable<EntityInfo> SelectSingleRandomTopicFromBundle(List<EntityInfo> entityInfos)
+        IEnumerable<EntityInfo> SelectFirstTopicFromBundle(List<EntityInfo> entityInfos)
         {
-            var index = randomGenerator.Next(0, entityInfos.Count);
-            var selected = entityInfos[index];
-
-            return entityInfos.Where(i => i.Path == selected.Path);
+            const int index = 0;
+            yield return entityInfos[index];
         }
 
         public TopologySection DetermineSendDestination(string destination)
         {
             return sendDestinations.GetOrAdd(destination, d =>
             {
-                var partitioningStrategy = (INamespacePartitioningStrategy) container.Resolve(typeof(INamespacePartitioningStrategy));
-                var addressingLogic = (AddressingLogic) container.Resolve(typeof(AddressingLogic));
+                var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
+                var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
                 var defaultAlias = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
 
                 var inputQueueAddress = addressingLogic.Apply(d, EntityType.Queue);
@@ -186,7 +194,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 subscriptions[eventType] = BuildSubscriptionHierarchy(eventType);
             }
 
-            return (subscriptions[eventType]);
+            return subscriptions[eventType];
         }
 
         public TopologySection DetermineResourcesToUnsubscribeFrom(Type eventtype)
@@ -273,16 +281,21 @@ namespace NServiceBus.Transport.AzureServiceBus
             var numberOfEntitiesInBundle = settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
             var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
 
-            for (var i = 1; i <= numberOfEntitiesInBundle; i++)
+            foreach (var @namespace in namespaces)
             {
-                topics.AddRange(namespaces.Select(n => new EntityInfo
+                var numberOfTopicsFound = namespaceBundleConfigurations.Value.GetNumberOfTopicInBundle(@namespace.Alias);
+                var numberOfTopicsToCreate = Math.Max(numberOfEntitiesInBundle, numberOfTopicsFound);
+                for (var i = 1; i <= numberOfTopicsToCreate; i++)
                 {
-                    Path = addressingLogic.Apply(bundlePrefix + i, EntityType.Topic).Name,
-                    Type = EntityType.Topic,
-                    Namespace = n
-                }));
+                    var topicEntity = new EntityInfo
+                    {
+                        Path = addressingLogic.Apply(bundlePrefix + i, EntityType.Topic).Name,
+                        Type = EntityType.Topic,
+                        Namespace = @namespace
+                    };
+                    topics.Add(topicEntity);
+                }
             }
         }
-
     }
 }
