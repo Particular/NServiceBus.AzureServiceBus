@@ -13,19 +13,12 @@
             foreach (var namespaceConfiguration in namespaceConfigurations)
             {
                 var namespaceManager = manageNamespaceManagerLifeCycle.Get(namespaceConfiguration.Alias);
-                var namespaceManagerThatCanQueryAndFilterTopics = namespaceManager as NamespaceManagerAdapterInternal;
-
-                // if user has provided an implementation of INamespaceManager, skip the checks all together
-                if (namespaceManagerThatCanQueryAndFilterTopics == null)
-                {
-                    break;
-                }
 
                 var numberOfTopics = 1;
-                if (await namespaceManagerThatCanQueryAndFilterTopics.CanManageEntities().ConfigureAwait(false))
+                if (await namespaceManager.CanManageEntities().ConfigureAwait(false))
                 {
                     var filter = $"startswith(path, '{bundlePrefix}') eq true";
-                    var foundTopics = await namespaceManagerThatCanQueryAndFilterTopics.GetTopics(filter).ConfigureAwait(false);
+                    var foundTopics = await namespaceManager.GetTopics(filter).ConfigureAwait(false);
                     numberOfTopics = foundTopics.Count();
                 }
                 namespaceBundleConfigurations.Add(namespaceConfiguration.Alias, numberOfTopics);
