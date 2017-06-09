@@ -47,7 +47,7 @@ namespace NServiceBus
         {
             this.settings = settings;
 
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle, 2);
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle, 1);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix, "bundle-");
 
             queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
