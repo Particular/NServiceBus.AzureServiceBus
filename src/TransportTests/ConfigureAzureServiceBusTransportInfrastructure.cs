@@ -39,5 +39,5 @@ class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfra
     {
         return Task.FromResult(0);
     }
-    
+
 }

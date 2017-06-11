@@ -19,6 +19,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\binaries\NServiceBus.Azure.Transports.WindowsAzureServiceBus.???" target="lib\net452" />
+    <file src="..\..\binaries\net452\NServiceBus.Azure.Transports.WindowsAzureServiceBus.???" target="lib\net452" />
   </files>
 </package>
