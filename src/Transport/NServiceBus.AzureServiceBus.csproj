@@ -19,8 +19,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\packaging\nuget\nservicebus.azureservicebus.nuspec" Link="nservicebus.azureservicebus.nuspec" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Janitor.Fody" Version="1.4.1" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="4.0.0" />
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
@@ -30,16 +28,7 @@
     <PackageReference Include="Particular.CodeRules" Version="0.2.0" />
     <PackageReference Include="NuGetPackager" Version="0.6.3" />
     <PackageReference Include="GitVersionTask" Version="4.0.0-beta0012" />
-    <Reference Include="System" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
 </Project>
