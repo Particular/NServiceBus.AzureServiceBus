@@ -19,8 +19,4 @@
     <PackageReference Include="NUnit" Version="3.6.1" />
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Issues\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
