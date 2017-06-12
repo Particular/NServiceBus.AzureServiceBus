@@ -24,7 +24,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             await topologyCreator.AssertManagedRights().ConfigureAwait(false);
 
-            var receiveResources = await sections.DetermineResourcesToCreate(queueBindings).ConfigureAwait(false);
+            var receiveResources = sections.DetermineResourcesToCreate(queueBindings);
             await topologyCreator.Create(receiveResources).ConfigureAwait(false);
 
             resourcesCreated = true;

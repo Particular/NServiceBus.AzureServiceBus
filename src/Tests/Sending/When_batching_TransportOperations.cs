@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using AzureServiceBus;
     using Tests;
     using Transport.AzureServiceBus;
@@ -18,7 +17,7 @@
     public class When_batching_TransportOperations
     {
         [Test]
-        public async Task Should_not_batch_different_types_of_transport_operations_together()
+        public void Should_not_batch_different_types_of_transport_operations_together()
         {
             var headers = new Dictionary<string, string>();
             var body = new byte[0];
@@ -32,7 +31,7 @@
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var batcher = new Batcher(new FakeTopolySectionManager(), settings);
-            var batches = await batcher.ToBatches(transportOperations);
+            var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(2));
             Assert.That(batches[0].Operations.Count, Is.EqualTo(1));
@@ -40,7 +39,7 @@
         }
 
         [Test]
-        public async Task Should_batch_transport_operations_of_the_same_type_with_the_same_dispatch_consistency()
+        public void Should_batch_transport_operations_of_the_same_type_with_the_same_dispatch_consistency()
         {
             var headers = new Dictionary<string, string>();
             var body = new byte[0];
@@ -56,7 +55,7 @@
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var batcher = new Batcher(new FakeTopolySectionManager(), settings);
-            var batches = await batcher.ToBatches(transportOperations);
+            var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(2));
             Assert.That(batches[0].Operations.Count, Is.EqualTo(2));
@@ -64,7 +63,7 @@
         }
 
         [Test]
-        public async Task Should_not_batch_transport_operations_of_the_same_type_with_different_dispatch_consistency()
+        public void Should_not_batch_transport_operations_of_the_same_type_with_different_dispatch_consistency()
         {
             var headers = new Dictionary<string, string>();
             var body = new byte[0];
@@ -80,7 +79,7 @@
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var batcher = new Batcher(new FakeTopolySectionManager(), settings);
-            var batches = await batcher.ToBatches(transportOperations);
+            var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(4));
             Assert.That(batches[0].Operations.First().Message.MessageId, Is.EqualTo("id-1"));
@@ -90,7 +89,7 @@
         }
 
         [Test]
-        public async Task Should_calculate_size_of_each_batched_operation()
+        public void Should_calculate_size_of_each_batched_operation()
         {
             var headers = new Dictionary<string, string>{ { "header", "value"} };
             var body = new byte[100];
@@ -104,7 +103,7 @@
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var batcher = new Batcher(new FakeTopolySectionManager(), settings);
-            var batches = await batcher.ToBatches(transportOperations);
+            var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(2));
             Assert.That(batches[0].Operations.First().GetEstimatedSize(), Is.EqualTo(2088), "For default message size padding of 5% size should be 2,088 bytes");
@@ -127,18 +126,18 @@
             throw new NotImplementedException();
         }
 
-        public Task<TopologySectionInternal> DetermineResourcesToCreate(QueueBindings queueBindings)
+        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
         {
             throw new NotImplementedException();
         }
 
-        public Task<TopologySectionInternal> DeterminePublishDestination(Type eventType)
+        public TopologySectionInternal DeterminePublishDestination(Type eventType)
         {
-            return Task.FromResult(new TopologySectionInternal
+            return new TopologySectionInternal
             {
                 Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
                 Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
-            });
+            };
         }
 
         public TopologySectionInternal DetermineSendDestination(string destination)
@@ -151,16 +150,16 @@
 
         }
 
-        public Task<TopologySectionInternal> DetermineResourcesToSubscribeTo(Type eventType)
+        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
         {
-            return Task.FromResult(new TopologySectionInternal
+            return new TopologySectionInternal
             {
                 Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
                 Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
-            });
+            };
         }
 
-        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType)
+        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
         {
             throw new NotImplementedException();
         }

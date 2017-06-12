@@ -2,7 +2,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Settings;
     using Transport;
 
@@ -17,10 +16,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             messageSizePaddingPercentage = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage);
         }
 
-        public async Task<List<BatchInternal>> ToBatches(TransportOperations operations)
+        public IList<BatchInternal> ToBatches(TransportOperations operations)
         {
             var indexedBatches = new Dictionary<string, BatchInternal>();
-            await AddMulticastOperationBatches(operations, indexedBatches).ConfigureAwait(false);
+            AddMulticastOperationBatches(operations, indexedBatches);
             AddUnicastOperationBatches(operations, indexedBatches);
             return indexedBatches.Values.ToList();
         }
@@ -47,7 +46,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        async Task AddMulticastOperationBatches(TransportOperations operations, Dictionary<string, BatchInternal> indexedBatches)
+        void AddMulticastOperationBatches(TransportOperations operations, Dictionary<string, BatchInternal> indexedBatches)
         {
             foreach (var multicastOperation in operations.MulticastTransportOperations)
             {
@@ -58,7 +57,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     batch = new BatchInternal();
                     indexedBatches[key] = batch;
 
-                    batch.Destinations = await topologySectionManager.DeterminePublishDestination(multicastOperation.MessageType).ConfigureAwait(false);
+                    batch.Destinations = topologySectionManager.DeterminePublishDestination(multicastOperation.MessageType);
                     batch.RequiredDispatchConsistency = multicastOperation.RequiredDispatchConsistency;
                 }
                 batch.Operations.Add(new BatchedOperationInternal(messageSizePaddingPercentage)

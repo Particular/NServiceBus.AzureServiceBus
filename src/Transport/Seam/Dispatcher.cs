@@ -15,27 +15,25 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.batcher = batcher;
         }
 
-        public async Task Dispatch(TransportOperations operations, TransportTransaction transportTransaction, ContextBag context)
+        public Task Dispatch(TransportOperations operations, TransportTransaction transportTransaction, ContextBag context)
         {
-            var outgoingBatches = await batcher.ToBatches(operations).ConfigureAwait(false);
+            var outgoingBatches = batcher.ToBatches(operations);
 
             ReceiveContextInternal receiveContext;
             if (!TryGetReceiveContext(transportTransaction, out receiveContext)) // not in a receive context, so send out immediately
             {
-                await routeOutgoingBatches.RouteBatches(outgoingBatches, null, DispatchConsistency.Default).ConfigureAwait(false);
-                return;
+                return routeOutgoingBatches.RouteBatches(outgoingBatches, null, DispatchConsistency.Default);
             }
 
             var brokeredMessageReceiveContext = receiveContext as BrokeredMessageReceiveContextInternal;
 
             if (brokeredMessageReceiveContext != null) // apply brokered message specific dispatching rules
             {
-                await DispatchBatches(outgoingBatches, brokeredMessageReceiveContext).ConfigureAwait(false);
-                return;
+                return DispatchBatches(outgoingBatches, brokeredMessageReceiveContext);
             }
             // case when the receive context is different from brokered messaging (like eventhub)
 
-            await routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext, DispatchConsistency.Default).ConfigureAwait(false); // otherwise send out immediately
+            return routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext, DispatchConsistency.Default); // otherwise send out immediately
         }
 
         Task DispatchBatches(IList<BatchInternal> outgoingBatches, BrokeredMessageReceiveContextInternal receiveContext)

@@ -1,7 +1,6 @@
 namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 {
     using System.Linq;
-    using System.Threading.Tasks;
     using AzureServiceBus;
     using TestUtils;
     using Transport.AzureServiceBus;
@@ -27,13 +26,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         }
 
         [Test]
-        public async Task Should_set_a_single_topic_as_destination_for_events()
+        public void Should_set_a_single_topic_as_destination_for_events()
         {
             var container = new TransportPartsContainer();
 
             var topology = SetupForwardingTopology(container, "sales");
 
-            var destination = await topology.DeterminePublishDestination(typeof(SomeMessageType));
+            var destination = topology.DeterminePublishDestination(typeof(SomeMessageType));
 
             Assert.IsTrue(destination.Entities.Single().Type == EntityType.Topic);
             Assert.IsTrue(destination.Entities.Single().Path.StartsWith("bundle"));

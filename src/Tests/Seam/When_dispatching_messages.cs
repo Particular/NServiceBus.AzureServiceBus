@@ -92,7 +92,7 @@
 
         class FakeBatcher : IBatcherInternal
         {
-            public Task<List<BatchInternal>> ToBatches(TransportOperations operations)
+            public IList<BatchInternal> ToBatches(TransportOperations operations)
             {
                 // we don't care about incoming operations as we'll fake batcher and return pre-canned batches
 
@@ -169,11 +169,11 @@
                     }
                 };
 
-                return Task.FromResult(new List<BatchInternal>
+                return new List<BatchInternal>
                 {
                     batch1,
                     batch2
-                });
+                };
             }
         }
     }

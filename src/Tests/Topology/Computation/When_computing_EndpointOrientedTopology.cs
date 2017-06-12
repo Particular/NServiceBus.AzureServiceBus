@@ -2,7 +2,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 {
     using System;
     using System.Linq;
-    using System.Threading.Tasks;
     using AzureServiceBus;
     using Transport.AzureServiceBus;
     using Settings;
@@ -17,7 +16,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         static string Name = "name";
 
         [Test]
-        public async Task Determines_the_namespace_from_partitioning_strategy()
+        public void Determines_the_namespace_from_partitioning_strategy()
         {
             var container = new TransportPartsContainer();
 
@@ -29,7 +28,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var definition = await DetermineResourcesToCreate(settings, container);
+            var definition = DetermineResourcesToCreate(settings, container);
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring);
@@ -37,7 +36,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         }
 
         [Test]
-        public async Task Determines_there_should_be_a_queue_with_same_name_as_endpointname()
+        public void Determines_there_should_be_a_queue_with_same_name_as_endpointname()
         {
             var container = new TransportPartsContainer();
 
@@ -49,7 +48,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var definition = await DetermineResourcesToCreate(settings, container);
+            var definition = DetermineResourcesToCreate(settings, container);
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == Connectionstring));
         }
@@ -72,12 +71,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            Assert.ThrowsAsync<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings()), "Was expected to fail: " + reasonToFail);
+            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings()), "Was expected to fail: " + reasonToFail);
         }
 
 
         [Test]
-        public async Task Determines_there_should_be_a_topic_with_same_name_as_endpointname_followed_by_dot_events()
+        public void Determines_there_should_be_a_topic_with_same_name_as_endpointname_followed_by_dot_events()
         {
             var container = new TransportPartsContainer();
 
@@ -89,12 +88,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var definition = await DetermineResourcesToCreate(settings, container);
+            var definition = DetermineResourcesToCreate(settings, container);
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales.events" && ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring));
         }
 
-        static Task<TopologySectionInternal> DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)
+        static TopologySectionInternal DetermineResourcesToCreate(SettingsHolder settings, TransportPartsContainer container)
         {
             var topology = new EndpointOrientedTopologyInternal(container);
 
@@ -102,7 +101,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
 
-            return sectionManager.DetermineResourcesToCreate(new QueueBindings());
+            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
+            return definition;
         }
     }
 }

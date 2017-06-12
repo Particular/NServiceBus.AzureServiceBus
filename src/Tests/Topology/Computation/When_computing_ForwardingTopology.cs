@@ -2,7 +2,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 {
     using System;
     using System.Linq;
-    using System.Threading.Tasks;
     using AzureServiceBus;
     using Transport.AzureServiceBus;
     using Settings;
@@ -17,7 +16,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         const string Name = "name";
 
         [Test]
-        public async Task Determines_the_namespace_from_partitioning_strategy()
+        public void Determines_the_namespace_from_partitioning_strategy()
         {
             var container = new TransportPartsContainer();
 
@@ -33,7 +32,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            var definition = await sectionManager.DetermineResourcesToCreate(new QueueBindings());
+            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring);
@@ -41,7 +40,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         }
 
         [Test]
-        public async Task Determines_there_should_be_a_queue_with_same_name_as_endpointname()
+        public void Determines_there_should_be_a_queue_with_same_name_as_endpointname()
         {
             var container = new TransportPartsContainer();
 
@@ -57,7 +56,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            var definition = await sectionManager.DetermineResourcesToCreate(new QueueBindings());
+            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == Connectionstring));
         }
@@ -80,11 +79,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            Assert.ThrowsAsync<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings()), "Was expected to fail: " + reasonToFail);
+            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings()), "Was expected to fail: " + reasonToFail);
         }
 
         [Test]
-        public async Task Determines_there_should_be_a_topic_bundle_created()
+        public void Determines_there_should_be_a_topic_bundle_created()
         {
             var container = new TransportPartsContainer();
 
@@ -100,7 +99,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            var definition = await sectionManager.DetermineResourcesToCreate(new QueueBindings());
+            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring && ei.Path.StartsWith("bundle-"));
 
@@ -109,7 +108,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         }
 
         [Test]
-        public async Task Creates_subscription_for_topic_in_bundle()
+        public void Creates_subscription_for_topic_in_bundle()
         {
             var container = new TransportPartsContainer();
 
@@ -125,15 +124,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            await sectionManager.DetermineResourcesToCreate(new QueueBindings());
+            sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
-            var section = await sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
 
             Assert.That(section.Entities.Count(), Is.EqualTo(1));
         }
 
         [Test]
-        public async Task Creates_subscription_path_matching_the_subscribing_endpoint_name()
+        public void Creates_subscription_path_matching_the_subscribing_endpoint_name()
         {
             var container = new TransportPartsContainer();
 
@@ -149,15 +148,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            await sectionManager.DetermineResourcesToCreate(new QueueBindings());
+            sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
-            var section = await sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
 
             Assert.IsTrue(section.Entities.All(e => e.Path == "sales"), "Subscription name should be matching subscribing endpoint name, but it wasn't.");
         }
 
         [Test]
-        public async Task Should_creates_subscription_entities_marked_as_not_be_listened_to()
+        public void Should_creates_subscription_entities_marked_as_not_be_listened_to()
         {
             var container = new TransportPartsContainer();
 
@@ -172,9 +171,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
-            await sectionManager.DetermineResourcesToCreate(new QueueBindings());
+            sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
-            var section = await sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
 
             Assert.IsFalse(section.Entities.Any(x => x.ShouldBeListenedTo));
         }
