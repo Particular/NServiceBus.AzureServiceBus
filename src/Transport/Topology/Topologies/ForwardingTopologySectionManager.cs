@@ -4,6 +4,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using NServiceBus.AzureServiceBus.Topology.MetaModel;
     using Transport;
 
     class ForwardingTopologySectionManager : ITopologySectionManagerInternal
@@ -12,7 +13,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         readonly ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
         readonly ConcurrentDictionary<Type, TopologySectionInternal> publishDestinations = new ConcurrentDictionary<Type, TopologySectionInternal>();
         readonly List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
-        readonly Random randomGenerator = new Random();
+        Lazy<NamespaceBundleConfigurations> namespaceBundleConfigurations;
         string endpointName;
         INamespacePartitioningStrategy namespacePartitioningStrategy;
         AddressingLogic addressingLogic;
@@ -21,7 +22,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         int numberOfEntitiesInBundle;
         string bundlePrefix;
 
-        public ForwardingTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string endpointName, int numberOfEntitiesInBundle, string bundlePrefix, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic)
+        public ForwardingTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string endpointName, int numberOfEntitiesInBundle, string bundlePrefix, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic, NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal)
         {
             this.bundlePrefix = bundlePrefix;
             this.numberOfEntitiesInBundle = numberOfEntitiesInBundle;
@@ -30,6 +31,14 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.addressingLogic = addressingLogic;
             this.namespacePartitioningStrategy = namespacePartitioningStrategy;
             this.endpointName = endpointName;
+
+            namespaceBundleConfigurations = new Lazy<NamespaceBundleConfigurations>(() =>
+            {
+                // TODO: review this if having a single IO blocking operation that is cached is better than 
+                // propagating Task based interface through the chain of invocations
+                var bundleConfigurations = NumberOfTopicsInBundleCheck.Run(namespaceManagerLifeCycleManagerInternal, namespaceConfigurations, bundlePrefix).GetAwaiter().GetResult();
+                return bundleConfigurations;
+            });
         }
 
         public TopologySectionInternal DetermineReceiveResources(string inputQueue)
@@ -101,18 +110,16 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 return new TopologySectionInternal
                 {
-                    Entities = SelectSingleRandomTopicFromBundle(topics),
+                    Entities = SelectFirstTopicFromBundle(topics),
                     Namespaces = namespaces
                 };
             });
         }
 
-        IEnumerable<EntityInfoInternal> SelectSingleRandomTopicFromBundle(List<EntityInfoInternal> entityInfos)
+        IEnumerable<EntityInfoInternal> SelectFirstTopicFromBundle(List<EntityInfoInternal> entityInfos)
         {
-            var index = randomGenerator.Next(0, entityInfos.Count);
-            var selected = entityInfos[index];
-
-            return entityInfos.Where(i => i.Path == selected.Path);
+            const int index = 0;
+            yield return entityInfos[index];
         }
 
         public TopologySectionInternal DetermineSendDestination(string destination)
@@ -178,11 +185,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             return subscriptions[eventType];
         }
 
-        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
+        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType)
         {
-            TopologySectionInternal result;
-
-            if (!subscriptions.TryRemove(eventtype, out result))
+            if (!subscriptions.TryRemove(eventType, out var result))
             {
                 result = new TopologySectionInternal
                 {
@@ -256,14 +261,19 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         void BuildTopicBundles(RuntimeNamespaceInfo[] namespaces, AddressingLogic addressingLogic)
         {
-            for (var i = 1; i <= numberOfEntitiesInBundle; i++)
+            foreach (var @namespace in namespaces)
             {
-                topics.AddRange(namespaces.Select(n => new EntityInfoInternal
+                var numberOfTopicsFound = namespaceBundleConfigurations.Value.GetNumberOfTopicInBundle(@namespace.Alias);
+                var numberOfTopicsToCreate = Math.Max(numberOfEntitiesInBundle, numberOfTopicsFound);
+                for (var i = 1; i <= numberOfTopicsToCreate; i++)
                 {
-                    Path = addressingLogic.Apply(bundlePrefix + i, EntityType.Topic).Name,
-                    Type = EntityType.Topic,
-                    Namespace = n
-                }));
+                    topics.AddRange(namespaces.Select(n => new EntityInfoInternal
+                    {
+                        Path = addressingLogic.Apply(bundlePrefix + i, EntityType.Topic).Name,
+                        Type = EntityType.Topic,
+                        Namespace = @namespace
+                    }));
+                }
             }
         }
     }

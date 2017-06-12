@@ -32,7 +32,7 @@
                 EndpointSetup<DefaultServer>(config =>
                 {
                     var transport = config.UseTransport<AzureServiceBusTransport>();
-                    transport.UseForwardingTopology().NumberOfEntitiesInBundle(1);
+                    transport.UseForwardingTopology();
                 });
             }
         }
@@ -44,7 +44,7 @@
                 EndpointSetup<DefaultServer>(config =>
                 {
                     var transport = config.UseTransport<AzureServiceBusTransport>();
-                    transport.UseForwardingTopology().NumberOfEntitiesInBundle(1);
+                    transport.UseForwardingTopology();
                     transport.Routing().RouteToEndpoint(typeof(MyEvent), typeof(Publisher));
                 });
             }

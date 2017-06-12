@@ -103,13 +103,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
             var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring && ei.Path.StartsWith("bundle-"));
 
-            Assert.That(result.Count(), Is.EqualTo(2));
+            Assert.That(result.Count(), Is.EqualTo(1));
             Assert.That(result, Has.Exactly(1).Matches<EntityInfoInternal>(x => x.Path == "bundle-1"));
-            Assert.That(result, Has.Exactly(1).Matches<EntityInfoInternal>(x => x.Path == "bundle-2"));
         }
 
         [Test]
-        public void Creates_subscription_on_each_topic_in_bundle()
+        public void Creates_subscription_for_topic_in_bundle()
         {
             var container = new TransportPartsContainer();
 
@@ -129,8 +128,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
 
-            Assert.That(section.Entities.Count(), Is.EqualTo(2));
-            // TODO: need to verify that subscription is done on each topic
+            Assert.That(section.Entities.Count(), Is.EqualTo(1));
         }
 
         [Test]

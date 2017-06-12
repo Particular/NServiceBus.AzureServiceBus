@@ -47,7 +47,7 @@ namespace NServiceBus
         {
             this.settings = settings;
 
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle, 2);
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle, 1);
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix, "bundle-");
 
             queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
@@ -81,11 +81,12 @@ namespace NServiceBus
             var numberOfEntitiesInBundle = settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
             var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
 
-            topologySectionManager = new ForwardingTopologySectionManager(defaultName, namespaceConfigurations, settings.EndpointName(), numberOfEntitiesInBundle, bundlePrefix, partitioningStrategy, addressingLogic);
-            container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
-
             namespaceManagerCreator = new NamespaceManagerCreator(settings);
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+
+            topologySectionManager = new ForwardingTopologySectionManager(defaultName, namespaceConfigurations, settings.EndpointName(), numberOfEntitiesInBundle, bundlePrefix, partitioningStrategy, addressingLogic, namespaceManagerLifeCycleManagerInternal);
+            container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
+
             messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, settings);
             messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryAdapterCreator, settings);
 
@@ -135,6 +136,7 @@ namespace NServiceBus
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
+
             return Task.FromResult(StartupCheckResult.Success);
         }
 
