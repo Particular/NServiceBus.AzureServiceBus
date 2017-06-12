@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
 using TesingConventions = NServiceBus.AcceptanceTesting.Customization;
@@ -79,18 +78,6 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
         configuration.Recoverability().Immediate(retriesSettings => retriesSettings.NumberOfRetries(3));
 
         return Task.FromResult(0);
-    }
-
-    internal static string NameForEndpoint<T>() where T : class
-    {
-        var classAndEndpoint = typeof(T).FullName.Split('.').Last();
-        var testName = classAndEndpoint.Split('+').First();
-        testName = testName.Replace("When_", "");
-        var endpoint = classAndEndpoint.Split('+').Last();
-        testName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(testName);
-        testName = testName.Replace("_", "");
-
-        return testName + "." + endpoint;
     }
 
     public Task Cleanup()
