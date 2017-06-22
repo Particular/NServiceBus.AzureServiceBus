@@ -6,7 +6,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
     using DelayedDelivery;
-    using DeliveryConstraints;
     using Performance.TimeToBeReceived;
     using Settings;
     using Transport;
