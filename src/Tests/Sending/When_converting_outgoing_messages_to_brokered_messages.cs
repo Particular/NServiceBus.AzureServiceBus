@@ -11,6 +11,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using Settings;
     using Transport;
     using NUnit.Framework;
+    using Performance.TimeToBeReceived;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -177,7 +178,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var batchedOperation = new BatchedOperationInternal
             {
                 Message = new OutgoingMessage("SomeId", headers, new byte[0]),
-                DeliveryConstraints = new List<DeliveryConstraint>()
+                DeliveryConstraints = new List<DeliveryConstraint> { new DiscardIfNotReceivedBefore(ttl) }
             };
 
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptionsInternal());
