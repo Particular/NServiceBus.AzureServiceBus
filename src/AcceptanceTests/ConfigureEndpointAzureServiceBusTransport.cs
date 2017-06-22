@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
 using NServiceBus.AcceptanceTests.ApiExtension;
+using NServiceBus.AcceptanceTests.Basic;
 using NServiceBus.AcceptanceTests.BestPractices;
+using NServiceBus.AcceptanceTests.DelayedDelivery;
 using NServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AcceptanceTests.Routing.AutomaticSubscriptions;
 using NServiceBus.AcceptanceTests.Routing.NativePublishSubscribe;
@@ -12,11 +14,13 @@ using NServiceBus.AcceptanceTests.Sagas;
 using NServiceBus.AcceptanceTests.Versioning;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
+using NUnit.Framework;
 
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
 {
     public Task Configure(string endpointName, EndpointConfiguration config, RunSettings settings)
     {
+        PreventInconclusiveTestsFromRunning(endpointName);
         var connectionString = settings.Get<string>("Transport.ConnectionString");
         var topology = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology", EnvironmentVariableTarget.User);
         topology = topology ?? Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
@@ -103,6 +107,15 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
         testName = testName.Replace("_", "");
 
         return testName + "." + endpoint;
+    }
+	
+    void PreventInconclusiveTestsFromRunning(string endpointName)
+    {
+        if (endpointName == NameForEndpoint<When_deferring_to_non_local.Endpoint>()
+            || endpointName == NameForEndpoint<When_deferring_a_message.Endpoint>())
+        {
+            Assert.Inconclusive("Flaky test that relies on time and cannot be executed.");
+        }
     }
 
     public Task Cleanup()

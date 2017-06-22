@@ -339,8 +339,6 @@
     <Compile Include="Routing\When_using_single_namespace.cs" />
     <Compile Include="Sending\When_sending_more_than_100_messages_in_a_transaction.cs" />
     <Compile Include="Serialization\When_using_default_serialization.cs" />
-    <Compile Include="SetupAcceptanceTests.cs" />
-    <Compile Include="TestSuiteConstraints.cs" />
     <Compile Include="TransportEncoding\When_receiving_a_message_with_unknown_transport_encoding.cs" />
     <Compile Include="TransportEncoding\When_sending_to_an_endpoint_with_different_transport_encoding.cs" />
   </ItemGroup>
