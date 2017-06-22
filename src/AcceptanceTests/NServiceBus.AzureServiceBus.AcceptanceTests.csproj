@@ -4,7 +4,6 @@
     <TargetFramework>net452</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugSymbols>True</DebugSymbols>
-    <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>PCR0001</NoWarn>
     <SignAssembly>true</SignAssembly>
