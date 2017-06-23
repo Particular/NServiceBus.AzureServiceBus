@@ -11,6 +11,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using Settings;
     using Transport;
     using NUnit.Framework;
+    using Performance.TimeToBeReceived;
 
 #pragma warning disable 618
     [TestFixture]
@@ -178,7 +179,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var batchedOperation = new BatchedOperation
             {
                 Message = new OutgoingMessage("SomeId", headers, new byte[0]),
-                DeliveryConstraints = new List<DeliveryConstraint>()
+                DeliveryConstraints = new List<DeliveryConstraint> { new DiscardIfNotReceivedBefore(ttl) }
             };
 
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptions());

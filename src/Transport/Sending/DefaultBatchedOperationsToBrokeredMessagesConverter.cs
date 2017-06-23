@@ -6,6 +6,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using Microsoft.ServiceBus.Messaging;
     using DelayedDelivery;
+    using Performance.TimeToBeReceived;
     using Settings;
     using Transport;
 
@@ -30,8 +31,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             brokeredMessage.MessageId = Guid.NewGuid().ToString();
 
             ApplyDeliveryConstraints(brokeredMessage, outgoingOperation);
-
-            ApplyTimeToLive(outgoingMessage, brokeredMessage);
 
             ApplyCorrelationId(outgoingMessage, brokeredMessage);
 
@@ -113,22 +112,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        void ApplyTimeToLive(OutgoingMessage outgoingMessage, BrokeredMessage brokeredMessage)
-        {
-            TimeSpan? timeToLive = null;
-            if (outgoingMessage.Headers.ContainsKey(Headers.TimeToBeReceived))
-            {
-                TimeSpan ttl;
-                TimeSpan.TryParse(outgoingMessage.Headers[Headers.TimeToBeReceived], out ttl);
-                timeToLive = ttl;
-            }
-
-            if (timeToLive.HasValue && timeToLive.Value > TimeSpan.Zero)
-            {
-                brokeredMessage.TimeToLive = timeToLive.Value;
-            }
-        }
-
         void ApplyDeliveryConstraints(BrokeredMessage brokeredMessage, BatchedOperation operation)
         {
             DateTime? scheduledEnqueueTime = null;
@@ -155,6 +138,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             if (scheduledEnqueueTime.HasValue)
             {
                 brokeredMessage.ScheduledEnqueueTimeUtc = scheduledEnqueueTime.Value;
+            }
+
+            var timeToBeReceivedConstraint = operation.DeliveryConstraints.FirstOrDefault(d => d is DiscardIfNotReceivedBefore) as DiscardIfNotReceivedBefore;
+            if (timeToBeReceivedConstraint != null)
+            {
+                brokeredMessage.TimeToLive = timeToBeReceivedConstraint.MaxTime;
             }
         }
 
