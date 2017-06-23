@@ -154,9 +154,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 //- It is raised when the underlying connection closes because of our close operation
                 var messagingException = exceptionReceivedEventArgs.Exception as MessagingException;
+                var timeoutException = exceptionReceivedEventArgs.Exception as TimeoutException;
                 if (messagingException != null && messagingException.IsTransient)
                 {
                     logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
+                }
+                else if (timeoutException != null)
+                {
+                    logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', timeout exception with message: {1}", exceptionReceivedEventArgs.Action, timeoutException.Message);
                 }
                 else
                 {
