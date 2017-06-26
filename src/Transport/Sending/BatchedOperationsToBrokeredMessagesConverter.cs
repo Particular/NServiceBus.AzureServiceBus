@@ -116,7 +116,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             DateTime? scheduledEnqueueTime = null;
 
-            var deliveryConstraint = operation.DeliveryConstraints.FirstOrDefault(d => d is DelayedDeliveryConstraint);
+            var deliveryConstraint = operation.DeliveryConstraints.OfType<DelayedDeliveryConstraint>().FirstOrDefault();
 
             if (deliveryConstraint != null)
             {
@@ -140,7 +140,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 brokeredMessage.ScheduledEnqueueTimeUtc = scheduledEnqueueTime.Value;
             }
 
-            var timeToBeReceivedConstraint = operation.DeliveryConstraints.FirstOrDefault(d => d is DiscardIfNotReceivedBefore) as DiscardIfNotReceivedBefore;
+            var timeToBeReceivedConstraint = operation.DeliveryConstraints.OfType<DiscardIfNotReceivedBefore>().FirstOrDefault();
             if (timeToBeReceivedConstraint != null)
             {
                 brokeredMessage.TimeToLive = timeToBeReceivedConstraint.MaxTime;
