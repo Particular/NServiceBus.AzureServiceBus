@@ -13,7 +13,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using NServiceBus.AzureServiceBus.Utils;
     using Settings;
 
-    partial class MessageReceiverNotifier : INotifyIncomingMessages
+    class MessageReceiverNotifier : INotifyIncomingMessages
     {
         public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
@@ -186,7 +186,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var invocations = (ConcurrentDictionary<Task, Task>) state;
                 Task toBeRemoved;
                 invocations.TryRemove(t, out toBeRemoved);
-            }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously);
+            }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously).Ignore();
             return processTask;
         }
 

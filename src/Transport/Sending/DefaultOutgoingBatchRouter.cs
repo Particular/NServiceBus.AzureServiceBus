@@ -187,7 +187,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             foreach (var message in messagesToSend)
             {
-                if (GuardMessageSize(message))
+                if (await GuardMessageSizeAsync(message).ConfigureAwait(false))
                 {
                     return;
                 }
@@ -220,13 +220,13 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        bool GuardMessageSize(BrokeredMessage brokeredMessage)
+        async Task<bool> GuardMessageSizeAsync(BrokeredMessage brokeredMessage)
         {
             var estimatedSize = brokeredMessage.EstimatedSize();
             if (estimatedSize > maximuMessageSizeInKilobytes * 1024)
             {
                 logger.Debug($"Detected an outgoing message that exceeds the maximum message size allowed by Azure ServiceBus. Estimated message size is {estimatedSize} bytes.");
-                oversizedMessageHandler.Handle(brokeredMessage);
+                await oversizedMessageHandler.Handle(brokeredMessage).ConfigureAwait(false);
                 return true;
             }
 
