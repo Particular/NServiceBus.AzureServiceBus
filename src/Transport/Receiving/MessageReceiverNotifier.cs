@@ -10,9 +10,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Logging;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
+    using NServiceBus.AzureServiceBus.Utils;
     using Settings;
 
-    class MessageReceiverNotifier : INotifyIncomingMessages
+    partial class MessageReceiverNotifier : INotifyIncomingMessages
     {
         public MessageReceiverNotifier(IManageMessageReceiverLifeCycle clientEntities, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
@@ -152,11 +153,9 @@ namespace NServiceBus.Transport.AzureServiceBus
                     return;
                 }
 
-                //- It is raised when the underlying connection closes because of our close operation
-                var messagingException = exceptionReceivedEventArgs.Exception as MessagingException;
-                if (messagingException != null && messagingException.IsTransient)
+                if (exceptionReceivedEventArgs.Exception.IsTransientException(exceptionReceivedEventArgs.Action))
                 {
-                    logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, messagingException.Detail.Message);
+                    logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, exceptionReceivedEventArgs.Exception.Message);
                 }
                 else
                 {

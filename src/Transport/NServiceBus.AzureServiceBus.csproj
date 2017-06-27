@@ -114,6 +114,7 @@
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
     <Compile Include="obsoletes.cs" />
     <Compile Include="Receiving\BrokeredMessageReceiveContext.cs" />
+    <Compile Include="Receiving\ExceptionReceivedAction.cs" />
     <Compile Include="Receiving\MultiProducerConcurrentCompletion.cs" />
     <Compile Include="Receiving\TransactionScopeSuppressBehavior.cs" />
     <Compile Include="Receiving\TransactionScopeSuppressFeature.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Topology\MetaModel\NamespacePurpose.cs" />
     <Compile Include="Utils\AsyncLazy.cs" />
     <Compile Include="Topology\NumberOfTopicsInBundleCheck.cs" />
+    <Compile Include="Utils\ExceptionExtensions.cs" />
     <Compile Include="Utils\MessageReceiverExtensions.cs" />
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Topology\TypesScanner\AssemblyTypesScanner.cs" />
