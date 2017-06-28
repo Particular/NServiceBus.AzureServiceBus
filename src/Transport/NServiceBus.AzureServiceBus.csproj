@@ -114,7 +114,6 @@
     <Compile Include="Creation\AzureServiceBusSubscriptionCreatorV6.cs" />
     <Compile Include="obsoletes.cs" />
     <Compile Include="Receiving\BrokeredMessageReceiveContext.cs" />
-    <Compile Include="Receiving\ExceptionReceivedAction.cs" />
     <Compile Include="Receiving\MultiProducerConcurrentCompletion.cs" />
     <Compile Include="Receiving\TransactionScopeSuppressBehavior.cs" />
     <Compile Include="Receiving\TransactionScopeSuppressFeature.cs" />

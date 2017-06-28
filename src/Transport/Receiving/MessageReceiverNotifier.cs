@@ -153,7 +153,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     return;
                 }
 
-                if (exceptionReceivedEventArgs.Exception.IsTransientException(exceptionReceivedEventArgs.Action))
+                if (exceptionReceivedEventArgs.Exception.IsTransientException())
                 {
                     logger.DebugFormat("OptionsOnExceptionReceived invoked, action: '{0}', transient exception with message: {1}", exceptionReceivedEventArgs.Action, exceptionReceivedEventArgs.Exception.Message);
                 }
