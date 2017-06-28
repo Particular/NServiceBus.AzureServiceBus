@@ -181,12 +181,15 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var processTask = ProcessMessage(internalReceiver, message, slotNumber);
             pipelineInvocations.TryAdd(processTask, processTask);
+
             processTask.ContinueWith((t, state) =>
             {
                 var invocations = (ConcurrentDictionary<Task, Task>) state;
                 Task toBeRemoved;
                 invocations.TryRemove(t, out toBeRemoved);
-            }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously).Ignore();
+            }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously)
+            .Ignore();
+
             return processTask;
         }
 
