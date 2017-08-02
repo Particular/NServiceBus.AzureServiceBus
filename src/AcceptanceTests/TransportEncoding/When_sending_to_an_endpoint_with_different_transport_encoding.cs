@@ -1,6 +1,5 @@
 ﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.TransportEncoding
 {
-    using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
@@ -17,11 +16,7 @@
             var context = await Scenario.Define<Context>()
                     .WithEndpoint<EndpointA>(b => b.When((bus, ctx) =>
                     {
-                        ctx.OriginalMessageIdIdentifier = "MyMessageId" + Guid.NewGuid().ToString("N");
-                        var sendOptions = new SendOptions();
-                        sendOptions.SetMessageId(ctx.OriginalMessageIdIdentifier);
-
-                        return bus.Send(new MyMessage { Identifier = ctx.OriginalMessageIdIdentifier }, sendOptions);
+                        return bus.Send(new MyMessage());
                     }))
                     .WithEndpoint<EndpointB>()
                     .Done(c => c.EndpointBReceivedMessage && c.EndpointAReceivedReply)
@@ -35,7 +30,6 @@
         {
             public bool EndpointBReceivedMessage { get; set; }
             public bool EndpointAReceivedReply { get; set; }
-            public string OriginalMessageIdIdentifier { get; set; }
         }
 
         public class EndpointA : EndpointConfigurationBuilder
@@ -55,13 +49,8 @@
 
                 public Task Handle(MyReply message, IMessageHandlerContext context)
                 {
-                    if (TestContext.OriginalMessageIdIdentifier != message.Identifier)
-                    {
-                        return Task.FromResult(0);
-                    }
-
                     TestContext.EndpointAReceivedReply = true;
-                    return context.Reply(new MyReply { Identifier = message.Identifier });
+                    return context.Reply(new MyReply());
                 }
             }
         }
@@ -82,24 +71,18 @@
 
                 public Task Handle(MyMessage message, IMessageHandlerContext context)
                 {
-                    if (TestContext.OriginalMessageIdIdentifier != message.Identifier)
-                    {
-                        return Task.FromResult(0);
-                    }
-
                     TestContext.EndpointBReceivedMessage = true;
-                    return context.Reply(new MyReply { Identifier = message.Identifier });
+                    return context.Reply(new MyReply());
                 }
             }
         }
 
         public class MyMessage : IMessage
         {
-            public string Identifier { get; set; }
         }
+
         public class MyReply : IMessage
         {
-            public string Identifier { get; set; }
         }
     }
 }
