@@ -35,28 +35,24 @@ namespace NServiceBus.Transport.AzureServiceBus
             var transportEncodingWasSpecified = brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding);
             var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : GetDefaultTransportEncoding();
 
-            byte[] body;
-            switch (transportEncodingToUse)
+            var body = EmptyBody;
+
+            var bodyStream = brokeredMessage.GetBody<Stream>();
+            if (bodyStream != null)
             {
-                case "wcf/byte-array":
-                    try
-                    {
-                        body = brokeredMessage.GetBody<byte[]>() ?? EmptyBody;
-                    }
-                    catch (Exception e)
-                    {
-                        var errorMessage = transportEncodingWasSpecified ? $"Unsupported brokered message body type `${transportEncodingToUse}` configured" : "No brokered message body type was found. Attempt to process message body as byte array has failed.";
-                        throw new UnsupportedBrokeredMessageBodyTypeException(errorMessage, e);
-                    }
-                    break;
-                case "application/octect-stream":
-                    var bodyStream = brokeredMessage.GetBody<Stream>();
+                try
+                {
                     body = new byte[bodyStream.Length];
                     // TODO : This could be async
                     bodyStream.Read(body, 0, (int)bodyStream.Length);
-                    break;
-                default:
-                    throw new UnsupportedBrokeredMessageBodyTypeException("Unsupported brokered message body type configured");
+                }
+                catch (Exception e)
+                {
+                    var error = transportEncodingWasSpecified
+                        ? $"Supported brokered message body type `${transportEncodingToUse}` was found, but couldn't read message body. See internal exception for details."
+                        : "No brokered message body type was found. Attempt to process message body has failed.";
+                    throw new UnsupportedBrokeredMessageBodyTypeException(error, e);
+                }
             }
 
             var replyToHeaderValue = headers.ContainsKey(Headers.ReplyToAddress) ?
