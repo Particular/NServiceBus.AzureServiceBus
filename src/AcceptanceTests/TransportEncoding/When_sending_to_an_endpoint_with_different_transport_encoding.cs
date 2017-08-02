@@ -1,5 +1,6 @@
 ﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.TransportEncoding
 {
+    using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
@@ -14,44 +15,60 @@
         public async Task Should_receive_the_message()
         {
             var context = await Scenario.Define<Context>()
-                    .WithEndpoint<Sender>(b => b.When((bus, ctx) =>
+                    .WithEndpoint<EndpointA>(b => b.When((bus, ctx) =>
                     {
-                        ctx.OriginalMessageId = "MyMessageId";
+                        ctx.OriginalMessageIdIdentifier = "MyMessageId" + Guid.NewGuid().ToString("N");
                         var sendOptions = new SendOptions();
-                        sendOptions.SetMessageId(ctx.OriginalMessageId);
+                        sendOptions.SetMessageId(ctx.OriginalMessageIdIdentifier);
 
-                        return bus.Send(new MyMessage { Id = ctx.OriginalMessageId }, sendOptions);
+                        return bus.Send(new MyMessage { Identifier = ctx.OriginalMessageIdIdentifier }, sendOptions);
                     }))
-                    .WithEndpoint<Receiver>()
-                    .Done(c => c.WasCalled)
+                    .WithEndpoint<EndpointB>()
+                    .Done(c => c.EndpointBReceivedMessage && c.EndpointAReceivedReply)
                     .Run();
 
-            Assert.True(context.WasCalled, "The message handler should be called");
-            Assert.AreEqual(context.OriginalMessageId, context.ReceivedMessageId, "The message handler should be called");
+            Assert.True(context.EndpointBReceivedMessage, "The message should have been handled, but it wasn't.");
+            Assert.True(context.EndpointAReceivedReply, "Reply message should have been received, but it wasn't.");
         }
 
         public class Context : ScenarioContext
         {
-            public bool WasCalled { get; set; }
-            public string OriginalMessageId { get; set; }
-            public string ReceivedMessageId { get; set; }
+            public bool EndpointBReceivedMessage { get; set; }
+            public bool EndpointAReceivedReply { get; set; }
+            public string OriginalMessageIdIdentifier { get; set; }
         }
 
-        public class Sender : EndpointConfigurationBuilder
+        public class EndpointA : EndpointConfigurationBuilder
         {
-            public Sender()
+            public EndpointA()
             {
                 EndpointSetup<DefaultServer>(endpointConfiguration =>
                 {
                     endpointConfiguration.UseTransport<AzureServiceBusTransport>().BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream);
-                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyMessage), typeof(Receiver));
+                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyMessage), typeof(EndpointB));
                 });
+            }
+
+            public class MyReplyHandler : IHandleMessages<MyReply>
+            {
+                public Context TestContext { get; set; }
+
+                public Task Handle(MyReply message, IMessageHandlerContext context)
+                {
+                    if (TestContext.OriginalMessageIdIdentifier != message.Identifier)
+                    {
+                        return Task.FromResult(0);
+                    }
+
+                    TestContext.EndpointAReceivedReply = true;
+                    return context.Reply(new MyReply { Identifier = message.Identifier });
+                }
             }
         }
 
-        public class Receiver : EndpointConfigurationBuilder
+        public class EndpointB : EndpointConfigurationBuilder
         {
-            public Receiver()
+            public EndpointB()
             {
                 EndpointSetup<DefaultServer>(busConfiguration =>
                 {
@@ -65,17 +82,24 @@
 
                 public Task Handle(MyMessage message, IMessageHandlerContext context)
                 {
-                    TestContext.ReceivedMessageId = message.Id;
-                    TestContext.WasCalled = true;
+                    if (TestContext.OriginalMessageIdIdentifier != message.Identifier)
+                    {
+                        return Task.FromResult(0);
+                    }
 
-                    return Task.FromResult(0);
+                    TestContext.EndpointBReceivedMessage = true;
+                    return context.Reply(new MyReply { Identifier = message.Identifier });
                 }
             }
         }
 
         public class MyMessage : IMessage
         {
-            public string Id { get; set; }
+            public string Identifier { get; set; }
+        }
+        public class MyReply : IMessage
+        {
+            public string Identifier { get; set; }
         }
     }
 }
