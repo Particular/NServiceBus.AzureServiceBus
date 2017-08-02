@@ -4,6 +4,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Text;
     using Microsoft.ServiceBus.Messaging;
     using Logging;
     using Settings;
@@ -25,7 +26,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (!brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding))
             {
-                logger.Debug($"Incoming BrokeredMessage with id=`{brokeredMessage.MessageId}` had no `{BrokeredMessageHeaders.TransportEncoding}` header.");
+                logger.Debug($"Incoming BrokeredMessage with id='{brokeredMessage.MessageId}' had no '{BrokeredMessageHeaders.TransportEncoding}' header.");
             }
 
             var headers = brokeredMessage.Properties
@@ -35,28 +36,33 @@ namespace NServiceBus.Transport.AzureServiceBus
             var transportEncodingWasSpecified = brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding);
             var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : GetDefaultTransportEncoding();
 
-            byte[] body;
-            switch (transportEncodingToUse)
+            var body = EmptyBody;
+            var bodyStream = brokeredMessage.GetBody<Stream>();
+
+            if (bodyStream != null)
             {
-                case "wcf/byte-array":
-                    try
+                try
+                {
+                    var temp = new byte[3];
+                    bodyStream.Read(temp, 0, temp.Length);
+                    var startsWithByteOrderMark = StartsWithByteOrderMark(temp);
+                    var size = startsWithByteOrderMark ? bodyStream.Length - 3 : bodyStream.Length;
+                    if (!startsWithByteOrderMark)
                     {
-                        body = brokeredMessage.GetBody<byte[]>() ?? EmptyBody;
+                        bodyStream.Seek(0, SeekOrigin.Begin);
                     }
-                    catch (Exception e)
-                    {
-                        var errorMessage = transportEncodingWasSpecified ? $"Unsupported brokered message body type `${transportEncodingToUse}` configured" : "No brokered message body type was found. Attempt to process message body as byte array has failed.";
-                        throw new UnsupportedBrokeredMessageBodyTypeException(errorMessage, e);
-                    }
-                    break;
-                case "application/octect-stream":
-                    var bodyStream = brokeredMessage.GetBody<Stream>();
-                    body = new byte[bodyStream.Length];
+
+                    body = new byte[size];
                     // TODO : This could be async
-                    bodyStream.Read(body, 0, (int)bodyStream.Length);
-                    break;
-                default:
-                    throw new UnsupportedBrokeredMessageBodyTypeException("Unsupported brokered message body type configured");
+                    bodyStream.Read(body, 0, (int)size);
+                }
+                catch (Exception e)
+                {
+                    var error = transportEncodingWasSpecified
+                        ? $"Supported brokered message body type '{transportEncodingToUse}' was found, but couldn't read message body. See internal exception for details."
+                        : "No brokered message body type was found. Attempt to process message body has failed.";
+                    throw new UnsupportedBrokeredMessageBodyTypeException(error, e);
+                }
             }
 
             var replyToHeaderValue = headers.ContainsKey(Headers.ReplyToAddress) ?
@@ -78,6 +84,17 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             return new IncomingMessageDetails(brokeredMessage.MessageId, headers, body);
+        }
+
+        static bool StartsWithByteOrderMark(byte[] bytes)
+        {
+            var bom = Encoding.UTF8.GetPreamble();
+            if (bytes.Length < 3)
+                return false;
+
+            return bytes[0] == bom[0]
+                   && bytes[1] == bom[1]
+                   && bytes[2] == bom[2];
         }
 
         string GetDefaultTransportEncoding()
