@@ -3,13 +3,11 @@
     using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
-    using Transport.AzureServiceBus;
     using Settings;
+    using Transport.AzureServiceBus;
 
     public class FailOverNamespacePartitioning : INamespacePartitioningStrategy
     {
-        NamespaceConfigurations namespaces;
-
         internal FailOverNamespacePartitioning(ReadOnlySettings settings)
         {
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
@@ -39,5 +37,7 @@
             yield return new RuntimeNamespaceInfo(primary.Alias, primary.Connection, primary.Purpose, Mode == FailOverMode.Primary ? NamespaceMode.Active : NamespaceMode.Passive);
             yield return new RuntimeNamespaceInfo(secondary.Alias, secondary.Connection, secondary.Purpose, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive);
         }
+
+        NamespaceConfigurations namespaces;
     }
 }

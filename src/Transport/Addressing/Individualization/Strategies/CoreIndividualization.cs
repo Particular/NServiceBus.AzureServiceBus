@@ -2,7 +2,6 @@ namespace NServiceBus
 {
     using Transport.AzureServiceBus;
 
-    
     public class CoreIndividualization : IIndividualizationStrategy
     {
         internal CoreIndividualization()

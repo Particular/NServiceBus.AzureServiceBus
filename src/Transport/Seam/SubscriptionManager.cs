@@ -3,14 +3,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System;
     using System.Threading.Tasks;
     using Extensibility;
-    using Transport;
 
     class SubscriptionManager : IManageSubscriptions
     {
-        ITopologySectionManagerInternal topologySectionManager; // responsible for providing the metadata about the subscription (what in case of EH?)
-        IOperateTopologyInternal topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
-        TopologyCreator topologyCreator;
-
         public SubscriptionManager(ITopologySectionManagerInternal topologySectionManager, IOperateTopologyInternal topologyOperator, TopologyCreator topologyCreator)
         {
             this.topologySectionManager = topologySectionManager;
@@ -31,5 +26,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             await topologyOperator.Stop(section.Entities).ConfigureAwait(false);
             await topologyCreator.TearDown(section).ConfigureAwait(false);
         }
+
+        ITopologySectionManagerInternal topologySectionManager; // responsible for providing the metadata about the subscription (what in case of EH?)
+        IOperateTopologyInternal topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
+        TopologyCreator topologyCreator;
     }
 }

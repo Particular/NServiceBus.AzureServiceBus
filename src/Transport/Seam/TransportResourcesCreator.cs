@@ -1,14 +1,9 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
     using System.Threading.Tasks;
-    using Transport;
 
     class TransportResourcesCreator : ICreateQueues
     {
-        ITopologySectionManagerInternal sections;
-        TopologyCreator topologyCreator;
-        bool resourcesCreated;
-
         public TransportResourcesCreator(TopologyCreator topologyCreator, ITopologySectionManagerInternal sections)
         {
             this.topologyCreator = topologyCreator;
@@ -29,5 +24,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             resourcesCreated = true;
         }
+
+        ITopologySectionManagerInternal sections;
+        TopologyCreator topologyCreator;
+        bool resourcesCreated;
     }
 }

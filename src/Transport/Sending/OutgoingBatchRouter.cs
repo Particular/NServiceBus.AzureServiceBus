@@ -5,23 +5,12 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using System.Threading.Tasks;
     using System.Transactions;
-    using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using Microsoft.ServiceBus.Messaging;
     using Settings;
-    using Transport;
 
     class OutgoingBatchRouter : IRouteOutgoingBatchesInternal
     {
-        ILog logger = LogManager.GetLogger<OutgoingBatchRouter>();
-        BatchedOperationsToBrokeredMessagesConverter outgoingMessageConverter;
-        MessageSenderLifeCycleManager sendersLifeCycleManager;
-        ReadOnlySettings settings;
-        IHandleOversizedBrokeredMessages oversizedMessageHandler;
-
-        int maxRetryAttemptsOnThrottle;
-        TimeSpan backOffTimeOnThrottle;
-        int maximuMessageSizeInKilobytes;
-
         public OutgoingBatchRouter(BatchedOperationsToBrokeredMessagesConverter outgoingMessageConverter, MessageSenderLifeCycleManager sendersLifeCycleManager, ReadOnlySettings settings, IHandleOversizedBrokeredMessages oversizedMessageHandler)
         {
             this.outgoingMessageConverter = outgoingMessageConverter;
@@ -69,7 +58,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 var ns = entity.Namespace;
                 // only use via if the destination and via namespace are the same
-                var via = routingOptions.SendVia && ns.ConnectionString ==  routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
+                var via = routingOptions.SendVia && ns.ConnectionString == routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
                 var suppressTransaction = via == null;
                 var messageSender = sendersLifeCycleManager.Get(entity.Path, via, ns.Alias);
 
@@ -117,7 +106,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return null;
         }
 
-        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSenderInternal messageSender, IList<IMessageSenderInternal> fallbacks, IList<BrokeredMessage> messagesToSend,bool suppressTransaction)
+        async Task RouteOutBatchesWithFallbackAndLogExceptionsAsync(IMessageSenderInternal messageSender, IList<IMessageSenderInternal> fallbacks, IList<BrokeredMessage> messagesToSend, bool suppressTransaction)
         {
             try
             {
@@ -137,7 +126,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             catch (Exception exception)
             {
-
                 // ASB team promissed to fix the issue with MessagingEntityNotFoundException (missing entity path) - verify that
                 var message = "Failed to dispatch a batch with the following message IDs: " + string.Join(", ", messagesToSend.Select(x => x.MessageId));
                 logger.Error(message, exception);
@@ -175,7 +163,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     }
                 }
 
-                if(!fallBackSucceeded) throw;
+                if (!fallBackSucceeded) throw;
             }
         }
 
@@ -203,7 +191,10 @@ namespace NServiceBus.Transport.AzureServiceBus
                         await messageSender.RetryOnThrottleAsync(s => s.SendBatch(currentChunk), s => s.SendBatch(currentChunk.Select(x => x.Clone())), backOffTimeOnThrottle, maxRetryAttemptsOnThrottle).ConfigureAwait(false);
                     }
 
-                    chunk = new List<BrokeredMessage> { message };
+                    chunk = new List<BrokeredMessage>
+                    {
+                        message
+                    };
                     batchSize = messageSize;
                 }
                 else
@@ -232,6 +223,16 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             return false;
         }
+
+        ILog logger = LogManager.GetLogger<OutgoingBatchRouter>();
+        BatchedOperationsToBrokeredMessagesConverter outgoingMessageConverter;
+        MessageSenderLifeCycleManager sendersLifeCycleManager;
+        ReadOnlySettings settings;
+        IHandleOversizedBrokeredMessages oversizedMessageHandler;
+
+        int maxRetryAttemptsOnThrottle;
+        TimeSpan backOffTimeOnThrottle;
+        int maximuMessageSizeInKilobytes;
 
         static ILog Logger = LogManager.GetLogger<OutgoingBatchRouter>();
     }

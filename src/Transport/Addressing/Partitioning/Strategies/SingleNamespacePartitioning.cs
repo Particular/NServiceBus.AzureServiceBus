@@ -8,8 +8,6 @@ namespace NServiceBus
 
     public class SingleNamespacePartitioning : INamespacePartitioningStrategy
     {
-        NamespaceConfigurations namespaces;
-
         internal SingleNamespacePartitioning(ReadOnlySettings settings)
         {
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
@@ -30,5 +28,7 @@ namespace NServiceBus
             var @namespace = namespaces.First();
             yield return new RuntimeNamespaceInfo(@namespace.Alias, @namespace.Connection, @namespace.Purpose, NamespaceMode.Active);
         }
+
+        NamespaceConfigurations namespaces;
     }
 }

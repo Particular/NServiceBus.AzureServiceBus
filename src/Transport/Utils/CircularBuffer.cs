@@ -5,16 +5,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Generic;
     using System.Threading;
 
-    class CircularBuffer<T> : ICollection<T>, ICollection where T: class
+    class CircularBuffer<T> : ICollection<T>, ICollection where T : class
     {
-        int capacity;
-        int size;
-        int head;
-        int tail;
-        T[] buffer;
-        object syncRoot;
-        object bufferLock = new object();
-
         public CircularBuffer(int capacity, bool allowOverflow = false)
         {
             if (capacity < 0)
@@ -23,18 +15,14 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             this.capacity = capacity;
-            size = 0;
+            Size = 0;
             head = 0;
             tail = 0;
             buffer = new T[capacity];
             AllowOverflow = allowOverflow;
         }
 
-        bool AllowOverflow
-        {
-            get;
-            set;
-        }
+        bool AllowOverflow { get; set; }
 
         public int Capacity
         {
@@ -44,11 +32,11 @@ namespace NServiceBus.Transport.AzureServiceBus
                 if (value == capacity)
                     return;
 
-                if (value < size)
+                if (value < Size)
                     throw new ArgumentOutOfRangeException("value", "Cannot reduce capacity below current size");
 
                 var dst = new T[value];
-                if (size > 0)
+                if (Size > 0)
                     CopyTo(dst);
                 buffer = dst;
 
@@ -56,16 +44,34 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public int Size
+        public int Size { get; set; }
+
+        int ICollection.Count => Size;
+
+        bool ICollection.IsSynchronized => false;
+
+        object ICollection.SyncRoot
         {
-            get { return size; }
+            get
+            {
+                if (syncRoot == null)
+                {
+                    Interlocked.CompareExchange(ref syncRoot, new object(), null);
+                }
+                return syncRoot;
+            }
+        }
+
+        void ICollection.CopyTo(Array array, int arrayIndex)
+        {
+            CopyTo((T[])array, arrayIndex);
         }
 
         public bool Contains(T item)
         {
             var bufferIndex = head;
             var comparer = EqualityComparer<T>.Default;
-            for (var i = 0; i < size; i++, bufferIndex++)
+            for (var i = 0; i < Size; i++, bufferIndex++)
             {
                 if (bufferIndex == capacity)
                     bufferIndex = 0;
@@ -82,9 +88,44 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public void Clear()
         {
-            size = 0;
+            Size = 0;
             head = 0;
             tail = 0;
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            CopyTo(0, array, arrayIndex, Size);
+        }
+
+        int ICollection<T>.Count => Size;
+
+        bool ICollection<T>.IsReadOnly => false;
+
+        void ICollection<T>.Add(T item)
+        {
+            Put(item);
+        }
+
+        bool ICollection<T>.Remove(T item)
+        {
+            if (Size == 0)
+            {
+                return false;
+            }
+
+            Get();
+            return true;
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public int Put(T[] src)
@@ -94,7 +135,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public int Put(T[] src, int offset, int count)
         {
-            if (!AllowOverflow &&  count > capacity - size)
+            if (!AllowOverflow && count > capacity - Size)
                 throw new InvalidOperationException("Overflow is not allowed");
 
             var srcIndex = offset;
@@ -104,13 +145,13 @@ namespace NServiceBus.Transport.AzureServiceBus
                     tail = 0;
                 buffer[tail] = src[srcIndex];
             }
-            size = Math.Min(size + count, capacity);
+            Size = Math.Min(Size + count, capacity);
             return count;
         }
 
         public void Put(T item)
         {
-            if (!AllowOverflow && size == capacity)
+            if (!AllowOverflow && Size == capacity)
                 throw new InvalidOperationException("Overflow is not allowed");
 
             lock (bufferLock)
@@ -118,7 +159,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 buffer[tail] = item;
                 if (++tail == capacity)
                     tail = 0;
-                size++;
+                Size++;
             }
         }
 
@@ -145,10 +186,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public int Get(T[] dst, int offset, int count)
         {
-            if (size == 0)
+            if (Size == 0)
                 throw new InvalidOperationException("Buffer is empty");
 
-            var realCount = Math.Min(count, size);
+            var realCount = Math.Min(count, Size);
             var dstIndex = offset;
             for (var i = 0; i < realCount; i++, head++, dstIndex++)
             {
@@ -161,7 +202,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public T Get()
         {
-            if (size == 0)
+            if (Size == 0)
             {
                 throw new InvalidOperationException("Buffer is empty");
             }
@@ -181,14 +222,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             CopyTo(array, 0);
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            CopyTo(0, array, arrayIndex, size);
-        }
-
         void CopyTo(int index, T[] array, int arrayIndex, int count)
         {
-            if (count > size)
+            if (count > Size)
                 throw new ArgumentOutOfRangeException("count", "Message read count is larger than size");
 
             var bufferIndex = head;
@@ -203,7 +239,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         IEnumerator<T> GetEnumerator()
         {
             var bufferIndex = head;
-            for (var i = 0; i < size; i++, bufferIndex++)
+            for (var i = 0; i < Size; i++, bufferIndex++)
             {
                 if (bufferIndex == capacity)
                     bufferIndex = 0;
@@ -219,61 +255,16 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public T[] ToArray()
         {
-            var dst = new T[size];
+            var dst = new T[Size];
             CopyTo(dst);
             return dst;
         }
 
-        int ICollection<T>.Count => Size;
-
-        bool ICollection<T>.IsReadOnly => false;
-
-        void ICollection<T>.Add(T item)
-        {
-            Put(item);
-        }
-
-        bool ICollection<T>.Remove(T item)
-        {
-            if (size == 0)
-            {
-                return false;
-            }
-
-            Get();
-            return true;
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        int ICollection.Count => Size;
-
-        bool ICollection.IsSynchronized => false;
-
-        object ICollection.SyncRoot
-        {
-            get
-            {
-                if (syncRoot == null)
-                {
-                    Interlocked.CompareExchange(ref syncRoot, new object(), null);
-                }
-                return syncRoot;
-            }
-        }
-
-        void ICollection.CopyTo(Array array, int arrayIndex)
-        {
-            CopyTo((T[])array, arrayIndex);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
+        int capacity;
+        int head;
+        int tail;
+        T[] buffer;
+        object syncRoot;
+        object bufferLock = new object();
     }
 }

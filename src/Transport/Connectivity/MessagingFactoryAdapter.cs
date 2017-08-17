@@ -6,8 +6,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessagingFactoryAdapter : IMessagingFactoryInternal
     {
-        MessagingFactory factory;
-
         public MessagingFactoryAdapter(MessagingFactory factory)
         {
             this.factory = factory;
@@ -40,5 +38,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             return factory.CloseAsync();
         }
+
+        MessagingFactory factory;
     }
 }

@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Transport;
 
     /// <summary>
     /// Operational aspects of running on top of the topology

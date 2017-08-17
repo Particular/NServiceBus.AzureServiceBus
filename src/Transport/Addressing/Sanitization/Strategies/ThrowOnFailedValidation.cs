@@ -7,19 +7,6 @@ namespace NServiceBus
 
     public class ThrowOnFailedValidation : ISanitizationStrategy
     {
-        ReadOnlySettings settings;
-
-        // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
-        static Regex queueAndTopicNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$", RegexOptions.Compiled);
-
-        // Except for subscriptions and rules, these cannot contain slashes (/)
-        static Regex subscriptionAndRuleNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$", RegexOptions.Compiled);
-
-        Func<string, ValidationResult> defaultQueuePathValidation;
-        Func<string, ValidationResult> defaultTopicPathValidation;
-        Func<string, ValidationResult> defaultSubscriptionNameValidation;
-        Func<string, ValidationResult> defaultRuleNameValidation;
-
         internal ThrowOnFailedValidation(ReadOnlySettings settings)
         {
             this.settings = settings;
@@ -80,9 +67,7 @@ namespace NServiceBus
                     validationResult.AddErrorForInvalidLenth($"Rule name `{ruleName}` exceeds maximum length of {maximumLength} characters.");
 
                 return validationResult;
-
             };
-            
         }
 
         public string Sanitize(string entityPathOrName, EntityType entityType)
@@ -135,7 +120,6 @@ namespace NServiceBus
 
         static void ThrowException(string entityPathOrName, EntityType entityType, string error)
         {
-
             var pathOrName = "path";
 
             if (entityType == EntityType.Rule || entityType == EntityType.Subscription)
@@ -146,5 +130,18 @@ namespace NServiceBus
             throw new Exception($"Invalid {entityType} entity {pathOrName} `{entityPathOrName}` that cannot be used with Azure Service Bus. {error}"
                                 + Environment.NewLine + "Use `Sanitization().UseStrategy<ISanitizationStrategy>()` configuration API to register a custom sanitization strategy if required.");
         }
+
+        ReadOnlySettings settings;
+
+        Func<string, ValidationResult> defaultQueuePathValidation;
+        Func<string, ValidationResult> defaultTopicPathValidation;
+        Func<string, ValidationResult> defaultSubscriptionNameValidation;
+        Func<string, ValidationResult> defaultRuleNameValidation;
+
+        // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
+        static Regex queueAndTopicNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$", RegexOptions.Compiled);
+
+        // Except for subscriptions and rules, these cannot contain slashes (/)
+        static Regex subscriptionAndRuleNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$", RegexOptions.Compiled);
     }
 }

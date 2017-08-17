@@ -6,8 +6,6 @@ namespace NServiceBus
 
     public class DiscriminatorBasedIndividualization : IIndividualizationStrategy
     {
-        ReadOnlySettings settings;
-
         internal DiscriminatorBasedIndividualization(ReadOnlySettings settings)
         {
             this.settings = settings;
@@ -32,5 +30,7 @@ namespace NServiceBus
 
             return endpointName + discriminator;
         }
+
+        ReadOnlySettings settings;
     }
 }

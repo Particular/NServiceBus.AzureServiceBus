@@ -4,6 +4,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class EntityInfoInternal
     {
+        public EntityInfoInternal()
+        {
+            RelationShips = new List<EntityRelationShipInfoInternal>();
+        }
+
         public string Path { get; set; }
 
         public EntityType Type { get; set; }
@@ -13,11 +18,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         public IList<EntityRelationShipInfoInternal> RelationShips { get; private set; }
 
         public bool ShouldBeListenedTo { get; set; } = true;
-
-        public EntityInfoInternal()
-        {
-            RelationShips = new List<EntityRelationShipInfoInternal>();
-        }
 
         protected bool Equals(EntityInfoInternal other)
         {
@@ -38,7 +38,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 return false;
             }
-            return Equals((EntityInfoInternal) obj);
+            return Equals((EntityInfoInternal)obj);
         }
 
         public override int GetHashCode()
@@ -46,8 +46,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             unchecked
             {
                 var hashCode = Path?.GetHashCode() ?? 0;
-                hashCode = (hashCode*397) ^ (int) Type;
-                hashCode = (hashCode*397) ^ (Namespace?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (int)Type;
+                hashCode = (hashCode * 397) ^ (Namespace?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }

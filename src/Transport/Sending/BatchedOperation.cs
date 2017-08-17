@@ -4,12 +4,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Linq;
     using System.Text;
     using DeliveryConstraints;
-    using Transport;
 
     class BatchedOperationInternal
     {
-        int messageSizePaddingPercentage;
-
         public BatchedOperationInternal(int messageSizePaddingPercentage = 0)
         {
             this.messageSizePaddingPercentage = messageSizePaddingPercentage;
@@ -41,7 +38,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                                          4 + // State
                                          8 + // TimeToLive +
                                          stringHeaderValueAssumedSizeInBytes + // To +
-                                         stringHeaderValueAssumedSizeInBytes;  // ViaPartitionKey;
+                                         stringHeaderValueAssumedSizeInBytes; // ViaPartitionKey;
 
             var headers = Message.Headers.Sum(property => GetStringSizeInBytes(property.Key) + GetStringSizeInBytes(property.Value));
             var bodySize = Message.Body.Length;
@@ -53,5 +50,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         }
 
         static int GetStringSizeInBytes(string value) => value != null ? Encoding.UTF8.GetByteCount(value) : 0;
+        int messageSizePaddingPercentage;
     }
 }

@@ -8,9 +8,6 @@
 
     class PublishersConfiguration
     {
-        Conventions conventions;
-        Dictionary<Type, List<string>> publishers;
-
         public PublishersConfiguration(Conventions conventions, ReadOnlySettings settings)
         {
             this.conventions = conventions;
@@ -28,7 +25,10 @@
         {
             var types = type
                 .GetParentTypes()
-                .Union(new[] { type })
+                .Union(new[]
+                {
+                    type
+                })
                 .Where(t => conventions.IsMessageType(t))
                 .ToArray();
 
@@ -73,5 +73,8 @@
                 publisherNames.Add(publisherName);
             }
         }
+
+        Conventions conventions;
+        Dictionary<Type, List<string>> publishers;
     }
 }

@@ -2,15 +2,12 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using Microsoft.ServiceBus.Messaging;
     using Settings;
 
     class AzureServiceBusSubscriptionCreatorV6 : ICreateAzureServiceBusSubscriptionsInternal
     {
-        AzureServiceBusSubscriptionCreator creator;
-        ILog logger = LogManager.GetLogger<AzureServiceBusSubscriptionCreatorV6>();
-
         public AzureServiceBusSubscriptionCreatorV6(TopologySubscriptionSettings subscriptionSettings, ReadOnlySettings settings)
         {
             creator = new AzureServiceBusSubscriptionCreator(subscriptionSettings, settings);
@@ -56,5 +53,8 @@
 
             return false;
         }
+
+        AzureServiceBusSubscriptionCreator creator;
+        ILog logger = LogManager.GetLogger<AzureServiceBusSubscriptionCreatorV6>();
     }
 }

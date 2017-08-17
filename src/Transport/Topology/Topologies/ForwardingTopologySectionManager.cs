@@ -5,23 +5,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
-    using Transport;
 
     class ForwardingTopologySectionManager : ITopologySectionManagerInternal
     {
-        readonly ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
-        readonly ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
-        readonly ConcurrentDictionary<Type, TopologySectionInternal> publishDestinations = new ConcurrentDictionary<Type, TopologySectionInternal>();
-        readonly List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
-        Lazy<NamespaceBundleConfigurations> namespaceBundleConfigurations;
-        string endpointName;
-        INamespacePartitioningStrategy namespacePartitioningStrategy;
-        AddressingLogic addressingLogic;
-        string defaultNameSpaceAlias;
-        NamespaceConfigurations namespaceConfigurations;
-        int numberOfEntitiesInBundle;
-        string bundlePrefix;
-
         public ForwardingTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string endpointName, int numberOfEntitiesInBundle, string bundlePrefix, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic, NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal)
         {
             this.bundlePrefix = bundlePrefix;
@@ -46,7 +32,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Receiving).ToArray();
 
             var inputQueuePath = addressingLogic.Apply(inputQueue, EntityType.Queue).Name;
-            var entities = namespaces.Select(n => new EntityInfoInternal { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
+            var entities = namespaces.Select(n => new EntityInfoInternal
+            {
+                Path = inputQueuePath,
+                Type = EntityType.Queue,
+                Namespace = n
+            }).ToList();
 
             return new TopologySectionInternal
             {
@@ -116,12 +107,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             });
         }
 
-        IEnumerable<EntityInfoInternal> SelectFirstTopicFromBundle(List<EntityInfoInternal> entityInfos)
-        {
-            const int index = 0;
-            yield return entityInfos[index];
-        }
-
         public TopologySectionInternal DetermineSendDestination(string destination)
         {
             return sendDestinations.GetOrAdd(destination, d =>
@@ -172,7 +157,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                     Entities = inputQueues
                 };
             });
-
         }
 
         public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
@@ -197,6 +181,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             return result;
+        }
+
+        IEnumerable<EntityInfoInternal> SelectFirstTopicFromBundle(List<EntityInfoInternal> entityInfos)
+        {
+            const int index = 0;
+            yield return entityInfos[index];
         }
 
         TopologySectionInternal BuildSubscriptionHierarchy(Type eventType)
@@ -276,5 +266,18 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
             }
         }
+
+        readonly ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
+        readonly ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
+        readonly ConcurrentDictionary<Type, TopologySectionInternal> publishDestinations = new ConcurrentDictionary<Type, TopologySectionInternal>();
+        readonly List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
+        Lazy<NamespaceBundleConfigurations> namespaceBundleConfigurations;
+        string endpointName;
+        INamespacePartitioningStrategy namespacePartitioningStrategy;
+        AddressingLogic addressingLogic;
+        string defaultNameSpaceAlias;
+        NamespaceConfigurations namespaceConfigurations;
+        int numberOfEntitiesInBundle;
+        string bundlePrefix;
     }
 }

@@ -33,7 +33,7 @@
                 queues[i] = new ConcurrentQueue<TItem>();
             }
 
-            var maxNumberOfCurrentOperationsPossible = numberOfSlots*maxConcurrency;
+            var maxNumberOfCurrentOperationsPossible = numberOfSlots * maxConcurrency;
 
             for (var i = 0; i < maxNumberOfCurrentOperationsPossible; i++)
             {
@@ -155,7 +155,7 @@
                      * completion phase the Task.Delay will be cancelled anyway, Task.WhenAny will return and then the batchSizeReached
                      * task completion source is successfully completed.
                     */
-                    batchSizeReached.TrySetResult(true); 
+                    batchSizeReached.TrySetResult(true);
                     batchSizeReached = new TaskCompletionSource<bool>();
                     await PushInBatches().ConfigureAwait(false);
                 }
@@ -182,7 +182,7 @@
 
             return Task.WhenAll(pushTasks).ContinueWith((t, s) =>
             {
-                var tasks = (List<Task>) s;
+                var tasks = (List<Task>)s;
                 tasks.Clear();
             }, pushTasks, TaskContinuationOptions.ExecuteSynchronously);
         }
@@ -221,7 +221,7 @@
                 concurrency++;
                 var task = pump(items, currentSlotNumber, state, tokenSource.Token).ContinueWith((t, taskState) =>
                 {
-                    var itemListAndListBuffer = (Tuple<List<TItem>, ConcurrentQueue<List<TItem>>>) taskState;
+                    var itemListAndListBuffer = (Tuple<List<TItem>, ConcurrentQueue<List<TItem>>>)taskState;
                     itemListAndListBuffer.Item1.Clear();
                     itemListAndListBuffer.Item2.Enqueue(itemListAndListBuffer.Item1);
                 }, Tuple.Create(items, itemListBuffer), TaskContinuationOptions.ExecuteSynchronously);

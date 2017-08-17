@@ -7,8 +7,6 @@ namespace NServiceBus
 
     public class AzureServiceBusSanitizationExtensionPoint<T> : ExposeSettings where T : ISanitizationStrategy
     {
-        SettingsHolder settings;
-
         internal AzureServiceBusSanitizationExtensionPoint(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
@@ -47,7 +45,6 @@ namespace NServiceBus
             Guard.AgainstNull(nameof(queuePathSanitizer), queuePathSanitizer);
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathSanitizer, queuePathSanitizer);
             return this;
-
         }
 
         public AzureServiceBusSanitizationExtensionPoint<T> TopicPathSanitization(Func<string, string> topicPathSanitizer)
@@ -77,5 +74,7 @@ namespace NServiceBus
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Hash, hash);
             return this;
         }
+
+        SettingsHolder settings;
     }
 }

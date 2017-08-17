@@ -6,10 +6,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class NamespaceManagerCreator : ICreateNamespaceManagersInternal
     {
-        ReadOnlySettings settings;
-        Func<string, NamespaceManagerSettings> settingsFactory;
-        Func<string, TokenProvider> tokenProviderFactory;
-
         public NamespaceManagerCreator(ReadOnlySettings settings)
         {
             this.settings = settings;
@@ -40,7 +36,8 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var builder = new ServiceBusConnectionStringBuilder(connectionString);
                 manager = new NamespaceManager(builder.GetAbsoluteRuntimeEndpoints(), s);
             }
-            else {
+            else
+            {
                 if (tokenProviderFactory != null)
                 {
                     var s = new NamespaceManagerSettings
@@ -62,5 +59,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             return new NamespaceManagerAdapterInternal(manager);
         }
+
+        ReadOnlySettings settings;
+        Func<string, NamespaceManagerSettings> settingsFactory;
+        Func<string, TokenProvider> tokenProviderFactory;
     }
 }

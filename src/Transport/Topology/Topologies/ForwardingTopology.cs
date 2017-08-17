@@ -10,31 +10,13 @@ namespace NServiceBus
 
     class ForwardingTopologyInternal : ITopologyInternal
     {
-        ILog logger = LogManager.GetLogger("ForwardingTopology");
-        ITopologySectionManagerInternal topologySectionManager;
-        AzureServiceBusQueueCreator queueCreator;
-        AzureServiceBusTopicCreator topicCreator;
-        NamespaceManagerCreator namespaceManagerCreator;
-        NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
-        MessagingFactoryCreator messagingFactoryAdapterCreator;
-        MessagingFactoryLifeCycleManager messagingFactoryLifeCycleManager;
-        MessageReceiverCreator receiverCreator;
-        MessageReceiverLifeCycleManager messageReceiverLifeCycleManager;
-        MessageSenderCreator senderCreator;
-        MessageSenderLifeCycleManager senderLifeCycleManager;
-        AzureServiceBusForwardingSubscriptionCreator subscriptionsCreator;
-        IOperateTopologyInternal topologyOperator;
-        TopologyCreator topologyCreator;
-        SettingsHolder settings;
-        OutgoingBatchRouter outgoingBatchRouter;
-        Batcher batcher;
-        IIndividualizationStrategy individualization;
+        public ITopologySectionManagerInternal TopologySectionManager { get; set; }
+
+        public IOperateTopologyInternal Operator { get; set; }
 
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
         public TopologySettings Settings { get; } = new TopologySettings();
-        public ITopologySectionManagerInternal TopologySectionManager => topologySectionManager;
-        public IOperateTopologyInternal Operator => topologyOperator;
 
         public void Initialize(SettingsHolder settings)
         {
@@ -49,13 +31,13 @@ namespace NServiceBus
             var defaultName = this.settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
             var namespaceConfigurations = this.settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
 
-            var partitioningStrategyType = (Type) this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
+            var partitioningStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
             var partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(this.settings);
 
-            var compositionStrategyType = (Type) this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
+            var compositionStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
             var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(this.settings);
 
-            var sanitizationStrategyType = (Type) this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
+            var sanitizationStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
             var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(this.settings);
 
             var individualizationStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
@@ -69,7 +51,7 @@ namespace NServiceBus
             namespaceManagerCreator = new NamespaceManagerCreator(this.settings);
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
 
-            topologySectionManager = new ForwardingTopologySectionManager(defaultName, namespaceConfigurations, this.settings.EndpointName(), numberOfEntitiesInBundle, bundlePrefix, partitioningStrategy, addressingLogic, namespaceManagerLifeCycleManagerInternal);
+            TopologySectionManager = new ForwardingTopologySectionManager(defaultName, namespaceConfigurations, this.settings.EndpointName(), numberOfEntitiesInBundle, bundlePrefix, partitioningStrategy, addressingLogic, namespaceManagerLifeCycleManagerInternal);
 
             messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, this.settings);
             messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryAdapterCreator, this.settings);
@@ -82,12 +64,12 @@ namespace NServiceBus
 
             topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal, this.settings);
 
-            var oversizedMessageHandler = (IHandleOversizedBrokeredMessages) this.settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
+            var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)this.settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
 
             outgoingBatchRouter = new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(this.settings), senderLifeCycleManager, this.settings, oversizedMessageHandler);
-            batcher = new Batcher(topologySectionManager, this.settings);
+            batcher = new Batcher(TopologySectionManager, this.settings);
 
-            topologyOperator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(this.settings, new DefaultConnectionStringToNamespaceAliasMapper(this.settings)), this.settings);
+            Operator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(this.settings, new DefaultConnectionStringToNamespaceAliasMapper(this.settings)), this.settings);
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
@@ -97,12 +79,12 @@ namespace NServiceBus
 
         public Func<ICreateQueues> GetQueueCreatorFactory()
         {
-            return () => new TransportResourcesCreator(topologyCreator, topologySectionManager);
+            return () => new TransportResourcesCreator(topologyCreator, TopologySectionManager);
         }
 
         public Func<IPushMessages> GetMessagePumpFactory()
         {
-            return () => new MessagePump(topologyOperator, messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), topologySectionManager, settings);
+            return () => new MessagePump(Operator, messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), TopologySectionManager, settings);
         }
 
         public Func<IDispatchMessages> GetDispatcherFactory()
@@ -112,12 +94,11 @@ namespace NServiceBus
 
         public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
         {
-            return () => new SubscriptionManager(topologySectionManager, topologyOperator, topologyCreator);
+            return () => new SubscriptionManager(TopologySectionManager, Operator, topologyCreator);
         }
 
         public Task<StartupCheckResult> RunPreStartupChecks()
         {
-
             return Task.FromResult(StartupCheckResult.Success);
         }
 
@@ -131,5 +112,23 @@ namespace NServiceBus
             logger.Info("Closing messaging factories");
             return messagingFactoryLifeCycleManager.CloseAll();
         }
+
+        ILog logger = LogManager.GetLogger("ForwardingTopology");
+        AzureServiceBusQueueCreator queueCreator;
+        AzureServiceBusTopicCreator topicCreator;
+        NamespaceManagerCreator namespaceManagerCreator;
+        NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
+        MessagingFactoryCreator messagingFactoryAdapterCreator;
+        MessagingFactoryLifeCycleManager messagingFactoryLifeCycleManager;
+        MessageReceiverCreator receiverCreator;
+        MessageReceiverLifeCycleManager messageReceiverLifeCycleManager;
+        MessageSenderCreator senderCreator;
+        MessageSenderLifeCycleManager senderLifeCycleManager;
+        AzureServiceBusForwardingSubscriptionCreator subscriptionsCreator;
+        TopologyCreator topologyCreator;
+        SettingsHolder settings;
+        OutgoingBatchRouter outgoingBatchRouter;
+        Batcher batcher;
+        IIndividualizationStrategy individualization;
     }
 }

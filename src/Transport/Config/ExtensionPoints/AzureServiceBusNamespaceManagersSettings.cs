@@ -8,15 +8,13 @@
 
     public class AzureServiceBusNamespaceManagersSettings : ExposeSettings
     {
-        SettingsHolder settings;
-
         internal AzureServiceBusNamespaceManagersSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }
 
         /// <summary>
-        /// Customize <see cref="NamespaceManager"/> creation.
+        /// Customize <see cref="NamespaceManager" /> creation.
         /// </summary>
         public AzureServiceBusNamespaceManagersSettings NamespaceManagerSettingsFactory(Func<string, NamespaceManagerSettings> factory)
         {
@@ -45,6 +43,7 @@
 
             return this;
         }
-        
+
+        SettingsHolder settings;
     }
 }

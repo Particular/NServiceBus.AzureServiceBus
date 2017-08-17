@@ -13,7 +13,9 @@ namespace NServiceBus.Transport.AzureServiceBus
         public bool EnableDeadLetteringOnMessageExpiration { get; set; } = false;
         public TimeSpan LockDuration { get; set; } = TimeSpan.FromSeconds(30);
         public int MaxDeliveryCount { get; set; } = 10;
+
         public string ForwardDeadLetteredMessagesTo { get; set; } = null;
+
         // TODO: no longer relevant since factory is replace with Customizer
         public Func<string, bool> ForwardDeadLetteredMessagesToCondition { get; set; } = name => true;
     }

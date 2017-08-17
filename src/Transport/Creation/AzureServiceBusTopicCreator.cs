@@ -3,16 +3,12 @@
     using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
 
     class AzureServiceBusTopicCreator
     {
-        TopologyTopicSettings topicSettings;
-        ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
-        ILog logger = LogManager.GetLogger<AzureServiceBusTopicCreator>();
-
         public AzureServiceBusTopicCreator(TopologyTopicSettings topicSettings)
         {
             this.topicSettings = topicSettings;
@@ -138,5 +134,9 @@
             newDescription.RequiresDuplicateDetection = existingDescription.RequiresDuplicateDetection;
             newDescription.EnablePartitioning = existingDescription.EnablePartitioning;
         }
+
+        TopologyTopicSettings topicSettings;
+        ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
+        ILog logger = LogManager.GetLogger<AzureServiceBusTopicCreator>();
     }
 }

@@ -5,10 +5,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessageReceiverLifeCycleManager
     {
-        ICreateMessageReceiversInternal receiveFactory;
-        int numberOfReceiversPerEntity;
-        ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>> MessageReceivers = new ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>>();
-
         public MessageReceiverLifeCycleManager(ICreateMessageReceiversInternal receiveFactory, ReadOnlySettings settings)
         {
             this.receiveFactory = receiveFactory;
@@ -20,7 +16,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var buffer = MessageReceivers.GetOrAdd(entityPath + namespaceAlias, s =>
             {
                 var b = new CircularBuffer<EntityClientEntry>(numberOfReceiversPerEntity);
-                for(var i = 0; i < numberOfReceiversPerEntity; i++)
+                for (var i = 0; i < numberOfReceiversPerEntity; i++)
                 {
                     var e = new EntityClientEntry();
                     e.ClientEntity = receiveFactory.Create(entityPath, namespaceAlias).GetAwaiter().GetResult();
@@ -43,8 +39,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             return entry.ClientEntity;
-
         }
+
+        ICreateMessageReceiversInternal receiveFactory;
+        int numberOfReceiversPerEntity;
+        ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>> MessageReceivers = new ConcurrentDictionary<string, CircularBuffer<EntityClientEntry>>();
 
         class EntityClientEntry
         {

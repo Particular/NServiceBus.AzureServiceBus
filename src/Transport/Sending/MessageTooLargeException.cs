@@ -6,12 +6,20 @@ namespace NServiceBus.Transport.AzureServiceBus
     [Serializable]
     public class MessageTooLargeException : Exception
     {
-        public MessageTooLargeException(){}
+        public MessageTooLargeException()
+        {
+        }
 
-        public MessageTooLargeException(string message) : base(message){}
+        public MessageTooLargeException(string message) : base(message)
+        {
+        }
 
-        public MessageTooLargeException(string message, Exception inner) : base(message, inner){}
+        public MessageTooLargeException(string message, Exception inner) : base(message, inner)
+        {
+        }
 
-        protected MessageTooLargeException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected MessageTooLargeException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
     }
 }

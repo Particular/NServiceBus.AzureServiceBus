@@ -5,7 +5,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Threading.Tasks;
     using Extensibility;
     using Microsoft.ServiceBus.Messaging;
-    using Transport;
 
     class Dispatcher : IDispatchMessages
     {
@@ -64,13 +63,10 @@ namespace NServiceBus.Transport.AzureServiceBus
                 return;
 
             await routeOutgoingBatches.RouteBatches(toBeDispatchedOnComplete, context, consistency).ConfigureAwait(false);
-
-
         }
 
         static bool TryGetReceiveContext(TransportTransaction transportTransaction, out ReceiveContextInternal receiveContext)
         {
-
             if (transportTransaction == null)
             {
                 receiveContext = null;

@@ -1,23 +1,21 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using Configuration.AdvanceExtensibility;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using Configuration.AdvanceExtensibility;
     using Settings;
     using Transport.AzureServiceBus;
 
     public class AzureServiceBusMessagingFactoriesSettings : ExposeSettings
     {
-        SettingsHolder settings;
-
         internal AzureServiceBusMessagingFactoriesSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
         }
 
         /// <summary>
-        /// Customize <see cref="MessagingFactory"/> creation.
+        /// Customize <see cref="MessagingFactory" /> creation.
         /// </summary>
         public AzureServiceBusMessagingFactoriesSettings MessagingFactorySettingsFactory(Func<string, MessagingFactorySettings> factory)
         {
@@ -58,5 +56,7 @@
 
             return this;
         }
+
+        SettingsHolder settings;
     }
 }

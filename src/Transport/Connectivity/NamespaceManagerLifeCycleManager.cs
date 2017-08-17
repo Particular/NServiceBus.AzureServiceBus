@@ -4,9 +4,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class NamespaceManagerLifeCycleManagerInternal : IManageNamespaceManagerLifeCycleInternal
     {
-        ICreateNamespaceManagersInternal factory;
-        ConcurrentDictionary<string, INamespaceManagerInternal> namespaceManagers = new ConcurrentDictionary<string, INamespaceManagerInternal>();
-
         public NamespaceManagerLifeCycleManagerInternal(ICreateNamespaceManagersInternal factory)
         {
             this.factory = factory;
@@ -17,5 +14,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return namespaceManagers.GetOrAdd(namespaceAlias, s => factory.Create(s));
         }
 
+        ICreateNamespaceManagersInternal factory;
+        ConcurrentDictionary<string, INamespaceManagerInternal> namespaceManagers = new ConcurrentDictionary<string, INamespaceManagerInternal>();
     }
 }

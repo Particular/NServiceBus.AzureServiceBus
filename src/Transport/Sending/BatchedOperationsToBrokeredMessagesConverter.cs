@@ -4,16 +4,13 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Microsoft.ServiceBus.Messaging;
     using DelayedDelivery;
+    using Microsoft.ServiceBus.Messaging;
     using Performance.TimeToBeReceived;
     using Settings;
-    using Transport;
 
     class BatchedOperationsToBrokeredMessagesConverter
     {
-        ReadOnlySettings settings;
-
         public BatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings)
         {
             this.settings = settings;
@@ -185,5 +182,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             return brokeredMessage;
         }
+
+        ReadOnlySettings settings;
     }
 }

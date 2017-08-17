@@ -4,14 +4,14 @@
 
     class NamespaceBundleInfo : IEquatable<NamespaceBundleInfo>
     {
-        public string Alias { get; }
-        public int NumberOfTopicsInBundle { get; }
-
         public NamespaceBundleInfo(string alias, int numberOfTopicsInBundle)
         {
             Alias = alias;
             NumberOfTopicsInBundle = numberOfTopicsInBundle;
         }
+
+        public string Alias { get; }
+        public int NumberOfTopicsInBundle { get; }
 
         public bool Equals(NamespaceBundleInfo other)
         {

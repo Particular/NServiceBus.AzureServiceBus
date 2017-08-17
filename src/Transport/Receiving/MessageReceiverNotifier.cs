@@ -48,8 +48,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             completionCanBeBatched = !wrapInScope;
             autoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout);
             numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
-            var concurrency = maximumConcurrency/(double) numberOfClients;
-            maxConcurrentCalls = concurrency > 1 ? (int) Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
+            var concurrency = maximumConcurrency / (double)numberOfClients;
+            maxConcurrentCalls = concurrency > 1 ? (int)Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
             if (Math.Abs(maxConcurrentCalls - concurrency) > 0)
             {
                 logger.InfoFormat("The maximum concurrency on message receiver instance for '{0}' has been adjusted to '{1}', because the total maximum concurrency '{2}' wasn't divisable by the number of clients '{3}'", fullPath, maxConcurrentCalls, maximumConcurrency, numberOfClients);
@@ -172,7 +172,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         static Task CompletionCallback(List<Guid> lockTokens, int slotNumber, object state, CancellationToken token)
         {
-            var receivers = (IMessageReceiverInternal[]) state;
+            var receivers = (IMessageReceiverInternal[])state;
             var receiver = receivers[slotNumber];
             return receiver.SafeCompleteBatchAsync(lockTokens);
         }
@@ -183,7 +183,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             pipelineInvocations.TryAdd(processTask, processTask);
             processTask.ContinueWith((t, state) =>
             {
-                var invocations = (ConcurrentDictionary<Task, Task>) state;
+                var invocations = (ConcurrentDictionary<Task, Task>)state;
                 invocations.TryRemove(t, out Task _);
             }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously).Ignore();
             return processTask;
@@ -213,10 +213,12 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var context = new BrokeredMessageReceiveContextInternal(message, entity, internalReceiver.Mode);
                 try
                 {
-                    var scope = wrapInScope ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
-                    {
-                        IsolationLevel = IsolationLevel.Serializable
-                    }, TransactionScopeAsyncFlowOption.Enabled) : null;
+                    var scope = wrapInScope
+                        ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
+                        {
+                            IsolationLevel = IsolationLevel.Serializable
+                        }, TransactionScopeAsyncFlowOption.Enabled)
+                        : null;
                     {
                         using (scope)
                         {
@@ -317,7 +319,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 return wasAbandoned;
             }
-           
         }
 
         static Task EmptyErrorCallback(Exception exception)

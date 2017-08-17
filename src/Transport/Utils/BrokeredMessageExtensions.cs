@@ -1,10 +1,10 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
-    using Logging;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using System.Transactions;
+    using Logging;
     using Microsoft.ServiceBus.Messaging;
 
     static class BrokeredMessageExtensions
@@ -45,7 +45,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return false;
         }
 
-        public static async Task<bool> SafeAbandonAsync(this BrokeredMessage msg, IDictionary<string, object> propertiesToModify=null)
+        public static async Task<bool> SafeAbandonAsync(this BrokeredMessage msg, IDictionary<string, object> propertiesToModify = null)
         {
             try
             {

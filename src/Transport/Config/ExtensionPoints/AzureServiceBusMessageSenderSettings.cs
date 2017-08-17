@@ -1,15 +1,13 @@
 namespace NServiceBus
 {
     using System;
-    using Microsoft.ServiceBus;
     using Configuration.AdvanceExtensibility;
+    using Microsoft.ServiceBus;
     using Settings;
     using Transport.AzureServiceBus;
 
     public class AzureServiceBusMessageSenderSettings : ExposeSettings
     {
-        SettingsHolder settings;
-
         internal AzureServiceBusMessageSenderSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
@@ -75,7 +73,7 @@ namespace NServiceBus
 
         /// <summary>
         /// Behavior for oversized messages.
-        /// <remarks>Default is throw an exception using <see cref="ThrowOnOversizedBrokeredMessages"/>.</remarks>
+        /// <remarks>Default is throw an exception using <see cref="ThrowOnOversizedBrokeredMessages" />.</remarks>
         /// </summary>
         public AzureServiceBusMessageSenderSettings OversizedBrokeredMessageHandler(IHandleOversizedBrokeredMessages instance)
         {
@@ -83,5 +81,7 @@ namespace NServiceBus
 
             return this;
         }
+
+        SettingsHolder settings;
     }
 }

@@ -10,31 +10,13 @@ namespace NServiceBus
 
     class EndpointOrientedTopologyInternal : ITopologyInternal
     {
-        ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
-        ITopologySectionManagerInternal topologySectionManager;
-        IOperateTopologyInternal topologyOperator;
-        AzureServiceBusQueueCreator queueCreator;
-        AzureServiceBusTopicCreator topicCreator;
-        NamespaceManagerCreator namespaceManagerCreator;
-        NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
-        MessagingFactoryCreator messagingFactoryAdapterCreator;
-        MessagingFactoryLifeCycleManager messagingFactoryLifeCycleManager;
-        MessageReceiverCreator receiverCreator;
-        MessageReceiverLifeCycleManager messageReceiverLifeCycleManager;
-        MessageSenderCreator senderCreator;
-        MessageSenderLifeCycleManager senderLifeCycleManager;
-        AzureServiceBusSubscriptionCreatorV6 subscriptionsCreator;
-        TopologyCreator topologyCreator;
-        SettingsHolder settings;
-        OutgoingBatchRouter outgoingBatchRouter;
-        Batcher batcher;
-        IIndividualizationStrategy individualization;
+        public ITopologySectionManagerInternal TopologySectionManager { get; set; }
+
+        public IOperateTopologyInternal Operator { get; set; }
 
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
         public TopologySettings Settings { get; } = new TopologySettings();
-        public ITopologySectionManagerInternal TopologySectionManager => topologySectionManager;
-        public IOperateTopologyInternal Operator => topologyOperator;
 
         public void Initialize(SettingsHolder settings)
         {
@@ -62,7 +44,7 @@ namespace NServiceBus
 
             var addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
 
-            topologySectionManager = new EndpointOrientedTopologySectionManager(defaultName, namespaceConfigurations, this.settings.EndpointName(), publishersConfiguration, partitioningStrategy, addressingLogic);
+            TopologySectionManager = new EndpointOrientedTopologySectionManager(defaultName, namespaceConfigurations, this.settings.EndpointName(), publishersConfiguration, partitioningStrategy, addressingLogic);
 
             namespaceManagerCreator = new NamespaceManagerCreator(this.settings);
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
@@ -82,7 +64,7 @@ namespace NServiceBus
             outgoingBatchRouter = new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(this.settings), senderLifeCycleManager, this.settings, oversizedMessageHandler);
             batcher = new Batcher(TopologySectionManager, this.settings);
 
-            topologyOperator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(this.settings, new DefaultConnectionStringToNamespaceAliasMapper(this.settings)), this.settings);
+            Operator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(this.settings, new DefaultConnectionStringToNamespaceAliasMapper(this.settings)), this.settings);
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
@@ -125,5 +107,23 @@ namespace NServiceBus
             logger.Info("Closing messaging factories");
             return messagingFactoryLifeCycleManager.CloseAll();
         }
+
+        ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
+        AzureServiceBusQueueCreator queueCreator;
+        AzureServiceBusTopicCreator topicCreator;
+        NamespaceManagerCreator namespaceManagerCreator;
+        NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal;
+        MessagingFactoryCreator messagingFactoryAdapterCreator;
+        MessagingFactoryLifeCycleManager messagingFactoryLifeCycleManager;
+        MessageReceiverCreator receiverCreator;
+        MessageReceiverLifeCycleManager messageReceiverLifeCycleManager;
+        MessageSenderCreator senderCreator;
+        MessageSenderLifeCycleManager senderLifeCycleManager;
+        AzureServiceBusSubscriptionCreatorV6 subscriptionsCreator;
+        TopologyCreator topologyCreator;
+        SettingsHolder settings;
+        OutgoingBatchRouter outgoingBatchRouter;
+        Batcher batcher;
+        IIndividualizationStrategy individualization;
     }
 }

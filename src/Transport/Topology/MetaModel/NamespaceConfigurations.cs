@@ -8,10 +8,6 @@
 
     public class NamespaceConfigurations : IEnumerable<NamespaceInfo>
     {
-        static ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
-
-        List<NamespaceInfo> inner;
-
         public NamespaceConfigurations()
         {
             inner = new List<NamespaceInfo>();
@@ -23,6 +19,16 @@
         }
 
         public int Count => inner.Count;
+
+        public IEnumerator<NamespaceInfo> GetEnumerator()
+        {
+            return inner.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
         public void Add(string alias, string connectionString, NamespacePurpose purpose)
         {
@@ -57,14 +63,7 @@
             }
         }
 
-        public IEnumerator<NamespaceInfo> GetEnumerator()
-        {
-            return inner.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        List<NamespaceInfo> inner;
+        static ILog Log = LogManager.GetLogger(typeof(NamespaceConfigurations));
     }
 }

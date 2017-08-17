@@ -7,31 +7,6 @@
 
     public class ValidateAndHashIfNeeded : ISanitizationStrategy
     {
-        readonly ReadOnlySettings settings;
-
-        // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
-        Regex queueAndTopicPathValidationRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$");
-
-        // Except for subscriptions and rules, these cannot contain slashes (/)
-        Regex subscriptionAndRuleNameValidationRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
-
-        // Sanitize anything that is [NOT letters, numbers, periods (.), hyphens (-), underscores (-)], and leading or trailing slashes (/)
-        Regex queueAndTopicPathSanitizationRegex = new Regex(@"[^a-zA-Z0-9\-\._/]|^/*|/*$");
-
-        Regex subscriptionAndRuleNameSanitizationRegex = new Regex(@"[^a-zA-Z0-9\-\._]");
-
-        Func<string, ValidationResult> defaultQueuePathValidation;
-        Func<string, ValidationResult> defaultTopicPathValidation;
-        Func<string, ValidationResult> defaultSubscriptionNameValidation;
-        Func<string, ValidationResult> defaultRuleNameValidation;
-
-        Func<string, string> defaultQueuePathSanitization;
-        Func<string, string> defaultTopicPathSanitization;
-        Func<string, string> defaultSubscriptionNameSanitization;
-        Func<string, string> defaultRuleNameSanitization;
-
-        Func<string, string> defaultHashing;
-
         internal ValidateAndHashIfNeeded(ReadOnlySettings settings)
         {
             this.settings = settings;
@@ -92,7 +67,6 @@
                     validationResult.AddErrorForInvalidLenth($"Rule name `{ruleName}` exceeds maximum length of {maximumLength} characters.");
 
                 return validationResult;
-
             };
 
             // sanitizers
@@ -182,5 +156,30 @@
 
             return hash(sanitizedValue);
         }
+
+        readonly ReadOnlySettings settings;
+
+        // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
+        Regex queueAndTopicPathValidationRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$");
+
+        // Except for subscriptions and rules, these cannot contain slashes (/)
+        Regex subscriptionAndRuleNameValidationRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$");
+
+        // Sanitize anything that is [NOT letters, numbers, periods (.), hyphens (-), underscores (-)], and leading or trailing slashes (/)
+        Regex queueAndTopicPathSanitizationRegex = new Regex(@"[^a-zA-Z0-9\-\._/]|^/*|/*$");
+
+        Regex subscriptionAndRuleNameSanitizationRegex = new Regex(@"[^a-zA-Z0-9\-\._]");
+
+        Func<string, ValidationResult> defaultQueuePathValidation;
+        Func<string, ValidationResult> defaultTopicPathValidation;
+        Func<string, ValidationResult> defaultSubscriptionNameValidation;
+        Func<string, ValidationResult> defaultRuleNameValidation;
+
+        Func<string, string> defaultQueuePathSanitization;
+        Func<string, string> defaultTopicPathSanitization;
+        Func<string, string> defaultSubscriptionNameSanitization;
+        Func<string, string> defaultRuleNameSanitization;
+
+        Func<string, string> defaultHashing;
     }
 }

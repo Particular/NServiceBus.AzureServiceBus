@@ -6,8 +6,6 @@ namespace NServiceBus
 
     public class HierarchyComposition : ICompositionStrategy
     {
-        ReadOnlySettings settings;
-
         internal HierarchyComposition(ReadOnlySettings settings)
         {
             this.settings = settings;
@@ -31,5 +29,7 @@ namespace NServiceBus
                     throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
             }
         }
+
+        ReadOnlySettings settings;
     }
 }

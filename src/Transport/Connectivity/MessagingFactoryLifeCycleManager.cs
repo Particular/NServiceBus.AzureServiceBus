@@ -8,10 +8,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessagingFactoryLifeCycleManager : IManageMessagingFactoryLifeCycleInternal
     {
-        int numberOfFactoriesPerNamespace;
-        ICreateMessagingFactoriesInternal createMessagingFactories;
-        ConcurrentDictionary<string, CircularBuffer<FactoryEntry>> MessagingFactories = new ConcurrentDictionary<string, CircularBuffer<FactoryEntry>>();
-
         public MessagingFactoryLifeCycleManager(ICreateMessagingFactoriesInternal createMessagingFactories, ReadOnlySettings settings)
         {
             this.createMessagingFactories = createMessagingFactories;
@@ -25,14 +21,13 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var b = new CircularBuffer<FactoryEntry>(numberOfFactoriesPerNamespace);
 
                 var factories = new List<FactoryEntry>(numberOfFactoriesPerNamespace);
-                for(var i= 0; i < numberOfFactoriesPerNamespace; i++)
+                for (var i = 0; i < numberOfFactoriesPerNamespace; i++)
                 {
                     var factory = createMessagingFactories.Create(namespaceName);
                     factories.Add(new FactoryEntry
                     {
                         Factory = factory
                     });
-
                 }
                 b.Put(factories.ToArray());
                 return b;
@@ -52,7 +47,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             return entry.Factory;
-
         }
 
         public async Task CloseAll()
@@ -64,11 +58,15 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     //if (entry?.Factory != null)
                     //{
-                        await entry.Factory.CloseAsync().ConfigureAwait(false);
+                    await entry.Factory.CloseAsync().ConfigureAwait(false);
                     //}
                 }
             }
         }
+
+        int numberOfFactoriesPerNamespace;
+        ICreateMessagingFactoriesInternal createMessagingFactories;
+        ConcurrentDictionary<string, CircularBuffer<FactoryEntry>> MessagingFactories = new ConcurrentDictionary<string, CircularBuffer<FactoryEntry>>();
 
         class FactoryEntry
         {
