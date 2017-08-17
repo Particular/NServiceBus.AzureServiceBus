@@ -60,7 +60,9 @@ namespace NServiceBus.Transport.AzureServiceBus
         async Task DispatchWithTransactionScopeIfRequired(IList<BatchInternal> toBeDispatchedOnComplete, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
         {
             if (context.CancellationToken.IsCancellationRequested || !toBeDispatchedOnComplete.Any())
+            {
                 return;
+            }
 
             await routeOutgoingBatches.RouteBatches(toBeDispatchedOnComplete, context, consistency).ConfigureAwait(false);
         }

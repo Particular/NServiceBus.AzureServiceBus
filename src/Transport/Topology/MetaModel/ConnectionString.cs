@@ -85,8 +85,14 @@
 
         public static bool operator ==(ConnectionStringInternal connectionString1, ConnectionStringInternal connectionString2)
         {
-            if (ReferenceEquals(connectionString1, null) && ReferenceEquals(connectionString2, null)) return true;
-            if (ReferenceEquals(connectionString1, null) || ReferenceEquals(connectionString2, null)) return false;
+            if (ReferenceEquals(connectionString1, null) && ReferenceEquals(connectionString2, null))
+            {
+                return true;
+            }
+            if (ReferenceEquals(connectionString1, null) || ReferenceEquals(connectionString2, null))
+            {
+                return false;
+            }
 
             return connectionString1.Equals(connectionString2);
         }

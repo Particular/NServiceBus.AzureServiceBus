@@ -13,7 +13,9 @@
         public override bool Equals(object obj)
         {
             if (!base.Equals(obj))
+            {
                 return false;
+            }
 
             var other = obj as SubscriptionInfoInternal;
             if (other == null)

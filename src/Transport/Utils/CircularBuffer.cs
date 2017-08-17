@@ -30,14 +30,20 @@ namespace NServiceBus.Transport.AzureServiceBus
             set
             {
                 if (value == capacity)
+                {
                     return;
+                }
 
                 if (value < Size)
+                {
                     throw new ArgumentOutOfRangeException("value", "Cannot reduce capacity below current size");
+                }
 
                 var dst = new T[value];
                 if (Size > 0)
+                {
                     CopyTo(dst);
+                }
                 buffer = dst;
 
                 capacity = value;
@@ -74,13 +80,19 @@ namespace NServiceBus.Transport.AzureServiceBus
             for (var i = 0; i < Size; i++, bufferIndex++)
             {
                 if (bufferIndex == capacity)
+                {
                     bufferIndex = 0;
+                }
 
                 if (item == null && buffer[bufferIndex] == null)
+                {
                     return true;
+                }
                 if (buffer[bufferIndex] != null &&
                     comparer.Equals(buffer[bufferIndex], item))
+                {
                     return true;
+                }
             }
 
             return false;
@@ -136,13 +148,17 @@ namespace NServiceBus.Transport.AzureServiceBus
         public int Put(T[] src, int offset, int count)
         {
             if (!AllowOverflow && count > capacity - Size)
+            {
                 throw new InvalidOperationException("Overflow is not allowed");
+            }
 
             var srcIndex = offset;
             for (var i = 0; i < count; i++, tail++, srcIndex++)
             {
                 if (tail == capacity)
+                {
                     tail = 0;
+                }
                 buffer[tail] = src[srcIndex];
             }
             Size = Math.Min(Size + count, capacity);
@@ -152,13 +168,17 @@ namespace NServiceBus.Transport.AzureServiceBus
         public void Put(T item)
         {
             if (!AllowOverflow && Size == capacity)
+            {
                 throw new InvalidOperationException("Overflow is not allowed");
+            }
 
             lock (bufferLock)
             {
                 buffer[tail] = item;
                 if (++tail == capacity)
+                {
                     tail = 0;
+                }
                 Size++;
             }
         }
@@ -187,14 +207,18 @@ namespace NServiceBus.Transport.AzureServiceBus
         public int Get(T[] dst, int offset, int count)
         {
             if (Size == 0)
+            {
                 throw new InvalidOperationException("Buffer is empty");
+            }
 
             var realCount = Math.Min(count, Size);
             var dstIndex = offset;
             for (var i = 0; i < realCount; i++, head++, dstIndex++)
             {
                 if (head == capacity)
+                {
                     head = 0;
+                }
                 dst[dstIndex] = buffer[head];
             }
             return realCount;
@@ -211,7 +235,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 var item = buffer[head];
                 if (++head == capacity)
+                {
                     head = 0;
+                }
 
                 return item;
             }
@@ -225,13 +251,17 @@ namespace NServiceBus.Transport.AzureServiceBus
         void CopyTo(int index, T[] array, int arrayIndex, int count)
         {
             if (count > Size)
+            {
                 throw new ArgumentOutOfRangeException("count", "Message read count is larger than size");
+            }
 
             var bufferIndex = head;
             for (var i = 0; i < count; i++, bufferIndex++, arrayIndex++)
             {
                 if (bufferIndex == capacity)
+                {
                     bufferIndex = 0;
+                }
                 array[arrayIndex] = buffer[bufferIndex];
             }
         }
@@ -242,7 +272,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             for (var i = 0; i < Size; i++, bufferIndex++)
             {
                 if (bufferIndex == capacity)
+                {
                     bufferIndex = 0;
+                }
 
                 yield return buffer[bufferIndex];
             }

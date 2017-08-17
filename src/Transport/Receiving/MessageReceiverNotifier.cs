@@ -97,7 +97,10 @@ namespace NServiceBus.Transport.AzureServiceBus
                     exceptions.Enqueue(ex);
                 }
             });
-            if (exceptions.Count > 0) throw new AggregateException(exceptions);
+            if (exceptions.Count > 0)
+            {
+                throw new AggregateException(exceptions);
+            }
         }
 
         public async Task Stop()
@@ -299,7 +302,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         async Task<bool> AbandonInternal(BrokeredMessage message, IDictionary<string, object> propertiesToModify = null)
         {
-            if (receiveMode == ReceiveMode.ReceiveAndDelete) return true;
+            if (receiveMode == ReceiveMode.ReceiveAndDelete)
+            {
+                return true;
+            }
 
             using (var suppressScope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {

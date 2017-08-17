@@ -11,7 +11,10 @@
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
             return obj is EntityAddress && Equals((EntityAddress)obj);
         }
 
@@ -45,7 +48,9 @@
         public EntityAddress(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
+            {
                 throw new ArgumentException("Entity address value can't be empty", nameof(value));
+            }
 
             var splitByAt = value.Split(seperators);
 

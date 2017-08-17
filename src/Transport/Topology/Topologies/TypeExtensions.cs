@@ -16,7 +16,9 @@ namespace NServiceBus
                     .FirstOrDefault(c => c.GetParameters().Length == 0);
 
                 if (defaultConstructor != null)
+                {
                     return (TReturnedType)Activator.CreateInstance(typeToResolve, true);
+                }
 
                 return (TReturnedType)Activator.CreateInstance(typeToResolve, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[]
                 {

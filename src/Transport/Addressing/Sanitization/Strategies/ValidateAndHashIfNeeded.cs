@@ -18,11 +18,15 @@
                 var validationResult = new ValidationResult();
 
                 if (!queueAndTopicPathValidationRegex.IsMatch(queuePath))
+                {
                     validationResult.AddErrorForInvalidCharacters($"Queue path {queuePath} contains illegal characters. Legal characters should match the following regex: `{queuePath}`.");
+                }
 
                 var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength);
                 if (queuePath.Length > maximumLength)
+                {
                     validationResult.AddErrorForInvalidLenth($"Queue path `{queuePath}` exceeds maximum length of {maximumLength} characters.");
+                }
 
                 return validationResult;
             };
@@ -32,11 +36,15 @@
                 var validationResult = new ValidationResult();
 
                 if (!queueAndTopicPathValidationRegex.IsMatch(topicPath))
+                {
                     validationResult.AddErrorForInvalidCharacters($"Topic path {topicPath} contains illegal characters. Legal characters should match the following regex: `{topicPath}`.");
+                }
 
                 var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength);
                 if (topicPath.Length > maximumLength)
+                {
                     validationResult.AddErrorForInvalidLenth($"Topic path `{topicPath}` exceeds maximum length of {maximumLength} characters.");
+                }
 
                 return validationResult;
             };
@@ -46,11 +54,15 @@
                 var validationResult = new ValidationResult();
 
                 if (!subscriptionAndRuleNameValidationRegex.IsMatch(subscriptionName))
+                {
                     validationResult.AddErrorForInvalidCharacters($"Subscription name {subscriptionName} contains illegal characters. Legal characters should match the following regex: `{subscriptionName}`.");
+                }
 
                 var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength);
                 if (subscriptionName.Length > maximumLength)
+                {
                     validationResult.AddErrorForInvalidLenth($"Subscription name `{subscriptionName}` exceeds maximum length of {maximumLength} characters.");
+                }
 
                 return validationResult;
             };
@@ -60,11 +72,15 @@
                 var validationResult = new ValidationResult();
 
                 if (!subscriptionAndRuleNameValidationRegex.IsMatch(ruleName))
+                {
                     validationResult.AddErrorForInvalidCharacters($"Rule name {ruleName} contains illegal characters. Legal characters should match the following regex: `{ruleName}`.");
+                }
 
                 var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameMaximumLength);
                 if (ruleName.Length > maximumLength)
+                {
                     validationResult.AddErrorForInvalidLenth($"Rule name `{ruleName}` exceeds maximum length of {maximumLength} characters.");
+                }
 
                 return validationResult;
             };
@@ -137,16 +153,22 @@
 
             var validationResult = validator(entityPathOrName);
             if (validationResult.IsValid)
+            {
                 return entityPathOrName;
+            }
 
             var sanitizedValue = entityPathOrName;
             if (!validationResult.CharactersAreValid)
+            {
                 sanitizedValue = sanitizer(entityPathOrName);
+            }
 
             // second validation pass to validate length based on sanitized characters
             validationResult = validator(sanitizedValue);
             if (validationResult.LengthIsValid)
+            {
                 return sanitizedValue;
+            }
 
             Func<string, string> hash;
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Hash, out hash))

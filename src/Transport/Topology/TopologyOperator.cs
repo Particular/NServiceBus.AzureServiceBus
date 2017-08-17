@@ -80,7 +80,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             foreach (var entity in entities)
             {
                 if (!entity.ShouldBeListenedTo)
+                {
                     continue;
+                }
 
                 var notifier = notifiers.GetOrAdd(entity, e =>
                 {

@@ -14,11 +14,13 @@
             publishers = new Dictionary<Type, List<string>>();
 
             if (settings.HasSetting(WellKnownConfigurationKeys.Topology.Publishers))
+            {
                 settings
                     .Get<Dictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers)
                     .ToDictionary(x => x.Key, x => x.Value.SelectMany(scanner => scanner.Scan()))
                     .ToList()
                     .ForEach(x => Map(x.Key, x.Value));
+            }
         }
 
         public void Map(string publisherName, Type type)

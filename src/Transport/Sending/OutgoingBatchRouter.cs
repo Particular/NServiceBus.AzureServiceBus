@@ -132,7 +132,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 // no need to try and send too large messages to another namespace, won't work
                 if (exception is MessageTooLargeException)
+                {
                     throw;
+                }
 
                 if (exception is TransactionSizeExceededException)
                 {
@@ -163,7 +165,10 @@ namespace NServiceBus.Transport.AzureServiceBus
                     }
                 }
 
-                if (!fallBackSucceeded) throw;
+                if (!fallBackSucceeded)
+                {
+                    throw;
+                }
             }
         }
 

@@ -50,9 +50,13 @@ namespace NServiceBus.Transport.AzureServiceBus
             try
             {
                 if (propertiesToModify == null)
+                {
                     await msg.AbandonAsync().ConfigureAwait(false);
+                }
                 else
+                {
                     await msg.AbandonAsync(propertiesToModify).ConfigureAwait(false);
+                }
 
                 return true;
             }
