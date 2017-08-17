@@ -12,7 +12,6 @@ namespace NServiceBus
     {
         ILog logger = LogManager.GetLogger("ForwardingTopology");
         ITopologySectionManagerInternal topologySectionManager;
-        ITransportPartsContainerInternal container;
         AzureServiceBusQueueCreator queueCreator;
         AzureServiceBusTopicCreator topicCreator;
         NamespaceManagerCreator namespaceManagerCreator;
@@ -31,17 +30,11 @@ namespace NServiceBus
         Batcher batcher;
         IIndividualizationStrategy individualization;
 
-        public ForwardingTopologyInternal() : this(new TransportPartsContainer()) { }
-
-        internal ForwardingTopologyInternal(ITransportPartsContainerInternal container)
-        {
-            this.container = container;
-        }
-
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
         public TopologySettings Settings { get; } = new TopologySettings();
-
+        public ITopologySectionManagerInternal TopologySectionManager => topologySectionManager;
+        public IOperateTopologyInternal Operator => topologyOperator;
 
         public void Initialize(SettingsHolder settings)
         {
@@ -52,61 +45,49 @@ namespace NServiceBus
 
             queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
             topicCreator = new AzureServiceBusTopicCreator(Settings.TopicSettings);
-            
-            InitializeContainer();
-        }
 
-        void InitializeContainer()
-        {
-            // runtime components
-            container.Register<ReadOnlySettings>(() => settings);
+            var defaultName = this.settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
+            var namespaceConfigurations = this.settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
 
-            var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
-            var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            var partitioningStrategyType = (Type) this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
+            var partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(this.settings);
 
-            var partitioningStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
-            var partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(settings);
+            var compositionStrategyType = (Type) this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
+            var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(this.settings);
 
-            var compositionStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
-            var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(settings);
+            var sanitizationStrategyType = (Type) this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
+            var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(this.settings);
 
-            var sanitizationStrategyType = (Type) settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(settings);
-
-            var individualizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
-            individualization = individualizationStrategyType.CreateInstance<IIndividualizationStrategy>(settings);
+            var individualizationStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
+            individualization = individualizationStrategyType.CreateInstance<IIndividualizationStrategy>(this.settings);
 
             var addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
 
-            var numberOfEntitiesInBundle = settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
-            var bundlePrefix = settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
+            var numberOfEntitiesInBundle = this.settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
+            var bundlePrefix = this.settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
 
-            namespaceManagerCreator = new NamespaceManagerCreator(settings);
+            namespaceManagerCreator = new NamespaceManagerCreator(this.settings);
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
 
-            topologySectionManager = new ForwardingTopologySectionManager(defaultName, namespaceConfigurations, settings.EndpointName(), numberOfEntitiesInBundle, bundlePrefix, partitioningStrategy, addressingLogic, namespaceManagerLifeCycleManagerInternal);
-            container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
+            topologySectionManager = new ForwardingTopologySectionManager(defaultName, namespaceConfigurations, this.settings.EndpointName(), numberOfEntitiesInBundle, bundlePrefix, partitioningStrategy, addressingLogic, namespaceManagerLifeCycleManagerInternal);
 
-            messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, settings);
-            messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryAdapterCreator, settings);
+            messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, this.settings);
+            messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryAdapterCreator, this.settings);
 
-            receiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
-            messageReceiverLifeCycleManager = new MessageReceiverLifeCycleManager(receiverCreator, settings);
-            senderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            senderLifeCycleManager = new MessageSenderLifeCycleManager(senderCreator, settings);
-            subscriptionsCreator = new AzureServiceBusForwardingSubscriptionCreator(Settings.SubscriptionSettings, settings);
+            receiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, this.settings);
+            messageReceiverLifeCycleManager = new MessageReceiverLifeCycleManager(receiverCreator, this.settings);
+            senderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, this.settings);
+            senderLifeCycleManager = new MessageSenderLifeCycleManager(senderCreator, this.settings);
+            subscriptionsCreator = new AzureServiceBusForwardingSubscriptionCreator(Settings.SubscriptionSettings, this.settings);
 
-            container.RegisterSingleton<DefaultConnectionStringToNamespaceAliasMapper>();
+            topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal, this.settings);
 
-            topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal, settings);
+            var oversizedMessageHandler = (IHandleOversizedBrokeredMessages) this.settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
 
-            var oversizedMessageHandler = (IHandleOversizedBrokeredMessages) settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
+            outgoingBatchRouter = new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(this.settings), senderLifeCycleManager, this.settings, oversizedMessageHandler);
+            batcher = new Batcher(topologySectionManager, this.settings);
 
-            outgoingBatchRouter = new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(settings), senderLifeCycleManager, settings, oversizedMessageHandler);
-            batcher = new Batcher(topologySectionManager, settings);
-
-            container.Register<TopologyOperator>(() => new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), settings));
-            topologyOperator = container.Resolve<IOperateTopologyInternal>();
+            topologyOperator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(this.settings, new DefaultConnectionStringToNamespaceAliasMapper(this.settings)), this.settings);
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)

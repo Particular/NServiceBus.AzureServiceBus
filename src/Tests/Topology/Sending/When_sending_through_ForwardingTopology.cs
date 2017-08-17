@@ -14,10 +14,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         [Test]
         public void Should_set_a_signle_queue_as_destination_for_command()
         {
-            // setting up the environment
-            var container = new TransportPartsContainer();
-
-            var topology = SetupForwardingTopology(container, "sales");
+            var topology = SetupForwardingTopology("sales");
 
             var destination = topology.DetermineSendDestination("operations");
 
@@ -28,9 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         [Test]
         public void Should_set_a_single_topic_as_destination_for_events()
         {
-            var container = new TransportPartsContainer();
-
-            var topology = SetupForwardingTopology(container, "sales");
+            var topology = SetupForwardingTopology("sales");
 
             var destination = topology.DeterminePublishDestination(typeof(SomeMessageType));
 
@@ -38,19 +33,18 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             Assert.IsTrue(destination.Entities.Single().Path.StartsWith("bundle"));
         }
 
-        ITopologySectionManagerInternal SetupForwardingTopology(TransportPartsContainer container, string enpointname)
+        static ITopologySectionManagerInternal SetupForwardingTopology(string enpointname)
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
             extensions.NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
 
-            var topology = new ForwardingTopologyInternal(container);
+            var topology = new ForwardingTopologyInternal();
 
             topology.Initialize(settings);
 
-            return container.Resolve<ITopologySectionManagerInternal>();
+            return topology.TopologySectionManager;
         }
 
         class SomeMessageType
@@ -60,31 +54,28 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         [Test]
         public void Returns_active_and_passive_namespaces_for_partitioned_sends()
         {
-            var container = new TransportPartsContainer();
-
             // setup using FailOverNamespacePartitioning to ensure we have active and passive namespaces for a failover
-            var topology = SetupForwardingTopologyWithFailoverNamespace(container, "sales");
+            var topology = SetupForwardingTopologyWithFailoverNamespace("sales");
 
             var destination = topology.DetermineSendDestination("operations");
 
             Assert.AreEqual(2, destination.Entities.Count(), "active and passive namespace should be returned");
         }
 
-        ITopologySectionManagerInternal SetupForwardingTopologyWithFailoverNamespace(TransportPartsContainer container, string enpointname)
+        static ITopologySectionManagerInternal SetupForwardingTopologyWithFailoverNamespace(string enpointname)
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
             extensions.NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
             extensions.NamespacePartitioning().AddNamespace("namespace2", AzureServiceBusConnectionString.Fallback);
             extensions.NamespacePartitioning().UseStrategy<FailOverNamespacePartitioning>();
 
-            var topology = new ForwardingTopologyInternal(container);
+            var topology = new ForwardingTopologyInternal();
 
             topology.Initialize(settings);
 
-            return container.Resolve<ITopologySectionManagerInternal>();
+            return topology.TopologySectionManager;
         }
     }
 }
