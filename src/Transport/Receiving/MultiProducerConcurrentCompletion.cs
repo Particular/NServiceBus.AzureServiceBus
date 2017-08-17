@@ -130,8 +130,7 @@
                     continue;
                 }
 
-                TItem item;
-                while (queue.TryDequeue(out item))
+                while (queue.TryDequeue(out TItem _))
                 {
                 }
             }

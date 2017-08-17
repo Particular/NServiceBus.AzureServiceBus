@@ -81,8 +81,7 @@
 
         public static bool IsConnectionString(string value)
         {
-            ConnectionStringInternal sampler;
-            return TryParse(value, out sampler);
+            return TryParse(value, out ConnectionStringInternal _);
         }
 
         public static implicit operator string(ConnectionStringInternal connectionString)
