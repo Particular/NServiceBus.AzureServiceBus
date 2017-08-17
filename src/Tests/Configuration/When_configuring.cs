@@ -56,7 +56,7 @@
         public void Should_be_able_to_extend_queue_settings()
         {
             var settings = new SettingsHolder();
-            settings.Set<ITopologyInternal>(new ForwardingTopologyInternal(null));
+            settings.Set<ITopologyInternal>(new ForwardingTopologyInternal());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var queueSettings = extensions.Queues();
@@ -68,7 +68,7 @@
         public void Should_be_able_to_extend_topic_settings()
         {
             var settings = new SettingsHolder();
-            settings.Set<ITopologyInternal>(new ForwardingTopologyInternal(null));
+            settings.Set<ITopologyInternal>(new ForwardingTopologyInternal());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var topicsSettings = extensions.Topics();
@@ -80,7 +80,7 @@
         public void Should_be_able_to_extend_subscription_settings()
         {
             var settings = new SettingsHolder();
-            settings.Set<ITopologyInternal>(new ForwardingTopologyInternal(null));
+            settings.Set<ITopologyInternal>(new ForwardingTopologyInternal());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var subscriptionSettings = extensions.Subscriptions();

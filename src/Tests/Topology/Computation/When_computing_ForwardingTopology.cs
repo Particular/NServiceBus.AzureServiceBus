@@ -18,20 +18,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         [Test]
         public void Determines_the_namespace_from_partitioning_strategy()
         {
-            var container = new TransportPartsContainer();
-
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopologyInternal(container);
+            var topology = new ForwardingTopologyInternal();
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
+            var sectionManager = topology.TopologySectionManager;
             var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             // ReSharper disable once RedundantArgumentDefaultValue
@@ -42,20 +39,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         [Test]
         public void Determines_there_should_be_a_queue_with_same_name_as_endpointname()
         {
-            var container = new TransportPartsContainer();
-
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopologyInternal(container);
+            var topology = new ForwardingTopologyInternal();
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
+            var sectionManager = topology.TopologySectionManager;
             var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == Connectionstring));
@@ -65,40 +59,34 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         [TestCase("Path contains invalid character", "input%queue")]
         public void Should_fail_sanitization_for_invalid_endpoint_name(string reasonToFail, string endpointName)
         {
-            var container = new TransportPartsContainer();
-
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopologyInternal(container);
+            var topology = new ForwardingTopologyInternal();
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
+            var sectionManager = topology.TopologySectionManager;
             Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings()), "Was expected to fail: " + reasonToFail);
         }
 
         [Test]
         public void Determines_there_should_be_a_topic_bundle_created()
         {
-            var container = new TransportPartsContainer();
-
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopologyInternal(container);
+            var topology = new ForwardingTopologyInternal();
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
+            var sectionManager = topology.TopologySectionManager;
             var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring && ei.Path.StartsWith("bundle-"));
@@ -110,20 +98,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         [Test]
         public void Creates_subscription_for_topic_in_bundle()
         {
-            var container = new TransportPartsContainer();
-
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopologyInternal(container);
+            var topology = new ForwardingTopologyInternal();
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
+            var sectionManager = topology.TopologySectionManager;
             sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
@@ -134,20 +119,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         [Test]
         public void Creates_subscription_path_matching_the_subscribing_endpoint_name()
         {
-            var container = new TransportPartsContainer();
-
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopologyInternal(container);
+            var topology = new ForwardingTopologyInternal();
 
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
+            var sectionManager = topology.TopologySectionManager;
             sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
@@ -158,19 +140,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         [Test]
         public void Should_creates_subscription_entities_marked_as_not_be_listened_to()
         {
-            var container = new TransportPartsContainer();
-
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-            container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopologyInternal(container);
+            var topology = new ForwardingTopologyInternal();
             topology.Initialize(settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
+            var sectionManager = topology.TopologySectionManager;
             sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));

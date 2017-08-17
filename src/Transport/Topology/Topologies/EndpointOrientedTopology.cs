@@ -12,7 +12,7 @@ namespace NServiceBus
     {
         ILog logger = LogManager.GetLogger("EndpointOrientedTopology");
         ITopologySectionManagerInternal topologySectionManager;
-        ITransportPartsContainerInternal container;
+        IOperateTopologyInternal topologyOperator;
         AzureServiceBusQueueCreator queueCreator;
         AzureServiceBusTopicCreator topicCreator;
         NamespaceManagerCreator namespaceManagerCreator;
@@ -24,23 +24,17 @@ namespace NServiceBus
         MessageSenderCreator senderCreator;
         MessageSenderLifeCycleManager senderLifeCycleManager;
         AzureServiceBusSubscriptionCreatorV6 subscriptionsCreator;
-        IOperateTopologyInternal topologyOperator;
         TopologyCreator topologyCreator;
         SettingsHolder settings;
         OutgoingBatchRouter outgoingBatchRouter;
         Batcher batcher;
         IIndividualizationStrategy individualization;
 
-        public EndpointOrientedTopologyInternal() : this(new TransportPartsContainer()){ }
-
-        internal EndpointOrientedTopologyInternal(ITransportPartsContainerInternal container)
-        {
-            this.container = container;
-        }
-
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
         public TopologySettings Settings { get; } = new TopologySettings();
+        public ITopologySectionManagerInternal TopologySectionManager => topologySectionManager;
+        public IOperateTopologyInternal Operator => topologyOperator;
 
         public void Initialize(SettingsHolder settings)
         {
@@ -49,56 +43,46 @@ namespace NServiceBus
             queueCreator = new AzureServiceBusQueueCreator(Settings.QueueSettings, settings);
             topicCreator = new AzureServiceBusTopicCreator(Settings.TopicSettings);
 
-            InitializeContainer();
-        }
+            var defaultName = this.settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
+            var namespaceConfigurations = this.settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            var conventions = this.settings.Get<Conventions>();
+            var publishersConfiguration = new PublishersConfiguration(conventions, this.settings);
 
-        void InitializeContainer()
-        {
-            // runtime components
-            container.Register<ReadOnlySettings>(() => settings);
+            var partitioningStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
+            var partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(this.settings);
 
-            var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
-            var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
-            var conventions = settings.Get<Conventions>();
-            var publishersConfiguration = new PublishersConfiguration(conventions, settings);
+            var compositionStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
+            var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(this.settings);
 
-            var partitioningStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
-            var partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(settings);
+            var sanitizationStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
+            var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(this.settings);
 
-            var compositionStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
-            var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(settings);
-
-            var sanitizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(settings);
-
-            var individualizationStrategyType = (Type)settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
-            individualization = individualizationStrategyType.CreateInstance<IIndividualizationStrategy>(settings);
+            var individualizationStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
+            individualization = individualizationStrategyType.CreateInstance<IIndividualizationStrategy>(this.settings);
 
             var addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
 
-            topologySectionManager = new EndpointOrientedTopologySectionManager(defaultName, namespaceConfigurations, settings.EndpointName(), publishersConfiguration, partitioningStrategy, addressingLogic);
-            container.Register<ITopologySectionManagerInternal>(() => topologySectionManager);
+            topologySectionManager = new EndpointOrientedTopologySectionManager(defaultName, namespaceConfigurations, this.settings.EndpointName(), publishersConfiguration, partitioningStrategy, addressingLogic);
 
-            namespaceManagerCreator = new NamespaceManagerCreator(settings);
+            namespaceManagerCreator = new NamespaceManagerCreator(this.settings);
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, settings);
-            messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryAdapterCreator, settings);
+            messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, this.settings);
+            messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryAdapterCreator, this.settings);
 
-            receiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
-            messageReceiverLifeCycleManager = new MessageReceiverLifeCycleManager(receiverCreator, settings);
-            senderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            senderLifeCycleManager = new MessageSenderLifeCycleManager(senderCreator, settings);
-            subscriptionsCreator = new AzureServiceBusSubscriptionCreatorV6(Settings.SubscriptionSettings, settings);
+            receiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, this.settings);
+            messageReceiverLifeCycleManager = new MessageReceiverLifeCycleManager(receiverCreator, this.settings);
+            senderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, this.settings);
+            senderLifeCycleManager = new MessageSenderLifeCycleManager(senderCreator, this.settings);
+            subscriptionsCreator = new AzureServiceBusSubscriptionCreatorV6(Settings.SubscriptionSettings, this.settings);
 
-            topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal, settings);
+            topologyCreator = new TopologyCreator(subscriptionsCreator, queueCreator, topicCreator, namespaceManagerLifeCycleManagerInternal, this.settings);
 
-            var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
+            var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)this.settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
 
-            outgoingBatchRouter = new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(settings), senderLifeCycleManager, settings, oversizedMessageHandler);
-            batcher = new Batcher(topologySectionManager, settings);
+            outgoingBatchRouter = new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(this.settings), senderLifeCycleManager, this.settings, oversizedMessageHandler);
+            batcher = new Batcher(TopologySectionManager, this.settings);
 
-            container.Register<TopologyOperator>(() => new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), settings));
-            topologyOperator = container.Resolve<IOperateTopologyInternal>();
+            topologyOperator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(this.settings, new DefaultConnectionStringToNamespaceAliasMapper(this.settings)), this.settings);
         }
 
         public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
@@ -108,12 +92,12 @@ namespace NServiceBus
 
         public Func<ICreateQueues> GetQueueCreatorFactory()
         {
-            return () => new TransportResourcesCreator(topologyCreator, topologySectionManager);
+            return () => new TransportResourcesCreator(topologyCreator, TopologySectionManager);
         }
 
         public Func<IPushMessages> GetMessagePumpFactory()
         {
-            return () => new MessagePump(topologyOperator, messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), topologySectionManager, settings);
+            return () => new MessagePump(Operator, messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(settings, new DefaultConnectionStringToNamespaceAliasMapper(settings)), TopologySectionManager, settings);
         }
 
         public Func<IDispatchMessages> GetDispatcherFactory()
@@ -123,7 +107,7 @@ namespace NServiceBus
 
         public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
         {
-            return () => new SubscriptionManager(topologySectionManager, topologyOperator, topologyCreator);
+            return () => new SubscriptionManager(TopologySectionManager, Operator, topologyCreator);
         }
 
         public Task<StartupCheckResult> RunPreStartupChecks()

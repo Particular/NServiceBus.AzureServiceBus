@@ -25,13 +25,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await TestUtility.Delete("sales");
 
             // setting up the environment
-            var container = new TransportPartsContainer();
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
+            var topology = await SetupEndpointOrientedTopology(settings, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = topology.Operator;
 
             var completed = new AsyncManualResetEvent(false);
             var error = new AsyncManualResetEvent(false);
@@ -57,7 +56,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+            topologyOperator.Start(topology.TopologySectionManager.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = new MessageSenderCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings);
@@ -83,13 +82,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await TestUtility.Delete("sales");
 
             // setting up the environment
-            var container = new TransportPartsContainer();
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
+            var topology = await SetupEndpointOrientedTopology(settings, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = topology.Operator;
 
             var error = new AsyncManualResetEvent(false);
 
@@ -112,7 +110,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+            topologyOperator.Start(topology.TopologySectionManager.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = new MessageSenderCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings);
@@ -138,13 +136,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await TestUtility.Delete("sales");
 
             // setting up the environment
-            var container = new TransportPartsContainer();
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
+            var topology = await SetupEndpointOrientedTopology(settings, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = topology.Operator;
 
             var completed = new AsyncManualResetEvent(false);
             var error = new AsyncManualResetEvent(false);
@@ -170,7 +167,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+            topologyOperator.Start(topology.TopologySectionManager.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = new MessageSenderCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings);
@@ -202,13 +199,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await TestUtility.Delete("sales");
 
             // setting up the environment
-            var container = new TransportPartsContainer();
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var topology = await SetupEndpointOrientedTopology(settings, container, "sales");
+            var topology = await SetupEndpointOrientedTopology(settings, "sales");
 
             // setup the operator
-            var topologyOperator = (IOperateTopologyInternal)container.Resolve(typeof(TopologyOperator));
+            var topologyOperator = topology.Operator;
 
             var completed = new AsyncManualResetEvent(false);
             var error = new AsyncManualResetEvent(false);
@@ -232,7 +228,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             });
 
             // execute
-            topologyOperator.Start(topology.DetermineReceiveResources("sales"), 1);
+            topologyOperator.Start(topology.TopologySectionManager.DetermineReceiveResources("sales"), 1);
 
             // send message to queue
             var senderFactory = new MessageSenderCreator(new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), settings), settings), settings);
@@ -255,15 +251,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await topologyOperator.Stop();
         }
 
-        async Task<ITopologySectionManagerInternal> SetupEndpointOrientedTopology(SettingsHolder settings, TransportPartsContainer container, string enpointname)
+        static async Task<EndpointOrientedTopologyInternal> SetupEndpointOrientedTopology(SettingsHolder settings, string endpointName)
         {
             settings.Set<Conventions>(new Conventions());
-            container.Register(typeof(SettingsHolder), () => settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            settings.SetDefault("NServiceBus.Routing.EndpointName", enpointname);
+            settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
             extensions.NamespacePartitioning().AddNamespace("namespace", AzureServiceBusConnectionString.Value);
 
-            var topology = new EndpointOrientedTopologyInternal(container);
+            var topology = new EndpointOrientedTopologyInternal();
             topology.Initialize(settings);
 
             // create the topologySectionManager
@@ -273,9 +268,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
                 new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), 
                 settings);
 
-            var sectionManager = container.Resolve<ITopologySectionManagerInternal>();
+            var sectionManager = topology.TopologySectionManager;
             await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
-            return sectionManager;
+            return topology;
         }
     }
 }

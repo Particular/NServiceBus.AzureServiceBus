@@ -18,15 +18,11 @@
         public async Task Should_trigger_circuit_breaker()
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-            var container = new TransportPartsContainer();
-
             var fakeTopologyOperator = new FakeTopologyOperator();
-            container.Register<IOperateTopologyInternal>(() => fakeTopologyOperator);
 
             var settings = new SettingsHolder();
             settings.Set("NServiceBus.SharedQueue", "sales");
             DefaultConfigurationValues.Apply(settings);
-            container.Register<ReadOnlySettings>(() => settings);
 
             Exception exceptionReceivedByCircuitBreaker = null;
             var criticalErrorWasRaised = false;
