@@ -6,15 +6,6 @@
 
     class ConnectionStringInternal : IEquatable<ConnectionStringInternal>
     {
-        static readonly string Sample = "Endpoint=sb://[namespace name].servicebus.windows.net;SharedAccessKeyName=[shared access key name];SharedAccessKey=[shared access key]";
-        static string Pattern = "^Endpoint=sb://(?<namespaceName>[A-Za-z][A-Za-z0-9-]{4,48}[A-Za-z0-9]).servicebus.windows.net/?;SharedAccessKeyName=(?<sharedAccessPolicyName>[\\w\\W]+);SharedAccessKey=(?<sharedAccessPolicyValue>[\\w\\W]+)$";
-
-        string value;
-
-        public string NamespaceName { get; }
-        public string SharedAccessPolicyName { get; }
-        public string SharedAccessPolicyValue { get; }
-
         public ConnectionStringInternal(string value)
         {
             if (!Regex.IsMatch(value, Pattern, RegexOptions.IgnoreCase))
@@ -31,12 +22,16 @@
             SharedAccessPolicyValue = Regex.Match(value, Pattern).Groups["sharedAccessPolicyValue"].Value;
         }
 
+        public string NamespaceName { get; }
+        public string SharedAccessPolicyName { get; }
+        public string SharedAccessPolicyValue { get; }
+
         public bool Equals(ConnectionStringInternal other)
         {
-            return other != null && 
-                string.Equals(NamespaceName, other.NamespaceName, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(SharedAccessPolicyName, other.SharedAccessPolicyName, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(SharedAccessPolicyValue, other.SharedAccessPolicyValue);
+            return other != null &&
+                   string.Equals(NamespaceName, other.NamespaceName, StringComparison.OrdinalIgnoreCase) &&
+                   string.Equals(SharedAccessPolicyName, other.SharedAccessPolicyName, StringComparison.OrdinalIgnoreCase) &&
+                   string.Equals(SharedAccessPolicyValue, other.SharedAccessPolicyValue);
         }
 
         public override bool Equals(object obj)
@@ -58,7 +53,6 @@
             return value;
         }
 
-        static ConcurrentDictionary<string, Tuple<bool, ConnectionStringInternal>> _parsingResults = new ConcurrentDictionary<string, Tuple<bool, ConnectionStringInternal>>();
         public static bool TryParse(string value, out ConnectionStringInternal connectionString)
         {
             var t = _parsingResults.GetOrAdd(value, s =>
@@ -91,8 +85,14 @@
 
         public static bool operator ==(ConnectionStringInternal connectionString1, ConnectionStringInternal connectionString2)
         {
-            if (ReferenceEquals(connectionString1, null) && ReferenceEquals(connectionString2, null)) return true;
-            if (ReferenceEquals(connectionString1, null) || ReferenceEquals(connectionString2, null)) return false;
+            if (ReferenceEquals(connectionString1, null) && ReferenceEquals(connectionString2, null))
+            {
+                return true;
+            }
+            if (ReferenceEquals(connectionString1, null) || ReferenceEquals(connectionString2, null))
+            {
+                return false;
+            }
 
             return connectionString1.Equals(connectionString2);
         }
@@ -101,5 +101,11 @@
         {
             return !(connectionString1 == connectionString2);
         }
+
+        string value;
+        static readonly string Sample = "Endpoint=sb://[namespace name].servicebus.windows.net;SharedAccessKeyName=[shared access key name];SharedAccessKey=[shared access key]";
+        static string Pattern = "^Endpoint=sb://(?<namespaceName>[A-Za-z][A-Za-z0-9-]{4,48}[A-Za-z0-9]).servicebus.windows.net/?;SharedAccessKeyName=(?<sharedAccessPolicyName>[\\w\\W]+);SharedAccessKey=(?<sharedAccessPolicyValue>[\\w\\W]+)$";
+
+        static ConcurrentDictionary<string, Tuple<bool, ConnectionStringInternal>> _parsingResults = new ConcurrentDictionary<string, Tuple<bool, ConnectionStringInternal>>();
     }
 }

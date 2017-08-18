@@ -9,8 +9,6 @@
 
     static class MessageReceiverExtensions
     {
-        static ILog Log = LogManager.GetLogger(typeof(MessageReceiverExtensions));
-
         public static async Task<bool> SafeCompleteBatchAsync(this IMessageReceiverInternal messageReceiver, IEnumerable<Guid> lockTokens)
         {
             try
@@ -47,5 +45,6 @@
             return false;
         }
 
+        static ILog Log = LogManager.GetLogger(typeof(MessageReceiverExtensions));
     }
 }

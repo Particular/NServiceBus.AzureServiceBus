@@ -1,15 +1,13 @@
 ﻿namespace NServiceBus
 {
     using System;
-    using Microsoft.ServiceBus.Messaging;
     using Configuration.AdvanceExtensibility;
+    using Microsoft.ServiceBus.Messaging;
     using Settings;
     using Transport.AzureServiceBus;
 
     public partial class AzureServiceBusQueueSettings : ExposeSettings
     {
-        TopologyQueueSettings queueSettings;
-
         internal AzureServiceBusQueueSettings(SettingsHolder settings) : base(settings)
         {
             queueSettings = settings.Get<ITopologyInternal>().Settings.QueueSettings;
@@ -178,5 +176,7 @@
 
             return this;
         }
+
+        TopologyQueueSettings queueSettings;
     }
 }

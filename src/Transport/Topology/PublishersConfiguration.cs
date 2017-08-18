@@ -8,27 +8,29 @@
 
     class PublishersConfiguration
     {
-        Conventions conventions;
-        Dictionary<Type, List<string>> publishers;
-
         public PublishersConfiguration(Conventions conventions, ReadOnlySettings settings)
         {
             this.conventions = conventions;
             publishers = new Dictionary<Type, List<string>>();
 
             if (settings.HasSetting(WellKnownConfigurationKeys.Topology.Publishers))
+            {
                 settings
                     .Get<Dictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers)
                     .ToDictionary(x => x.Key, x => x.Value.SelectMany(scanner => scanner.Scan()))
                     .ToList()
                     .ForEach(x => Map(x.Key, x.Value));
+            }
         }
 
         public void Map(string publisherName, Type type)
         {
             var types = type
                 .GetParentTypes()
-                .Union(new[] { type })
+                .Union(new[]
+                {
+                    type
+                })
                 .Where(t => conventions.IsMessageType(t))
                 .ToArray();
 
@@ -73,5 +75,8 @@
                 publisherNames.Add(publisherName);
             }
         }
+
+        Conventions conventions;
+        Dictionary<Type, List<string>> publishers;
     }
 }

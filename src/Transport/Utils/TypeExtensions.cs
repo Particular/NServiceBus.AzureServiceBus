@@ -8,7 +8,9 @@ namespace NServiceBus.Transport.AzureServiceBus
         public static IEnumerable<Type> GetParentTypes(this Type target)
         {
             foreach (var i in target.GetInterfaces())
+            {
                 yield return i;
+            }
 
             var currentBaseType = target.BaseType;
             var objectType = typeof(object);

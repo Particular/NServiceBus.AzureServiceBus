@@ -4,8 +4,6 @@
 
     public class RuntimeNamespaceInfo : IEquatable<RuntimeNamespaceInfo>
     {
-        readonly NamespaceInfo info;
-
         public RuntimeNamespaceInfo(string alias, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning, NamespaceMode mode = NamespaceMode.Active)
         {
             info = new NamespaceInfo(alias, connectionString, purpose);
@@ -41,5 +39,7 @@
         {
             return !(left == right);
         }
+
+        readonly NamespaceInfo info;
     }
 }

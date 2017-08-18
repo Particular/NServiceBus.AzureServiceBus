@@ -4,17 +4,12 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Globalization;
     using System.IO;
     using System.Linq;
-    using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using Microsoft.ServiceBus.Messaging;
     using Settings;
 
     class BrokeredMessagesToIncomingMessagesConverter
     {
-        ILog logger = LogManager.GetLogger<BrokeredMessagesToIncomingMessagesConverter>();
-        ReadOnlySettings settings;
-        DefaultConnectionStringToNamespaceAliasMapper mapper;
-        static byte[] EmptyBody = new byte[0];
-
         public BrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings, DefaultConnectionStringToNamespaceAliasMapper mapper)
         {
             this.settings = settings;
@@ -59,8 +54,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     throw new UnsupportedBrokeredMessageBodyTypeException("Unsupported brokered message body type configured");
             }
 
-            var replyToHeaderValue = headers.ContainsKey(Headers.ReplyToAddress) ?
-                headers[Headers.ReplyToAddress] : brokeredMessage.ReplyTo;
+            var replyToHeaderValue = headers.ContainsKey(Headers.ReplyToAddress) ? headers[Headers.ReplyToAddress] : brokeredMessage.ReplyTo;
 
             if (!string.IsNullOrWhiteSpace(replyToHeaderValue))
             {
@@ -85,5 +79,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             var configuredDefault = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
             return configuredDefault == SupportedBrokeredMessageBodyTypes.ByteArray ? "wcf/byte-array" : "application/octect-stream";
         }
+
+        ILog logger = LogManager.GetLogger<BrokeredMessagesToIncomingMessagesConverter>();
+        ReadOnlySettings settings;
+        DefaultConnectionStringToNamespaceAliasMapper mapper;
+        static byte[] EmptyBody = new byte[0];
     }
 }

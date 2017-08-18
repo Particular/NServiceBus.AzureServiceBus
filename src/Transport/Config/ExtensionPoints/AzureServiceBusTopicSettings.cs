@@ -1,22 +1,20 @@
 ﻿namespace NServiceBus
 {
     using System;
-    using Microsoft.ServiceBus.Messaging;
     using Configuration.AdvanceExtensibility;
+    using Microsoft.ServiceBus.Messaging;
     using Settings;
     using Transport.AzureServiceBus;
 
     public partial class AzureServiceBusTopicSettings : ExposeSettings
     {
-        TopologyTopicSettings topicSettings;
-
         internal AzureServiceBusTopicSettings(SettingsHolder settings) : base(settings)
         {
             topicSettings = settings.Get<ITopologyInternal>().Settings.TopicSettings;
         }
 
         /// <summary>
-        /// Customize topic creation by providing <see cref="TopicDescription"/>.
+        /// Customize topic creation by providing <see cref="TopicDescription" />.
         /// </summary>
         public AzureServiceBusTopicSettings DescriptionFactory(Action<TopicDescription> factory)
         {
@@ -102,7 +100,7 @@
 
         /// <summary>
         /// <remarks> Default is false.</remarks>
-        /// <remarks>When using <see cref="ForwardingTopology"/>, partitioning cannot be enabled.</remarks>
+        /// <remarks>When using <see cref="ForwardingTopology" />, partitioning cannot be enabled.</remarks>
         /// </summary>
         public AzureServiceBusTopicSettings EnablePartitioning(bool enablePartitioning)
         {
@@ -127,5 +125,7 @@
             topicSettings.RequiresDuplicateDetection = requiresDuplicateDetection;
             return this;
         }
+
+        TopologyTopicSettings topicSettings;
     }
 }

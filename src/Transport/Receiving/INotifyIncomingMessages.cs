@@ -2,7 +2,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Threading.Tasks;
-    using Transport;
 
     interface INotifyIncomingMessagesInternal
     {

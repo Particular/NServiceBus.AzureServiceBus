@@ -6,8 +6,6 @@
 
     public class AzureServiceBusCompositionSettings : ExposeSettings
     {
-        SettingsHolder settings;
-
         internal AzureServiceBusCompositionSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
@@ -15,8 +13,8 @@
 
         /// <summary>
         /// Provide composition strategy to use.
-        /// <remarks>Default is <see cref="FlatComposition"/></remarks>
-        /// <seealso cref="HierarchyComposition"/>
+        /// <remarks>Default is <see cref="FlatComposition" /></remarks>
+        /// <seealso cref="HierarchyComposition" />
         /// </summary>
         public AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>() where T : ICompositionStrategy
         {
@@ -24,5 +22,7 @@
 
             return new AzureServiceBusCompositionExtensionPoint<T>(settings);
         }
+
+        SettingsHolder settings;
     }
 }

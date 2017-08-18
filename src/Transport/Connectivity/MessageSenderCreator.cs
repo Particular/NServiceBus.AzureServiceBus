@@ -6,9 +6,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessageSenderCreator : ICreateMessageSendersInternal
     {
-        IManageMessagingFactoryLifeCycleInternal factories;
-        ReadOnlySettings settings;
-
         public MessageSenderCreator(IManageMessagingFactoryLifeCycleInternal factories, ReadOnlySettings settings)
         {
             this.factories = factories;
@@ -29,7 +26,9 @@ namespace NServiceBus.Transport.AzureServiceBus
                 sender.RetryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy);
             }
             return sender;
-
         }
+
+        IManageMessagingFactoryLifeCycleInternal factories;
+        ReadOnlySettings settings;
     }
 }

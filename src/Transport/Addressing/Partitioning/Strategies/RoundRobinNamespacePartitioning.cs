@@ -9,8 +9,6 @@ namespace NServiceBus
 
     public class RoundRobinNamespacePartitioning : INamespacePartitioningStrategy
     {
-        CircularBuffer<NamespaceInfo> namespaces;
-
         internal RoundRobinNamespacePartitioning(ReadOnlySettings settings)
         {
             NamespaceConfigurations namespaces;
@@ -49,5 +47,7 @@ namespace NServiceBus
                 }
             }
         }
+
+        CircularBuffer<NamespaceInfo> namespaces;
     }
 }

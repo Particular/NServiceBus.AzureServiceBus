@@ -7,17 +7,25 @@
     using DelayedDelivery;
     using Performance.TimeToBeReceived;
     using Routing;
-    using Transport;
 
     class AzureServiceBusTransportInfrastructure : TransportInfrastructure
     {
-        ITopologyInternal topology;
-
         public AzureServiceBusTransportInfrastructure(ITopologyInternal topology, TransportTransactionMode supportedTransactionMode)
         {
             this.topology = topology;
             TransactionMode = supportedTransactionMode;
         }
+
+        public override IEnumerable<Type> DeliveryConstraints => new List<Type>
+        {
+            typeof(DelayDeliveryWith),
+            typeof(DoNotDeliverBefore),
+            typeof(DiscardIfNotReceivedBefore)
+        };
+
+        public override TransportTransactionMode TransactionMode { get; }
+
+        public override OutboundRoutingPolicy OutboundRoutingPolicy => topology.GetOutboundRoutingPolicy();
 
         public override Task Stop()
         {
@@ -66,10 +74,6 @@
             return new TransportSubscriptionInfrastructure(topology.GetSubscriptionManagerFactory());
         }
 
-        public override IEnumerable<Type> DeliveryConstraints => new List<Type> { typeof(DelayDeliveryWith), typeof(DoNotDeliverBefore), typeof(DiscardIfNotReceivedBefore) };
-
-        public override TransportTransactionMode TransactionMode { get; }
-
-        public override OutboundRoutingPolicy OutboundRoutingPolicy => topology.GetOutboundRoutingPolicy();
+        ITopologyInternal topology;
     }
 }

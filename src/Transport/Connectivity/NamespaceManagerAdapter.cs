@@ -8,8 +8,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class NamespaceManagerAdapterInternal : INamespaceManagerInternal
     {
-        NamespaceManager manager;
-
         public NamespaceManagerAdapterInternal(NamespaceManager manager)
         {
             this.manager = manager;
@@ -118,15 +116,17 @@ namespace NServiceBus.Transport.AzureServiceBus
             return manager.GetTopicAsync(path);
         }
 
+        public Task DeleteSubscription(SubscriptionDescription subscriptionDescription)
+        {
+            return manager.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
+        }
+
         // TODO: delete this once NamespaceManagerAdapterInternal is internalized
         public Task DeleteSubscriptionAsync(string topicPath, string subscriptionName)
         {
             return DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }
 
-        public Task DeleteSubscription(SubscriptionDescription subscriptionDescription)
-        {
-            return manager.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
-        }
+        NamespaceManager manager;
     }
 }

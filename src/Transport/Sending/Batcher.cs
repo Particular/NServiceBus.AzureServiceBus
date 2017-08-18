@@ -3,13 +3,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using Settings;
-    using Transport;
 
     class Batcher : IBatcherInternal
     {
-        ITopologySectionManagerInternal topologySectionManager;
-        int messageSizePaddingPercentage;
-
         public Batcher(ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings)
         {
             this.topologySectionManager = topologySectionManager;
@@ -41,7 +37,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 batch.Operations.Add(new BatchedOperationInternal(messageSizePaddingPercentage)
                 {
                     Message = unicastOperation.Message,
-                    DeliveryConstraints = unicastOperation.DeliveryConstraints,
+                    DeliveryConstraints = unicastOperation.DeliveryConstraints
                 });
             }
         }
@@ -67,5 +63,8 @@ namespace NServiceBus.Transport.AzureServiceBus
                 });
             }
         }
+
+        ITopologySectionManagerInternal topologySectionManager;
+        int messageSizePaddingPercentage;
     }
 }

@@ -1,22 +1,20 @@
 namespace NServiceBus
 {
     using System;
-    using Microsoft.ServiceBus.Messaging;
     using Configuration.AdvanceExtensibility;
+    using Microsoft.ServiceBus.Messaging;
     using Settings;
     using Transport.AzureServiceBus;
 
     public partial class AzureServiceBusSubscriptionSettings : ExposeSettings
     {
-        TopologySubscriptionSettings subscriptionSettings;
-
         internal AzureServiceBusSubscriptionSettings(SettingsHolder settings) : base(settings)
         {
             subscriptionSettings = settings.Get<ITopologyInternal>().Settings.SubscriptionSettings;
         }
 
         /// <summary>
-        /// Customize subscription creation by providing <see cref="SubscriptionDescription"/>.
+        /// Customize subscription creation by providing <see cref="SubscriptionDescription" />.
         /// </summary>
         public AzureServiceBusSubscriptionSettings DescriptionFactory(Action<SubscriptionDescription> factory)
         {
@@ -109,5 +107,7 @@ namespace NServiceBus
             subscriptionSettings.AutoDeleteOnIdle = autoDeleteOnIdle;
             return this;
         }
+
+        TopologySubscriptionSettings subscriptionSettings;
     }
 }

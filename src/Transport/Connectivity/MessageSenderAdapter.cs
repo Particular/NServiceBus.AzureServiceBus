@@ -7,8 +7,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessageSenderAdapter : IMessageSenderInternal
     {
-        MessageSender sender;
-
         public MessageSenderAdapter(MessageSender sender)
         {
             this.sender = sender;
@@ -24,7 +22,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public Task Send(BrokeredMessage message)
         {
-          return sender.SendAsync(message);
+            return sender.SendAsync(message);
         }
 
         public Task SendBatch(IEnumerable<BrokeredMessage> messages)
@@ -36,5 +34,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             return sender.CloseAsync();
         }
+
+        MessageSender sender;
     }
 }

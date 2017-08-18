@@ -1,4 +1,5 @@
 ﻿// ReSharper disable MemberHidesStaticFromOuterClass
+
 namespace NServiceBus.Transport.AzureServiceBus
 {
     static class WellKnownConfigurationKeys
@@ -54,7 +55,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                 public const string NumberOfEntitiesInBundle = "AzureServiceBus.Settings.Topology.Bundling.NumberOfEntitiesInBundle";
                 public const string BundlePrefix = "AzureServiceBus.Settings.Topology.Bundling.BundlePrefix";
             }
-
         }
 
         public static class Connectivity
@@ -107,7 +107,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         public static class Serialization
         {
             public const string BrokeredMessageBodyType = "AzureServiceBus.Serialization.BrokeredMessageBodyType";
-
         }
     }
 }

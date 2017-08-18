@@ -2,13 +2,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using Microsoft.ServiceBus.Messaging;
 
     static class TaskWithRetryExtensions
     {
-        static ILog logger = LogManager.GetLogger(typeof(TaskWithRetryExtensions));
-
         public static async Task RetryOnThrottleAsync(this IMessageSenderInternal sender, Func<IMessageSenderInternal, Task> action, Func<IMessageSenderInternal, Task> retryAction, TimeSpan delay, int maxRetryAttempts, int retryAttempts = 0)
         {
             try
@@ -32,5 +30,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
             }
         }
+
+        static ILog logger = LogManager.GetLogger(typeof(TaskWithRetryExtensions));
     }
 }

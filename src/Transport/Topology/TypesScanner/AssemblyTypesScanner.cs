@@ -6,8 +6,6 @@
 
     class AssemblyTypesScanner : ITypesScanner, IEquatable<AssemblyTypesScanner>
     {
-        Assembly assembly;
-
         public AssemblyTypesScanner(Assembly assembly)
         {
             if (assembly == null)
@@ -16,6 +14,17 @@
             }
 
             this.assembly = assembly;
+        }
+
+        public bool Equals(AssemblyTypesScanner other)
+        {
+            return other != null
+                   && assembly.Equals(other.assembly);
+        }
+
+        public IEnumerable<Type> Scan()
+        {
+            return assembly.GetTypes();
         }
 
         public override bool Equals(object obj)
@@ -29,15 +38,6 @@
             return assembly.GetHashCode();
         }
 
-        public IEnumerable<Type> Scan()
-        {
-            return assembly.GetTypes();
-        }
-
-        public bool Equals(AssemblyTypesScanner other)
-        {
-            return other != null
-                   && assembly.Equals(other.assembly);
-        }
+        Assembly assembly;
     }
 }

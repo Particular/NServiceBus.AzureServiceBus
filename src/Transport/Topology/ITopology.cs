@@ -4,10 +4,13 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Threading.Tasks;
     using Routing;
     using Settings;
-    using Transport;
 
     interface ITopologyInternal
     {
+        bool HasNativePubSubSupport { get; }
+        bool HasSupportForCentralizedPubSub { get; }
+
+        TopologySettings Settings { get; }
         void Initialize(SettingsHolder settings);
         EndpointInstance BindToLocalEndpoint(EndpointInstance instance);
         Func<ICreateQueues> GetQueueCreatorFactory();
@@ -17,11 +20,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         Func<IManageSubscriptions> GetSubscriptionManagerFactory();
         OutboundRoutingPolicy GetOutboundRoutingPolicy();
 
-        bool HasNativePubSubSupport { get; }
-        bool HasSupportForCentralizedPubSub { get;}
-
         Task Stop();
-
-        TopologySettings Settings { get; }
     }
 }

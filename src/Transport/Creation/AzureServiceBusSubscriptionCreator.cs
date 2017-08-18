@@ -3,18 +3,13 @@
     using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using Settings;
 
     class AzureServiceBusSubscriptionCreator
     {
-        TopologySubscriptionSettings subscriptionSettings;
-        int numberOfImmediateRetries;
-        ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
-        ILog logger = LogManager.GetLogger<AzureServiceBusSubscriptionCreator>();
-
         public AzureServiceBusSubscriptionCreator(TopologySubscriptionSettings subscriptionSettings, ReadOnlySettings settings)
         {
             this.subscriptionSettings = subscriptionSettings;
@@ -100,7 +95,6 @@
             }
 
             return subscriptionDescription;
-
         }
 
         public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
@@ -177,5 +171,10 @@
         {
             newDescription.RequiresSession = existingDescription.RequiresSession;
         }
+
+        TopologySubscriptionSettings subscriptionSettings;
+        int numberOfImmediateRetries;
+        ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
+        ILog logger = LogManager.GetLogger<AzureServiceBusSubscriptionCreator>();
     }
 }

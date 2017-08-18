@@ -6,8 +6,6 @@ namespace NServiceBus
 
     public class AzureServiceBusNamespaceRoutingSettings : ExposeSettings
     {
-        SettingsHolder settings;
-
         internal AzureServiceBusNamespaceRoutingSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
@@ -28,5 +26,6 @@ namespace NServiceBus
             namespaces.Add(name, connectionString, NamespacePurpose.Routing);
         }
 
+        SettingsHolder settings;
     }
 }

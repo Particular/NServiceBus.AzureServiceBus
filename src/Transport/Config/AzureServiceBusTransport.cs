@@ -11,7 +11,9 @@
 
     public class AzureServiceBusTransport : TransportDefinition
     {
-        static ILog logger = LogManager.GetLogger(typeof(AzureServiceBusTransport));
+        public override bool RequiresConnectionString { get; } = false;
+
+        public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
 
         public override TransportInfrastructure Initialize(SettingsHolder settings, string connectionString)
         {
@@ -27,7 +29,7 @@
 
             var topology = GetConfiguredTopology(settings);
             topology.Initialize(settings);
-            
+
             return new AzureServiceBusTransportInfrastructure(topology, settings.SupportedTransactionMode());
         }
 
@@ -74,7 +76,6 @@
                             logger.Warn("Default value for message receiver's PrefetchCount was reduced to zero to avoid message loss with ReceiveAndDelete receive mode. To enforce prefetch, use the configuration API to set the value explicitly.");
                         }
                     }
-
                 }
             }
         }
@@ -91,8 +92,6 @@
             namespaces.Add(alias, connectionString, NamespacePurpose.Partitioning);
         }
 
-        public override bool RequiresConnectionString { get; } = false;
-
-        public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
+        static ILog logger = LogManager.GetLogger(typeof(AzureServiceBusTransport));
     }
 }

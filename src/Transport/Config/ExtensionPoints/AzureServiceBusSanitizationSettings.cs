@@ -6,8 +6,6 @@ namespace NServiceBus
 
     public class AzureServiceBusSanitizationSettings : ExposeSettings
     {
-        SettingsHolder settings;
-
         internal AzureServiceBusSanitizationSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
@@ -56,7 +54,10 @@ namespace NServiceBus
 
         /// <summary>
         /// Strategy to use for sanitization of entity paths/names.
-        /// <remarks> Default is <see cref="ThrowOnFailedValidation"/>. For backward compatibility with <see cref="EndpointOrientedTopology"/> use <see cref="ValidateAndHashIfNeeded"/>.</remarks>
+        /// <remarks>
+        /// Default is <see cref="ThrowOnFailedValidation" />. For backward compatibility with
+        /// <see cref="EndpointOrientedTopology" /> use <see cref="ValidateAndHashIfNeeded" />.
+        /// </remarks>
         /// </summary>
         public AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>() where T : ISanitizationStrategy
         {
@@ -64,5 +65,7 @@ namespace NServiceBus
 
             return new AzureServiceBusSanitizationExtensionPoint<T>(settings);
         }
+
+        SettingsHolder settings;
     }
 }

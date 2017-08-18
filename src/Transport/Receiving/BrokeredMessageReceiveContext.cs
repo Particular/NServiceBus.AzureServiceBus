@@ -20,6 +20,5 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         // while recovering, send via must be avoided as it will be rolled back
         public bool Recovering { get; set; }
-
     }
 }

@@ -1,8 +1,8 @@
 namespace NServiceBus
 {
+    using Configuration.AdvanceExtensibility;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using Configuration.AdvanceExtensibility;
     using Transport.AzureServiceBus;
 
     public static partial class AzureServiceBusTransportExtensions
@@ -22,7 +22,7 @@ namespace NServiceBus
         }
 
         /// <summary>
-        /// <see cref="BrokeredMessage"/> body type used to store and retrieve messages.
+        /// <see cref="BrokeredMessage" /> body type used to store and retrieve messages.
         /// <remarks>Default is SupportedBrokeredMessageBodyTypes.ByteArray.</remarks>
         /// </summary>
         public static void BrokeredMessageBodyType(this TransportExtensions<AzureServiceBusTransport> transportExtensions, SupportedBrokeredMessageBodyTypes type)

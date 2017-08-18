@@ -11,15 +11,18 @@
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is EntityAddress && Equals((EntityAddress) obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            return obj is EntityAddress && Equals((EntityAddress)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((Name?.GetHashCode() ?? 0)*397) ^ (Suffix?.GetHashCode() ?? 0);
+                return ((Name?.GetHashCode() ?? 0) * 397) ^ (Suffix?.GetHashCode() ?? 0);
             }
         }
 
@@ -45,7 +48,9 @@
         public EntityAddress(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
+            {
                 throw new ArgumentException("Entity address value can't be empty", nameof(value));
+            }
 
             var splitByAt = value.Split(seperators);
 

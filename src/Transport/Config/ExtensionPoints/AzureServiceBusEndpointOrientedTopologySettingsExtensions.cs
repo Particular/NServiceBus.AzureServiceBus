@@ -32,7 +32,9 @@
             }
 
             if (!map.ContainsKey(publisherName))
+            {
                 map[publisherName] = new List<ITypesScanner>();
+            }
 
             map[publisherName].Add(scanner);
         }

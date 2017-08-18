@@ -4,16 +4,13 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Microsoft.ServiceBus.Messaging;
     using DelayedDelivery;
+    using Microsoft.ServiceBus.Messaging;
     using Performance.TimeToBeReceived;
     using Settings;
-    using Transport;
 
     class BatchedOperationsToBrokeredMessagesConverter
     {
-        ReadOnlySettings settings;
-
         public BatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings)
         {
             this.settings = settings;
@@ -65,7 +62,9 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var replyToAddress = outgoingMessage.Headers[Headers.ReplyToAddress];
                 // Read-only endpoints have no reply-to value
                 if (string.IsNullOrWhiteSpace(replyToAddress))
+                {
                     return;
+                }
 
                 var replyTo = new EntityAddress(replyToAddress);
 
@@ -99,8 +98,14 @@ namespace NServiceBus.Transport.AzureServiceBus
             var defaultAlias = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
 
             var selected = destinationNamespace != null ? namespaces.FirstOrDefault(ns => ns.Alias == destinationNamespace.Alias) : null;
-            if (selected == null) selected = namespaces.FirstOrDefault(ns => ns.Alias == defaultAlias);
-            if (selected == null) selected = namespaces.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);
+            if (selected == null)
+            {
+                selected = namespaces.FirstOrDefault(ns => ns.Alias == defaultAlias);
+            }
+            if (selected == null)
+            {
+                selected = namespaces.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);
+            }
             return selected;
         }
 
@@ -185,5 +190,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             return brokeredMessage;
         }
+
+        ReadOnlySettings settings;
     }
 }

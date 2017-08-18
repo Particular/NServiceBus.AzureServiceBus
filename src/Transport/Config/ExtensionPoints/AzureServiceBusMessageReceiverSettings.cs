@@ -1,16 +1,14 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using Configuration.AdvanceExtensibility;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using Configuration.AdvanceExtensibility;
     using Settings;
     using Transport.AzureServiceBus;
 
     public class AzureServiceBusMessageReceiverSettings : ExposeSettings
     {
-        SettingsHolder settings;
-
         internal AzureServiceBusMessageReceiverSettings(SettingsHolder settings) : base(settings)
         {
             this.settings = settings;
@@ -49,7 +47,7 @@
         }
 
         /// <summary>
-        /// Maximum duration within which the message lock will be renewed automatically. 
+        /// Maximum duration within which the message lock will be renewed automatically.
         /// <remarks>This value should be greater than the message lock duration. Default is 5 minutes.</remarks>
         /// </summary>
         public AzureServiceBusMessageReceiverSettings AutoRenewTimeout(TimeSpan autoRenewTimeout)
@@ -58,5 +56,7 @@
 
             return this;
         }
+
+        SettingsHolder settings;
     }
 }

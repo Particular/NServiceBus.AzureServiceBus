@@ -2,9 +2,6 @@
 {
     class AddressingLogic
     {
-        readonly ICompositionStrategy composition;
-        readonly ISanitizationStrategy sanitizationStrategy;
-
         public AddressingLogic(ISanitizationStrategy sanitizationStrategy, ICompositionStrategy composition)
         {
             this.sanitizationStrategy = sanitizationStrategy;
@@ -19,6 +16,8 @@
             path = sanitizationStrategy.Sanitize(path, entityType);
             return new EntityAddress(path, address.Suffix);
         }
-    }
 
+        readonly ICompositionStrategy composition;
+        readonly ISanitizationStrategy sanitizationStrategy;
+    }
 }

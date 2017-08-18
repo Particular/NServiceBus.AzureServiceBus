@@ -8,8 +8,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessageReceiverAdapter : IMessageReceiverInternal
     {
-        MessageReceiver receiver;
-
         public MessageReceiverAdapter(MessageReceiver receiver)
         {
             this.receiver = receiver;
@@ -38,12 +36,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public Task CloseAsync()
         {
-           return receiver.CloseAsync();
+            return receiver.CloseAsync();
         }
 
         public Task CompleteBatchAsync(IEnumerable<Guid> lockTokens)
         {
             return receiver.CompleteBatchAsync(lockTokens);
         }
+
+        MessageReceiver receiver;
     }
 }

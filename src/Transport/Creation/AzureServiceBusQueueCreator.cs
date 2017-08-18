@@ -5,19 +5,13 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
     using Logging;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using Settings;
 
     class AzureServiceBusQueueCreator
     {
-        ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
-        TopologyQueueSettings queueSettings;
-        ILog logger = LogManager.GetLogger(typeof(AzureServiceBusQueueCreator));
-        IReadOnlyCollection<string> systemQueueAddresses;
-        int numberOfImmediateRetries;
-
         public AzureServiceBusQueueCreator(TopologyQueueSettings queueSettings, ReadOnlySettings settings)
         {
             this.queueSettings = queueSettings;
@@ -31,20 +25,20 @@
         {
             var description = new QueueDescription(queuePath)
             {
-               LockDuration = queueSettings.LockDuration,
-               MaxSizeInMegabytes = queueSettings.MaxSizeInMegabytes,
-               RequiresDuplicateDetection = queueSettings.RequiresDuplicateDetection,
-               DefaultMessageTimeToLive = queueSettings.DefaultMessageTimeToLive,
-               EnableDeadLetteringOnMessageExpiration = queueSettings.EnableDeadLetteringOnMessageExpiration,
-               DuplicateDetectionHistoryTimeWindow = queueSettings.DuplicateDetectionHistoryTimeWindow,
-               MaxDeliveryCount = IsSystemQueue(queuePath) ? 10 : numberOfImmediateRetries,
-               EnableBatchedOperations = queueSettings.EnableBatchedOperations,
-               EnablePartitioning = queueSettings.EnablePartitioning,
-               SupportOrdering = queueSettings.SupportOrdering,
-               AutoDeleteOnIdle = queueSettings.AutoDeleteOnIdle,
+                LockDuration = queueSettings.LockDuration,
+                MaxSizeInMegabytes = queueSettings.MaxSizeInMegabytes,
+                RequiresDuplicateDetection = queueSettings.RequiresDuplicateDetection,
+                DefaultMessageTimeToLive = queueSettings.DefaultMessageTimeToLive,
+                EnableDeadLetteringOnMessageExpiration = queueSettings.EnableDeadLetteringOnMessageExpiration,
+                DuplicateDetectionHistoryTimeWindow = queueSettings.DuplicateDetectionHistoryTimeWindow,
+                MaxDeliveryCount = IsSystemQueue(queuePath) ? 10 : numberOfImmediateRetries,
+                EnableBatchedOperations = queueSettings.EnableBatchedOperations,
+                EnablePartitioning = queueSettings.EnablePartitioning,
+                SupportOrdering = queueSettings.SupportOrdering,
+                AutoDeleteOnIdle = queueSettings.AutoDeleteOnIdle,
 
-               EnableExpress = queueSettings.EnableExpress,
-               ForwardDeadLetteredMessagesTo = queueSettings.ForwardDeadLetteredMessagesTo
+                EnableExpress = queueSettings.EnableExpress,
+                ForwardDeadLetteredMessagesTo = queueSettings.ForwardDeadLetteredMessagesTo
             };
 
             queueSettings.DescriptionCustomizer(description);
@@ -168,5 +162,11 @@
             newDescription.EnablePartitioning = existingDescription.EnablePartitioning;
             newDescription.RequiresSession = existingDescription.RequiresSession;
         }
+
+        ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
+        TopologyQueueSettings queueSettings;
+        ILog logger = LogManager.GetLogger(typeof(AzureServiceBusQueueCreator));
+        IReadOnlyCollection<string> systemQueueAddresses;
+        int numberOfImmediateRetries;
     }
 }

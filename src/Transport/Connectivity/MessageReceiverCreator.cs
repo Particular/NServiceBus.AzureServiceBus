@@ -7,9 +7,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessageReceiverCreator : ICreateMessageReceiversInternal
     {
-        IManageMessagingFactoryLifeCycleInternal factories;
-        ReadOnlySettings settings;
-
         public MessageReceiverCreator(IManageMessagingFactoryLifeCycleInternal factories, ReadOnlySettings settings)
         {
             this.factories = factories;
@@ -31,5 +28,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             return receiver;
         }
+
+        IManageMessagingFactoryLifeCycleInternal factories;
+        ReadOnlySettings settings;
     }
 }

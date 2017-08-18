@@ -5,7 +5,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Threading.Tasks;
     using Extensibility;
     using Microsoft.ServiceBus.Messaging;
-    using Transport;
 
     class Dispatcher : IDispatchMessages
     {
@@ -61,16 +60,15 @@ namespace NServiceBus.Transport.AzureServiceBus
         async Task DispatchWithTransactionScopeIfRequired(IList<BatchInternal> toBeDispatchedOnComplete, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
         {
             if (context.CancellationToken.IsCancellationRequested || !toBeDispatchedOnComplete.Any())
+            {
                 return;
+            }
 
             await routeOutgoingBatches.RouteBatches(toBeDispatchedOnComplete, context, consistency).ConfigureAwait(false);
-
-
         }
 
         static bool TryGetReceiveContext(TransportTransaction transportTransaction, out ReceiveContextInternal receiveContext)
         {
-
             if (transportTransaction == null)
             {
                 receiveContext = null;

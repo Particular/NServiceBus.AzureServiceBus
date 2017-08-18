@@ -17,6 +17,11 @@
             timer = new Timer(CircuitBreakerTriggered);
         }
 
+        public void Dispose()
+        {
+            //Injected
+        }
+
         public void Success()
         {
             var oldValue = Interlocked.Exchange(ref failureCount, 0);
@@ -44,11 +49,6 @@
             return TaskEx.Completed;
         }
 
-        public void Dispose()
-        {
-            //Injected
-        }
-
         void CircuitBreakerTriggered(object state)
         {
             if (Interlocked.Read(ref failureCount) > 0)
@@ -58,14 +58,14 @@
             }
         }
 
-        static TimeSpan NoPeriodicTriggering = TimeSpan.FromMilliseconds(-1);
-        static ILog Logger = LogManager.GetLogger<RepeatedFailuresOverTimeCircuitBreaker>();
-
         string name;
         TimeSpan timeToWaitBeforeTriggering;
         Timer timer;
         Action<Exception> triggerAction;
         long failureCount;
         Exception lastException;
+
+        static TimeSpan NoPeriodicTriggering = TimeSpan.FromMilliseconds(-1);
+        static ILog Logger = LogManager.GetLogger<RepeatedFailuresOverTimeCircuitBreaker>();
     }
 }

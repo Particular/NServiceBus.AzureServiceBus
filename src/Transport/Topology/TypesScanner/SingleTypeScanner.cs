@@ -5,11 +5,20 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class SingleTypeScanner : ITypesScanner, IEquatable<SingleTypeScanner>
     {
-        Type target;
-
         public SingleTypeScanner(Type target)
         {
             this.target = target;
+        }
+
+        public bool Equals(SingleTypeScanner other)
+        {
+            return other != null
+                   && target == other.target;
+        }
+
+        public IEnumerable<Type> Scan()
+        {
+            yield return target;
         }
 
         public override bool Equals(object obj)
@@ -23,15 +32,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             return target.GetHashCode();
         }
 
-        public IEnumerable<Type> Scan()
-        {
-            yield return target;
-        }
-
-        public bool Equals(SingleTypeScanner other)
-        {
-            return other != null
-                   && target == other.target;
-        }
+        Type target;
     }
 }

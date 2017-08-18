@@ -13,10 +13,14 @@
     }
 
     [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class ForwardingTopology : ITopology { }
+    public class ForwardingTopology : ITopology
+    {
+    }
 
     [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public class EndpointOrientedTopology : ITopology { }
+    public class EndpointOrientedTopology : ITopology
+    {
+    }
 
     public static partial class AzureServiceBusTransportExtensions
     {
@@ -270,7 +274,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
 
     [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public interface ITransportPartsContainer : IRegisterTransportParts, IResolveTransportParts { }
+    public interface ITransportPartsContainer : IRegisterTransportParts, IResolveTransportParts
+    {
+    }
 
     [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
     public interface IBrokerSideSubscriptionFilter
@@ -357,7 +363,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public ConnectionString ConnectionString
         {
-            get {  throw new NotImplementedException(); }
+            get { throw new NotImplementedException(); }
         }
     }
 }

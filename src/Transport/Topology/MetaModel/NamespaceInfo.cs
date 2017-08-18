@@ -4,14 +4,6 @@
 
     public partial class NamespaceInfo : IEquatable<NamespaceInfo>
     {
-        ConnectionStringInternal connectionString;
-
-        public string Alias { get; }
-  
-        public NamespacePurpose Purpose { get; }
-
-        public string Connection => connectionString;
-
         public NamespaceInfo(string alias, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
         {
             if (string.IsNullOrWhiteSpace(alias))
@@ -28,6 +20,12 @@
             this.connectionString = new ConnectionStringInternal(connectionString);
             Purpose = purpose;
         }
+
+        public string Alias { get; }
+
+        public NamespacePurpose Purpose { get; }
+
+        public string Connection => connectionString;
 
         public bool Equals(NamespaceInfo other)
         {
@@ -47,5 +45,7 @@
             var name = Alias.ToLower();
             return string.Concat(name, "#", connectionString).GetHashCode();
         }
+
+        ConnectionStringInternal connectionString;
     }
 }
