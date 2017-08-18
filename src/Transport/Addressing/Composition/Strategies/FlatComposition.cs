@@ -1,12 +1,17 @@
 namespace NServiceBus
 {
+    using Settings;
     using Transport.AzureServiceBus;
 
     public class FlatComposition : ICompositionStrategy
     {
-        public string GetEntityPath(string entityname, EntityType entityType)
+        public void Initialize(ReadOnlySettings settings)
         {
-            return entityname;
+        }
+
+        public string GetEntityPath(string entityName, EntityType entityType)
+        {
+            return entityName;
         }
     }
 }

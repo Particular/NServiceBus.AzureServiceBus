@@ -4,7 +4,7 @@
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class AzureServiceBusIndividualizationSettings : ExposeSettings
+    public partial class AzureServiceBusIndividualizationSettings : ExposeSettings
     {
         internal AzureServiceBusIndividualizationSettings(SettingsHolder settings) : base(settings)
         {
@@ -17,11 +17,9 @@
         /// <seealso cref="CoreIndividualization" />
         /// <seealso cref="DiscriminatorBasedIndividualization" />
         /// </summary>
-        public AzureServiceBusIndividualizationExtensionPoint<T> UseStrategy<T>() where T : IIndividualizationStrategy
+        public AzureServiceBusIndividualizationExtensionPoint<T> UseStrategy<T>(T strategy) where T : IIndividualizationStrategy
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(T));
-
-            return new AzureServiceBusIndividualizationExtensionPoint<T>(settings);
+            return new AzureServiceBusIndividualizationExtensionPoint<T>(settings, strategy);
         }
 
         SettingsHolder settings;

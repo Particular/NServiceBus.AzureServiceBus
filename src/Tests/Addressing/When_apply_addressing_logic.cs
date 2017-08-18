@@ -2,6 +2,7 @@
 {
     using Transport.AzureServiceBus;
     using NUnit.Framework;
+    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -47,6 +48,10 @@
         {
             public string ProvidedEntityPathOrName { get; private set; }
 
+            public void Initialize(ReadOnlySettings settings)
+            {
+            }
+
             public string Sanitize(string entityPathOrName, EntityType entityType)
             {
                 ProvidedEntityPathOrName = entityPathOrName;
@@ -58,11 +63,15 @@
         {
             public string ProvidedEntityName { get; private set; }
 
-            public string GetEntityPath(string entityname, EntityType entityType)
+            public void Initialize(ReadOnlySettings settings)
             {
-                ProvidedEntityName = entityname;
+            }
 
-                return entityname;
+            public string GetEntityPath(string entityName, EntityType entityType)
+            {
+                ProvidedEntityName = entityName;
+
+                return entityName;
             }
         }
     }

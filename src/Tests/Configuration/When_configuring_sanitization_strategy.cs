@@ -16,9 +16,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         {
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            var strategy = extensions.Sanitization().UseStrategy<MySanitizationStrategy>();
 
-            Assert.AreEqual(typeof(MySanitizationStrategy), strategy.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy));
+            var strategy = new MySanitizationStrategy();
+            var strategySettings = extensions.Sanitization().UseStrategy(strategy);
+
+            Assert.AreSame(strategy, strategySettings.GetSettings().Get<ISanitizationStrategy>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy));
         }
 
         [Test]
@@ -28,7 +30,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, string> hash = pathOrName => pathOrName;
-            extensions.Sanitization().UseStrategy<MySanitizationStrategy>().Hash(hash);
+            extensions.Sanitization().UseStrategy(new MySanitizationStrategy()).Hash(hash);
 
             Assert.That(hash, Is.EqualTo(settings.Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Hash)));
         }
@@ -40,7 +42,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, ValidationResult> queuePathValidator = path => new ValidationResult();
-            var sanitization = extensions.Sanitization().UseStrategy<MySanitizationStrategy>().QueuePathValidation(queuePathValidator);
+            var sanitization = extensions.Sanitization().UseStrategy(new MySanitizationStrategy()).QueuePathValidation(queuePathValidator);
 
             Assert.That(queuePathValidator, Is.EqualTo(sanitization.GetSettings().Get<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathValidator)));
         }
@@ -52,7 +54,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, ValidationResult> topicPathValidator = path => new ValidationResult();
-            var sanitization = extensions.Sanitization().UseStrategy<MySanitizationStrategy>().TopicPathValidation(topicPathValidator);
+            var sanitization = extensions.Sanitization().UseStrategy(new MySanitizationStrategy()).TopicPathValidation(topicPathValidator);
 
             Assert.That(topicPathValidator, Is.EqualTo(sanitization.GetSettings().Get<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathValidator)));
         }
@@ -64,7 +66,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, ValidationResult> subscriptionNameValidator = name => new ValidationResult();
-            var sanitization = extensions.Sanitization().UseStrategy<MySanitizationStrategy>().SubscriptionNameValidation(subscriptionNameValidator);
+            var sanitization = extensions.Sanitization().UseStrategy(new MySanitizationStrategy()).SubscriptionNameValidation(subscriptionNameValidator);
 
             Assert.That(subscriptionNameValidator, Is.EqualTo(sanitization.GetSettings().Get<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameValidator)));
         }
@@ -76,7 +78,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, ValidationResult> ruleNameValidator = name => new ValidationResult();
-            var sanitization = extensions.Sanitization().UseStrategy<MySanitizationStrategy>().RuleNameValidation(ruleNameValidator);
+            var sanitization = extensions.Sanitization().UseStrategy(new MySanitizationStrategy()).RuleNameValidation(ruleNameValidator);
 
             Assert.That(ruleNameValidator, Is.EqualTo(sanitization.GetSettings().Get<Func<string, ValidationResult>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameValidator)));
         }
@@ -88,7 +90,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, string> queuePathSanitizer = path => path;
-            var sanitization = extensions.Sanitization().UseStrategy<MySanitizationStrategy>().QueuePathSanitization(queuePathSanitizer);
+            var sanitization = extensions.Sanitization().UseStrategy(new MySanitizationStrategy()).QueuePathSanitization(queuePathSanitizer);
 
             Assert.That(queuePathSanitizer, Is.EqualTo(sanitization.GetSettings().Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathSanitizer)));
         }
@@ -100,7 +102,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, string> topicPathSanitizer = path => path;
-            var sanitization = extensions.Sanitization().UseStrategy<MySanitizationStrategy>().TopicPathSanitization(topicPathSanitizer);
+            var sanitization = extensions.Sanitization().UseStrategy(new MySanitizationStrategy()).TopicPathSanitization(topicPathSanitizer);
 
             Assert.That(topicPathSanitizer, Is.EqualTo(sanitization.GetSettings().Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathSanitizer)));
         }
@@ -112,7 +114,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, string> subscriptionNameSanitizer = path => path;
-            extensions.Sanitization().UseStrategy<MySanitizationStrategy>().SubscriptionNameSanitization(subscriptionNameSanitizer);
+            extensions.Sanitization().UseStrategy(new MySanitizationStrategy()).SubscriptionNameSanitization(subscriptionNameSanitizer);
 
             Assert.That(subscriptionNameSanitizer, Is.EqualTo(settings.Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameSanitizer)));
         }
@@ -124,13 +126,18 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             Func<string, string> ruleNameSanitizer = path => path;
-            extensions.Sanitization().UseStrategy<MySanitizationStrategy>().RuleNameSanitization(ruleNameSanitizer);
+            extensions.Sanitization().UseStrategy(new MySanitizationStrategy()).RuleNameSanitization(ruleNameSanitizer);
 
             Assert.That(ruleNameSanitizer, Is.EqualTo(settings.Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameSanitizer)));
         }
 
         class MySanitizationStrategy : ISanitizationStrategy
         {
+            public void Initialize(ReadOnlySettings settings)
+            {
+                throw new NotImplementedException();
+            }
+
             public string Sanitize(string entityPathOrName, EntityType entityType)
             {
                 throw new NotImplementedException();//not relevant for test

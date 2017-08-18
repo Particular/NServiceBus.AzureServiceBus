@@ -71,7 +71,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
             extensions.NamespacePartitioning().AddNamespace("namespace1", AzureServiceBusConnectionString.Value);
             extensions.NamespacePartitioning().AddNamespace("namespace2", AzureServiceBusConnectionString.Fallback);
-            extensions.NamespacePartitioning().UseStrategy<FailOverNamespacePartitioning>();
+            extensions.NamespacePartitioning().UseStrategy(new FailOverNamespacePartitioning());
 
             var topology = new EndpointOrientedTopologyInternal();
 

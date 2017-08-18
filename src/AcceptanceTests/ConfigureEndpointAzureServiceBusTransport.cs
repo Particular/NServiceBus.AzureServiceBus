@@ -70,7 +70,7 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
         }
 
         transportConfig.Sanitization()
-            .UseStrategy<ValidateAndHashIfNeeded>();
+            .UseStrategy(new ValidateAndHashIfNeeded());
 
         configuration.RegisterComponents(c => { c.ConfigureComponent<TestIndependenceMutator>(DependencyLifecycle.SingleInstance); });
 

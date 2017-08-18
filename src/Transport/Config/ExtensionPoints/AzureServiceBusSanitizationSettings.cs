@@ -4,7 +4,7 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class AzureServiceBusSanitizationSettings : ExposeSettings
+    public partial class AzureServiceBusSanitizationSettings : ExposeSettings
     {
         internal AzureServiceBusSanitizationSettings(SettingsHolder settings) : base(settings)
         {
@@ -51,7 +51,6 @@ namespace NServiceBus
             return this;
         }
 
-
         /// <summary>
         /// Strategy to use for sanitization of entity paths/names.
         /// <remarks>
@@ -59,11 +58,9 @@ namespace NServiceBus
         /// <see cref="EndpointOrientedTopology" /> use <see cref="ValidateAndHashIfNeeded" />.
         /// </remarks>
         /// </summary>
-        public AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>() where T : ISanitizationStrategy
+        public AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>(T strategy) where T : ISanitizationStrategy
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(T));
-
-            return new AzureServiceBusSanitizationExtensionPoint<T>(settings);
+            return new AzureServiceBusSanitizationExtensionPoint<T>(settings, strategy);
         }
 
         SettingsHolder settings;

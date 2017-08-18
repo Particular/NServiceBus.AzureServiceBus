@@ -23,5 +23,7 @@
             LengthError = error;
             LengthIsValid = false;
         }
+
+        public static ValidationResult Empty = new ValidationResult();
     }
 }

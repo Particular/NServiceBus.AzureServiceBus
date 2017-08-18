@@ -25,7 +25,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
 
-            strategy = new SingleNamespacePartitioning(settings);
+            strategy = new SingleNamespacePartitioning();
+            strategy.Initialize(settings);
         }
 
         [Test]
@@ -63,9 +64,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Single_partitioning_strategy_will_throw_if_no_namespace_defined()
         {
-            var settings = new SettingsHolder();
-
-            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioning().Initialize(new SettingsHolder()));
         }
 
         [Test]
@@ -76,7 +75,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             extensions.NamespacePartitioning().AddNamespace(Name, ConnectionString);
             extensions.NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new SingleNamespacePartitioning().Initialize(settings));
         }
     }
 

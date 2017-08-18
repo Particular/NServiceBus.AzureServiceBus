@@ -25,7 +25,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         {
             var settings = new SettingsHolder();
             DefaultConfigurationValues.Apply(settings);
-            var sanitization = new ThrowOnFailedValidation(settings);
+            var sanitization = new ThrowOnFailedValidation();
+            sanitization.Initialize(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 
@@ -40,7 +41,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         {
             var settings = new SettingsHolder();
             DefaultConfigurationValues.Apply(settings);
-            var sanitization = new ThrowOnFailedValidation(settings);
+            var sanitization = new ThrowOnFailedValidation();
+            sanitization.Initialize(settings);
 
             Assert.Throws<Exception>(() => sanitization.Sanitize(entityPathOrName, entityType));
         }
@@ -53,7 +55,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         {
             var settings = new SettingsHolder();
             DefaultConfigurationValues.Apply(settings);
-            var sanitization = new ThrowOnFailedValidation(settings);
+            var sanitization = new ThrowOnFailedValidation();
+            sanitization.Initialize(settings);
 
             Assert.Throws<Exception>(() => sanitization.Sanitize(entityPathOrName, entityType));
         }

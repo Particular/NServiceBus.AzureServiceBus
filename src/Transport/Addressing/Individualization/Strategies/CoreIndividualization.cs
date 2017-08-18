@@ -1,10 +1,11 @@
 namespace NServiceBus
 {
+    using Settings;
     using Transport.AzureServiceBus;
 
     public class CoreIndividualization : IIndividualizationStrategy
     {
-        internal CoreIndividualization()
+        public void Initialize(ReadOnlySettings settings)
         {
         }
 

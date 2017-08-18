@@ -29,7 +29,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
             extensions.NamespacePartitioning().AddNamespace(TertiaryName, TertiaryConnectionString);
 
-            strategy = new RoundRobinNamespacePartitioning(settings);
+            strategy = new RoundRobinNamespacePartitioning();
+            strategy.Initialize(settings);
         }
 
         [Test]
@@ -71,9 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Roundrobin_partitioning_strategy_will_throw_if_no_namespace_are_provided()
         {
-            var settings = new SettingsHolder();
-
-            Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioning().Initialize(new SettingsHolder()));
         }
 
         [Test]
@@ -83,7 +82,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new RoundRobinNamespacePartitioning().Initialize(settings));
         }
     }
 }
