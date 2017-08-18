@@ -46,13 +46,17 @@
             {
                 var tcs1 = tcs;
                 if (!tcs1.Task.IsCompleted)
+                {
                     return;
+                }
 
                 var taskCompletionSource = new TaskCompletionSource<bool>();
 #pragma warning disable 420
                 if (Interlocked.CompareExchange(ref tcs, taskCompletionSource, tcs1) == tcs1)
 #pragma warning restore 420
+                {
                     return;
+                }
 
                 sw.SpinOnce();
             } while (true);
