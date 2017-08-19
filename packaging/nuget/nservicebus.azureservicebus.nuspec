@@ -14,7 +14,7 @@
     <copyright>$copyright$</copyright>
     <tags>$tags$</tags>
     <dependencies>
-      <dependency id="WindowsAzure.ServiceBus" version="[3.0.0.0, 4.0.0.0)" />
+      <dependency id="WindowsAzure.ServiceBus" version="[4.0.0.0, 5.0.0.0)" />
       <dependency id="NServiceBus" version="[6.0.0.0, 7.0.0.0)" />
     </dependencies>
   </metadata>
