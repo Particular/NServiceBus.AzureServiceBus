@@ -19,7 +19,7 @@
                     if (!queueAndTopicPathValidationRegex.IsMatch(queuePath))
                     {
                         validationResult = new ValidationResult();
-                        validationResult.AddErrorForInvalidCharacters($"Queue path {queuePath} contains illegal characters. Legal characters should match the following regex: `{queuePath}`.");
+                        validationResult.AddErrorForInvalidCharacters($"Queue path {queuePath} contains illegal characters. Legal characters should match the following regex: `{queueAndTopicPathValidationRegex}`.");
                     }
 
                     if (queuePath.Length > maximumQueuePathLength)
@@ -46,7 +46,7 @@
                     if (!queueAndTopicPathValidationRegex.IsMatch(topicPath))
                     {
                         validationResult = new ValidationResult();
-                        validationResult.AddErrorForInvalidCharacters($"Topic path {topicPath} contains illegal characters. Legal characters should match the following regex: `{topicPath}`.");
+                        validationResult.AddErrorForInvalidCharacters($"Topic path {topicPath} contains illegal characters. Legal characters should match the following regex: `{queueAndTopicPathValidationRegex}`.");
                     }
 
 
@@ -74,7 +74,7 @@
                     if (!subscriptionAndRuleNameValidationRegex.IsMatch(subscriptionName))
                     {
                         validationResult = new ValidationResult();
-                        validationResult.AddErrorForInvalidCharacters($"Subscription name {subscriptionName} contains illegal characters. Legal characters should match the following regex: `{subscriptionName}`.");
+                        validationResult.AddErrorForInvalidCharacters($"Subscription name {subscriptionName} contains illegal characters. Legal characters should match the following regex: `{subscriptionAndRuleNameValidationRegex}`.");
                     }
 
 
@@ -102,7 +102,7 @@
                     if (!subscriptionAndRuleNameValidationRegex.IsMatch(ruleName))
                     {
                         validationResult = new ValidationResult();
-                        validationResult.AddErrorForInvalidCharacters($"Rule name {ruleName} contains illegal characters. Legal characters should match the following regex: `{ruleName}`.");
+                        validationResult.AddErrorForInvalidCharacters($"Rule name {ruleName} contains illegal characters. Legal characters should match the following regex: `{subscriptionAndRuleNameValidationRegex}`.");
                     }
 
                     if (ruleName.Length > ruleNameMaximumLength)

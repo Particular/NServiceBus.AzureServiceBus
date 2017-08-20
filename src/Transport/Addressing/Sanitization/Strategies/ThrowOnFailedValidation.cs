@@ -18,7 +18,7 @@ namespace NServiceBus
                     if (!ValidateAndHashIfNeeded.queueAndTopicPathValidationRegex.IsMatch(queuePath))
                     {
                         validationResult = new ValidationResult();
-                        validationResult.AddErrorForInvalidCharacters($"Queue path {queuePath} contains illegal characters. Legal characters should match the following regex: `{queuePath}`.");
+                        validationResult.AddErrorForInvalidCharacters($"Queue path {queuePath} contains illegal characters. Legal characters should match the following regex: `{ValidateAndHashIfNeeded.queueAndTopicPathValidationRegex}`.");
                     }
 
                     if (queuePath.Length > maximumQueuePathLength)
@@ -41,7 +41,7 @@ namespace NServiceBus
                     if (!ValidateAndHashIfNeeded.queueAndTopicPathValidationRegex.IsMatch(topicPath))
                     {
                         validationResult = new ValidationResult();
-                        validationResult.AddErrorForInvalidCharacters($"Topic path {topicPath} contains illegal characters. Legal characters should match the following regex: `{topicPath}`.");
+                        validationResult.AddErrorForInvalidCharacters($"Topic path {topicPath} contains illegal characters. Legal characters should match the following regex: `{ValidateAndHashIfNeeded.queueAndTopicPathValidationRegex}`.");
                     }
 
 
@@ -65,7 +65,7 @@ namespace NServiceBus
                     if (!ValidateAndHashIfNeeded.subscriptionAndRuleNameValidationRegex.IsMatch(subscriptionName))
                     {
                         validationResult = new ValidationResult();
-                        validationResult.AddErrorForInvalidCharacters($"Subscription name {subscriptionName} contains illegal characters. Legal characters should match the following regex: `{subscriptionName}`.");
+                        validationResult.AddErrorForInvalidCharacters($"Subscription name {subscriptionName} contains illegal characters. Legal characters should match the following regex: `{ValidateAndHashIfNeeded.subscriptionAndRuleNameValidationRegex}`.");
                     }
 
 
@@ -89,7 +89,7 @@ namespace NServiceBus
                     if (!ValidateAndHashIfNeeded.subscriptionAndRuleNameValidationRegex.IsMatch(ruleName))
                     {
                         validationResult = new ValidationResult();
-                        validationResult.AddErrorForInvalidCharacters($"Rule name {ruleName} contains illegal characters. Legal characters should match the following regex: `{ruleName}`.");
+                        validationResult.AddErrorForInvalidCharacters($"Rule name {ruleName} contains illegal characters. Legal characters should match the following regex: `{ValidateAndHashIfNeeded.subscriptionAndRuleNameValidationRegex}`.");
                     }
 
                     if (ruleName.Length > ruleNameMaximumLength)
