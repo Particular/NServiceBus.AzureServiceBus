@@ -8,28 +8,24 @@ namespace NServiceBus
     {
         internal HierarchyComposition(ReadOnlySettings settings)
         {
-            this.settings = settings;
+            pathGenerator = settings.Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator);
         }
 
-        public string GetEntityPath(string entityname, EntityType entityType)
+        public string GetEntityPath(string entityName, EntityType entityType)
         {
-            var pathGenerator = settings.Get<Func<string, string>>(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator);
-
             switch (entityType)
             {
                 case EntityType.Queue:
                 case EntityType.Topic:
-                    return pathGenerator(entityname) + entityname;
-
+                    return pathGenerator(entityName) + entityName;
                 case EntityType.Subscription:
                 case EntityType.Rule:
-                    return entityname;
-
+                    return entityName;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
             }
         }
 
-        ReadOnlySettings settings;
+        Func<string, string> pathGenerator;
     }
 }

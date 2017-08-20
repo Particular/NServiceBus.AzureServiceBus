@@ -10,7 +10,7 @@ namespace NServiceBus
     {
         internal SingleNamespacePartitioning(ReadOnlySettings settings)
         {
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out NamespaceConfigurations namespaces))
             {
                 throw new ConfigurationErrorsException($"The '{nameof(SingleNamespacePartitioning)}' strategy requires exactly one namespace, please configure the connection string to your azure servicebus namespace.");
             }
@@ -21,14 +21,19 @@ namespace NServiceBus
             {
                 throw new ConfigurationErrorsException($"The '{nameof(SingleNamespacePartitioning)}' strategy requires exactly one namespace for the purpose of partitioning, found {namespaces.Count}. Please remove additional namespace registrations.");
             }
+
+            var @namespace = namespaces.First();
+            runtimeNamespaces = new[]
+            {
+                new RuntimeNamespaceInfo(@namespace.Alias, @namespace.Connection, @namespace.Purpose, NamespaceMode.Active)
+            };
         }
 
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {
-            var @namespace = namespaces.First();
-            yield return new RuntimeNamespaceInfo(@namespace.Alias, @namespace.Connection, @namespace.Purpose, NamespaceMode.Active);
+            return runtimeNamespaces;
         }
 
-        NamespaceConfigurations namespaces;
+        RuntimeNamespaceInfo[] runtimeNamespaces;
     }
 }

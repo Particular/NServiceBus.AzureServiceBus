@@ -1,7 +1,6 @@
 namespace NServiceBus
 {
     using System;
-    using System.Text.RegularExpressions;
     using Settings;
     using Transport.AzureServiceBus;
 
@@ -9,81 +8,99 @@ namespace NServiceBus
     {
         internal ThrowOnFailedValidation(ReadOnlySettings settings)
         {
-            this.settings = settings;
-
-            // validators
-
-            defaultQueuePathValidation = queuePath =>
+            var maximumQueuePathLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength);
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathValidator, out queuePathValidation))
             {
-                var validationResult = new ValidationResult();
-
-                if (!queueAndTopicNameRegex.IsMatch(queuePath))
+                queuePathValidation = queuePath =>
                 {
-                    validationResult.AddErrorForInvalidCharacters($"Queue path {queuePath} contains illegal characters. Legal characters should match the following regex: `{queuePath}`.");
-                }
+                    ValidationResult validationResult = null;
 
-                var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength);
-                if (queuePath.Length > maximumLength)
-                {
-                    validationResult.AddErrorForInvalidLenth($"Queue path `{queuePath}` exceeds maximum length of {maximumLength} characters.");
-                }
+                    if (!ValidateAndHashIfNeeded.queueAndTopicPathValidationRegex.IsMatch(queuePath))
+                    {
+                        validationResult = new ValidationResult();
+                        validationResult.AddErrorForInvalidCharacters($"Queue path {queuePath} contains illegal characters. Legal characters should match the following regex: `{queuePath}`.");
+                    }
 
-                return validationResult;
-            };
+                    if (queuePath.Length > maximumQueuePathLength)
+                    {
+                        validationResult = validationResult ?? new ValidationResult();
+                        validationResult.AddErrorForInvalidLenth($"Queue path `{queuePath}` exceeds maximum length of {maximumQueuePathLength} characters.");
+                    }
 
-            defaultTopicPathValidation = topicPath =>
+                    return validationResult ?? ValidationResult.Empty;
+                };
+            }
+
+            var topicPathMaximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength);
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathValidator, out topicPathValidation))
             {
-                var validationResult = new ValidationResult();
-
-                if (!queueAndTopicNameRegex.IsMatch(topicPath))
+                topicPathValidation = topicPath =>
                 {
-                    validationResult.AddErrorForInvalidCharacters($"Topic path {topicPath} contains illegal characters. Legal characters should match the following regex: `{topicPath}`.");
-                }
+                    ValidationResult validationResult = null;
 
-                var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength);
-                if (topicPath.Length > maximumLength)
-                {
-                    validationResult.AddErrorForInvalidLenth($"Topic path `{topicPath}` exceeds maximum length of {maximumLength} characters.");
-                }
+                    if (!ValidateAndHashIfNeeded.queueAndTopicPathValidationRegex.IsMatch(topicPath))
+                    {
+                        validationResult = new ValidationResult();
+                        validationResult.AddErrorForInvalidCharacters($"Topic path {topicPath} contains illegal characters. Legal characters should match the following regex: `{topicPath}`.");
+                    }
 
-                return validationResult;
-            };
 
-            defaultSubscriptionNameValidation = subscriptionName =>
+                    if (topicPath.Length > topicPathMaximumLength)
+                    {
+                        validationResult = validationResult ?? new ValidationResult();
+                        validationResult.AddErrorForInvalidLenth($"Topic path `{topicPath}` exceeds maximum length of {topicPathMaximumLength} characters.");
+                    }
+
+                    return validationResult ?? ValidationResult.Empty;
+                };
+            }
+
+            var subscriptionNameMaximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength);
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameValidator, out subscriptionNameValidation))
             {
-                var validationResult = new ValidationResult();
-
-                if (!subscriptionAndRuleNameRegex.IsMatch(subscriptionName))
+                subscriptionNameValidation = subscriptionName =>
                 {
-                    validationResult.AddErrorForInvalidCharacters($"Subscription name {subscriptionName} contains illegal characters. Legal characters should match the following regex: `{subscriptionName}`.");
-                }
+                    ValidationResult validationResult = null;
 
-                var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength);
-                if (subscriptionName.Length > maximumLength)
-                {
-                    validationResult.AddErrorForInvalidLenth($"Subscription name `{subscriptionName}` exceeds maximum length of {maximumLength} characters.");
-                }
+                    if (!ValidateAndHashIfNeeded.subscriptionAndRuleNameValidationRegex.IsMatch(subscriptionName))
+                    {
+                        validationResult = new ValidationResult();
+                        validationResult.AddErrorForInvalidCharacters($"Subscription name {subscriptionName} contains illegal characters. Legal characters should match the following regex: `{subscriptionName}`.");
+                    }
 
-                return validationResult;
-            };
 
-            defaultRuleNameValidation = ruleName =>
+                    if (subscriptionName.Length > subscriptionNameMaximumLength)
+                    {
+                        validationResult = validationResult ?? new ValidationResult();
+                        validationResult.AddErrorForInvalidLenth($"Subscription name `{subscriptionName}` exceeds maximum length of {subscriptionNameMaximumLength} characters.");
+                    }
+
+                    return validationResult ?? ValidationResult.Empty;
+                };
+            }
+
+            var ruleNameMaximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameMaximumLength);
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameValidator, out ruleNameValidation))
             {
-                var validationResult = new ValidationResult();
-
-                if (!subscriptionAndRuleNameRegex.IsMatch(ruleName))
+                ruleNameValidation = ruleName =>
                 {
-                    validationResult.AddErrorForInvalidCharacters($"Rule name {ruleName} contains illegal characters. Legal characters should match the following regex: `{ruleName}`.");
-                }
+                    ValidationResult validationResult = null;
 
-                var maximumLength = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameMaximumLength);
-                if (ruleName.Length > maximumLength)
-                {
-                    validationResult.AddErrorForInvalidLenth($"Rule name `{ruleName}` exceeds maximum length of {maximumLength} characters.");
-                }
+                    if (!ValidateAndHashIfNeeded.subscriptionAndRuleNameValidationRegex.IsMatch(ruleName))
+                    {
+                        validationResult = new ValidationResult();
+                        validationResult.AddErrorForInvalidCharacters($"Rule name {ruleName} contains illegal characters. Legal characters should match the following regex: `{ruleName}`.");
+                    }
 
-                return validationResult;
-            };
+                    if (ruleName.Length > ruleNameMaximumLength)
+                    {
+                        validationResult = validationResult ?? new ValidationResult();
+                        validationResult.AddErrorForInvalidLenth($"Rule name `{ruleName}` exceeds maximum length of {ruleNameMaximumLength} characters.");
+                    }
+
+                    return validationResult ?? ValidationResult.Empty;
+                };
+            }
         }
 
         public string Sanitize(string entityPathOrName, EntityType entityType)
@@ -93,31 +110,16 @@ namespace NServiceBus
             switch (entityType)
             {
                 case EntityType.Queue:
-                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathValidator, out validator))
-                    {
-                        validator = defaultQueuePathValidation;
-                    }
+                    validator = queuePathValidation;
                     break;
-
                 case EntityType.Topic:
-                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathValidator, out validator))
-                    {
-                        validator = defaultTopicPathValidation;
-                    }
+                    validator = topicPathValidation;
                     break;
-
                 case EntityType.Subscription:
-                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameValidator, out validator))
-                    {
-                        validator = defaultSubscriptionNameValidation;
-                    }
+                    validator = subscriptionNameValidation;
                     break;
-
                 case EntityType.Rule:
-                    if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameValidator, out validator))
-                    {
-                        validator = defaultRuleNameValidation;
-                    }
+                    validator = ruleNameValidation;
                     break;
 
                 default:
@@ -151,17 +153,9 @@ namespace NServiceBus
                                 + Environment.NewLine + "Use `Sanitization().UseStrategy<ISanitizationStrategy>()` configuration API to register a custom sanitization strategy if required.");
         }
 
-        ReadOnlySettings settings;
-
-        Func<string, ValidationResult> defaultQueuePathValidation;
-        Func<string, ValidationResult> defaultTopicPathValidation;
-        Func<string, ValidationResult> defaultSubscriptionNameValidation;
-        Func<string, ValidationResult> defaultRuleNameValidation;
-
-        // Entity segments can contain only letters, numbers, periods (.), hyphens (-), and underscores (-), paths can contain slashes (/)
-        static Regex queueAndTopicNameRegex = new Regex(@"^[^\/][0-9A-Za-z_\.\-\/]+[^\/]$", RegexOptions.Compiled);
-
-        // Except for subscriptions and rules, these cannot contain slashes (/)
-        static Regex subscriptionAndRuleNameRegex = new Regex(@"^[0-9A-Za-z_\.\-]+$", RegexOptions.Compiled);
+        Func<string, ValidationResult> queuePathValidation;
+        Func<string, ValidationResult> topicPathValidation;
+        Func<string, ValidationResult> subscriptionNameValidation;
+        Func<string, ValidationResult> ruleNameValidation;
     }
 }
