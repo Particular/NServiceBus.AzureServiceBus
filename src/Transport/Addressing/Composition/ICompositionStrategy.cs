@@ -1,7 +1,11 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
+    using Settings;
+
     public interface ICompositionStrategy
     {
-        string GetEntityPath(string entityname, EntityType entityType);
+        void Initialize(ReadOnlySettings settings);
+
+        string GetEntityPath(string entityName, EntityType entityType);
     }
 }

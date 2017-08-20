@@ -4,7 +4,7 @@
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class AzureServiceBusCompositionSettings : ExposeSettings
+    public partial class AzureServiceBusCompositionSettings : ExposeSettings
     {
         internal AzureServiceBusCompositionSettings(SettingsHolder settings) : base(settings)
         {
@@ -16,11 +16,9 @@
         /// <remarks>Default is <see cref="FlatComposition" /></remarks>
         /// <seealso cref="HierarchyComposition" />
         /// </summary>
-        public AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>() where T : ICompositionStrategy
+        public AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>(T strategy) where T : ICompositionStrategy
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(T));
-
-            return new AzureServiceBusCompositionExtensionPoint<T>(settings);
+            return new AzureServiceBusCompositionExtensionPoint<T>(settings, strategy);
         }
 
         SettingsHolder settings;

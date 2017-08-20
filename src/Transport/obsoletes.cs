@@ -132,6 +132,42 @@
             throw new NotImplementedException();
         }
     }
+
+    public partial class AzureServiceBusCompositionSettings
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "UseStrategy<T>(T strategy)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>() where T : ICompositionStrategy
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class AzureServiceBusSanitizationSettings
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "UseStrategy<T>(T strategy)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>() where T : ISanitizationStrategy
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class AzureServiceBusNamespacePartitioningSettings
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "UseStrategy<T>(T strategy)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusNamespacePartitioningSettings UseStrategy<T>() where T : INamespacePartitioningStrategy
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class AzureServiceBusIndividualizationSettings
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "UseStrategy<T>(T strategy)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusIndividualizationExtensionPoint<T> UseStrategy<T>() where T : IIndividualizationStrategy
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
 
 namespace NServiceBus.Transport.AzureServiceBus

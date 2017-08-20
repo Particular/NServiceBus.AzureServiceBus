@@ -31,17 +31,17 @@ namespace NServiceBus
             var defaultName = this.settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
             var namespaceConfigurations = this.settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
 
-            var partitioningStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
-            var partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(this.settings);
+            var partitioningStrategy = (INamespacePartitioningStrategy)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
+            partitioningStrategy.Initialize(settings);
 
-            var compositionStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
-            var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(this.settings);
+            var compositionStrategy = (ICompositionStrategy)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
+            compositionStrategy.Initialize(settings);
 
-            var sanitizationStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(this.settings);
+            var sanitizationStrategy = (ISanitizationStrategy)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
+            sanitizationStrategy.Initialize(settings);
 
-            var individualizationStrategyType = (Type)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
-            individualization = individualizationStrategyType.CreateInstance<IIndividualizationStrategy>(this.settings);
+            individualization = (IIndividualizationStrategy)this.settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
+            individualization.Initialize(settings);
 
             var addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
 

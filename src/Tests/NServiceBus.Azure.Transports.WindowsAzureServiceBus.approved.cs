@@ -8,9 +8,16 @@ namespace NServiceBus
 {
     
     public class AzureServiceBusCompositionExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-        where T : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy { }
+        where T : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
+    {
+        public T Strategy { get; }
+    }
     public class AzureServiceBusCompositionSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
+        public NServiceBus.AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>(T strategy)
+            where T : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `UseStrategy<T>(T strategy)` instead. The member curre" +
+            "ntly throws a NotImplementedException. Will be removed in version 9.0.0.", true)]
         public NServiceBus.AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>()
             where T : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy { }
     }
@@ -52,9 +59,16 @@ namespace NServiceBus
         public static NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.HierarchyComposition> PathGenerator(this NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.HierarchyComposition> composition, System.Func<string, string> pathGenerator) { }
     }
     public class AzureServiceBusIndividualizationExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
-        where T : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy { }
+        where T : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy
+    {
+        public T Strategy { get; }
+    }
     public class AzureServiceBusIndividualizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
+        public NServiceBus.AzureServiceBusIndividualizationExtensionPoint<T> UseStrategy<T>(T strategy)
+            where T : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `UseStrategy<T>(T strategy)` instead. The member curre" +
+            "ntly throws a NotImplementedException. Will be removed in version 9.0.0.", true)]
         public NServiceBus.AzureServiceBusIndividualizationExtensionPoint<T> UseStrategy<T>()
             where T : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy { }
     }
@@ -90,8 +104,17 @@ namespace NServiceBus
     public class AzureServiceBusNamespacePartitioningSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
         public void AddNamespace(string name, string connectionString) { }
+        public NServiceBus.AzureServiceBusNamespacePartitioningSettingsExtensionPoint<T> UseStrategy<T>(T strategy)
+            where T : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `UseStrategy<T>(T strategy)` instead. The member curre" +
+            "ntly throws a NotImplementedException. Will be removed in version 9.0.0.", true)]
         public NServiceBus.AzureServiceBusNamespacePartitioningSettings UseStrategy<T>()
             where T : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy { }
+    }
+    public class AzureServiceBusNamespacePartitioningSettingsExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+        where T : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
+    {
+        public T Strategy { get; }
     }
     public class AzureServiceBusNamespaceRoutingSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
     {
@@ -123,6 +146,7 @@ namespace NServiceBus
     public class AzureServiceBusSanitizationExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
         where T : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy
     {
+        public T Strategy { get; }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> Hash(System.Func<string, string> hash) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> QueuePathSanitization(System.Func<string, string> queuePathSanitizer) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> QueuePathValidation(System.Func<string, NServiceBus.Transport.AzureServiceBus.ValidationResult> queuePathValidator) { }
@@ -137,6 +161,10 @@ namespace NServiceBus
     {
         public NServiceBus.AzureServiceBusSanitizationSettings UseQueuePathMaximumLength(int queuePathMaximumLength) { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseRulePathMaximumLength(int rulePathMaximumLength) { }
+        public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>(T strategy)
+            where T : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `UseStrategy<T>(T strategy)` instead. The member curre" +
+            "ntly throws a NotImplementedException. Will be removed in version 9.0.0.", true)]
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>()
             where T : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseSubscriptionPathMaximumLength(int subscriptionPathMaximumLength) { }
@@ -240,11 +268,15 @@ namespace NServiceBus
     }
     public class CoreIndividualization : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy
     {
+        public CoreIndividualization() { }
         public string Individualize(string endpointName) { }
+        public void Initialize(NServiceBus.Settings.ReadOnlySettings settings) { }
     }
     public class DiscriminatorBasedIndividualization : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy
     {
+        public DiscriminatorBasedIndividualization() { }
         public string Individualize(string endpointName) { }
+        public void Initialize(NServiceBus.Settings.ReadOnlySettings settings) { }
     }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public class EndpointOrientedTopology : NServiceBus.Transport.AzureServiceBus.ITopology
@@ -260,14 +292,16 @@ namespace NServiceBus
     }
     public class FailOverNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
     {
+        public FailOverNamespacePartitioning() { }
         public NServiceBus.Transport.AzureServiceBus.FailOverMode Mode { get; set; }
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.FailOverNamespacePartitioning.<GetNamespaces>d__5))]
         public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent) { }
+        public void Initialize(NServiceBus.Settings.ReadOnlySettings settings) { }
     }
     public class FlatComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
     {
         public FlatComposition() { }
-        public string GetEntityPath(string entityname, NServiceBus.EntityType entityType) { }
+        public string GetEntityPath(string entityName, NServiceBus.EntityType entityType) { }
+        public void Initialize(NServiceBus.Settings.ReadOnlySettings settings) { }
     }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public class ForwardingTopology : NServiceBus.Transport.AzureServiceBus.ITopology
@@ -276,17 +310,22 @@ namespace NServiceBus
     }
     public class HierarchyComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
     {
-        public string GetEntityPath(string entityname, NServiceBus.EntityType entityType) { }
+        public HierarchyComposition() { }
+        public string GetEntityPath(string entityName, NServiceBus.EntityType entityType) { }
+        public void Initialize(NServiceBus.Settings.ReadOnlySettings settings) { }
     }
     public class RoundRobinNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
     {
+        public RoundRobinNamespacePartitioning() { }
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.RoundRobinNamespacePartitioning.<GetNamespaces>d__1))]
         public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent) { }
+        public void Initialize(NServiceBus.Settings.ReadOnlySettings settings) { }
     }
     public class SingleNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
     {
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.SingleNamespacePartitioning.<GetNamespaces>d__1))]
+        public SingleNamespacePartitioning() { }
         public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent) { }
+        public void Initialize(NServiceBus.Settings.ReadOnlySettings settings) { }
     }
     public class SizeInMegabytes
     {
@@ -299,10 +338,14 @@ namespace NServiceBus
     }
     public class ThrowOnFailedValidation : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy
     {
+        public ThrowOnFailedValidation() { }
+        public void Initialize(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType) { }
     }
     public class ValidateAndHashIfNeeded : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy
     {
+        public ValidateAndHashIfNeeded() { }
+        public void Initialize(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType) { }
     }
 }
@@ -357,7 +400,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface IClientSideSubscriptionFilter { }
     public interface ICompositionStrategy
     {
-        string GetEntityPath(string entityname, NServiceBus.EntityType entityType);
+        string GetEntityPath(string entityName, NServiceBus.EntityType entityType);
+        void Initialize(NServiceBus.Settings.ReadOnlySettings settings);
     }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public interface IConvertBrokeredMessagesToIncomingMessages { }
@@ -386,6 +430,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface IIndividualizationStrategy
     {
         string Individualize(string endpointName);
+        void Initialize(NServiceBus.Settings.ReadOnlySettings settings);
     }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public interface IManageMessageReceiverLifeCycle { }
@@ -406,6 +451,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface INamespacePartitioningStrategy
     {
         System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent);
+        void Initialize(NServiceBus.Settings.ReadOnlySettings settings);
     }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public class IncomingMessageDetails
@@ -424,6 +470,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface IRouteOutgoingBatches { }
     public interface ISanitizationStrategy
     {
+        void Initialize(NServiceBus.Settings.ReadOnlySettings settings);
         string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType);
     }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
@@ -543,6 +590,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
     public class ValidationResult
     {
+        public static NServiceBus.Transport.AzureServiceBus.ValidationResult Empty;
         public ValidationResult() { }
         public bool CharactersAreValid { get; }
         public string CharactersError { get; set; }

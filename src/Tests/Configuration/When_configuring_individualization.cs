@@ -16,13 +16,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var topicSettings = extensions.Individualization().UseStrategy<MyIndividualizationStrategy>();
+            var strategy = new MyIndividualizationStrategy();
+            var topicSettings = extensions.Individualization().UseStrategy(strategy);
 
-            Assert.AreEqual(typeof(MyIndividualizationStrategy), topicSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy));
+            Assert.AreSame(strategy, topicSettings.GetSettings().Get<IIndividualizationStrategy>(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy));
         }
 
         class MyIndividualizationStrategy : IIndividualizationStrategy
         {
+            public void Initialize(ReadOnlySettings settings)
+            {
+                throw new NotImplementedException();
+            }
+
             public string Individualize(string endpointName)
             {
                 throw new NotImplementedException();//not relevant to the test

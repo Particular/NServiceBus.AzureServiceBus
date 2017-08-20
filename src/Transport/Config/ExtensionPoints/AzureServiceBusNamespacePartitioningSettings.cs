@@ -4,7 +4,7 @@
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class AzureServiceBusNamespacePartitioningSettings : ExposeSettings
+    public partial class AzureServiceBusNamespacePartitioningSettings : ExposeSettings
     {
         internal AzureServiceBusNamespacePartitioningSettings(SettingsHolder settings) : base(settings)
         {
@@ -19,11 +19,9 @@
         /// <see cref="FailOverNamespacePartitioning" />,
         /// </remarks>
         /// </summary>
-        public AzureServiceBusNamespacePartitioningSettings UseStrategy<T>() where T : INamespacePartitioningStrategy
+        public AzureServiceBusNamespacePartitioningSettingsExtensionPoint<T> UseStrategy<T>(T strategy) where T : INamespacePartitioningStrategy
         {
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(T));
-
-            return this;
+            return new AzureServiceBusNamespacePartitioningSettingsExtensionPoint<T>(settings, strategy);
         }
 
         /// <summary>

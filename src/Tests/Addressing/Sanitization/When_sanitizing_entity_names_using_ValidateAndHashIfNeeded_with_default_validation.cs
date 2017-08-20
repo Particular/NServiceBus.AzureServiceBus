@@ -22,7 +22,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         {
             var settings = new SettingsHolder();
             DefaultConfigurationValues.Apply(settings);
-            var sanitization = new ValidateAndHashIfNeeded(settings);
+            var sanitization = new ValidateAndHashIfNeeded();
+            sanitization.Initialize(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 
@@ -38,7 +39,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         {
             var settings = new SettingsHolder();
             DefaultConfigurationValues.Apply(settings);
-            var sanitization = new ValidateAndHashIfNeeded(settings);
+            var sanitization = new ValidateAndHashIfNeeded();
+            sanitization.Initialize(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 
@@ -53,7 +55,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         {
             var settings = new SettingsHolder();
             DefaultConfigurationValues.Apply(settings);
-            var sanitization = new ValidateAndHashIfNeeded(settings);
+            var sanitization = new ValidateAndHashIfNeeded();
+            sanitization.Initialize(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 
@@ -67,8 +70,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         {
             var settings = new SettingsHolder();
             DefaultConfigurationValues.Apply(settings);
-            var sanitization = new ValidateAndHashIfNeeded(settings);
-            
+            var sanitization = new ValidateAndHashIfNeeded();
+            sanitization.Initialize(settings);
+
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 
             var expectedPathOrName = MD5DeterministicNameBuilder.Build(entityPathOrName);
@@ -84,7 +88,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         {
             var settings = new SettingsHolder();
             DefaultConfigurationValues.Apply(settings);
-            var sanitization = new ValidateAndHashIfNeeded(settings);
+            var sanitization = new ValidateAndHashIfNeeded();
+            sanitization.Initialize(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 

@@ -28,7 +28,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
             extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
 
-            strategy = new FailOverNamespacePartitioning(settings);
+            strategy = new FailOverNamespacePartitioning();
+            strategy.Initialize(settings);
         }
 
         [Test]
@@ -76,9 +77,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
         [Test]
         public void Failover_partitioning_strategy_will_throw_if_no_namespace_defined()
         {
-            var settings = new SettingsHolder();
-
-            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning().Initialize(new SettingsHolder()));
         }
 
         [Test]
@@ -88,7 +87,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.NamespacePartitioning().AddNamespace(PrimaryName, PrimaryConnectionString);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning().Initialize(settings));
         }
 
         [Test]
@@ -100,7 +99,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.NamespacePar
             extensions.NamespacePartitioning().AddNamespace(SecondaryName, SecondaryConnectionString);
             extensions.NamespacePartitioning().AddNamespace(OtherName, OtherConnectionString);
 
-            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning(settings));
+            Assert.Throws<ConfigurationErrorsException>(() => new FailOverNamespacePartitioning().Initialize(settings));
         }
     }
 }

@@ -6,8 +6,12 @@
 
     public class AzureServiceBusIndividualizationExtensionPoint<T> : ExposeSettings where T : IIndividualizationStrategy
     {
-        internal AzureServiceBusIndividualizationExtensionPoint(SettingsHolder settings) : base(settings)
+        internal AzureServiceBusIndividualizationExtensionPoint(SettingsHolder settings, T strategy) : base(settings)
         {
+            Strategy = strategy;
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, Strategy);
         }
+
+        public T Strategy { get; }
     }
 }

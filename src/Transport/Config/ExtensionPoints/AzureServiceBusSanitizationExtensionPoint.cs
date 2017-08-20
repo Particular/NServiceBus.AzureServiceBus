@@ -7,10 +7,14 @@ namespace NServiceBus
 
     public class AzureServiceBusSanitizationExtensionPoint<T> : ExposeSettings where T : ISanitizationStrategy
     {
-        internal AzureServiceBusSanitizationExtensionPoint(SettingsHolder settings) : base(settings)
+        internal AzureServiceBusSanitizationExtensionPoint(SettingsHolder settings, T strategy) : base(settings)
         {
             this.settings = settings;
+            Strategy = strategy;
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, Strategy);
         }
+
+        public T Strategy { get; }
 
         public AzureServiceBusSanitizationExtensionPoint<T> QueuePathValidation(Func<string, ValidationResult> queuePathValidator)
         {

@@ -17,9 +17,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             var settings = new SettingsHolder();
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var partitioningSettings = extensions.NamespacePartitioning().UseStrategy<MyNamespacePartitioningStrategy>();
+            var strategy = new MyNamespacePartitioningStrategy();
 
-            Assert.AreEqual(typeof(MyNamespacePartitioningStrategy), partitioningSettings.GetSettings().Get<Type>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy));
+            var partitioningSettings = extensions.NamespacePartitioning().UseStrategy(strategy);
+
+            Assert.AreSame(strategy, partitioningSettings.GetSettings().Get<INamespacePartitioningStrategy>(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy));
         }
 
         [Test]
@@ -39,6 +41,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
         class MyNamespacePartitioningStrategy : INamespacePartitioningStrategy
         {
+            public void Initialize(ReadOnlySettings settings)
+            {
+                throw new NotImplementedException();
+            }
+
             public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
             {
                 throw new NotImplementedException(); // not relevant for the test

@@ -28,10 +28,10 @@
 
         static void ApplyDefaultsForExtensibility(SettingsHolder settings)
         {
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, typeof(FlatComposition));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, typeof(CoreIndividualization));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(SingleNamespacePartitioning));
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(ThrowOnFailedValidation));
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy, new FlatComposition());
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy, new CoreIndividualization());
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, new SingleNamespacePartitioning());
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, new ThrowOnFailedValidation());
         }
 
         static void ApplyDefaultValuesForSerialization(SettingsHolder settings)

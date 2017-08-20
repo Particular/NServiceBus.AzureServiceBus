@@ -17,7 +17,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
 
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
-            var strategy = new HierarchyComposition(settings);
+            var strategy = new HierarchyComposition();
+            strategy.Initialize(settings);
 
             Assert.AreEqual(prefix + entityname, strategy.GetEntityPath(entityname, EntityType.Queue));
         }
@@ -30,7 +31,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
 
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
-            var strategy = new HierarchyComposition(settings);
+            var strategy = new HierarchyComposition();
+            strategy.Initialize(settings);
 
             Assert.AreEqual(prefix + entityname, strategy.GetEntityPath(entityname, EntityType.Topic));
         }
@@ -43,7 +45,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
 
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
-            var strategy = new HierarchyComposition(settings);
+            var strategy = new HierarchyComposition();
+            strategy.Initialize(settings);
 
             Assert.AreEqual(entityname, strategy.GetEntityPath(entityname, EntityType.Subscription));
         }
@@ -56,7 +59,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
 
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
-            var strategy = new HierarchyComposition(settings);
+            var strategy = new HierarchyComposition();
+            strategy.Initialize(settings);
 
             Assert.AreEqual(entityname, strategy.GetEntityPath(entityname, EntityType.Rule));
         }
