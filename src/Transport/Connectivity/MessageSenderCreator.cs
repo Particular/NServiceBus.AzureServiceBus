@@ -9,7 +9,10 @@ namespace NServiceBus.Transport.AzureServiceBus
         public MessageSenderCreator(IManageMessagingFactoryLifeCycleInternal factories, ReadOnlySettings settings)
         {
             this.factories = factories;
-            this.settings = settings;
+            if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy))
+            {
+                retryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy);
+            }
         }
 
 
@@ -21,14 +24,14 @@ namespace NServiceBus.Transport.AzureServiceBus
                 ? await factory.CreateMessageSender(entitypath, viaEntityPath).ConfigureAwait(false)
                 : await factory.CreateMessageSender(entitypath).ConfigureAwait(false);
 
-            if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy))
+            if (retryPolicy != null)
             {
-                sender.RetryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryPolicy);
+                sender.RetryPolicy = retryPolicy;
             }
             return sender;
         }
 
         IManageMessagingFactoryLifeCycleInternal factories;
-        ReadOnlySettings settings;
+        RetryPolicy retryPolicy;
     }
 }

@@ -10,26 +10,30 @@ namespace NServiceBus.Transport.AzureServiceBus
         public MessageReceiverCreator(IManageMessagingFactoryLifeCycleInternal factories, ReadOnlySettings settings)
         {
             this.factories = factories;
-            this.settings = settings;
+            receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
+            prefetchCount = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount);
+            if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy))
+            {
+                retryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy);
+            }
         }
 
         public async Task<IMessageReceiverInternal> Create(string entityPath, string namespaceAlias)
         {
             var factory = factories.Get(namespaceAlias);
-            var receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
-
             var receiver = await factory.CreateMessageReceiver(entityPath, receiveMode).ConfigureAwait(false);
+            receiver.PrefetchCount = prefetchCount;
 
-            receiver.PrefetchCount = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.PrefetchCount);
-
-            if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy))
+            if (retryPolicy != null)
             {
-                receiver.RetryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.RetryPolicy);
+                receiver.RetryPolicy = retryPolicy;
             }
             return receiver;
         }
 
         IManageMessagingFactoryLifeCycleInternal factories;
-        ReadOnlySettings settings;
+        ReceiveMode receiveMode;
+        int prefetchCount;
+        RetryPolicy retryPolicy;
     }
 }

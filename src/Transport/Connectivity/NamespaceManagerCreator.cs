@@ -8,8 +8,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         public NamespaceManagerCreator(ReadOnlySettings settings)
         {
-            this.settings = settings;
-
             if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.NamespaceManagers.NamespaceManagerSettingsFactory))
             {
                 settingsFactory = settings.Get<Func<string, NamespaceManagerSettings>>(WellKnownConfigurationKeys.Connectivity.NamespaceManagers.NamespaceManagerSettingsFactory);
@@ -18,11 +16,18 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 tokenProviderFactory = settings.Get<Func<string, TokenProvider>>(WellKnownConfigurationKeys.Connectivity.NamespaceManagers.TokenProviderFactory);
             }
+
+            if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.NamespaceManagers.RetryPolicy))
+            {
+                retryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.NamespaceManagers.RetryPolicy);
+            }
+
+            namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
         }
 
         public INamespaceManagerInternal Create(string @namespace)
         {
-            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            
             var connectionString = @namespace;
             if (!ConnectionStringInternal.IsConnectionString(connectionString))
             {
@@ -52,16 +57,17 @@ namespace NServiceBus.Transport.AzureServiceBus
                     manager = NamespaceManager.CreateFromConnectionString(connectionString);
                 }
 
-                if (settings.HasExplicitValue(WellKnownConfigurationKeys.Connectivity.NamespaceManagers.RetryPolicy))
+                if (retryPolicy != null)
                 {
-                    manager.Settings.RetryPolicy = settings.Get<RetryPolicy>(WellKnownConfigurationKeys.Connectivity.NamespaceManagers.RetryPolicy);
+                    manager.Settings.RetryPolicy = retryPolicy;
                 }
             }
             return new NamespaceManagerAdapterInternal(manager);
         }
 
-        ReadOnlySettings settings;
         Func<string, NamespaceManagerSettings> settingsFactory;
         Func<string, TokenProvider> tokenProviderFactory;
+        RetryPolicy retryPolicy;
+        NamespaceConfigurations namespacesDefinition;
     }
 }
