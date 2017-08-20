@@ -19,8 +19,12 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
-            this.settings = settings;
             RefCount = 1;
+
+            receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
+            transportTransactionMode = settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode();
+            autoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout);
+            numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
         }
 
         public bool IsRunning => isRunning;
@@ -29,8 +33,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public void Initialize(EntityInfoInternal entity, Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
         {
-            receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
-
             incomingCallback = callback;
             this.errorCallback = errorCallback ?? EmptyErrorCallback;
             this.processingFailureCallback = processingFailureCallback;
@@ -43,11 +45,9 @@ namespace NServiceBus.Transport.AzureServiceBus
                 fullPath = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, entity.Path);
             }
 
-            var transportTransactionMode = settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode();
             wrapInScope = transportTransactionMode == TransportTransactionMode.SendsAtomicWithReceive;
             completionCanBeBatched = !wrapInScope;
-            autoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout);
-            numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
+
             var concurrency = maximumConcurrency / (double)numberOfClients;
             maxConcurrentCalls = concurrency > 1 ? (int)Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
             if (Math.Abs(maxConcurrentCalls - concurrency) > 0)
@@ -334,7 +334,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         MessageReceiverLifeCycleManager clientEntities;
         BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter;
-        ReadOnlySettings settings;
         IMessageReceiverInternal[] internalReceivers;
         ReceiveMode receiveMode;
         OnMessageOptions[] onMessageOptions;
@@ -352,6 +351,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         TimeSpan autoRenewTimeout;
         bool wrapInScope;
         bool completionCanBeBatched;
+        TransportTransactionMode transportTransactionMode;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
     }
 }

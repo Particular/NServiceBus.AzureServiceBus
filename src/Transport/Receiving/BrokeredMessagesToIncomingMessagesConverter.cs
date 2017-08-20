@@ -12,8 +12,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         public BrokeredMessagesToIncomingMessagesConverter(ReadOnlySettings settings, DefaultConnectionStringToNamespaceAliasMapper mapper)
         {
-            this.settings = settings;
             this.mapper = mapper;
+            defaultTransportEncoding = GetDefaultTransportEncoding(settings);
         }
 
         public IncomingMessageDetailsInternal Convert(BrokeredMessage brokeredMessage)
@@ -28,7 +28,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
 
             var transportEncodingWasSpecified = brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding);
-            var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : GetDefaultTransportEncoding();
+            var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : defaultTransportEncoding;
 
             byte[] body;
             switch (transportEncodingToUse)
@@ -74,15 +74,15 @@ namespace NServiceBus.Transport.AzureServiceBus
             return new IncomingMessageDetailsInternal(brokeredMessage.MessageId, headers, body);
         }
 
-        string GetDefaultTransportEncoding()
+        static string GetDefaultTransportEncoding(ReadOnlySettings settings)
         {
             var configuredDefault = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
             return configuredDefault == SupportedBrokeredMessageBodyTypes.ByteArray ? "wcf/byte-array" : "application/octect-stream";
         }
 
         ILog logger = LogManager.GetLogger<BrokeredMessagesToIncomingMessagesConverter>();
-        ReadOnlySettings settings;
         DefaultConnectionStringToNamespaceAliasMapper mapper;
+        string defaultTransportEncoding;
         static byte[] EmptyBody = new byte[0];
     }
 }
