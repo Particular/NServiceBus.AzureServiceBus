@@ -11,20 +11,15 @@ namespace NServiceBus.Transport.AzureServiceBus
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
     using NServiceBus.AzureServiceBus.Utils;
-    using Settings;
 
     class MessageReceiverNotifier : INotifyIncomingMessagesInternal
     {
-        public MessageReceiverNotifier(MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ReadOnlySettings settings)
+        public MessageReceiverNotifier(MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, MessageReceiverNotifierSettings settings)
         {
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
+            this.settings = settings;
             RefCount = 1;
-
-            receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
-            transportTransactionMode = settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode();
-            autoRenewTimeout = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout);
-            numberOfClients = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
         }
 
         public bool IsRunning => isRunning;
@@ -45,9 +40,10 @@ namespace NServiceBus.Transport.AzureServiceBus
                 fullPath = SubscriptionClient.FormatSubscriptionPath(topic.Target.Path, entity.Path);
             }
 
-            wrapInScope = transportTransactionMode == TransportTransactionMode.SendsAtomicWithReceive;
+            wrapInScope = settings.TransportTransactionMode == TransportTransactionMode.SendsAtomicWithReceive;
             completionCanBeBatched = !wrapInScope;
 
+            var numberOfClients = settings.NumberOfClients;
             var concurrency = maximumConcurrency / (double)numberOfClients;
             maxConcurrentCalls = concurrency > 1 ? (int)Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
             if (Math.Abs(maxConcurrentCalls - concurrency) > 0)
@@ -67,7 +63,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             completion.Start(CompletionCallback, internalReceivers);
 
             var exceptions = new ConcurrentQueue<Exception>();
-            Parallel.For(0, numberOfClients, i =>
+            Parallel.For(0, settings.NumberOfClients, i =>
             {
                 try
                 {
@@ -81,7 +77,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     var options = new OnMessageOptions
                     {
                         AutoComplete = false,
-                        AutoRenewTimeout = autoRenewTimeout,
+                        AutoRenewTimeout = settings.AutoRenewTimeout,
                         MaxConcurrentCalls = maxConcurrentCalls
                     };
                     options.ExceptionReceived += OptionsOnExceptionReceived;
@@ -272,7 +268,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         Task<bool> HandleCompletion(BrokeredMessage message, BrokeredMessageReceiveContextInternal context, bool canBeBatched, int slotNumber)
         {
-            if (receiveMode == ReceiveMode.PeekLock)
+            if (settings.ReceiveMode == ReceiveMode.PeekLock)
             {
                 if (canBeBatched)
                 {
@@ -288,7 +284,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         Task<bool> AbandonOnCancellation(BrokeredMessage message)
         {
-            logger.Debug("Received message is cancelled by the pipeline, abandoning it so we can process it later.");
+            logger.Debug("Received message is canceled by the pipeline, abandoning it so we can process it later.");
 
             return AbandonInternal(message);
         }
@@ -302,7 +298,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         async Task<bool> AbandonInternal(BrokeredMessage message, IDictionary<string, object> propertiesToModify = null)
         {
-            if (receiveMode == ReceiveMode.ReceiveAndDelete)
+            if (settings.ReceiveMode == ReceiveMode.ReceiveAndDelete)
             {
                 return true;
             }
@@ -335,7 +331,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         MessageReceiverLifeCycleManager clientEntities;
         BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter;
         IMessageReceiverInternal[] internalReceivers;
-        ReceiveMode receiveMode;
         OnMessageOptions[] onMessageOptions;
         Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> incomingCallback;
         Func<Exception, Task> errorCallback;
@@ -345,13 +340,11 @@ namespace NServiceBus.Transport.AzureServiceBus
         volatile bool stopping;
         volatile bool isRunning;
         Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
-        int numberOfClients;
         MultiProducerConcurrentCompletion<Guid> completion;
         int maxConcurrentCalls;
-        TimeSpan autoRenewTimeout;
         bool wrapInScope;
         bool completionCanBeBatched;
-        TransportTransactionMode transportTransactionMode;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
+        MessageReceiverNotifierSettings settings;
     }
 }

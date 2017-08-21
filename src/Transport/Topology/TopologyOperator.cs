@@ -5,15 +5,21 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Logging;
+    using Microsoft.ServiceBus.Messaging;
     using Settings;
 
     class TopologyOperator : IOperateTopologyInternal, IDisposable
     {
         public TopologyOperator(MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ReadOnlySettings settings)
         {
-            readOnlySettings = settings;
             this.brokeredMessageConverter = brokeredMessageConverter;
             messageReceiverLifeCycle = clientEntities;
+
+            messageReceiverNotifierSettings = new MessageReceiverNotifierSettings(
+                settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode),
+                settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode(),
+                settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
+                settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
         }
 
         public void Dispose()
@@ -106,7 +112,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (type == EntityType.Queue || type == EntityType.Subscription)
             {
-                return new MessageReceiverNotifier(messageReceiverLifeCycle, brokeredMessageConverter, readOnlySettings);
+                return new MessageReceiverNotifier(messageReceiverLifeCycle, brokeredMessageConverter, messageReceiverNotifierSettings);
             }
 
             throw new NotSupportedException("Entity type " + type + " not supported");
@@ -147,6 +153,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         int maxConcurrency;
         MessageReceiverLifeCycleManager messageReceiverLifeCycle;
         BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter;
-        ReadOnlySettings readOnlySettings;
+        MessageReceiverNotifierSettings messageReceiverNotifierSettings;
     }
 }
