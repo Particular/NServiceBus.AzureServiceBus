@@ -19,10 +19,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.queuesCreator = queuesCreator;
             this.subscriptionsCreator = subscriptionsCreator;
             this.namespaces = namespaces;
+            var namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
 
             hasManageRights = new AsyncLazy<bool>(async () =>
             {
-                var namespacesWithoutManageRights = await ManageRightsCheck.Run(namespaces, settings)
+                var namespacesWithoutManageRights = await ManageRightsCheck.Run(namespaces, namespaceConfigurations)
                     .ConfigureAwait(false);
                 namespacesWithoutManageRightsJoined = string.Join(", ", namespacesWithoutManageRights.Select(alias => $"`{alias}`"));
                 return namespacesWithoutManageRights.Count == 0;
@@ -33,7 +34,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (!await hasManageRights.Value.ConfigureAwait(false))
             {
-                Logger.Info($"Configured to create topology, but have no manage rights for the following namespace(s): {namespacesWithoutManageRightsJoined}. Execution will continue and assume the topology is already created.");
+                logger.Info($"Configured to create topology, but have no manage rights for the following namespace(s): {namespacesWithoutManageRightsJoined}. Execution will continue and assume the topology is already created.");
                 return;
             }
 
@@ -107,6 +108,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         AzureServiceBusTopicCreator topicsCreator;
         AsyncLazy<bool> hasManageRights;
         string namespacesWithoutManageRightsJoined;
-        static ILog Logger = LogManager.GetLogger<TopologyCreator>();
+        static ILog logger = LogManager.GetLogger<TopologyCreator>();
     }
 }
