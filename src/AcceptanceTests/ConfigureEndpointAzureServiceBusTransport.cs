@@ -7,7 +7,7 @@ using NServiceBus.AcceptanceTests.Routing.NativePublishSubscribe;
 using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
-using NServiceBus.Configuration.AdvanceExtensibility;
+using NServiceBus.Configuration.AdvancedExtensibility;
 using NUnit.Framework;
 
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
