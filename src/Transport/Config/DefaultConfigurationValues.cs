@@ -12,7 +12,7 @@
         public static SettingsHolder Apply(SettingsHolder settings)
         {
             // override core default serialization
-            settings.SetDefault(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new JsonSerializer(), new SettingsHolder()));
+            settings.SetDefault(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new NewtonsoftSerializer(), new SettingsHolder()));
 
             ApplyDefaultsForExtensibility(settings);
             ApplyDefaultsForConnectivity(settings);

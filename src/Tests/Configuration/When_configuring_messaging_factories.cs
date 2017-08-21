@@ -4,7 +4,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
     using Microsoft.ServiceBus;
     using Transport.AzureServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using NServiceBus.Configuration.AdvanceExtensibility;
+    using NServiceBus.Configuration.AdvancedExtensibility;
     using Settings;
     using NUnit.Framework;
 

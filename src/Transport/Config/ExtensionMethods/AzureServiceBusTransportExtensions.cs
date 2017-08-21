@@ -1,6 +1,6 @@
 namespace NServiceBus
 {
-    using Configuration.AdvanceExtensibility;
+    using Configuration.AdvancedExtensibility;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Transport.AzureServiceBus;
