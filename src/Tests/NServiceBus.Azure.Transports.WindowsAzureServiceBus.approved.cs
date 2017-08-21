@@ -261,7 +261,6 @@ namespace NServiceBus
     public class FailOverNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
     {
         public NServiceBus.Transport.AzureServiceBus.FailOverMode Mode { get; set; }
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.FailOverNamespacePartitioning.<GetNamespaces>d__5))]
         public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent) { }
     }
     public class FlatComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
@@ -276,7 +275,7 @@ namespace NServiceBus
     }
     public class HierarchyComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
     {
-        public string GetEntityPath(string entityname, NServiceBus.EntityType entityType) { }
+        public string GetEntityPath(string entityName, NServiceBus.EntityType entityType) { }
     }
     public class RoundRobinNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
     {
@@ -285,7 +284,6 @@ namespace NServiceBus
     }
     public class SingleNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
     {
-        [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.SingleNamespacePartitioning.<GetNamespaces>d__1))]
         public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent) { }
     }
     public class SizeInMegabytes
@@ -543,6 +541,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     }
     public class ValidationResult
     {
+        public static NServiceBus.Transport.AzureServiceBus.ValidationResult Empty;
         public ValidationResult() { }
         public bool CharactersAreValid { get; }
         public string CharactersError { get; set; }
