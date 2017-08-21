@@ -239,8 +239,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
-            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
-
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings, shouldSecureConnectionString);
             var namespaces = new NamespaceConfigurations(new List<NamespaceInfo>
             {
@@ -259,6 +257,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                 DeliveryConstraints = new List<DeliveryConstraint>()
             };
 
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptionsInternal());
 
             Assert.That(brokeredMessage.ReplyTo, Is.EqualTo(expectedReplyToAddress));
@@ -269,8 +268,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public void Should_set_replyto_address_to_destination_if_multiple_available_with_respect_to_secured_connection_strings_setting(bool shouldSecureConnectionString, string expectedReplyToAddress)
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
-
-            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
 
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings, shouldSecureConnectionString);
             var namespaces = new NamespaceConfigurations(new List<NamespaceInfo>
@@ -291,6 +288,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                 DeliveryConstraints = new List<DeliveryConstraint>()
             };
 
+            var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptionsInternal
             {
                DestinationNamespace = new RuntimeNamespaceInfo("alias2", "Endpoint=sb://name-y.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key")
