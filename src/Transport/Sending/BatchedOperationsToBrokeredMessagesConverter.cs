@@ -13,7 +13,10 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         public BatchedOperationsToBrokeredMessagesConverter(ReadOnlySettings settings)
         {
-            this.settings = settings;
+            useAliases = settings.Get<bool>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings);
+            namespaceConfigurations = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces).Where(n => n.Purpose == NamespacePurpose.Partitioning).ToList();
+            defaultAlias = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
+            configuredBodyType = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
         }
 
         public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperationInternal> outgoingMessages, RoutingOptionsInternal routingOptions)
@@ -70,8 +73,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 if (!replyTo.HasSuffix)
                 {
-                    var useAliases = settings.Get<bool>(WellKnownConfigurationKeys.Topology.Addressing.UseNamespaceAliasesInsteadOfConnectionStrings);
-
                     var selected = SelectMostAppropriateReplyToNamespace(destinationNamespace);
 
                     if (selected != null)
@@ -94,17 +95,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         NamespaceInfo SelectMostAppropriateReplyToNamespace(RuntimeNamespaceInfo destinationNamespace)
         {
-            var namespaces = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces).Where(n => n.Purpose == NamespacePurpose.Partitioning).ToList();
-            var defaultAlias = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
-
-            var selected = destinationNamespace != null ? namespaces.FirstOrDefault(ns => ns.Alias == destinationNamespace.Alias) : null;
+            var selected = destinationNamespace != null ? namespaceConfigurations.FirstOrDefault(ns => ns.Alias == destinationNamespace.Alias) : null;
             if (selected == null)
             {
-                selected = namespaces.FirstOrDefault(ns => ns.Alias == defaultAlias);
+                selected = namespaceConfigurations.FirstOrDefault(ns => ns.Alias == defaultAlias);
             }
             if (selected == null)
             {
-                selected = namespaces.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);
+                selected = namespaceConfigurations.FirstOrDefault(ns => ns.Purpose == NamespacePurpose.Partitioning);
             }
             return selected;
         }
@@ -173,8 +171,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         BrokeredMessage CreateBrokeredMessage(OutgoingMessage outgoingMessage)
         {
             BrokeredMessage brokeredMessage;
-            var bodyType = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
-            switch (bodyType)
+            
+            switch (configuredBodyType)
             {
                 case SupportedBrokeredMessageBodyTypes.ByteArray:
                     brokeredMessage = outgoingMessage.Body != null ? new BrokeredMessage(outgoingMessage.Body) : new BrokeredMessage();
@@ -191,6 +189,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             return brokeredMessage;
         }
 
-        ReadOnlySettings settings;
+        readonly bool useAliases;
+        List<NamespaceInfo> namespaceConfigurations;
+        string defaultAlias;
+        SupportedBrokeredMessageBodyTypes configuredBodyType;
     }
 }

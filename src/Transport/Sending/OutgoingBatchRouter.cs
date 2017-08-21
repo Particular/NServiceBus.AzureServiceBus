@@ -15,8 +15,10 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             this.outgoingMessageConverter = outgoingMessageConverter;
             this.sendersLifeCycleManager = sendersLifeCycleManager;
-            this.settings = settings;
             this.oversizedMessageHandler = oversizedMessageHandler;
+
+            sendViaFromConfiguration = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
+            transportTypeIsNetMessaging = settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType) == TransportType.NetMessaging;
 
             backOffTimeOnThrottle = settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageSenders.BackOffTimeOnThrottle);
             maxRetryAttemptsOnThrottle = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.RetryAttemptsOnThrottle);
@@ -46,11 +48,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 if (routingOptions.SendVia && !string.IsNullOrEmpty(routingOptions.ViaEntityPath))
                 {
-                    Logger.DebugFormat("Routing {0} messages to {1} via {2}", outgoingBatches.Count, entity.Path, routingOptions.ViaEntityPath);
+                    logger.DebugFormat("Routing {0} messages to {1} via {2}", outgoingBatches.Count, entity.Path, routingOptions.ViaEntityPath);
                 }
                 else
                 {
-                    Logger.DebugFormat("Routing {0} messages to {1}", outgoingBatches.Count, entity.Path);
+                    logger.DebugFormat("Routing {0} messages to {1}", outgoingBatches.Count, entity.Path);
                 }
 
                 // don't use via on fallback, not supported across namespaces
@@ -78,8 +80,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var context = receiveContext as BrokeredMessageReceiveContextInternal;
             if (context?.Recovering == false) // avoid send via when recovering to prevent error message from rolling back
             {
-                sendVia = settings.Get<bool>(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue);
-                sendVia &= settings.Get<TransportType>(WellKnownConfigurationKeys.Connectivity.TransportType) == TransportType.NetMessaging;
+                sendVia = sendViaFromConfiguration & transportTypeIsNetMessaging;
                 sendVia &= consistency != DispatchConsistency.Isolated;
             }
             return new RoutingOptionsInternal
@@ -229,16 +230,17 @@ namespace NServiceBus.Transport.AzureServiceBus
             return false;
         }
 
-        ILog logger = LogManager.GetLogger<OutgoingBatchRouter>();
         BatchedOperationsToBrokeredMessagesConverter outgoingMessageConverter;
         MessageSenderLifeCycleManager sendersLifeCycleManager;
-        ReadOnlySettings settings;
         IHandleOversizedBrokeredMessages oversizedMessageHandler;
+
+        bool sendViaFromConfiguration;
 
         int maxRetryAttemptsOnThrottle;
         TimeSpan backOffTimeOnThrottle;
         int maximuMessageSizeInKilobytes;
 
-        static ILog Logger = LogManager.GetLogger<OutgoingBatchRouter>();
+        static ILog logger = LogManager.GetLogger<OutgoingBatchRouter>();
+        bool transportTypeIsNetMessaging;
     }
 }
