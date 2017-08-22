@@ -41,9 +41,6 @@
                     transport.MessageReceivers().AutoRenewTimeout(TimeSpan.Zero);
                     transport.Routing().RouteToEndpoint(typeof(DispatchedMessage), AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(Receiver)));
                     config.LimitMessageProcessingConcurrencyTo(1);
-#pragma warning disable 618
-                    config.Recoverability().DisableLegacyRetriesSatellite();
-#pragma warning restore 618
                 });
             }
 
@@ -68,9 +65,7 @@
             {
                 EndpointSetup<DefaultServer>(config =>
                 {
-#pragma warning disable 618
-                    config.Recoverability().DisableLegacyRetriesSatellite();
-#pragma warning restore 618
+
                 });
             }
 
