@@ -12,10 +12,10 @@
     <NoWarn>PCR0001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.0.0" />
-    <PackageReference Include="NServiceBus" Version="6.3.1" />
-    <PackageReference Include="NServiceBus.TransportTests.Sources" Version="6.3.1" />
-    <PackageReference Include="NUnit" Version="3.6.1" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.1.3" />
+    <PackageReference Include="NServiceBus" Version="6.3.6" />
+    <PackageReference Include="NServiceBus.TransportTests.Sources" Version="6.3.6" />
+    <PackageReference Include="NUnit" Version="3.7.1" />
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
   </ItemGroup>
 </Project>
