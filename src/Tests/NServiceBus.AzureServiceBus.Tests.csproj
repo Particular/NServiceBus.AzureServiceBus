@@ -12,6 +12,11 @@
     <NoWarn>PCR0001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="ApiApprover\**" />
+    <EmbeddedResource Remove="ApiApprover\**" />
+    <None Remove="ApiApprover\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="NServiceBus.Azure.Transports.WindowsAzureServiceBus.approved.cs" />
     <Compile Remove="NServiceBus.Azure.Transports.WindowsAzureServiceBus.received.cs" />
     <PackageReference Include="ApprovalTests" Version="3.0.13" />
@@ -20,7 +25,6 @@
     <PackageReference Include="WindowsAzure.ServiceBus" Version="4.1.3" />
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0-beta6" />
-    <PackageReference Include="ApiApprover" Version="6.1.0-beta2" />
     <PackageReference Include="PublicApiGenerator" Version="6.1.0-beta2" />
     <PackageReference Include="NServiceBus" Version="7.0.0-alpharelease0051" />
     <PackageReference Include="NUnit" Version="3.7.1" />
