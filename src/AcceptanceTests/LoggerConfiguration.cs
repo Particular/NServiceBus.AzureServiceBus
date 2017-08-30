@@ -35,19 +35,12 @@ namespace NServiceBus.AcceptanceTests
 
         public ILog GetLogger(string name)
         {
-            return new StaticContextAppender(name);
+            return new StaticContextAppender();
         }
     }
 
     class StaticContextAppender : ILog
-    {
-        string name;
-
-        public StaticContextAppender(string name)
-        {
-            this.name = name;
-        }
-
+    {        
         public bool IsDebugEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Debug;
         public bool IsInfoEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Info;
         public bool IsWarnEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Warn;
