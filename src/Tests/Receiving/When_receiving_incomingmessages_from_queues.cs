@@ -39,7 +39,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
             notifier.Initialize(new EntityInfoInternal { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, 10);
 
@@ -75,7 +75,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
             notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, 10);
 
@@ -120,7 +120,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await sender.Send(new BrokeredMessage());
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
             var completed = new AsyncManualResetEvent(false);
             var error = new AsyncManualResetEvent(false);
@@ -156,6 +156,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             //cleanup
             await notifier.Stop();
             await namespaceManager.DeleteQueue("myqueue");
+        }
+
+        static MessageReceiverNotifierSettings BuildMessageReceiverNotifierSettings(SettingsHolder settings)
+        {
+            // default values set by DefaultConfigurationValues.Apply - shouldn't hardcode those here, so OK to use settings
+            return new MessageReceiverNotifierSettings(
+                ReceiveMode.PeekLock,
+                settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode(),
+                settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
+                settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
         }
 
         class PassThroughMapper : DefaultConnectionStringToNamespaceAliasMapper

@@ -31,6 +31,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode, ReceiveMode.PeekLock);
             settings.Set(WellKnownConfigurationKeys.Connectivity.SendViaReceiveQueue, true);
 
+            // default values set by DefaultConfigurationValues.Apply - shouldn't hardcode those here, so OK to use settings
+            var messageReceiverNotifierSettings = new MessageReceiverNotifierSettings(
+                ReceiveMode.PeekLock,
+                settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode(),
+                settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout), 
+                settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
+
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
             var namespaceLifeCycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
@@ -69,7 +76,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var expected = 1000 - faulted;
             // sending messages to the queue is done
 
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, messageReceiverNotifierSettings);
             notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 (message, context) =>
                 {
@@ -94,7 +101,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             Console.WriteLine($"Receiving {receivedMessages} messages took {sw.ElapsedMilliseconds} milliseconds");
             Console.WriteLine("Total of {0} msgs / second", (double)receivedMessages / sw.ElapsedMilliseconds * 1000);
 
-            // make sure messages are autocompleted
+            // make sure messages are auto-completed
             Assert.That(queue.MessageCount, Is.EqualTo(0), "Messages where not completed!");
 
             //cleanup

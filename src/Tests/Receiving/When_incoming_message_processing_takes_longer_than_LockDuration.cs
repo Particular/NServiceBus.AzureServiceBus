@@ -17,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     public class When_incoming_message_processing_takes_longer_than_LockDuration
     {
         [Test]
-        public async Task AutoRenewTimout_will_extend_lock_for_processing_to_finish()
+        public async Task AutoRenewTimeout_will_extend_lock_for_processing_to_finish()
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // default settings
@@ -29,6 +29,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // set lock duration on a queue to 5 seconds and emulate message processing that takes longer than that, but less than AutoRenewTimeout
             settings.Get<TopologySettings>().QueueSettings.LockDuration = TimeSpan.FromSeconds(2);
             settings.Set(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout, TimeSpan.FromSeconds(5));
+
+            // default values set by DefaultConfigurationValues.Apply - shouldn't hardcode those here, so OK to use settings
+            var messageReceiverNotifierSettings = new MessageReceiverNotifierSettings(
+                ReceiveMode.PeekLock,
+                settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode(),
+                settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
+                settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
 
             // setup the infrastructure
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
@@ -58,7 +65,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await sender.Send(messageToSend);
             // sending messages to the queue is done
 
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, messageReceiverNotifierSettings);
             notifier.Initialize(new EntityInfoInternal { Path = "autorenewtimeout", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 async (message, context) =>
                 {
