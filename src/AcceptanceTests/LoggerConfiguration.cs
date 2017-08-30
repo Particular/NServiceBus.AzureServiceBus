@@ -21,11 +21,11 @@ namespace NServiceBus.AcceptanceTests
 
     class StaticLoggerFactory : ILoggerFactory
     {
-        ScenarioContext currentContext;
+        public static ScenarioContext CurrentContext;
 
         public StaticLoggerFactory(ScenarioContext currentContext)
         {
-            this.currentContext = currentContext;
+            CurrentContext = currentContext;
         }
 
         public ILog GetLogger(Type type)
@@ -35,24 +35,24 @@ namespace NServiceBus.AcceptanceTests
 
         public ILog GetLogger(string name)
         {
-            return new StaticContextAppender(currentContext);
+            return new StaticContextAppender(name);
         }
     }
 
     class StaticContextAppender : ILog
     {
-        ScenarioContext currentContext;
+        string name;
 
-        public StaticContextAppender(ScenarioContext currentContext)
+        public StaticContextAppender(string name)
         {
-            this.currentContext = currentContext;
+            this.name = name;
         }
 
-        public bool IsDebugEnabled => currentContext.LogLevel <= LogLevel.Debug;
-        public bool IsInfoEnabled => currentContext.LogLevel <= LogLevel.Info;
-        public bool IsWarnEnabled => currentContext.LogLevel <= LogLevel.Warn;
-        public bool IsErrorEnabled => currentContext.LogLevel <= LogLevel.Error;
-        public bool IsFatalEnabled => currentContext.LogLevel <= LogLevel.Fatal;
+        public bool IsDebugEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Debug;
+        public bool IsInfoEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Info;
+        public bool IsWarnEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Warn;
+        public bool IsErrorEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Error;
+        public bool IsFatalEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Fatal;
 
 
         public void Debug(string message)
@@ -143,13 +143,13 @@ namespace NServiceBus.AcceptanceTests
 
         void Log(string message, LogLevel messageSeverity)
         {
-            if (currentContext.LogLevel > messageSeverity)
+            if (StaticLoggerFactory.CurrentContext.LogLevel > messageSeverity)
             {
                 return;
             }
 
             Trace.WriteLine(message);
-            currentContext.Logs.Enqueue(new ScenarioContext.LogItem
+            StaticLoggerFactory.CurrentContext.Logs.Enqueue(new ScenarioContext.LogItem
             {
                 Level = messageSeverity,
                 Message = message
