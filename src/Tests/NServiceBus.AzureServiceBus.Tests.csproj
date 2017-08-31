@@ -30,6 +30,9 @@
     <PackageReference Include="PublicApiGenerator" Version="6.1.0-*" />
     <PackageReference Include="NServiceBus" Version="7.0.0-*" />
     <PackageReference Include="NUnit" Version="3.*" />
+    <!-- TODO: replace with "3.*" when NUnit bug is fixed -->
+    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.*" />
   
     <Reference Include="System.Configuration" />
   </ItemGroup>
