@@ -10,18 +10,13 @@
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.*" />
+    <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="4.*" />
-    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.*" />
+    <PackageReference Include="NServiceBus" Version="7.0.0-*" />
     <PackageReference Include="NServiceBus.AcceptanceTesting" Version="7.0.0-*" />
     <PackageReference Include="NServiceBus.AcceptanceTests.Sources" Version="7.0.0-*" />
-    <PackageReference Include="NServiceBus" Version="7.0.0-*" />
-    <PackageReference Include="NUnit" Version="3.8.1" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.1.3" />
-    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
-    <PackageReference Include="NServiceBus.AcceptanceTesting" Version="7.0.0-alpharelease0066" />
-    <PackageReference Include="NServiceBus.AcceptanceTests.Sources" Version="7.0.0-alpharelease0066" />
-    <PackageReference Include="NServiceBus" Version="7.0.0-alpharelease0066" />
-    <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.*" />
+    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.*" />
+    <PackageReference Include="NUnit" Version="3.*" />
   </ItemGroup>
 </Project>

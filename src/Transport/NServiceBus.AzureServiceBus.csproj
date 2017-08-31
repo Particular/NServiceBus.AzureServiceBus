@@ -11,20 +11,22 @@
     <NoWarn>CS0419</NoWarn>
     <NoWarn>1591, 0618</NoWarn>
   </PropertyGroup>
+  
   <PropertyGroup>
     <PackageId>NServiceBus.Azure.Transports.WindowsAzureServiceBus</PackageId>
     <Description>NServiceBus Transport for the Windows Azure Servicebus</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Janitor.Fody" Version="1.*" PrivateAssets="All" />
     <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="[2.0.0-*, 3.0.0)" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="[4.1.0, 5.0.0)" />
-    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
     <PackageReference Include="NServiceBus" Version="[7.0.0-*, 8.0.0)" />
     <PackageReference Include="Obsolete.Fody" Version="4.*" PrivateAssets="All" />
     <PackageReference Include="Fody" Version="2.*" PrivateAssets="All" />
-    <PackageReference Include="Particular.CodeRules" Version="0.2.0" PrivateAssets="All" />
+    <PackageReference Include="Particular.CodeRules" Version="*" PrivateAssets="All" />
+    
     <Reference Include="System.Configuration" />
     <Reference Include="System.Transactions" />
   </ItemGroup>
