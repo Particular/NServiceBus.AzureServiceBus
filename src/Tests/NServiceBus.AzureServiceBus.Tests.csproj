@@ -27,7 +27,7 @@
     <PackageReference Include="Mono.Cecil" Version="0.10.0-beta6" />
     <PackageReference Include="PublicApiGenerator" Version="6.1.0-beta2" />
     <PackageReference Include="NServiceBus" Version="7.0.0-alpharelease0066" />
-    <PackageReference Include="NUnit" Version="3.7.1" />
+    <PackageReference Include="NUnit" Version="3.8.1" />
     <Reference Include="System.Configuration" />
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
   </ItemGroup>
