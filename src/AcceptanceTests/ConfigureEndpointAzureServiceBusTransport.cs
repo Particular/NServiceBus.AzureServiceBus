@@ -4,10 +4,12 @@ using NServiceBus.AcceptanceTesting.Support;
 using NServiceBus.AcceptanceTests.DelayedDelivery;
 using TesingConventions = NServiceBus.AcceptanceTesting.Customization;
 using NServiceBus.AcceptanceTests.Routing.NativePublishSubscribe;
+using NServiceBus.AcceptanceTests.Sagas;
 using NServiceBus.AcceptanceTests.ScenarioDescriptors;
+using NServiceBus.AcceptanceTests.Versioning;
 using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing;
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
-using NServiceBus.Configuration.AdvanceExtensibility;
+using NServiceBus.Configuration.AdvancedExtensibility;
 using NUnit.Framework;
 
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
@@ -57,6 +59,17 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
             endpointOrientedTopology.RegisterPublisher(typeof(When_unsubscribing_from_event.Event), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_unsubscribing_from_event.Publisher)));
 
             endpointOrientedTopology.RegisterPublisher(typeof(When_unsubscribing.MyEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_unsubscribing.Endpoint)));
+
+            endpointOrientedTopology.RegisterPublisher(typeof(When_multiple_versions_of_a_message_is_published.V1Event), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_multiple_versions_of_a_message_is_published.V2Publisher)));
+            endpointOrientedTopology.RegisterPublisher(typeof(When_multiple_versions_of_a_message_is_published.V2Event), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_multiple_versions_of_a_message_is_published.V2Publisher)));
+
+            endpointOrientedTopology.RegisterPublisher(typeof(When_replies_to_message_published_by_a_saga.DidSomething), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_replies_to_message_published_by_a_saga.SagaEndpoint)));
+
+            endpointOrientedTopology.RegisterPublisher(typeof(When_started_by_base_event_from_other_saga.BaseEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_started_by_base_event_from_other_saga.Publisher)));
+            endpointOrientedTopology.RegisterPublisher(typeof(When_started_by_event_from_another_saga.SomethingHappenedEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_started_by_event_from_another_saga.SagaThatPublishesAnEvent)));
+
+            //When_two_sagas_subscribe_to_the_same_event
+            endpointOrientedTopology.RegisterPublisher(typeof(When_two_sagas_subscribe_to_the_same_event.GroupPendingEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_two_sagas_subscribe_to_the_same_event.Publisher)));
 
             // TODO: investigate why these tests that are intended for the ForwradingTopology only fail w/o publisher registration on EndpointOrientedTopology execution on build server
             endpointOrientedTopology.RegisterPublisher(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.BaseEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology.Publisher)));

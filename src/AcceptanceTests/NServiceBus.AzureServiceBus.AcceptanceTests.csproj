@@ -2,21 +2,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugSymbols>True</DebugSymbols>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>PCR0001</NoWarn>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>WorkaroundKey.snk</AssemblyOriginatorKeyFile>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.0.0" />
-    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
-    <PackageReference Include="NServiceBus.AcceptanceTesting" Version="6.3.1" />
-    <PackageReference Include="NServiceBus.AcceptanceTests.Sources" Version="6.3.1" />
-    <PackageReference Include="NServiceBus" Version="6.3.1" />
-    <PackageReference Include="NUnit" Version="3.6.1" />
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.*" />
+    <PackageReference Include="NServiceBus" Version="7.0.0-*" />
+    <PackageReference Include="NServiceBus.AcceptanceTesting" Version="7.0.0-*" />
+    <PackageReference Include="NServiceBus.AcceptanceTests.Sources" Version="7.0.0-*" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.*" />
+    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.*" />
+    <PackageReference Include="NUnit" Version="3.*" />
   </ItemGroup>
 </Project>

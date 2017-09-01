@@ -2,12 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <DebugType>full</DebugType>
-    <DebugSymbols>True</DebugSymbols>
-    <WarningLevel>4</WarningLevel>
     <OutputType>Exe</OutputType>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.KeyVault.Core" Version="2.0.4" />
@@ -21,12 +16,12 @@
     <PackageReference Include="NLog" Version="4.2.3" />
     <PackageReference Include="NServiceBus" Version="6.3.3" />
     <PackageReference Include="NServiceBus.NLog" Version="1.2.0" />
+    <PackageReference Include="System.Spatial" Version="5.8.2" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
-    <PackageReference Include="System.Spatial" Version="5.8.2" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />

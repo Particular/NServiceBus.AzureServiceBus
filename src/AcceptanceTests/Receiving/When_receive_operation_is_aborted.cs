@@ -40,7 +40,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     var transport = config.UseTransport<AzureServiceBusTransport>();
                     transport.Routing().RouteToEndpoint(typeof(DispatchedMessage), typeof(EndpointThatShouldNotReceive));
                     config.LimitMessageProcessingConcurrencyTo(1);
-                    config.Recoverability().DisableLegacyRetriesSatellite();
 
                     config.Pipeline.Register("AbortReceiveOperation", typeof(AbortReceiveOperationBehavior), "Abort receive operation");
                 });
@@ -87,7 +86,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             {
                 EndpointSetup<DefaultServer>(config =>
                 {
-                    config.Recoverability().DisableLegacyRetriesSatellite();
+
                 });
             }
 

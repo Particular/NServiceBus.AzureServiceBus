@@ -3,13 +3,11 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute(@"NServiceBus.AzureServiceBus.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100dde965e6172e019ac82c2639ffe494dd2e7dd16347c34762a05732b492e110f2e4e2e1b5ef2d85c848ccfb671ee20a47c8d1376276708dc30a90ff1121b647ba3b7259a6bc383b2034938ef0e275b58b920375ac605076178123693c6c4f1331661a62eba28c249386855637780e3ff5f23a6d854700eaa6803ef48907513b92")]
 [assembly: System.Runtime.InteropServices.ComVisibleAttribute(false)]
 [assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETFramework,Version=v4.5.2", FrameworkDisplayName=".NET Framework 4.5.2")]
-
 namespace NServiceBus
 {
-    
-    public class AzureServiceBusCompositionExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusCompositionExtensionPoint<T> : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
         where T : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy { }
-    public class AzureServiceBusCompositionSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusCompositionSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>()
             where T : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy { }
@@ -51,21 +49,21 @@ namespace NServiceBus
     {
         public static NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.HierarchyComposition> PathGenerator(this NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.HierarchyComposition> composition, System.Func<string, string> pathGenerator) { }
     }
-    public class AzureServiceBusIndividualizationExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusIndividualizationExtensionPoint<T> : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
         where T : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy { }
-    public class AzureServiceBusIndividualizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusIndividualizationSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusIndividualizationExtensionPoint<T> UseStrategy<T>()
             where T : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy { }
     }
-    public class AzureServiceBusMessageReceiverSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusMessageReceiverSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusMessageReceiverSettings AutoRenewTimeout(System.TimeSpan autoRenewTimeout) { }
         public NServiceBus.AzureServiceBusMessageReceiverSettings PrefetchCount(int prefetchCount) { }
         public NServiceBus.AzureServiceBusMessageReceiverSettings ReceiveMode(Microsoft.ServiceBus.Messaging.ReceiveMode receiveMode) { }
         public NServiceBus.AzureServiceBusMessageReceiverSettings RetryPolicy(Microsoft.ServiceBus.RetryPolicy retryPolicy) { }
     }
-    public class AzureServiceBusMessageSenderSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusMessageSenderSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusMessageSenderSettings BackOffTimeOnThrottle(System.TimeSpan backoffTime) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings MaximuMessageSizeInKilobytes(int sizeInKilobytes) { }
@@ -74,30 +72,30 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusMessageSenderSettings RetryAttemptsOnThrottle(int count) { }
         public NServiceBus.AzureServiceBusMessageSenderSettings RetryPolicy(Microsoft.ServiceBus.RetryPolicy retryPolicy) { }
     }
-    public class AzureServiceBusMessagingFactoriesSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusMessagingFactoriesSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusMessagingFactoriesSettings BatchFlushInterval(System.TimeSpan batchFlushInterval) { }
         public NServiceBus.AzureServiceBusMessagingFactoriesSettings MessagingFactorySettingsFactory(System.Func<string, Microsoft.ServiceBus.Messaging.MessagingFactorySettings> factory) { }
         public NServiceBus.AzureServiceBusMessagingFactoriesSettings NumberOfMessagingFactoriesPerNamespace(int number) { }
         public NServiceBus.AzureServiceBusMessagingFactoriesSettings RetryPolicy(Microsoft.ServiceBus.RetryPolicy retryPolicy) { }
     }
-    public class AzureServiceBusNamespaceManagersSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusNamespaceManagersSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusNamespaceManagersSettings NamespaceManagerSettingsFactory(System.Func<string, Microsoft.ServiceBus.NamespaceManagerSettings> factory) { }
         public NServiceBus.AzureServiceBusNamespaceManagersSettings RetryPolicy(Microsoft.ServiceBus.RetryPolicy retryPolicy) { }
         public NServiceBus.AzureServiceBusNamespaceManagersSettings TokenProvider(System.Func<string, Microsoft.ServiceBus.TokenProvider> factory) { }
     }
-    public class AzureServiceBusNamespacePartitioningSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusNamespacePartitioningSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public void AddNamespace(string name, string connectionString) { }
         public NServiceBus.AzureServiceBusNamespacePartitioningSettings UseStrategy<T>()
             where T : NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy { }
     }
-    public class AzureServiceBusNamespaceRoutingSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusNamespaceRoutingSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public void AddNamespace(string name, string connectionString) { }
     }
-    public class AzureServiceBusQueueSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusQueueSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusQueueSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusQueueSettings DefaultMessageTimeToLive(System.TimeSpan defaultMessageTimeToLive) { }
@@ -120,7 +118,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusQueueSettings SupportOrdering(bool supportOrdering) { }
     }
-    public class AzureServiceBusSanitizationExtensionPoint<T> : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusSanitizationExtensionPoint<T> : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
         where T : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy
     {
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> Hash(System.Func<string, string> hash) { }
@@ -133,7 +131,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> TopicPathSanitization(System.Func<string, string> topicPathSanitizer) { }
         public NServiceBus.AzureServiceBusSanitizationExtensionPoint<T> TopicPathValidation(System.Func<string, NServiceBus.Transport.AzureServiceBus.ValidationResult> topicPathValidator) { }
     }
-    public class AzureServiceBusSanitizationSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusSanitizationSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusSanitizationSettings UseQueuePathMaximumLength(int queuePathMaximumLength) { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseRulePathMaximumLength(int rulePathMaximumLength) { }
@@ -142,7 +140,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusSanitizationSettings UseSubscriptionPathMaximumLength(int subscriptionPathMaximumLength) { }
         public NServiceBus.AzureServiceBusSanitizationSettings UseTopicPathMaximumLength(int topicPathMaximumLength) { }
     }
-    public class AzureServiceBusSubscriptionSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusSubscriptionSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusSubscriptionSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings DefaultMessageTimeToLive(System.TimeSpan expiryTimespan) { }
@@ -159,7 +157,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusSubscriptionSettings LockDuration(System.TimeSpan lockDuration) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings MaxDeliveryCount(int maxDeliveryCount) { }
     }
-    public class AzureServiceBusTopicSettings : NServiceBus.Configuration.AdvanceExtensibility.ExposeSettings
+    public class AzureServiceBusTopicSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusTopicSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusTopicSettings DefaultMessageTimeToLive(System.TimeSpan timeToLive) { }
@@ -306,7 +304,6 @@ namespace NServiceBus
 }
 namespace NServiceBus.Transport.AzureServiceBus
 {
-    
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public class Batch
     {

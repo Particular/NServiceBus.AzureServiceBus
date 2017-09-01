@@ -5,17 +5,14 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(SolutionDir)NServiceBus.snk</AssemblyOriginatorKeyFile>
-    <DebugType>full</DebugType>
-    <DebugSymbols>True</DebugSymbols>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>PCR0001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.0.0" />
-    <PackageReference Include="NServiceBus" Version="6.3.1" />
-    <PackageReference Include="NServiceBus.TransportTests.Sources" Version="6.3.1" />
-    <PackageReference Include="NUnit" Version="3.6.1" />
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.*" />
+    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.*" />
+    <PackageReference Include="NServiceBus" Version="7.0.0-*" />
+    <PackageReference Include="NServiceBus.TransportTests.Sources" Version="7.0.0-*" />
+    <PackageReference Include="NUnit" Version="3.*" />
   </ItemGroup>
 </Project>

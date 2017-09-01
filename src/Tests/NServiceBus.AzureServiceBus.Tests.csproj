@@ -5,26 +5,35 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(SolutionDir)NServiceBus.snk</AssemblyOriginatorKeyFile>
-    <DebugType>full</DebugType>
-    <DebugSymbols>True</DebugSymbols>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>PCR0001</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ApiApprover\**" />
+    <EmbeddedResource Remove="ApiApprover\**" />
+    <None Remove="ApiApprover\**" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Compile Remove="NServiceBus.Azure.Transports.WindowsAzureServiceBus.approved.cs" />
     <Compile Remove="NServiceBus.Azure.Transports.WindowsAzureServiceBus.received.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
     <PackageReference Include="ApprovalTests" Version="3.0.13" />
     <PackageReference Include="ApprovalUtilities" Version="3.0.13" />
-    <PackageReference Include="FakeItEasy" Version="2.3.3" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.0.0" />
-    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
-    <PackageReference Include="Mono.Cecil" Version="0.10.0-beta6" />
-    <PackageReference Include="ApiApprover" Version="6.1.0-beta2" />
-    <PackageReference Include="PublicApiGenerator" Version="6.1.0-beta2" />
-    <PackageReference Include="NServiceBus" Version="6.3.1" />
-    <PackageReference Include="NUnit" Version="3.6.1" />
+    <PackageReference Include="FakeItEasy" Version="2.*" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.*" />
+    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.*" />
+    <PackageReference Include="Mono.Cecil" Version="0.10.0-*" />
+    <PackageReference Include="PublicApiGenerator" Version="6.1.0-*" />
+    <PackageReference Include="NServiceBus" Version="7.0.0-*" />
+    <PackageReference Include="NUnit" Version="3.*" />
+    <!-- TODO: replace with "3.*" when NUnit bug is fixed -->
+    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.*" />
+  
     <Reference Include="System.Configuration" />
-    <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
   </ItemGroup>
 </Project>
