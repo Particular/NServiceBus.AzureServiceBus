@@ -35,7 +35,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return Task.WhenAll(pendingBatches);
         }
 
-        internal Task RouteBatch(BatchInternal batch, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
+        internal async Task RouteBatch(BatchInternal batch, BrokeredMessageReceiveContextInternal context, DispatchConsistency consistency)
         {
             var outgoingBatches = batch.Operations;
 
@@ -56,13 +56,19 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
 
                 // don't use via on fallback, not supported across namespaces
-                var fallbacks = passiveNamespaces.Select(n => sendersLifeCycleManager.Get(entity.Path, null, n.Alias)).ToList();
+                var fallbacks = new List<IMessageSenderInternal>(passiveNamespaces.Count);
+                foreach (var passiveNamespace in passiveNamespaces)
+                {
+                    fallbacks.Add(await sendersLifeCycleManager.Get(entity.Path, null, passiveNamespace.Alias)
+                        .ConfigureAwait(false));
+                }
 
                 var ns = entity.Namespace;
                 // only use via if the destination and via namespace are the same
                 var via = routingOptions.SendVia && ns.ConnectionString == routingOptions.ViaConnectionString ? routingOptions.ViaEntityPath : null;
                 var suppressTransaction = via == null;
-                var messageSender = sendersLifeCycleManager.Get(entity.Path, via, ns.Alias);
+                var messageSender = await sendersLifeCycleManager.Get(entity.Path, via, ns.Alias)
+                    .ConfigureAwait(false);
 
                 routingOptions.DestinationEntityPath = entity.Path;
                 routingOptions.DestinationNamespace = ns;
@@ -71,7 +77,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 pendingSends.Add(RouteOutBatchesWithFallbackAndLogExceptionsAsync(messageSender, fallbacks, brokeredMessages, suppressTransaction));
             }
-            return Task.WhenAll(pendingSends);
+            await Task.WhenAll(pendingSends)
+                .ConfigureAwait(false);
         }
 
         RoutingOptionsInternal GetRoutingOptions(ReceiveContextInternal receiveContext, DispatchConsistency consistency)

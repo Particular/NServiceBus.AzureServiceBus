@@ -56,7 +56,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             {
                 for (var i = 0; i < 1000; i++)
                 {
-                    var sender = entityLifecycleManager.Get("myqueue", null, "namespace");
+                    var sender = await entityLifecycleManager.Get("myqueue", null, "namespace");
                     tasks.Add(sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
 
                     counter++;
@@ -123,7 +123,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                     batch.Add(new BrokeredMessage());
                     counter++;
                 }
-                var sender = entityLifecycleManager.Get("myqueue", null, "namespace");
+                var sender = await entityLifecycleManager.Get("myqueue", null, "namespace");
                 tasks.Add(sender.RetryOnThrottleAsync(s => s.SendBatch(batch), s => s.SendBatch(batch.Select(x => x.Clone())), TimeSpan.FromSeconds(10), 5));
             }
             await Task.WhenAll(tasks);
