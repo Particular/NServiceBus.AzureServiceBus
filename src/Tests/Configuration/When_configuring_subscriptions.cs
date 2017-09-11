@@ -18,7 +18,7 @@
 
             Action<SubscriptionDescription> registeredFactory = sd => { };
 
-            extensions.Subscriptions().DescriptionFactory(registeredFactory);
+            extensions.Subscriptions().DescriptionCustomizer(registeredFactory);
 
             Assert.AreEqual(registeredFactory, topology.Settings.SubscriptionSettings.DescriptionCustomizer);
         }

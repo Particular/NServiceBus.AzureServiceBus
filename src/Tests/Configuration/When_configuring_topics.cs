@@ -154,7 +154,7 @@
 
             Action<TopicDescription> registeredFactory = td => { };
 
-            extensions.Topics().DescriptionFactory(registeredFactory);
+            extensions.Topics().DescriptionCustomizer(registeredFactory);
 
             Assert.AreEqual(registeredFactory, fakeTopology.Settings.TopicSettings.DescriptionCustomizer);
         }

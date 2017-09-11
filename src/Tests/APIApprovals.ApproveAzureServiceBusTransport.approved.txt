@@ -144,7 +144,7 @@ namespace NServiceBus
     {
         public NServiceBus.AzureServiceBusSubscriptionSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings DefaultMessageTimeToLive(System.TimeSpan expiryTimespan) { }
-        public NServiceBus.AzureServiceBusSubscriptionSettings DescriptionFactory(System.Action<Microsoft.ServiceBus.Messaging.SubscriptionDescription> factory) { }
+        public NServiceBus.AzureServiceBusSubscriptionSettings DescriptionCustomizer(System.Action<Microsoft.ServiceBus.Messaging.SubscriptionDescription> factory) { }
         [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<SubscriptionDescription>" +
             ")` instead. The member currently throws a NotImplementedException. Will be remov" +
             "ed in version 9.0.0.", true)]
@@ -161,7 +161,7 @@ namespace NServiceBus
     {
         public NServiceBus.AzureServiceBusTopicSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusTopicSettings DefaultMessageTimeToLive(System.TimeSpan timeToLive) { }
-        public NServiceBus.AzureServiceBusTopicSettings DescriptionFactory(System.Action<Microsoft.ServiceBus.Messaging.TopicDescription> factory) { }
+        public NServiceBus.AzureServiceBusTopicSettings DescriptionCustomizer(System.Action<Microsoft.ServiceBus.Messaging.TopicDescription> factory) { }
         [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<TopicDescription>)` inst" +
             "ead. The member currently throws a NotImplementedException. Will be removed in v" +
             "ersion 9.0.0.", true)]
