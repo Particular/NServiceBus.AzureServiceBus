@@ -16,7 +16,7 @@ namespace NServiceBus
         /// <summary>
         /// Customize subscription creation by providing <see cref="SubscriptionDescription" />.
         /// </summary>
-        public AzureServiceBusSubscriptionSettings DescriptionFactory(Action<SubscriptionDescription> factory)
+        public AzureServiceBusSubscriptionSettings DescriptionCustomizer(Action<SubscriptionDescription> factory)
         {
             subscriptionSettings.DescriptionCustomizer = factory;
 

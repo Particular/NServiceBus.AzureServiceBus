@@ -100,7 +100,7 @@
             const string subscriptionName = "endpoint2";
 
             var userCustomizationsWhereInvoked = false;
-            extensions.Subscriptions().DescriptionFactory(_ =>
+            extensions.Subscriptions().DescriptionCustomizer(_ =>
             {
                 userCustomizationsWhereInvoked = true;
             });
@@ -388,7 +388,7 @@
 
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory(description =>
+            extensions.UseForwardingTopology().Subscriptions().DescriptionCustomizer(description =>
             {
                 description.LockDuration = TimeSpan.FromMinutes(5);
                 description.EnableDeadLetteringOnMessageExpiration = true;
@@ -414,7 +414,7 @@
 
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory(description =>
+            extensions.UseForwardingTopology().Subscriptions().DescriptionCustomizer(description =>
             {
                 description.EnableDeadLetteringOnFilterEvaluationExceptions = false;
                 description.RequiresSession = false;
@@ -431,7 +431,7 @@
 
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.UseForwardingTopology().Subscriptions().DescriptionFactory(description =>
+            extensions.UseForwardingTopology().Subscriptions().DescriptionCustomizer(description =>
             {
                 description.MaxDeliveryCount = 100;
                 description.EnableDeadLetteringOnMessageExpiration = true;

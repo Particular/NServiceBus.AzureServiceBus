@@ -16,7 +16,7 @@
         /// <summary>
         /// Customize topic creation by providing <see cref="TopicDescription" />.
         /// </summary>
-        public AzureServiceBusTopicSettings DescriptionFactory(Action<TopicDescription> factory)
+        public AzureServiceBusTopicSettings DescriptionCustomizer(Action<TopicDescription> factory)
         {
             topicSettings.DescriptionCustomizer = factory;
 

@@ -83,7 +83,7 @@
             const string subscriptionName = "sub2";
 
             var userCustomizationsWhereInvoked = false;
-            extensions.Subscriptions().DescriptionFactory(_ =>
+            extensions.Subscriptions().DescriptionCustomizer(_ =>
             {
                 userCustomizationsWhereInvoked = true;
             });
@@ -395,7 +395,7 @@
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Subscriptions().DescriptionFactory(description =>
+            extensions.Subscriptions().DescriptionCustomizer(description =>
             {
                 description.LockDuration = TimeSpan.FromSeconds(100);
                 description.EnableDeadLetteringOnMessageExpiration = true;
@@ -422,7 +422,7 @@
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-            extensions.Subscriptions().DescriptionFactory(description =>
+            extensions.Subscriptions().DescriptionCustomizer(description =>
             {
                 description.EnableDeadLetteringOnFilterEvaluationExceptions = false;
                 description.RequiresSession = false;
