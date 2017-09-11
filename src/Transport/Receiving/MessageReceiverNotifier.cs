@@ -26,9 +26,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public int RefCount { get; set; }
 
-        public void Initialize(EntityInfoInternal entity, Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
+        public void Initialize(EntityInfoInternal entity, Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> callback, Func<Exception, Task> errorCallback, Action<Exception> criticalError, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
         {
             incomingCallback = callback;
+            this.criticalError = criticalError;
             this.errorCallback = errorCallback ?? EmptyErrorCallback;
             this.processingFailureCallback = processingFailureCallback;
             this.entity = entity;
@@ -64,13 +65,22 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             // Offloading here to make sure calling thread is not used for sync path inside
             // async call stack.
-            Task.Run(() =>
+            startTask = Task.Run(async () =>
             {
+                var exceptions = new ConcurrentQueue<Exception>();
+                var tasks = new Task[settings.NumberOfClients];
                 for (var i = 0; i < settings.NumberOfClients; i++)
                 {
-                    InitializeAndStartReceiver(i).Ignore();
+                    tasks[i] = InitializeAndStartReceiver(i, exceptions);
                 }
-            }).Ignore();
+                await Task.WhenAll(tasks)
+                    .ConfigureAwait(false);
+
+                if (!exceptions.IsEmpty)
+                {
+                    criticalError(new AggregateException(exceptions));
+                }
+            });
         }
 
         public async Task Stop()
@@ -78,6 +88,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             stopping = true;
 
             logger.Info($"Stopping notifier for '{fullPath}'");
+
+            await startTask.ConfigureAwait(false);
 
             foreach (var option in onMessageOptions)
             {
@@ -111,17 +123,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             isRunning = false;
         }
 
-        async Task InitializeAndStartReceiver(int i)
+        async Task InitializeAndStartReceiver(int i, ConcurrentQueue<Exception> exceptions)
         {
             try
             {
                 var internalReceiver = await clientEntities.Get(fullPath, entity.Namespace.Alias)
                     .ConfigureAwait(false);
-
-                if (internalReceiver == null)
-                {
-                    throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
-                }
 
                 var options = new OnMessageOptions
                 {
@@ -130,7 +137,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     MaxConcurrentCalls = maxConcurrentCalls
                 };
                 options.ExceptionReceived += OptionsOnExceptionReceived;
-                internalReceivers[i] = internalReceiver;
+                internalReceivers[i] = internalReceiver ?? throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
                 onMessageOptions[i] = options;
 
                 internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, i, pipelineInvocationTasks), options);
@@ -139,8 +146,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             catch (Exception ex)
             {
-                await errorCallback(ex)
-                    .ConfigureAwait(false);
+                exceptions.Enqueue(ex);
             }
         }
 
@@ -353,5 +359,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         bool completionCanBeBatched;
         MessageReceiverNotifierSettings settings;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
+        Task startTask;
+        Action<Exception> criticalError;
     }
 }

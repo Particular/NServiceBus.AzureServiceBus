@@ -8,7 +8,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         bool IsRunning { get; }
         int RefCount { get; set; }
 
-        void Initialize(EntityInfoInternal entity, Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency);
+        void Initialize(EntityInfoInternal entity, Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> callback, Func<Exception, Task> errorCallback, Action<Exception> onCritical, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency);
 
         void Start();
         Task Stop();

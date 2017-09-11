@@ -70,6 +70,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             topologyOperator.OnError(exception => circuitBreaker.Failure(exception));
             topologyOperator.OnProcessingFailure(onError);
+            topologyOperator.OnCritical(exception => criticalError.Raise("Failed to receive message from Azure Service Bus.", exception));
 
             return TaskEx.Completed;
         }

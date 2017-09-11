@@ -29,6 +29,7 @@
         void OnIncomingMessage(Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> func);
 
         void OnError(Func<Exception, Task> func);
+        void OnCritical(Action<Exception> action);
 
         void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> onError);
     }

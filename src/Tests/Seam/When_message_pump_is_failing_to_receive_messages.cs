@@ -146,9 +146,12 @@
                 onError = func;
             }
 
+            public void OnCritical(Action<Exception> action)
+            {
+            }
+
             public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func)
             {
-
             }
 
             public Func<Exception, Task> onError;
