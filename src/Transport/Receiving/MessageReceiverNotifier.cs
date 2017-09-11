@@ -62,41 +62,15 @@ namespace NServiceBus.Transport.AzureServiceBus
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
             completion.Start(CompletionCallback, internalReceivers);
 
-            var exceptions = new ConcurrentQueue<Exception>();
-            Parallel.For(0, settings.NumberOfClients, i =>
+            // Offloading here to make sure calling thread is not used for sync path inside
+            // async call stack.
+            Task.Run(() =>
             {
-                try
+                for (var i = 0; i < settings.NumberOfClients; i++)
                 {
-                    var internalReceiver = clientEntities.Get(fullPath, entity.Namespace.Alias);
-
-                    if (internalReceiver == null)
-                    {
-                        throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
-                    }
-
-                    var options = new OnMessageOptions
-                    {
-                        AutoComplete = false,
-                        AutoRenewTimeout = settings.AutoRenewTimeout,
-                        MaxConcurrentCalls = maxConcurrentCalls
-                    };
-                    options.ExceptionReceived += OptionsOnExceptionReceived;
-                    internalReceivers[i] = internalReceiver;
-                    onMessageOptions[i] = options;
-
-                    internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, i, pipelineInvocationTasks), options);
-
-                    isRunning = true;
+                    InitializeAndStartReceiver(i).Ignore();
                 }
-                catch (Exception ex)
-                {
-                    exceptions.Enqueue(ex);
-                }
-            });
-            if (exceptions.Count > 0)
-            {
-                throw new AggregateException(exceptions);
-            }
+            }).Ignore();
         }
 
         public async Task Stop()
@@ -135,6 +109,39 @@ namespace NServiceBus.Transport.AzureServiceBus
             logger.Info($"Notifier for '{fullPath}' stopped");
 
             isRunning = false;
+        }
+
+        async Task InitializeAndStartReceiver(int i)
+        {
+            try
+            {
+                var internalReceiver = await clientEntities.Get(fullPath, entity.Namespace.Alias)
+                    .ConfigureAwait(false);
+
+                if (internalReceiver == null)
+                {
+                    throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
+                }
+
+                var options = new OnMessageOptions
+                {
+                    AutoComplete = false,
+                    AutoRenewTimeout = settings.AutoRenewTimeout,
+                    MaxConcurrentCalls = maxConcurrentCalls
+                };
+                options.ExceptionReceived += OptionsOnExceptionReceived;
+                internalReceivers[i] = internalReceiver;
+                onMessageOptions[i] = options;
+
+                internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, i, pipelineInvocationTasks), options);
+
+                isRunning = true;
+            }
+            catch (Exception ex)
+            {
+                await errorCallback(ex)
+                    .ConfigureAwait(false);
+            }
         }
 
         // Intentionally made async void since we don't care about the outcome here
@@ -344,7 +351,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         int maxConcurrentCalls;
         bool wrapInScope;
         bool completionCanBeBatched;
-        static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
         MessageReceiverNotifierSettings settings;
+        static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
     }
 }
