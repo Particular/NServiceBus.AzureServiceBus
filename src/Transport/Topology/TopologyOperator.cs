@@ -76,6 +76,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             onError = func;
         }
 
+        public void OnCritical(Action<Exception> action)
+        {
+            onCriticalError = action;
+        }
+
         public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func)
         {
             onProcessingFailure = func;
@@ -93,7 +98,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var notifier = notifiers.GetOrAdd(entity, e =>
                 {
                     var n = CreateNotifier(entity.Type);
-                    n.Initialize(e, onMessage, onError, onProcessingFailure, maxConcurrency);
+                    n.Initialize(e, onMessage, onError, onCriticalError, onProcessingFailure, maxConcurrency);
                     return n;
                 });
 
@@ -154,5 +159,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         MessageReceiverLifeCycleManager messageReceiverLifeCycle;
         BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter;
         MessageReceiverNotifierSettings messageReceiverNotifierSettings;
+        Action<Exception> onCriticalError;
     }
 }

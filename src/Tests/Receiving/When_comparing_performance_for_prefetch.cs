@@ -86,7 +86,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                         completed.Set();
                     }
                     return TaskEx.Completed;
-                }, null, null, 32);
+                }, null, null, null, 32);
 
 
             var sw = new Stopwatch();

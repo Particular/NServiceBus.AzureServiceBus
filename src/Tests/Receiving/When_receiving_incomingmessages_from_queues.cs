@@ -41,7 +41,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
-            notifier.Initialize(new EntityInfoInternal { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, 10);
+            notifier.Initialize(new EntityInfoInternal { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -77,7 +77,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // perform the test
             var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
-            notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, 10);
+            notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -143,7 +143,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                 error.Set();
 
                 return TaskEx.Completed;
-            }, null, 1);
+            }, null, null, 1);
 
             notifier.Start();
 
@@ -156,6 +156,60 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             //cleanup
             await notifier.Stop();
             await namespaceManager.DeleteQueue("myqueue");
+        }
+
+        [Test]
+        public async Task Triggers_critical_error_when_receiver_cannot_be_started()
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+            // default settings
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            settings.Set<TopologySettings>(new TopologySettings());
+            var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
+
+            // setup the infrastructure
+            var namespaceManagerCreator = new NamespaceManagerCreator(settings);
+            var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
+            var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
+            var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
+            var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
+            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
+
+            var brokeredMessageConverter = new BrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
+
+            // perform the test
+            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
+
+            var completed = new AsyncManualResetEvent(false);
+            var error = new AsyncManualResetEvent(false);
+
+            Exception ex = null;
+            var received = false;
+
+            notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) =>
+                {
+                    received = true;
+
+                    completed.Set();
+
+                    return TaskEx.Completed;
+                },
+                null, 
+                exception =>
+                {
+                    ex = exception;
+
+                    error.Set();
+                }, null, 1);
+
+            notifier.Start();
+
+            await Task.WhenAny(completed.WaitAsync(cts.Token).IgnoreCancellation(), error.WaitAsync(cts.Token).IgnoreCancellation());
+
+            // validate
+            Assert.IsFalse(received);
+            Assert.IsNotNull(ex);
         }
 
         static MessageReceiverNotifierSettings BuildMessageReceiverNotifierSettings(SettingsHolder settings)

@@ -16,7 +16,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     public class When_managing_entity_client_lifecycle
     {
         [Test]
-        public void Creates_a_pool_of_clients_per_entity()
+        public async Task Creates_a_pool_of_clients_per_entity()
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
@@ -25,13 +25,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
             var lifecycleManager = new MessageReceiverLifeCycleManager(creator, settings);
 
-            lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
+            await lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
 
             Assert.AreEqual(poolSize, creator.InvocationCount);
         }
 
         [Test]
-        public void Round_robins_across_instances_in_pool()
+        public async Task Round_robins_across_instances_in_pool()
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
@@ -41,25 +41,25 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
             var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
 
-            var first = lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
+            var first = await lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
             var next = first;
 
             var reuseInPool = false;
             for (var i = 0; i < poolSize - 1; i++)
             {
-                var n = lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
+                var n = await lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
                 reuseInPool &= next == n;
                 next = n;
             }
 
-            var second = lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
+            var second = await lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
 
             Assert.IsFalse(reuseInPool);
             Assert.AreEqual(first, second);
         }
 
         [Test]
-        public void Replaces_receivers_when_closed()
+        public async Task Replaces_receivers_when_closed()
         {
             var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 1); // pool size of 1 simplifies the test
@@ -68,11 +68,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
             var lifecycleManager = new MessageReceiverLifeCycleManager(creator, settings);
 
-            var first = (InterceptedMessageReceiver)lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
+            var first = (InterceptedMessageReceiver) await lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
 
             first.Close();
 
-            var second = (InterceptedMessageReceiver)lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
+            var second = (InterceptedMessageReceiver) await lifecycleManager.Get("myqueue", AzureServiceBusConnectionString.Value);
 
             Assert.AreEqual(2, creator.InvocationCount);
             Assert.AreNotEqual(first, second);
