@@ -29,5 +29,16 @@
 
             Assert.That(settings.Get<TopologySettings>().QueueSettings.MaxDeliveryCount, Is.EqualTo(10));
         }
+
+        [Test]
+        public void Should_throw_exception_when_no_serializer_was_set()
+        {
+            var settings = new SettingsHolder();
+            settings.Set<TopologySettings>(new TopologySettings());
+
+            var exception = Assert.Throws<Exception>(() => DefaultConfigurationValues.Apply(settings));
+
+            Assert.IsTrue(exception.Message.StartsWith("Due to message size restriction"), $"Incorrect exception message: {exception.Message}");
+        }
     }
 }
