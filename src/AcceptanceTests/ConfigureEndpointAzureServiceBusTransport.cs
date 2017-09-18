@@ -18,6 +18,8 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
     {
         PreventInconclusiveTestsFromRunning(endpointName);
 
+        configuration.UseSerialization<NewtonsoftSerializer>();
+
         var connectionString = EnvironmentHelper.GetEnvironmentVariable($"{nameof(AzureServiceBusTransport)}.ConnectionString");
         var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
 
@@ -49,7 +51,7 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
                     endpointOrientedTopology.RegisterPublisher(eventType, publisher.PublisherName);
                 }
             }
-            
+
             // ATTs that that require publishers to be explicitely registered for the EndpointOrientedTopology
             endpointOrientedTopology.RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent1), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_multi_subscribing_to_a_polymorphic_event.Publisher1)));
             endpointOrientedTopology.RegisterPublisher(typeof(When_multi_subscribing_to_a_polymorphic_event.MyEvent2), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_multi_subscribing_to_a_polymorphic_event.Publisher2)));
