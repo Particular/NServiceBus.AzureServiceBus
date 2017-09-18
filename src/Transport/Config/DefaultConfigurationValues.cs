@@ -3,7 +3,6 @@
     using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using Serialization;
     using Settings;
     using Transport.AzureServiceBus;
 
@@ -11,8 +10,7 @@
     {
         public static SettingsHolder Apply(SettingsHolder settings)
         {
-            // override core default serialization
-            settings.SetDefault(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new NewtonsoftSerializer(), new SettingsHolder()));
+            Guard.AgainstUnsetSerializerSetting(settings);
 
             ApplyDefaultsForExtensibility(settings);
             ApplyDefaultsForConnectivity(settings);
