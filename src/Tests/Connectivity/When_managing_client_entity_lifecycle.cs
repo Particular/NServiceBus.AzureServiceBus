@@ -8,7 +8,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
     using Transport.AzureServiceBus;
-    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -18,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public async Task Creates_a_pool_of_clients_per_entity()
         {
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity);
 
             var creator = new InterceptedMessageReceiverCreator();
@@ -33,7 +32,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public async Task Round_robins_across_instances_in_pool()
         {
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var creator = new InterceptedMessageReceiverCreator();
 
@@ -61,7 +60,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public async Task Replaces_receivers_when_closed()
         {
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity, 1); // pool size of 1 simplifies the test
 
             var creator = new InterceptedMessageReceiverCreator();

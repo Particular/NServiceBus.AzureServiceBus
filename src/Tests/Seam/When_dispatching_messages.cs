@@ -10,7 +10,6 @@
     using DeliveryConstraints;
     using Extensibility;
     using Microsoft.ServiceBus.Messaging;
-    using Settings;
     using NUnit.Framework;
     using Transport;
 
@@ -25,7 +24,7 @@
             await TestUtility.Delete("myqueue", "myqueue2");
 
             // default settings
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<TopologySettings>(new TopologySettings());
             settings.Set("NServiceBus.SharedQueue", "myqueue");
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
@@ -64,7 +63,7 @@
             await TestUtility.Delete("myqueue", "myqueue2");
 
             // default settings
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<TopologySettings>(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);

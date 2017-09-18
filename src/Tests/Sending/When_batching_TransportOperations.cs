@@ -8,7 +8,6 @@
     using Transport.AzureServiceBus;
     using DeliveryConstraints;
     using Routing;
-    using Settings;
     using Transport;
     using NUnit.Framework;
 
@@ -28,7 +27,7 @@
 
             var transportOperations = new TransportOperations(operation1, operation2);
 
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var batcher = new Batcher(new FakeTopolySectionManager(), settings);
             var batches = batcher.ToBatches(transportOperations);
@@ -52,7 +51,7 @@
 
             var transportOperations = new TransportOperations(operation1, operation2, operation3, operation4);
 
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var batcher = new Batcher(new FakeTopolySectionManager(), settings);
             var batches = batcher.ToBatches(transportOperations);
@@ -76,7 +75,7 @@
 
             var transportOperations = new TransportOperations(operation1, operation2, operation3, operation4);
 
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var batcher = new Batcher(new FakeTopolySectionManager(), settings);
             var batches = batcher.ToBatches(transportOperations);
@@ -100,7 +99,7 @@
 
             var transportOperations = new TransportOperations(operation1, operation2);
 
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var batcher = new Batcher(new FakeTopolySectionManager(), settings);
             var batches = batcher.ToBatches(transportOperations);

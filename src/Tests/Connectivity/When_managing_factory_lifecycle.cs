@@ -6,7 +6,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
     using Transport.AzureServiceBus;
-    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -16,7 +15,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Creates_a_pool_of_factories_for_namespace()
         {
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var poolSize = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace);
 
             var creator = new InterceptedFactoryCreator();
@@ -31,7 +30,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Round_robins_across_instances_in_pool()
         {
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var creator = new InterceptedFactoryCreator();
 
@@ -59,7 +58,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Replaces_factories_when_closed()
         {
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set(WellKnownConfigurationKeys.Connectivity.MessagingFactories.NumberOfMessagingFactoriesPerNamespace, 1); // pool size of 1 simplifies the test
 
             var creator = new InterceptedFactoryCreator();

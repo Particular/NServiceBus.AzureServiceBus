@@ -4,7 +4,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
     using AzureServiceBus;
     using TestUtils;
     using Transport.AzureServiceBus;
-    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -35,7 +34,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 
         static ITopologySectionManagerInternal SetupEndpointOrientedTopology(string endpointName)
         {
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<Conventions>(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
@@ -65,7 +64,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
 
         static ITopologySectionManagerInternal SetupEndpointOrientedTopologyWithFailoverNamespace(string endpointName)
         {
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<Conventions>(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);

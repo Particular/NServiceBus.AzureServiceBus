@@ -1,5 +1,6 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
+    using System;
     using AzureServiceBus;
     using Transport.AzureServiceBus;
     using NUnit.Framework;
@@ -13,8 +14,9 @@
         [Test]
         public void Should_set_DeliveryCount_for_queues_to_10_attempts_for_no_immediate_retries_configured()
         {
-            var settings = new SettingsHolder();
+            var settings = SettingsHolderFactory.BuildWithSerializer();
             settings.Set<TopologySettings>(new TopologySettings());
+
             DefaultConfigurationValues.Apply(settings);
 
             Assert.That(settings.Get<TopologySettings>().QueueSettings.MaxDeliveryCount, Is.EqualTo(10));
@@ -23,8 +25,9 @@
         [Test]
         public void Should_set_DeliveryCount_for_subscriptions_to_10_attempts_for_no_immediate_retries_configured()
         {
-            var settings = new SettingsHolder();
+            var settings = SettingsHolderFactory.BuildWithSerializer();
             settings.Set<TopologySettings>(new TopologySettings());
+
             DefaultConfigurationValues.Apply(settings);
 
             Assert.That(settings.Get<TopologySettings>().QueueSettings.MaxDeliveryCount, Is.EqualTo(10));

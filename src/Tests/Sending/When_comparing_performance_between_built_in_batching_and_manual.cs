@@ -9,7 +9,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
     using Transport.AzureServiceBus;
-    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -20,7 +19,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Can_send_brokered_messages_fast()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<TopologySettings>(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -80,7 +79,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Can_send_batches_of_brokered_messages_fast()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<TopologySettings>(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);

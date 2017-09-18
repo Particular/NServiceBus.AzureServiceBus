@@ -6,7 +6,6 @@
     using System.Threading.Tasks;
     using AzureServiceBus;
     using NUnit.Framework;
-    using Settings;
     using Transport;
     using Transport.AzureServiceBus;
 
@@ -20,7 +19,7 @@
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             var fakeTopologyOperator = new FakeTopologyOperator();
 
-            var settings = new SettingsHolder();
+            var settings = SettingsHolderFactory.BuildWithSerializer();
             settings.Set("NServiceBus.SharedQueue", "sales");
             DefaultConfigurationValues.Apply(settings);
 

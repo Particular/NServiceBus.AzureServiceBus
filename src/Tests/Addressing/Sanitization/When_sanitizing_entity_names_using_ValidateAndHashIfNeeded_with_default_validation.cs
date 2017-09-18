@@ -3,7 +3,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
     using AzureServiceBus;
     using Transport.AzureServiceBus;
     using NUnit.Framework;
-    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -20,8 +19,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase(validNameForSubscription, EntityType.Subscription)]
         public void Should_not_change_valid_paths_or_names(string entityPathOrName, EntityType entityType)
         {
-            var settings = new SettingsHolder();
-            DefaultConfigurationValues.Apply(settings);
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var sanitization = new ValidateAndHashIfNeeded(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
@@ -36,8 +34,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase("endpoint+name", EntityType.Rule, "endpointname")]
         public void Should_sanitize_invalid_characters_for_registered_sanitizer(string entityPathOrName, EntityType entityType, string expectedPathOrName)
         {
-            var settings = new SettingsHolder();
-            DefaultConfigurationValues.Apply(settings);
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var sanitization = new ValidateAndHashIfNeeded(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
@@ -51,8 +48,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase("endpoint/name", EntityType.Rule, "endpointname")]
         public void Should_not_sanitize_characters_passing_default_validation_for_registered_sanitizer(string entityPathOrName, EntityType entityType, string expectedPathOrName)
         {
-            var settings = new SettingsHolder();
-            DefaultConfigurationValues.Apply(settings);
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var sanitization = new ValidateAndHashIfNeeded(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
@@ -65,10 +61,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase(tooLongNameForSubscription, EntityType.Subscription)]
         public void Should_sanitize_longer_than_maximum_path_or_name(string entityPathOrName, EntityType entityType)
         {
-            var settings = new SettingsHolder();
-            DefaultConfigurationValues.Apply(settings);
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var sanitization = new ValidateAndHashIfNeeded(settings);
-            
+
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
 
             var expectedPathOrName = MD5DeterministicNameBuilder.Build(entityPathOrName);
@@ -82,8 +77,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase("/endpoint/name/", EntityType.Rule, "endpointname")]
         public void Should_remove_leading_and_trailing_slashes(string entityPathOrName, EntityType entityType, string expectedPathOrName)
         {
-            var settings = new SettingsHolder();
-            DefaultConfigurationValues.Apply(settings);
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var sanitization = new ValidateAndHashIfNeeded(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);

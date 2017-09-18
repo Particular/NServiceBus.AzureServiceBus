@@ -5,7 +5,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using Transport.AzureServiceBus;
     using Transport;
     using NUnit.Framework;
-    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -14,7 +13,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public void Should_throw()
         {
-            var settings = new SettingsHolder();
+            var settings = SettingsHolderFactory.BuildWithSerializer();
             settings.Set("NServiceBus.SharedQueue", "sales");
             DefaultConfigurationValues.Apply(settings);
 
