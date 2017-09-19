@@ -8,7 +8,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
     using Tests;
     using TestUtils;
     using Transport.AzureServiceBus;
-    using Settings;
     using Transport;
     using NUnit.Framework;
 
@@ -23,7 +22,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
             await TestUtility.Delete("sales");
 
-            var settings = new SettingsHolder();
+            var settings = SettingsHolderFactory.BuildWithSerializer();
             settings.Set("NServiceBus.SharedQueue", "sales");
             DefaultConfigurationValues.Apply(settings);
 
@@ -40,8 +39,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
             var namespaceManagerCreator = new NamespaceManagerCreator(settings);
 
             var namespaceLifecycleManager = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
-            var topologyCreator = new TopologyCreator(new AzureServiceBusSubscriptionCreatorV6(topology.Settings.SubscriptionSettings, settings), 
-                new AzureServiceBusQueueCreator(topology.Settings.QueueSettings,settings),  new AzureServiceBusTopicCreator(topology.Settings.TopicSettings), 
+            var topologyCreator = new TopologyCreator(new AzureServiceBusSubscriptionCreatorV6(topology.Settings.SubscriptionSettings, settings),
+                new AzureServiceBusQueueCreator(topology.Settings.QueueSettings,settings),  new AzureServiceBusTopicCreator(topology.Settings.TopicSettings),
                 namespaceLifecycleManager, settings);
 
             var topologySectionManager = topology.TopologySectionManager;

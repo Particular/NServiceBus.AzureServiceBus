@@ -7,7 +7,6 @@
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
     using Transport.AzureServiceBus;
-    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -39,7 +38,7 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(Ns1.ReusedEvent).Name), new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize());
 
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings(), settings);
             var metadata1 = new SubscriptionMetadataInternal

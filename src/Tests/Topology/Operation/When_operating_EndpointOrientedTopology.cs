@@ -25,7 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await TestUtility.Delete("sales");
 
             // setting up the environment
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var topology = await SetupEndpointOrientedTopology(settings, "sales");
 
@@ -82,7 +82,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await TestUtility.Delete("sales");
 
             // setting up the environment
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var topology = await SetupEndpointOrientedTopology(settings, "sales");
 
@@ -136,7 +136,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await TestUtility.Delete("sales");
 
             // setting up the environment
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var topology = await SetupEndpointOrientedTopology(settings, "sales");
 
@@ -199,7 +199,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             await TestUtility.Delete("sales");
 
             // setting up the environment
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var topology = await SetupEndpointOrientedTopology(settings, "sales");
 
@@ -262,10 +262,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
             topology.Initialize(settings);
 
             // create the topologySectionManager
-            var topologyCreator = new TopologyCreator(new AzureServiceBusSubscriptionCreatorV6(topology.Settings.SubscriptionSettings, settings), 
+            var topologyCreator = new TopologyCreator(new AzureServiceBusSubscriptionCreatorV6(topology.Settings.SubscriptionSettings, settings),
                 new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings),
                 new AzureServiceBusTopicCreator(topology.Settings.TopicSettings),
-                new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), 
+                new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)),
                 settings);
 
             var sectionManager = topology.TopologySectionManager;

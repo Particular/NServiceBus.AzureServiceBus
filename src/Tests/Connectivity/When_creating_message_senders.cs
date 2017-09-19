@@ -8,7 +8,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
     using Transport.AzureServiceBus;
-    using Settings;
     using NUnit.Framework;
 
     [TestFixture]
@@ -18,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public async Task Delegates_creation_to_messaging_factory()
         {
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var factory = new InterceptedMessagingFactory();
 
@@ -33,7 +32,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public async Task Applies_user_defined_connectivity_settings()
         {
-            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
+            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.MessageSenders()
