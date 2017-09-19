@@ -41,7 +41,7 @@
 
             var exception = Assert.Throws<Exception>(() => DefaultConfigurationValues.Apply(settings));
 
-            Assert.IsTrue(exception.Message.StartsWith("Due to message size restriction"), $"Incorrect exception message: {exception.Message}");
+            Assert.IsTrue(exception.Message.StartsWith("Use 'endpointConfiguration.UseSerialization<T>();'"), $"Incorrect exception message: {exception.Message}");
         }
     }
 }
