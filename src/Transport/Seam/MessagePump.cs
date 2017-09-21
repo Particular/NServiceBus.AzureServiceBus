@@ -48,6 +48,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             topologyOperator.OnIncomingMessage(async (incoming, receiveContext) =>
             {
+                if (circuitBreaker == null || throttler == null) /* can be disposed by fody injected logic, in theory */
+                {
+                    return;
+                }
+
                 var tokenSource = new CancellationTokenSource();
                 receiveContext.CancellationToken = tokenSource.Token;
 
