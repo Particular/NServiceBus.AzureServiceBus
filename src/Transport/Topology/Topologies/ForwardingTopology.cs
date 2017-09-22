@@ -51,7 +51,7 @@ namespace NServiceBus
             namespaceManagerCreator = new NamespaceManagerCreator(this.settings);
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
 
-            var endpointName = this.settings.GetOrDefault<string>("BaseInputQueueName") ?? this.settings.EndpointName();
+            var endpointName = this.settings.LocalAddress();
             TopologySectionManager = new ForwardingTopologySectionManager(defaultName, namespaceConfigurations, endpointName, numberOfEntitiesInBundle, bundlePrefix, partitioningStrategy, addressingLogic, namespaceManagerLifeCycleManagerInternal);
 
             messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, this.settings);
