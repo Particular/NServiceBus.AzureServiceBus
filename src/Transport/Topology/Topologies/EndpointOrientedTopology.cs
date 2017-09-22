@@ -44,7 +44,8 @@ namespace NServiceBus
 
             var addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
 
-            TopologySectionManager = new EndpointOrientedTopologySectionManager(defaultName, namespaceConfigurations, this.settings.EndpointName(), publishersConfiguration, partitioningStrategy, addressingLogic);
+            var endpointName = this.settings.GetOrDefault<string>("BaseInputQueueName") ?? this.settings.EndpointName();
+            TopologySectionManager = new EndpointOrientedTopologySectionManager(defaultName, namespaceConfigurations, endpointName, publishersConfiguration, partitioningStrategy, addressingLogic);
 
             namespaceManagerCreator = new NamespaceManagerCreator(this.settings);
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
