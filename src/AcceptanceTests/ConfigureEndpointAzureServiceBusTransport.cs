@@ -2,6 +2,7 @@
 using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
 using NServiceBus.AcceptanceTests.DelayedDelivery;
+using NServiceBus.AcceptanceTests.Routing;
 using TesingConventions = NServiceBus.AcceptanceTesting.Customization;
 using NServiceBus.AcceptanceTests.Routing.NativePublishSubscribe;
 using NServiceBus.AcceptanceTests.Sagas;
@@ -82,6 +83,8 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
             endpointOrientedTopology.RegisterPublisher(typeof(When_publishing_from_sendonly.MyEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_publishing_from_sendonly.SendOnlyPublisher)));
             endpointOrientedTopology.RegisterPublisher(typeof(When_subscribing_to_a_base_event.IBaseEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_subscribing_to_a_base_event.Publisher)));
             endpointOrientedTopology.RegisterPublisher(typeof(When_subscribing_to_a_derived_event.SpecificEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_subscribing_to_a_derived_event.Publisher)));
+
+            endpointOrientedTopology.RegisterPublisher(typeof(When_publishing_with_overridden_local_address.MyEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_publishing_with_overridden_local_address.Publisher)));
         }
 
         transportConfig.Sanitization()
