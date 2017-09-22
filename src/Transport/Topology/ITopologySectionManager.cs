@@ -5,7 +5,7 @@
     interface ITopologySectionManagerInternal
     {
         TopologySectionInternal DetermineReceiveResources(string inputQueue);
-        TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings);
+        TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress);
 
         TopologySectionInternal DeterminePublishDestination(Type eventType);
         TopologySectionInternal DetermineSendDestination(string destination);

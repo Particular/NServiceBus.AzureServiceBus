@@ -125,7 +125,7 @@
             throw new NotImplementedException();
         }
 
-        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
+        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress)
         {
             throw new NotImplementedException();
         }

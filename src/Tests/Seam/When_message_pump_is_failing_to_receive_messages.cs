@@ -89,7 +89,7 @@
                 };
             }
 
-            public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
+            public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress)
             {
                 return new TopologySectionInternal();
             }

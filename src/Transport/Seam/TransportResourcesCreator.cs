@@ -4,10 +4,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class TransportResourcesCreator : ICreateQueues
     {
-        public TransportResourcesCreator(TopologyCreator topologyCreator, ITopologySectionManagerInternal sections)
+        public TransportResourcesCreator(TopologyCreator topologyCreator, ITopologySectionManagerInternal sections, string localAddress)
         {
             this.topologyCreator = topologyCreator;
             this.sections = sections;
+            this.localAddress = localAddress;
         }
 
         public async Task CreateQueueIfNecessary(QueueBindings queueBindings, string identity)
@@ -19,13 +20,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             await topologyCreator.AssertManagedRights().ConfigureAwait(false);
 
-            var receiveResources = sections.DetermineResourcesToCreate(queueBindings);
+            var receiveResources = sections.DetermineResourcesToCreate(queueBindings, localAddress);
             await topologyCreator.Create(receiveResources).ConfigureAwait(false);
 
             resourcesCreated = true;
         }
 
         ITopologySectionManagerInternal sections;
+        readonly string localAddress;
         TopologyCreator topologyCreator;
         bool resourcesCreated;
     }

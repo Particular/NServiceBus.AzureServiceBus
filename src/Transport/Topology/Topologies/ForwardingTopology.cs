@@ -80,7 +80,8 @@ namespace NServiceBus
 
         public Func<ICreateQueues> GetQueueCreatorFactory()
         {
-            return () => new TransportResourcesCreator(topologyCreator, TopologySectionManager);
+            // Have to provide endpoint name by accessing the settings and not using the cached version for an endpoint name that is overridden. 
+            return () => new TransportResourcesCreator(topologyCreator, TopologySectionManager, settings.LocalAddress());
         }
 
         public Func<IPushMessages> GetMessagePumpFactory()
