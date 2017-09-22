@@ -110,7 +110,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var sectionManager = topology.TopologySectionManager;
             sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
-            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent), "sales");
 
             Assert.That(section.Entities.Count(), Is.EqualTo(1));
         }
@@ -131,7 +131,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var sectionManager = topology.TopologySectionManager;
             sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
-            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent), "sales");
 
             Assert.IsTrue(section.Entities.All(e => e.Path == "sales"), "Subscription name should be matching subscribing endpoint name, but it wasn't.");
         }
@@ -151,7 +151,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var sectionManager = topology.TopologySectionManager;
             sectionManager.DetermineResourcesToCreate(new QueueBindings());
 
-            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent));
+            var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent), "sales");
 
             Assert.IsFalse(section.Entities.Any(x => x.ShouldBeListenedTo));
         }

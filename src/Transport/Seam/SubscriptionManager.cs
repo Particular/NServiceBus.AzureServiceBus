@@ -6,16 +6,17 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class SubscriptionManager : IManageSubscriptions
     {
-        public SubscriptionManager(ITopologySectionManagerInternal topologySectionManager, IOperateTopologyInternal topologyOperator, TopologyCreator topologyCreator)
+        public SubscriptionManager(ITopologySectionManagerInternal topologySectionManager, IOperateTopologyInternal topologyOperator, TopologyCreator topologyCreator, string localAddress)
         {
             this.topologySectionManager = topologySectionManager;
             this.topologyOperator = topologyOperator;
             this.topologyCreator = topologyCreator;
+            this.localAddress = localAddress;
         }
 
         public async Task Subscribe(Type eventType, ContextBag context)
         {
-            var section = topologySectionManager.DetermineResourcesToSubscribeTo(eventType);
+            var section = topologySectionManager.DetermineResourcesToSubscribeTo(eventType, localAddress);
             await topologyCreator.Create(section).ConfigureAwait(false);
             topologyOperator.Start(section.Entities);
         }
@@ -30,5 +31,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         ITopologySectionManagerInternal topologySectionManager; // responsible for providing the metadata about the subscription (what in case of EH?)
         IOperateTopologyInternal topologyOperator; // responsible for operating the subscription (creating if needed & receiving from)
         TopologyCreator topologyCreator;
+        readonly string localAddress;
     }
 }

@@ -170,11 +170,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             });
         }
 
-        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
+        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
         {
             if (!subscriptions.ContainsKey(eventType))
             {
-                subscriptions[eventType] = BuildSubscriptionHierarchy(eventType);
+                subscriptions[eventType] = BuildSubscriptionHierarchy(eventType, localAddress);
             }
 
             return subscriptions[eventType];
@@ -194,12 +194,15 @@ namespace NServiceBus.Transport.AzureServiceBus
             return result;
         }
 
-        TopologySectionInternal BuildSubscriptionHierarchy(Type eventType)
+        TopologySectionInternal BuildSubscriptionHierarchy(Type eventType, string localAddress)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
-            var sanitizedInputQueuePath = addressingLogic.Apply(endpointName, EntityType.Queue).Name;
-            var sanitizedSubscriptionPath = addressingLogic.Apply(endpointName, EntityType.Subscription).Name;
+            // Using localAddress that will be provided by SubscriptionManager instead of the endpoint name.
+            // Reason: endpoint name can be overridden. If the endpoint name is overridden, "endpointName" will not have the override value.
+            var sanitizedInputQueuePath = addressingLogic.Apply(localAddress, EntityType.Queue).Name;
+            var sanitizedSubscriptionPath = addressingLogic.Apply(localAddress, EntityType.Subscription).Name;
+
             // rule name needs to be 1) based on event full name 2) unique 3) deterministic
             var ruleName = addressingLogic.Apply(eventType.FullName, EntityType.Rule).Name;
 

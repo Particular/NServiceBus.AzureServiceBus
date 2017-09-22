@@ -104,7 +104,7 @@
                 return new TopologySectionInternal();
             }
 
-            public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
+            public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
             {
                 return new TopologySectionInternal();
             }

@@ -51,7 +51,7 @@ namespace NServiceBus
             namespaceManagerCreator = new NamespaceManagerCreator(this.settings);
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
 
-            var endpointName = this.settings.LocalAddress();
+            var endpointName = this.settings.EndpointName();
             TopologySectionManager = new ForwardingTopologySectionManager(defaultName, namespaceConfigurations, endpointName, numberOfEntitiesInBundle, bundlePrefix, partitioningStrategy, addressingLogic, namespaceManagerLifeCycleManagerInternal);
 
             messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, this.settings);
@@ -95,7 +95,8 @@ namespace NServiceBus
 
         public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
         {
-            return () => new SubscriptionManager(TopologySectionManager, Operator, topologyCreator);
+            // Have to provide endpoint name by accessing the settings and not using the cached version for an endpoint name that is overridden. 
+            return () => new SubscriptionManager(TopologySectionManager, Operator, topologyCreator, settings.LocalAddress());
         }
 
         public Task<StartupCheckResult> RunPreStartupChecks()

@@ -170,11 +170,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             });
         }
 
-        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
+        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
         {
             if (!subscriptions.ContainsKey(eventType))
             {
-                subscriptions[eventType] = BuildSubscriptionHierarchy(eventType);
+                subscriptions[eventType] = BuildSubscriptionHierarchy(eventType, localAddress);
             }
 
             return subscriptions[eventType];
@@ -196,15 +196,17 @@ namespace NServiceBus.Transport.AzureServiceBus
             return result;
         }
 
-        TopologySectionInternal BuildSubscriptionHierarchy(Type eventType)
+        TopologySectionInternal BuildSubscriptionHierarchy(Type eventType, string localAddress)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
             var topicPaths = DetermineTopicsFor(eventType);
 
-            var subscriptionNameCandidateV6 = endpointName + "." + eventType.Name;
+            // Using localAddress that will be provided by SubscriptionManager instead of the endpoint name.
+            // Reason: endpoint name can be overridden. If the endpoint name is overridden, "endpointName" will not have the override value.
+            var subscriptionNameCandidateV6 = localAddress + "." + eventType.Name;
             var subscriptionNameV6 = addressingLogic.Apply(subscriptionNameCandidateV6, EntityType.Subscription).Name;
-            var subscriptionNameCandidate = endpointName + "." + eventType.FullName;
+            var subscriptionNameCandidate = localAddress + "." + eventType.FullName;
             var subscriptionName = addressingLogic.Apply(subscriptionNameCandidate, EntityType.Subscription).Name;
 
             var topics = new List<EntityInfoInternal>();
