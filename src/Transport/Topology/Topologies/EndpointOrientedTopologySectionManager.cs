@@ -90,6 +90,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return publishDestinations.GetOrAdd(eventType, t =>
             {
                 var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+            // TODO: does this need to be localAddress and not endpointOriginalName?
             	var topicPath = addressingLogic.Apply(originalEndpointName + ".events", EntityType.Topic).Name;
                 var topics = namespaces.Select(n => new EntityInfoInternal
                 {
