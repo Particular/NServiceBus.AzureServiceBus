@@ -18,8 +18,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var outgoingBatches = batcher.ToBatches(operations);
 
-            ReceiveContextInternal receiveContext;
-            if (!TryGetReceiveContext(transportTransaction, out receiveContext)) // not in a receive context, so send out immediately
+            if (!TryGetReceiveContext(transportTransaction, out var receiveContext)) // not in a receive context, so send out immediately
             {
                 return routeOutgoingBatches.RouteBatches(outgoingBatches, null, DispatchConsistency.Default);
             }

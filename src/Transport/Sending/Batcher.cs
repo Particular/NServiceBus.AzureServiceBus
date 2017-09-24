@@ -25,8 +25,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             foreach (var unicastOperation in operations.UnicastTransportOperations)
             {
                 var key = $"unicast-{unicastOperation.Destination}-consistency-{unicastOperation.RequiredDispatchConsistency}";
-                BatchInternal batch;
-                if (!indexedBatches.TryGetValue(key, out batch))
+                if (!indexedBatches.TryGetValue(key, out var batch))
                 {
                     batch = new BatchInternal();
                     indexedBatches[key] = batch;
@@ -47,8 +46,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             foreach (var multicastOperation in operations.MulticastTransportOperations)
             {
                 var key = $"multicast-{multicastOperation.MessageType}-consistency-{multicastOperation.RequiredDispatchConsistency}";
-                BatchInternal batch;
-                if (!indexedBatches.TryGetValue(key, out batch))
+                if (!indexedBatches.TryGetValue(key, out var batch))
                 {
                     batch = new BatchInternal();
                     indexedBatches[key] = batch;

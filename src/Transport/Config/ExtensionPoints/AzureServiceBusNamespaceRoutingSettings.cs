@@ -16,8 +16,7 @@ namespace NServiceBus
         /// </summary>
         public NamespaceInfo AddNamespace(string name, string connectionString)
         {
-            NamespaceConfigurations namespaces;
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
+            if (!settings.TryGet<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out var namespaces))
             {
                 namespaces = new NamespaceConfigurations();
                 settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);

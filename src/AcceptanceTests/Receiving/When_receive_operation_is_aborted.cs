@@ -71,8 +71,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                 {
                     await next(context);
 
-                    string runId;
-                    if (context.Message.Headers.TryGetValue("$AcceptanceTesting.TestRunId", out runId) && runId == testRunId)
+                    if (context.Message.Headers.TryGetValue("$AcceptanceTesting.TestRunId", out var runId) && runId == testRunId)
                     {
                         context.AbortReceiveOperation();
                     }

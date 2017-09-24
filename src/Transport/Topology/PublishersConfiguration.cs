@@ -63,8 +63,7 @@
 
         void AddPublisherForType(string publisherName, Type type)
         {
-            List<string> publisherNames;
-            if (!publishers.TryGetValue(type, out publisherNames))
+            if (!publishers.TryGetValue(type, out var publisherNames))
             {
                 publisherNames = new List<string>();
                 publishers.Add(type, publisherNames);

@@ -91,8 +91,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public static long EstimatedSize(this BrokeredMessage message)
         {
-            object size;
-            message.Properties.TryGetValue(BrokeredMessageHeaders.EstimatedMessageSize, out size);
+            message.Properties.TryGetValue(BrokeredMessageHeaders.EstimatedMessageSize, out var size);
             return Convert.ToInt64(size);
         }
 
