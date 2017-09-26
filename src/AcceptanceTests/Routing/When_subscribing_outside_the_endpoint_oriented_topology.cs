@@ -17,6 +17,12 @@
         [Test]
         public async Task Should_receive_event()
         {
+            var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
+            if (topology == "ForwardingTopology")
+            {
+                Assert.Inconclusive("The test is designed for EndpointOrientedTopology only.");
+            }
+
             var runSettings = new RunSettings();
             runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
 
@@ -33,28 +39,13 @@
                     extensions.NamespaceRouting()
                                     .AddNamespace("publisherNamespace", publisherConnectionString)
                                     .RegisteredEndpoints.Add(AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(Publisher)));
+                    extensions.UseEndpointOrientedTopology()
+                        .RegisterPublisher(typeof(MyEvent), AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(Publisher)));
                 }
                 else
                 {
                     extensions.NamespacePartitioning().AddNamespace("publisherNamespace", publisherConnectionString);
-                }
-
-                var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
-                if (topology == "ForwardingTopology")
-                {
-                    extensions.UseForwardingTopology();
-                }
-                else
-                {
-                    if (endpointName == "SubscribingOutsideTheEndpointOrientedTopology.Subscriber")
-                    {
-                        extensions.UseEndpointOrientedTopology()
-                            .RegisterPublisher(typeof(MyEvent), AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(Publisher)));
-                    }
-                    else
-                    {
-                        extensions.UseEndpointOrientedTopology();
-                    }
+                    extensions.UseEndpointOrientedTopology();
                 }
             };
 
@@ -74,11 +65,6 @@
                 }))
                 .Done(ctx => ctx.SubscriberGotTheEvent || !ctx.IsEndpointOrientedTopology)
                 .Run(runSettings);
-
-            if (!context.IsEndpointOrientedTopology)
-            {
-                Assert.Inconclusive("The test is designed for EndpointOrientedTopology only.");
-            }
 
             Assert.That(context.SubscriberGotTheEvent, Is.True, "Should receive the event");
          }
