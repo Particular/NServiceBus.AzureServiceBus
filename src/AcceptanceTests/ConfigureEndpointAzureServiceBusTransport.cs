@@ -84,6 +84,7 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
             endpointOrientedTopology.RegisterPublisher(typeof(When_subscribing_to_a_derived_event.SpecificEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_subscribing_to_a_derived_event.Publisher)));
 
             endpointOrientedTopology.RegisterPublisher(typeof(When_publishing_with_overridden_local_address.MyEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_publishing_with_overridden_local_address.Publisher)));
+            endpointOrientedTopology.RegisterPublisher(typeof(When_publishing_and_subscribing_to_self_with_overridden_address.MyEvent), TesingConventions.Conventions.EndpointNamingConvention(typeof(When_publishing_and_subscribing_to_self_with_overridden_address.PublisherAndSubscriber)));
         }
 
         transportConfig.Sanitization()

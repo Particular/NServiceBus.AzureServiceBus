@@ -33,7 +33,7 @@
                 EndpointSetup<DefaultPublisher>(builder =>
                 {
                     builder.OverrideLocalAddress("myinputqueue");                    
-                }, metadata => metadata.RegisterPublisherFor<MyEvent>(typeof(PublisherAndSubscriber)));
+                });
             }
 
             public class MyEventHandler : IHandleMessages<MyEvent>
