@@ -36,6 +36,16 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     extensions.NamespacePartitioning().AddNamespace("source", connectionString);
                     extensions.NamespaceRouting().AddNamespace("target", targetConnectionString);
                 }
+
+                var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
+                if (topology == "ForwardingTopology")
+                {
+                    extensions.UseForwardingTopology();
+                }
+                else
+                {
+                    extensions.UseEndpointOrientedTopology();
+                }
             };
 
             runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);
@@ -80,6 +90,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                 {
                     extensions.NamespacePartitioning().AddNamespace("source", connectionString);
                     extensions.NamespaceRouting().AddNamespace("target", targetConnectionString);
+                }
+                var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
+                if (topology == "ForwardingTopology")
+                {
+                    extensions.UseForwardingTopology();
+                }
+                else
+                {
+                    extensions.UseEndpointOrientedTopology();
                 }
             };
 

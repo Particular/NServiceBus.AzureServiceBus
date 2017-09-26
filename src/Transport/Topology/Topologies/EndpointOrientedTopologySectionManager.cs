@@ -223,6 +223,31 @@ namespace NServiceBus.Transport.AzureServiceBus
                         Type = EntityType.Topic,
                         Path = path
                     }));
+
+                    subs.AddRange(destinationsOutsideTopology.Select(ns =>
+                    {
+                        var rns = new RuntimeNamespaceInfo(ns.Alias, ns.Connection, NamespacePurpose.Routing);
+                        var sub = new SubscriptionInfoInternal
+                        {
+                            Namespace = rns,
+                            Type = EntityType.Subscription,
+                            Path = subscriptionNameV6,
+                            Metadata = new SubscriptionMetadataInternal
+                            {
+                                Description = endpointName + " subscribed to " + eventType.FullName,
+                                SubscriptionNameBasedOnEventWithNamespace = subscriptionName
+                            },
+                            BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                            ShouldBeListenedTo = true
+                        };
+                        sub.RelationShips.Add(new EntityRelationShipInfoInternal
+                        {
+                            Source = sub,
+                            Target = topics.First(t => t.Path == path && t.Namespace == rns),
+                            Type = EntityRelationShipTypeInternal.Subscription
+                        });
+                        return sub;
+                    }));
                 }
                 else
                 {
@@ -232,31 +257,33 @@ namespace NServiceBus.Transport.AzureServiceBus
                         Type = EntityType.Topic,
                         Path = path
                     }));
+
+                    subs.AddRange(namespaces.Select(ns =>
+                    {
+                        var sub = new SubscriptionInfoInternal
+                        {
+                            Namespace = ns,
+                            Type = EntityType.Subscription,
+                            Path = subscriptionNameV6,
+                            Metadata = new SubscriptionMetadataInternal
+                            {
+                            Description = originalEndpointName + " subscribed to " + eventType.FullName,
+                                SubscriptionNameBasedOnEventWithNamespace = subscriptionName
+                            },
+                            BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                            ShouldBeListenedTo = true
+                        };
+                        sub.RelationShips.Add(new EntityRelationShipInfoInternal
+                        {
+                            Source = sub,
+                            Target = topics.First(t => t.Path == path && t.Namespace == ns),
+                            Type = EntityRelationShipTypeInternal.Subscription
+                        });
+                        return sub;
+                    }));
                 }
 
-                subs.AddRange(namespaces.Select(ns =>
-                {
-                    var sub = new SubscriptionInfoInternal
-                    {
-                        Namespace = ns,
-                        Type = EntityType.Subscription,
-                        Path = subscriptionNameV6,
-                        Metadata = new SubscriptionMetadataInternal
-                        {
-                            Description = originalEndpointName + " subscribed to " + eventType.FullName,
-                            SubscriptionNameBasedOnEventWithNamespace = subscriptionName
-                        },
-                        BrokerSideFilter = new SqlSubscriptionFilter(eventType),
-                        ShouldBeListenedTo = true
-                    };
-                    sub.RelationShips.Add(new EntityRelationShipInfoInternal
-                    {
-                        Source = sub,
-                        Target = topics.First(t => t.Path == path && t.Namespace == ns),
-                        Type = EntityRelationShipTypeInternal.Subscription
-                    });
-                    return sub;
-                }));
+                
             }
             return new TopologySectionInternal
             {
