@@ -214,7 +214,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var topicPath = publisher + ".events";
                 var path = addressingLogic.Apply(topicPath, EntityType.Topic).Name;
 
-                var destinationsOutsideTopology = namespaceConfigurations.Where(c => c.RegisteredEndpoints.Contains(publisher)).ToList();
+                var destinationsOutsideTopology = namespaceConfigurations.Where(c => c.RegisteredEndpoints.Contains(publisher, StringComparer.OrdinalIgnoreCase)).ToList();
                 if (destinationsOutsideTopology.Any())
                 {
                     topics.AddRange(destinationsOutsideTopology.Select(ns => new EntityInfoInternal
