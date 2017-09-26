@@ -94,7 +94,7 @@ namespace NServiceBus
     }
     public class AzureServiceBusNamespaceRoutingSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
-        public void AddNamespace(string name, string connectionString) { }
+        public NServiceBus.Transport.AzureServiceBus.NamespaceInfo AddNamespace(string name, string connectionString) { }
     }
     public class AzureServiceBusQueueSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
@@ -439,7 +439,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         public NamespaceConfigurations() { }
         public int Count { get; }
-        public void Add(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose) { }
+        public NServiceBus.Transport.AzureServiceBus.NamespaceInfo Add(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose) { }
         public string GetConnectionString(string name) { }
         public System.Collections.Generic.IEnumerator<NServiceBus.Transport.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
     }
@@ -452,6 +452,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             " removed in version 9.0.0.", true)]
         public NServiceBus.Transport.AzureServiceBus.ConnectionString ConnectionString { get; }
         public NServiceBus.Transport.AzureServiceBus.NamespacePurpose Purpose { get; }
+        public System.Collections.Generic.HashSet<string> RegisteredEndpoints { get; }
         public bool Equals(NServiceBus.Transport.AzureServiceBus.NamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }

@@ -14,7 +14,7 @@ namespace NServiceBus
         /// <summary>
         /// Adds a namespace for routing.
         /// </summary>
-        public void AddNamespace(string name, string connectionString)
+        public NamespaceInfo AddNamespace(string name, string connectionString)
         {
             NamespaceConfigurations namespaces;
             if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
@@ -23,7 +23,7 @@ namespace NServiceBus
                 settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaces);
             }
 
-            namespaces.Add(name, connectionString, NamespacePurpose.Routing);
+            return namespaces.Add(name, connectionString, NamespacePurpose.Routing);
         }
 
         SettingsHolder settings;

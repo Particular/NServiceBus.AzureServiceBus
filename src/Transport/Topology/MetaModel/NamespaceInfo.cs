@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
+    using System.Collections.Generic;
 
     public partial class NamespaceInfo : IEquatable<NamespaceInfo>
     {
@@ -19,6 +20,7 @@
             Alias = alias;
             this.connectionString = new ConnectionStringInternal(connectionString);
             Purpose = purpose;
+            RegisteredEndpoints = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public string Alias { get; }
@@ -26,6 +28,8 @@
         public NamespacePurpose Purpose { get; }
 
         public string Connection => connectionString;
+
+        public HashSet<string> RegisteredEndpoints { get; }
 
         public bool Equals(NamespaceInfo other)
         {
