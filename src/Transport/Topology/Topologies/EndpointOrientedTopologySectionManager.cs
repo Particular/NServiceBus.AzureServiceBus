@@ -197,8 +197,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         TopologySectionInternal BuildSubscriptionHierarchy(Type eventType, string localAddress)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
-
-            var topicPaths = DetermineTopicsFor(eventType);
+            
+            var publishers = publishersConfiguration.GetPublishersFor(eventType);
 
             // Using localAddress that will be provided by SubscriptionManager instead of the endpoint name.
             // Reason: endpoint name can be overridden. If the endpoint name is overridden, "originalEndpointName" will not have the override value.
@@ -209,15 +209,30 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             var topics = new List<EntityInfoInternal>();
             var subs = new List<SubscriptionInfoInternal>();
-            foreach (var topicPath in topicPaths)
+            foreach (var publisher in publishers)
             {
+                var topicPath = publisher + ".events";
                 var path = addressingLogic.Apply(topicPath, EntityType.Topic).Name;
-                topics.AddRange(namespaces.Select(ns => new EntityInfoInternal
+
+                var destinationsOutsideTopology = namespaceConfigurations.Where(c => c.RegisteredEndpoints.Contains(publisher)).ToList();
+                if (destinationsOutsideTopology.Any())
                 {
-                    Namespace = ns,
-                    Type = EntityType.Topic,
-                    Path = path
-                }));
+                    topics.AddRange(destinationsOutsideTopology.Select(ns => new EntityInfoInternal
+                    {
+                        Namespace = new RuntimeNamespaceInfo(ns.Alias, ns.Connection, NamespacePurpose.Routing),
+                        Type = EntityType.Topic,
+                        Path = path
+                    }));
+                }
+                else
+                {
+                    topics.AddRange(namespaces.Select(ns => new EntityInfoInternal
+                    {
+                        Namespace = ns,
+                        Type = EntityType.Topic,
+                        Path = path
+                    }));
+                }
 
                 subs.AddRange(namespaces.Select(ns =>
                 {
@@ -248,14 +263,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                 Entities = subs,
                 Namespaces = namespaces
             };
-        }
-
-        List<string> DetermineTopicsFor(Type eventType)
-        {
-            return publishersConfiguration
-                .GetPublishersFor(eventType)
-                .Select(x => string.Concat(x, ".events"))
-                .ToList();
         }
 
         ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
