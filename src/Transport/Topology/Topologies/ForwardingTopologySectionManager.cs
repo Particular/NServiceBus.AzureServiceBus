@@ -101,7 +101,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 return new TopologySectionInternal
                 {
-                    Entities = SelectFirstTopicFromBundle(topics),
+                    Entities = new [] { topics[0] }, // first in bundle
                     Namespaces = namespaces
                 };
             });
@@ -192,12 +192,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             return result;
-        }
-
-        IEnumerable<EntityInfoInternal> SelectFirstTopicFromBundle(List<EntityInfoInternal> entityInfos)
-        {
-            const int index = 0;
-            yield return entityInfos[index];
         }
 
         TopologySectionInternal BuildSubscriptionHierarchy(Type eventType)
