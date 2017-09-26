@@ -120,7 +120,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     {
                         namespaces = new[]
                         {
-                            new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing, NamespaceMode.Active)
+                            new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing)
                         };
                     }
                     else
@@ -130,14 +130,25 @@ namespace NServiceBus.Transport.AzureServiceBus
                         {
                             namespaces = new[]
                             {
-                                new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose, NamespaceMode.Active)
+                                new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose)
                             };
                         }
                     }
                 }
-                else // sending to the partition
+                else
                 {
-                    namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
+                    var configured = namespaceConfigurations.FirstOrDefault(n => n.RegisteredEndpoints.Contains(d, StringComparer.OrdinalIgnoreCase));
+                    if (configured != null)
+                    {
+                        namespaces = new[]
+                        {
+                            new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose),
+                        };
+                    }
+                    else // sending to the partition
+                    {
+                        namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
+                    }
                 }
 
                 if (namespaces == null)
