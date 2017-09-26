@@ -4,12 +4,10 @@
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AcceptanceTesting.Support;
-    using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using Features;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
-    using Settings;
     using NUnit.Framework;
 
     public class When_subscribing_outside_the_endpoint_oriented_topology : NServiceBusAcceptanceTest
@@ -63,7 +61,7 @@
 
                     c.ReceiverSubscribedToEvents = true;
                 }))
-                .Done(ctx => ctx.SubscriberGotTheEvent || !ctx.IsEndpointOrientedTopology)
+                .Done(ctx => ctx.SubscriberGotTheEvent)
                 .Run(runSettings);
 
             Assert.That(context.SubscriberGotTheEvent, Is.True, "Should receive the event");
@@ -72,7 +70,6 @@
         public class Context : ScenarioContext
         {
             public bool SubscriberGotTheEvent { get; set; }
-            public bool IsEndpointOrientedTopology { get; set; }
             public bool ReceiverSubscribedToEvents { get; set; }
         }
 
@@ -82,41 +79,7 @@
 
             public Publisher()
             {
-                EndpointSetup<DefaultPublisher>(endpointConfiguration =>
-                {
-                    endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>();
-                });
-            }
-
-            class DetermineWhatTopologyIsUsed : Feature
-            {
-                protected override void Setup(FeatureConfigurationContext context)
-                {
-                    context.RegisterStartupTask(builder => new TaskToDetermineCurrentTopology(builder.Build<Context>(), builder.Build<ReadOnlySettings>()));
-                }
-            }
-
-            class TaskToDetermineCurrentTopology : FeatureStartupTask
-            {
-                Context context;
-                ReadOnlySettings settings;
-
-                public TaskToDetermineCurrentTopology(Context context, ReadOnlySettings settings)
-                {
-                    this.context = context;
-                    this.settings = settings;
-                }
-
-                protected override Task OnStart(IMessageSession session)
-                {
-                    context.IsEndpointOrientedTopology = settings.Get<string>("AzureServiceBus.AcceptanceTests.UsedTopology") == "EndpointOrientedTopology";
-                    return TaskEx.Completed;
-                }
-
-                protected override Task OnStop(IMessageSession session)
-                {
-                    return TaskEx.Completed;
-                }
+                EndpointSetup<DefaultPublisher>();
             }
         }
 
