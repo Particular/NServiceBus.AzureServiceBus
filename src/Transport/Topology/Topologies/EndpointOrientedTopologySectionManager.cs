@@ -136,12 +136,12 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
                 else
                 {
-                    var configured = namespaceConfigurations.FirstOrDefault(n => n.RegisteredEndpoints.Contains(d, StringComparer.OrdinalIgnoreCase));
-                    if (configured != null)
+                    var namespaceToRouteTo = namespaceConfigurations.FirstOrDefault(n => n.RegisteredEndpoints.Contains(d, StringComparer.OrdinalIgnoreCase));
+                    if (namespaceToRouteTo != null)
                     {
                         namespaces = new[]
                         {
-                            new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose),
+                            new RuntimeNamespaceInfo(namespaceToRouteTo.Alias, namespaceToRouteTo.Connection, namespaceToRouteTo.Purpose),
                         };
                     }
                     else // sending to the partition
@@ -152,7 +152,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 if (namespaces == null)
                 {
-                    throw new Exception($"Could not determine namespace for destination {d}");
+                    throw new Exception($"Could not determine namespace for destination '{d}'");
                 }
 
                 var inputQueues = namespaces.Select(n => new EntityInfoInternal
