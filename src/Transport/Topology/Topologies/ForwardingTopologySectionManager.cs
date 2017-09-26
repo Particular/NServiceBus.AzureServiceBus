@@ -89,7 +89,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DeterminePublishDestination(Type eventType)
+        public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
         {
             return publishDestinations.GetOrAdd(eventType, t =>
             {

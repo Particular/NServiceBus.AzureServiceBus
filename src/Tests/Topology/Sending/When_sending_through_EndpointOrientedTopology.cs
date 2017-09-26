@@ -26,7 +26,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Sending
         {
             var topology = SetupEndpointOrientedTopology("sales");
 
-            var destination = topology.DeterminePublishDestination(typeof(SomeMessageType));
+            var destination = topology.DeterminePublishDestination(typeof(SomeMessageType), "sales");
 
             Assert.IsTrue(destination.Entities.Single().Type == EntityType.Topic);
             Assert.IsTrue(destination.Entities.Single().Path == "sales.events");

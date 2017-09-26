@@ -94,7 +94,7 @@
                 return new TopologySectionInternal();
             }
 
-            public TopologySectionInternal DeterminePublishDestination(Type eventType)
+            public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
             {
                 return new TopologySectionInternal();
             }

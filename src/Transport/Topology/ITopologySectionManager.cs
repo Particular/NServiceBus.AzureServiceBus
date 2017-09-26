@@ -7,7 +7,7 @@
         TopologySectionInternal DetermineReceiveResources(string inputQueue);
         TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress);
 
-        TopologySectionInternal DeterminePublishDestination(Type eventType);
+        TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress);
         TopologySectionInternal DetermineSendDestination(string destination);
 
         TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress);
