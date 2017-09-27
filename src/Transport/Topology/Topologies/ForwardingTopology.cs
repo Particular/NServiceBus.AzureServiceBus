@@ -11,9 +11,7 @@ namespace NServiceBus
     class ForwardingTopologyInternal : ITopologyInternal
     {
         public ITopologySectionManagerInternal TopologySectionManager { get; set; }
-
         public IOperateTopologyInternal Operator { get; set; }
-
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
         public TopologySettings Settings { get; } = new TopologySettings();
@@ -68,7 +66,6 @@ namespace NServiceBus
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)this.settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
 
             outgoingBatchRouter = new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(this.settings), senderLifeCycleManager, this.settings, oversizedMessageHandler);
-            batcher = new Batcher(TopologySectionManager, this.settings);
 
             Operator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(this.settings, new DefaultConnectionStringToNamespaceAliasMapper(this.settings)), this.settings);
         }
@@ -91,7 +88,7 @@ namespace NServiceBus
 
         public Func<IDispatchMessages> GetDispatcherFactory()
         {
-            return () => new Dispatcher(outgoingBatchRouter, batcher);
+            return () => new Dispatcher(outgoingBatchRouter, new Batcher(TopologySectionManager, this.settings));
         }
 
         public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
@@ -131,7 +128,6 @@ namespace NServiceBus
         TopologyCreator topologyCreator;
         SettingsHolder settings;
         OutgoingBatchRouter outgoingBatchRouter;
-        Batcher batcher;
         IIndividualizationStrategy individualization;
     }
 }

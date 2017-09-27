@@ -1,6 +1,5 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Settings;
@@ -11,7 +10,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             this.topologySectionManager = topologySectionManager;
             messageSizePaddingPercentage = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage);
-            localAddress = new Lazy<string>(() => settings.LocalAddress());
+            localAddress = settings.LocalAddress();
         }
 
         public IList<BatchInternal> ToBatches(TransportOperations operations)
@@ -53,7 +52,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     batch = new BatchInternal();
                     indexedBatches[key] = batch;
 
-                    batch.Destinations = topologySectionManager.DeterminePublishDestination(multicastOperation.MessageType, localAddress.Value);
+                    batch.Destinations = topologySectionManager.DeterminePublishDestination(multicastOperation.MessageType, localAddress);
                     batch.RequiredDispatchConsistency = multicastOperation.RequiredDispatchConsistency;
                 }
                 batch.Operations.Add(new BatchedOperationInternal(messageSizePaddingPercentage)
@@ -66,6 +65,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         ITopologySectionManagerInternal topologySectionManager;
         int messageSizePaddingPercentage;
-        Lazy<string> localAddress;
+        string localAddress;
     }
 }
