@@ -11,9 +11,7 @@ namespace NServiceBus
     class ForwardingTopologyInternal : ITopologyInternal
     {
         public ITopologySectionManagerInternal TopologySectionManager { get; set; }
-
         public IOperateTopologyInternal Operator { get; set; }
-
         public bool HasNativePubSubSupport => true;
         public bool HasSupportForCentralizedPubSub => true;
         public TopologySettings Settings { get; } = new TopologySettings();
@@ -51,7 +49,7 @@ namespace NServiceBus
             namespaceManagerCreator = new NamespaceManagerCreator(this.settings);
             namespaceManagerLifeCycleManagerInternal = new NamespaceManagerLifeCycleManagerInternal(namespaceManagerCreator);
 
-            var endpointName = this.settings.GetOrDefault<string>("BaseInputQueueName") ?? this.settings.EndpointName();
+            var endpointName = this.settings.EndpointName();
             TopologySectionManager = new ForwardingTopologySectionManager(defaultName, namespaceConfigurations, endpointName, numberOfEntitiesInBundle, bundlePrefix, partitioningStrategy, addressingLogic, namespaceManagerLifeCycleManagerInternal);
 
             messagingFactoryAdapterCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManagerInternal, this.settings);
@@ -68,7 +66,6 @@ namespace NServiceBus
             var oversizedMessageHandler = (IHandleOversizedBrokeredMessages)this.settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
 
             outgoingBatchRouter = new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(this.settings), senderLifeCycleManager, this.settings, oversizedMessageHandler);
-            batcher = new Batcher(TopologySectionManager, this.settings);
 
             Operator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(this.settings, new DefaultConnectionStringToNamespaceAliasMapper(this.settings)), this.settings);
         }
@@ -80,7 +77,8 @@ namespace NServiceBus
 
         public Func<ICreateQueues> GetQueueCreatorFactory()
         {
-            return () => new TransportResourcesCreator(topologyCreator, TopologySectionManager);
+            // Have to provide endpoint name by accessing the settings and not using the cached version for an endpoint name that is overridden. 
+            return () => new TransportResourcesCreator(topologyCreator, TopologySectionManager, settings.LocalAddress());
         }
 
         public Func<IPushMessages> GetMessagePumpFactory()
@@ -90,12 +88,13 @@ namespace NServiceBus
 
         public Func<IDispatchMessages> GetDispatcherFactory()
         {
-            return () => new Dispatcher(outgoingBatchRouter, batcher);
+            return () => new Dispatcher(outgoingBatchRouter, new Batcher(TopologySectionManager, this.settings));
         }
 
         public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
         {
-            return () => new SubscriptionManager(TopologySectionManager, Operator, topologyCreator);
+            // Have to provide endpoint name by accessing the settings and not using the cached version for an endpoint name that is overridden. 
+            return () => new SubscriptionManager(TopologySectionManager, Operator, topologyCreator, settings.LocalAddress());
         }
 
         public Task<StartupCheckResult> RunPreStartupChecks()
@@ -129,7 +128,6 @@ namespace NServiceBus
         TopologyCreator topologyCreator;
         SettingsHolder settings;
         OutgoingBatchRouter outgoingBatchRouter;
-        Batcher batcher;
         IIndividualizationStrategy individualization;
     }
 }

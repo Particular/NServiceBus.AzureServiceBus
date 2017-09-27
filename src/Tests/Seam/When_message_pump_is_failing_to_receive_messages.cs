@@ -89,12 +89,12 @@
                 };
             }
 
-            public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
+            public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress)
             {
                 return new TopologySectionInternal();
             }
 
-            public TopologySectionInternal DeterminePublishDestination(Type eventType)
+            public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
             {
                 return new TopologySectionInternal();
             }
@@ -104,7 +104,7 @@
                 return new TopologySectionInternal();
             }
 
-            public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
+            public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
             {
                 return new TopologySectionInternal();
             }

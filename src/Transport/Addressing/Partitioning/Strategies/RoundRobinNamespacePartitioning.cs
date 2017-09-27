@@ -11,8 +11,7 @@ namespace NServiceBus
     {
         internal RoundRobinNamespacePartitioning(ReadOnlySettings settings)
         {
-            NamespaceConfigurations namespaces;
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out namespaces))
+            if (!settings.TryGet<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, out var namespaces))
             {
                 throw new ConfigurationErrorsException($"The '{nameof(RoundRobinNamespacePartitioning)}' strategy requires more than one namespace, please use {nameof(AzureServiceBusTransportExtensions.NamespacePartitioning)}().{nameof(AzureServiceBusNamespacePartitioningSettings.AddNamespace)}() to register multiple namespaces");
             }

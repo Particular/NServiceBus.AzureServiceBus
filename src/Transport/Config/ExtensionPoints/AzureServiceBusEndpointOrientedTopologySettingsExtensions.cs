@@ -23,9 +23,7 @@
 
         static void AddScannerForPublisher(SettingsHolder settings, string publisherName, ITypesScanner scanner)
         {
-            Dictionary<string, List<ITypesScanner>> map;
-
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Publishers, out map))
+            if (!settings.TryGet<Dictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers, out var map))
             {
                 map = new Dictionary<string, List<ITypesScanner>>();
                 settings.Set(WellKnownConfigurationKeys.Topology.Publishers, map);

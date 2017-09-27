@@ -127,8 +127,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             foreach (var entity in entities)
             {
-                INotifyIncomingMessagesInternal notifier;
-                notifiers.TryGetValue(entity, out notifier);
+                notifiers.TryGetValue(entity, out var notifier);
 
                 if (notifier == null || !notifier.IsRunning)
                 {

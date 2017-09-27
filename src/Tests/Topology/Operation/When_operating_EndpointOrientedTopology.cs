@@ -269,7 +269,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Operation
                 settings);
 
             var sectionManager = topology.TopologySectionManager;
-            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings()));
+            await topologyCreator.Create(sectionManager.DetermineResourcesToCreate(new QueueBindings(), endpointName));
             return topology;
         }
     }

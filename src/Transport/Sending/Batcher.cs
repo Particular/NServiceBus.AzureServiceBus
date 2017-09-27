@@ -10,6 +10,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             this.topologySectionManager = topologySectionManager;
             messageSizePaddingPercentage = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage);
+            localAddress = settings.LocalAddress();
         }
 
         public IList<BatchInternal> ToBatches(TransportOperations operations)
@@ -25,8 +26,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             foreach (var unicastOperation in operations.UnicastTransportOperations)
             {
                 var key = $"unicast-{unicastOperation.Destination}-consistency-{unicastOperation.RequiredDispatchConsistency}";
-                BatchInternal batch;
-                if (!indexedBatches.TryGetValue(key, out batch))
+                if (!indexedBatches.TryGetValue(key, out var batch))
                 {
                     batch = new BatchInternal();
                     indexedBatches[key] = batch;
@@ -47,13 +47,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             foreach (var multicastOperation in operations.MulticastTransportOperations)
             {
                 var key = $"multicast-{multicastOperation.MessageType}-consistency-{multicastOperation.RequiredDispatchConsistency}";
-                BatchInternal batch;
-                if (!indexedBatches.TryGetValue(key, out batch))
+                if (!indexedBatches.TryGetValue(key, out var batch))
                 {
                     batch = new BatchInternal();
                     indexedBatches[key] = batch;
 
-                    batch.Destinations = topologySectionManager.DeterminePublishDestination(multicastOperation.MessageType);
+                    batch.Destinations = topologySectionManager.DeterminePublishDestination(multicastOperation.MessageType, localAddress);
                     batch.RequiredDispatchConsistency = multicastOperation.RequiredDispatchConsistency;
                 }
                 batch.Operations.Add(new BatchedOperationInternal(messageSizePaddingPercentage)
@@ -66,5 +65,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         ITopologySectionManagerInternal topologySectionManager;
         int messageSizePaddingPercentage;
+        string localAddress;
     }
 }

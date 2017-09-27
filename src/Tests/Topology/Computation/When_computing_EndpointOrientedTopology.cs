@@ -62,7 +62,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             topology.Initialize(settings);
 
             var sectionManager = topology.TopologySectionManager;
-            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings()), "Was expected to fail: " + reasonToFail);
+            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings(), endpointName), "Was expected to fail: " + reasonToFail);
         }
 
 
@@ -89,7 +89,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
             var sectionManager = topology.TopologySectionManager;
 
-            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings());
+            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings(), "sales");
             return definition;
         }
     }

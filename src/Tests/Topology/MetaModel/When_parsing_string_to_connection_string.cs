@@ -16,8 +16,7 @@
         {
             var @namespace = string.Format(Template, value, "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionStringInternal connectionString;
-            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out var connectionString);
 
             Assert.IsFalse(isValid);
             Assert.Null(connectionString);
@@ -30,8 +29,7 @@
         {
             var @namespace = string.Format(Template, value, "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionStringInternal connectionString;
-            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out var connectionString);
 
             Assert.IsFalse(isValid);
             Assert.Null(connectionString);
@@ -44,8 +42,7 @@
         {
             var @namespace = string.Format(Template, value, "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionStringInternal connectionString;
-            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out var connectionString);
 
             Assert.IsFalse(isValid);
             Assert.Null(connectionString);
@@ -56,8 +53,7 @@
         {
             var @namespace = string.Format(Template, "abcdef-", "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionStringInternal connectionString;
-            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out var connectionString);
 
             Assert.IsFalse(isValid);
             Assert.Null(connectionString);
@@ -74,8 +70,7 @@
         {
             var @namespace = string.Format(Template, value, "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionStringInternal connectionString;
-            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out var connectionString);
 
             Assert.IsFalse(isValid);
             Assert.Null(connectionString);
@@ -92,8 +87,7 @@
         {
             var @namespace = string.Format(Template, value, "RootManageSharedAccessKey", "YourSecret");
 
-            ConnectionStringInternal connectionString;
-            var isValid = ConnectionStringInternal.TryParse(@namespace, out connectionString);
+            var isValid = ConnectionStringInternal.TryParse(@namespace, out var connectionString);
 
             Assert.True(isValid);
             Assert.NotNull(connectionString);

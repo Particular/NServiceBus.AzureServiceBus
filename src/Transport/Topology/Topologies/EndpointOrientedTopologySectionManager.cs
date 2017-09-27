@@ -7,11 +7,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class EndpointOrientedTopologySectionManager : ITopologySectionManagerInternal
     {
-        public EndpointOrientedTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string endpointName, PublishersConfiguration publishersConfiguration, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic)
+        public EndpointOrientedTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string originalEndpointName, PublishersConfiguration publishersConfiguration, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic)
         {
             this.namespaceConfigurations = namespaceConfigurations;
             this.defaultNameSpaceAlias = defaultNameSpaceAlias;
-            this.endpointName = endpointName;
+            this.originalEndpointName = originalEndpointName;
             this.addressingLogic = addressingLogic;
             this.namespacePartitioningStrategy = namespacePartitioningStrategy;
             this.publishersConfiguration = publishersConfiguration;
@@ -36,13 +36,13 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
+        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress)
         {
             // computes the topologySectionManager
 
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
-            var inputQueuePath = addressingLogic.Apply(endpointName, EntityType.Queue).Name;
+            var inputQueuePath = addressingLogic.Apply(localAddress, EntityType.Queue).Name;
             var entities = namespaces.Select(n => new EntityInfoInternal
             {
                 Path = inputQueuePath,
@@ -50,7 +50,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 Namespace = n
             }).ToList();
 
-            var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
+            var topicPath = addressingLogic.Apply(localAddress + ".events", EntityType.Topic).Name;
             var topics = namespaces.Select(n => new EntityInfoInternal
             {
                 Path = topicPath,
@@ -85,12 +85,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DeterminePublishDestination(Type eventType)
+        public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
         {
             return publishDestinations.GetOrAdd(eventType, t =>
             {
                 var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
-                var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
+            	var topicPath = addressingLogic.Apply(localAddress + ".events", EntityType.Topic).Name;
                 var topics = namespaces.Select(n => new EntityInfoInternal
                 {
                     Path = topicPath,
@@ -170,11 +170,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             });
         }
 
-        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
+        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
         {
             if (!subscriptions.ContainsKey(eventType))
             {
-                subscriptions[eventType] = BuildSubscriptionHierarchy(eventType);
+                subscriptions[eventType] = BuildSubscriptionHierarchy(eventType, localAddress);
             }
 
             return subscriptions[eventType];
@@ -182,9 +182,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
         {
-            TopologySectionInternal result;
-
-            if (!subscriptions.TryRemove(eventtype, out result))
+            if (!subscriptions.TryRemove(eventtype, out var result))
             {
                 result = new TopologySectionInternal
                 {
@@ -196,15 +194,17 @@ namespace NServiceBus.Transport.AzureServiceBus
             return result;
         }
 
-        TopologySectionInternal BuildSubscriptionHierarchy(Type eventType)
+        TopologySectionInternal BuildSubscriptionHierarchy(Type eventType, string localAddress)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
             var topicPaths = DetermineTopicsFor(eventType);
 
-            var subscriptionNameCandidateV6 = endpointName + "." + eventType.Name;
+            // Using localAddress that will be provided by SubscriptionManager instead of the endpoint name.
+            // Reason: endpoint name can be overridden. If the endpoint name is overridden, "originalEndpointName" will not have the override value.
+            var subscriptionNameCandidateV6 = localAddress + "." + eventType.Name;
             var subscriptionNameV6 = addressingLogic.Apply(subscriptionNameCandidateV6, EntityType.Subscription).Name;
-            var subscriptionNameCandidate = endpointName + "." + eventType.FullName;
+            var subscriptionNameCandidate = localAddress + "." + eventType.FullName;
             var subscriptionName = addressingLogic.Apply(subscriptionNameCandidate, EntityType.Subscription).Name;
 
             var topics = new List<EntityInfoInternal>();
@@ -228,7 +228,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         Path = subscriptionNameV6,
                         Metadata = new SubscriptionMetadataInternal
                         {
-                            Description = endpointName + " subscribed to " + eventType.FullName,
+                            Description = originalEndpointName + " subscribed to " + eventType.FullName,
                             SubscriptionNameBasedOnEventWithNamespace = subscriptionName
                         },
                         BrokerSideFilter = new SqlSubscriptionFilter(eventType),
@@ -264,7 +264,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         INamespacePartitioningStrategy namespacePartitioningStrategy;
         AddressingLogic addressingLogic;
         PublishersConfiguration publishersConfiguration;
-        string endpointName;
+        string originalEndpointName;
         string defaultNameSpaceAlias;
         NamespaceConfigurations namespaceConfigurations;
     }

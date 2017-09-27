@@ -197,8 +197,7 @@
                 List<TItem> items = null;
                 for (var i = 0; i < batchSize; i++)
                 {
-                    TItem item;
-                    if (!queue.TryDequeue(out item))
+                    if (!queue.TryDequeue(out var item))
                     {
                         break;
                     }

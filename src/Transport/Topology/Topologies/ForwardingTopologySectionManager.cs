@@ -8,7 +8,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class ForwardingTopologySectionManager : ITopologySectionManagerInternal
     {
-        public ForwardingTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string endpointName, int numberOfEntitiesInBundle, string bundlePrefix, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic, NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal)
+        public ForwardingTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string originalEndpointName, int numberOfEntitiesInBundle, string bundlePrefix, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic, NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal)
         {
             this.bundlePrefix = bundlePrefix;
             this.numberOfEntitiesInBundle = numberOfEntitiesInBundle;
@@ -16,7 +16,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.defaultNameSpaceAlias = defaultNameSpaceAlias;
             this.addressingLogic = addressingLogic;
             this.namespacePartitioningStrategy = namespacePartitioningStrategy;
-            this.endpointName = endpointName;
+            this.originalEndpointName = originalEndpointName;
 
             namespaceBundleConfigurations = new Lazy<NamespaceBundleConfigurations>(() =>
             {
@@ -46,11 +46,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings)
+        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
-            var inputQueuePath = addressingLogic.Apply(endpointName, EntityType.Queue).Name;
+            var inputQueuePath = addressingLogic.Apply(localAddress, EntityType.Queue).Name;
             var inputQueues = namespaces.Select(n => new EntityInfoInternal
             {
                 Path = inputQueuePath,
@@ -89,7 +89,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DeterminePublishDestination(Type eventType)
+        public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
         {
             return publishDestinations.GetOrAdd(eventType, t =>
             {
@@ -170,11 +170,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             });
         }
 
-        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
+        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
         {
             if (!subscriptions.ContainsKey(eventType))
             {
-                subscriptions[eventType] = BuildSubscriptionHierarchy(eventType);
+                subscriptions[eventType] = BuildSubscriptionHierarchy(eventType, localAddress);
             }
 
             return subscriptions[eventType];
@@ -194,12 +194,15 @@ namespace NServiceBus.Transport.AzureServiceBus
             return result;
         }
 
-        TopologySectionInternal BuildSubscriptionHierarchy(Type eventType)
+        TopologySectionInternal BuildSubscriptionHierarchy(Type eventType, string localAddress)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
-            var sanitizedInputQueuePath = addressingLogic.Apply(endpointName, EntityType.Queue).Name;
-            var sanitizedSubscriptionPath = addressingLogic.Apply(endpointName, EntityType.Subscription).Name;
+            // Using localAddress that will be provided by SubscriptionManager instead of the endpoint name.
+            // Reason: endpoint name can be overridden. If the endpoint name is overridden, "originalEndpointName" will not have the override value.
+            var sanitizedInputQueuePath = addressingLogic.Apply(localAddress, EntityType.Queue).Name;
+            var sanitizedSubscriptionPath = addressingLogic.Apply(localAddress, EntityType.Subscription).Name;
+
             // rule name needs to be 1) based on event full name 2) unique 3) deterministic
             var ruleName = addressingLogic.Apply(eventType.FullName, EntityType.Rule).Name;
 
@@ -219,7 +222,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         Path = sanitizedSubscriptionPath,
                         Metadata = new ForwardingTopologySubscriptionMetadata
                         {
-                            Description = $"Events {endpointName} is subscribed to",
+                            Description = $"Events {originalEndpointName} is subscribed to",
                             SubscriptionNameBasedOnEventWithNamespace = ruleName,
                             NamespaceInfo = ns,
                             SubscribedEventFullName = eventType.FullName
@@ -277,7 +280,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         readonly ConcurrentDictionary<Type, TopologySectionInternal> publishDestinations = new ConcurrentDictionary<Type, TopologySectionInternal>();
         readonly List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
         Lazy<NamespaceBundleConfigurations> namespaceBundleConfigurations;
-        string endpointName;
+        string originalEndpointName;
         INamespacePartitioningStrategy namespacePartitioningStrategy;
         AddressingLogic addressingLogic;
         string defaultNameSpaceAlias;

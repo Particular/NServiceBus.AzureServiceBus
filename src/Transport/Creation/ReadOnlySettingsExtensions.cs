@@ -26,10 +26,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         static T GetDefault<T>(this ReadOnlySettings settings, string key)
         {
-            object result;
             var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
             var defaults = (ConcurrentDictionary<string, object>)typeof(SettingsHolder).GetField("Defaults", bindingFlags).GetValue(settings);
-            if (defaults.TryGetValue(key, out result))
+            if (defaults.TryGetValue(key, out var result))
             {
                 return (T)result;
             }
