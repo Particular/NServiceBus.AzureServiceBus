@@ -6,6 +6,7 @@
     using AcceptanceTesting.Support;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
+    using TestingConventions = AcceptanceTesting.Customization;
     using Features;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
@@ -30,15 +31,15 @@
                 var publisherConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
                 var subscriberConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
 
-                if (endpointName == "SubscribingOutsideTheEndpointOrientedTopology.Subscriber")
+                if (endpointName == TestingConventions.Conventions.EndpointNamingConvention(typeof(Subscriber)))
                 {
 
                     extensions.NamespacePartitioning().AddNamespace("subscriberNamespace", subscriberConnectionString);
-                    extensions.NamespaceRouting()
-                                    .AddNamespace("publisherNamespace", publisherConnectionString)
-                                    .RegisteredEndpoints.Add(AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(Publisher)));
+                    var namespaceInfo = extensions.NamespaceRouting()
+                        .AddNamespace("publisherNamespace", publisherConnectionString);
+                    namespaceInfo.RegisteredEndpoints.Add(TestingConventions.Conventions.EndpointNamingConvention(typeof(Publisher)));
                     extensions.UseEndpointOrientedTopology()
-                        .RegisterPublisher(typeof(MyEvent), AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(Publisher)));
+                        .RegisterPublisher(typeof(MyEvent), TestingConventions.Conventions.EndpointNamingConvention(typeof(Publisher)));
                 }
                 else
                 {
@@ -51,9 +52,9 @@
 
             var context = await Scenario.Define<Context>()
                 // Publish event only when it was signaled that events went out
-                .WithEndpoint<Publisher>(b => b.When(c => c.ReceiverSubscribedToEvents, async bus =>
+                .WithEndpoint<Publisher>(b => b.When(c => c.ReceiverSubscribedToEvents, async messageSession =>
                 {
-                    await bus.Publish<MyEvent>();
+                    await messageSession.Publish<MyEvent>();
                 }))
                 .WithEndpoint<Subscriber>(b => b.When(async (session, c) =>
                 {
