@@ -87,71 +87,87 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySectionInternal DeterminePublishDestination(Type eventType)
         {
-            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
-
-            var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
-            var topics = namespaces.Select(n => new EntityInfoInternal
+            return publishDestinations.GetOrAdd(eventType, t =>
             {
-                Path = topicPath,
-                Type = EntityType.Topic,
-                Namespace = n
-            }).ToArray();
+                var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+                var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
+                var topics = namespaces.Select(n => new EntityInfoInternal
+                {
+                    Path = topicPath,
+                    Type = EntityType.Topic,
+                    Namespace = n
+                }).ToArray();
 
-            return new TopologySectionInternal
-            {
-                Namespaces = namespaces,
-                Entities = topics
-            };
+                return new TopologySectionInternal
+                {
+                    Namespaces = namespaces,
+                    Entities = topics
+                };
+            });
         }
 
         public TopologySectionInternal DetermineSendDestination(string destination)
         {
-            var inputQueueAddress = addressingLogic.Apply(destination, EntityType.Queue);
-
-            RuntimeNamespaceInfo[] namespaces = null;
-            if (inputQueueAddress.HasSuffix && inputQueueAddress.Suffix != defaultNameSpaceAlias) // sending to specific namespace
+            return sendDestinations.GetOrAdd(destination, d =>
             {
-                if (inputQueueAddress.HasConnectionString)
+                var inputQueueAddress = addressingLogic.Apply(d, EntityType.Queue);
+
+                RuntimeNamespaceInfo[] namespaces = null;
+                if (inputQueueAddress.HasSuffix && inputQueueAddress.Suffix != defaultNameSpaceAlias) // sending to specific namespace
                 {
-                    namespaces = new[]
-                    {
-                        new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing, NamespaceMode.Active)
-                    };
-                }
-                else
-                {
-                    var configured = namespaceConfigurations.FirstOrDefault(n => n.Alias == inputQueueAddress.Suffix);
-                    if (configured != null)
+                    if (inputQueueAddress.HasConnectionString)
                     {
                         namespaces = new[]
                         {
-                            new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose, NamespaceMode.Active)
+                            new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing)
                         };
                     }
+                    else
+                    {
+                        var configured = namespaceConfigurations.FirstOrDefault(n => n.Alias == inputQueueAddress.Suffix);
+                        if (configured != null)
+                        {
+                            namespaces = new[]
+                            {
+                                new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose)
+                            };
+                        }
+                    }
                 }
-            }
-            else // sending to the partition
-            {
-                namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
-            }
+                else
+                {
+                    var namespaceToRouteTo = namespaceConfigurations.FirstOrDefault(n => n.RegisteredEndpoints.Contains(d, StringComparer.OrdinalIgnoreCase));
+                    if (namespaceToRouteTo != null)
+                    {
+                        namespaces = new[]
+                        {
+                            new RuntimeNamespaceInfo(namespaceToRouteTo.Alias, namespaceToRouteTo.Connection, namespaceToRouteTo.Purpose),
+                        };
+                    }
+                    else // sending to the partition
+                    {
+                        namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
+                    }
+                }
 
-            if (namespaces == null)
-            {
-                throw new Exception($"Could not determine namespace for destination {destination}");
-            }
+                if (namespaces == null)
+                {
+                    throw new Exception($"Could not determine namespace for destination '{d}'");
+                }
 
-            var inputQueues = namespaces.Select(n => new EntityInfoInternal
-            {
-                Path = inputQueueAddress.Name,
-                Type = EntityType.Queue,
-                Namespace = n
-            }).ToArray();
+                var inputQueues = namespaces.Select(n => new EntityInfoInternal
+                {
+                    Path = inputQueueAddress.Name,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                }).ToArray();
 
-            return new TopologySectionInternal
-            {
-                Namespaces = namespaces,
-                Entities = inputQueues
-            };
+                return new TopologySectionInternal
+                {
+                    Namespaces = namespaces,
+                    Entities = inputQueues
+                };
+            });
         }
 
         public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType)
@@ -243,6 +259,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         }
 
         ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
+        ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
+        ConcurrentDictionary<Type, TopologySectionInternal> publishDestinations = new ConcurrentDictionary<Type, TopologySectionInternal>();
         INamespacePartitioningStrategy namespacePartitioningStrategy;
         AddressingLogic addressingLogic;
         PublishersConfiguration publishersConfiguration;
