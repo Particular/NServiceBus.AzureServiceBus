@@ -234,7 +234,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             Path = subscriptionNameV6,
                             Metadata = new SubscriptionMetadataInternal
                             {
-                                Description = endpointName + " subscribed to " + eventType.FullName,
+                                Description = originalEndpointName + " subscribed to " + eventType.FullName,
                                 SubscriptionNameBasedOnEventWithNamespace = subscriptionName
                             },
                             BrokerSideFilter = new SqlSubscriptionFilter(eventType),
