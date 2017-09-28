@@ -1,14 +1,11 @@
 namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing
 {
-    using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
-    using AcceptanceTesting.Support;
     using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
 
     public class When_using_single_namespace : NServiceBusAcceptanceTest
@@ -16,29 +13,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         [Test]
         public async Task Should_append_namespace_alias_to_reply_address_when_using_aliases()
         {
-            var runSettings = new RunSettings();
-            runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
-
-            var ctx = new AzureServiceBusTransportConfigContext();
-            ctx.Callback = (endpointName, extensions) =>
-            {
-                var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-                extensions.ConnectionString(connectionString);
-                extensions.UseNamespaceAliasesInsteadOfConnectionStrings();
-
-                var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
-                if (topology == "ForwardingTopology")
-                {
-                    extensions.UseForwardingTopology();
-                }
-                else
-                {
-                    extensions.UseEndpointOrientedTopology();
-                }
-            };
-
-            runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);
-
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<SourceEndpoint>(b =>
                 {
@@ -51,7 +25,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                 })
                 .WithEndpoint<TargetEndpoint>()
                 .Done(c => c.ReplyReceived)
-                .Run(runSettings);
+                .Run();
 
             Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
             Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
@@ -63,8 +37,13 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         {
             public SourceEndpoint()
             {
-                EndpointSetup<DefaultServer>(endpointConfiguration =>
-                        endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyRequest), typeof(TargetEndpoint)));
+                EndpointSetup<DefaultServer>(c =>
+                {
+                    var transport = c.ConfigureAzureServiceBus();
+                    transport.UseNamespaceAliasesInsteadOfConnectionStrings();
+
+                    c.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyRequest), typeof(TargetEndpoint));
+                });
             }
 
             class MyResponseHandler : IHandleMessages<MyResponse>
@@ -83,7 +62,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         {
             public TargetEndpoint()
             {
-                EndpointSetup<DefaultServer>();
+                EndpointSetup<DefaultServer>(c =>
+                {
+                    var transport = c.ConfigureAzureServiceBus();
+                    transport.UseNamespaceAliasesInsteadOfConnectionStrings();
+                });
             }
 
             class MyRequestHandler : IHandleMessages<MyRequest>

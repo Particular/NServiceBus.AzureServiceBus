@@ -35,13 +35,12 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         {
             public AbortReceivingEndpoint()
             {
-                EndpointSetup<DefaultServer>(config =>
+                EndpointSetup<DefaultServer>(c =>
                 {
-                    var transport = config.UseTransport<AzureServiceBusTransport>();
-                    transport.Routing().RouteToEndpoint(typeof(DispatchedMessage), typeof(EndpointThatShouldNotReceive));
-                    config.LimitMessageProcessingConcurrencyTo(1);
+                    c.ConfigureTransport().Routing().RouteToEndpoint(typeof(DispatchedMessage), typeof(EndpointThatShouldNotReceive));
+                    c.LimitMessageProcessingConcurrencyTo(1);
 
-                    config.Pipeline.Register("AbortReceiveOperation", typeof(AbortReceiveOperationBehavior), "Abort receive operation");
+                    c.Pipeline.Register("AbortReceiveOperation", typeof(AbortReceiveOperationBehavior), "Abort receive operation");
                 });
             }
 

@@ -4,11 +4,9 @@
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
-    using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using Features;
-    using Settings;
     using NUnit.Framework;
 
     public class When_subscribing_to_base_and_derived_polymorphic_events_with_forwarding_topology : NServiceBusAcceptanceTest
@@ -16,6 +14,8 @@
         [Test]
         public async Task Should_handle_each_event_once_only()
         {
+            TestRequires.ForwardingToplogy();
+
             var context = await Scenario.Define<Context>()
                 // Publish event only when it was signaled that events went out
                 .WithEndpoint<Publisher>(b => b.When(c => c.ReceiverSubscribedToEvents, async bus =>
@@ -37,11 +37,6 @@
                 .Done(ctx => ctx.StopCommandWasReceived && ctx.IsForwardingTopology || !ctx.IsForwardingTopology)
                 .Run();
 
-            if (!context.IsForwardingTopology)
-            {
-                Assert.Inconclusive("The test is designed for ForwardingTopology only.");
-            }
-
             Assert.That(context.SubscriberGotTheBaseEvent, Is.EqualTo(1), $"Should only receive BaseEvent once, but it was {context.SubscriberGotTheBaseEvent}");
             Assert.That(context.SubscriberGotTheDerivedEvent, Is.EqualTo(1), $"Should only receive DerivedEvent once, but it was {context.SubscriberGotTheDerivedEvent}");
         }
@@ -61,42 +56,10 @@
 
             public Publisher()
             {
-                EndpointSetup<DefaultPublisher>(endpointConfiguration =>
+                EndpointSetup<DefaultPublisher>(c =>
                 {
-                    endpointConfiguration.EnableFeature<DetermineWhatTopologyIsUsed>();
-                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(EventWasRaisedSoStopProcessing), typeof(Subscriber));
+                    c.ConfigureTransport().Routing().RouteToEndpoint(typeof(EventWasRaisedSoStopProcessing), typeof(Subscriber));
                 });
-            }
-
-            class DetermineWhatTopologyIsUsed : Feature
-            {
-                protected override void Setup(FeatureConfigurationContext context)
-                {
-                    context.RegisterStartupTask(builder => new TaskToDetermineCurrentTopology(builder.Build<Context>(), builder.Build<ReadOnlySettings>()));
-                }
-            }
-
-            class TaskToDetermineCurrentTopology : FeatureStartupTask
-            {
-                Context context;
-                ReadOnlySettings settings;
-
-                public TaskToDetermineCurrentTopology(Context context, ReadOnlySettings settings)
-                {
-                    this.context = context;
-                    this.settings = settings;
-                }
-
-                protected override Task OnStart(IMessageSession session)
-                {
-                    context.IsForwardingTopology = settings.Get<string>("AzureServiceBus.AcceptanceTests.UsedTopology") == "ForwardingTopology";
-                    return TaskEx.Completed;
-                }
-
-                protected override Task OnStop(IMessageSession session)
-                {
-                    return TaskEx.Completed;
-                }
             }
         }
 
@@ -105,15 +68,15 @@
         {
             public Subscriber()
             {
-                EndpointSetup<DefaultServer>(endpointConfiguration =>
+                EndpointSetup<DefaultServer>(c =>
                 {
-                    endpointConfiguration.DisableFeature<AutoSubscribe>();
+                    c.DisableFeature<AutoSubscribe>();
                     // Limit message processing to a single thread to ensure that if duplicate events are sent, they are getting
                     // to the subscriber before stop command
-                    endpointConfiguration.LimitMessageProcessingConcurrencyTo(1);
+                    c.LimitMessageProcessingConcurrencyTo(1);
 
-                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(BaseEvent), typeof(Publisher));
-                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(DerivedEvent), typeof(Publisher));
+                    c.ConfigureTransport().Routing().RouteToEndpoint(typeof(BaseEvent), typeof(Publisher));
+                    c.ConfigureTransport().Routing().RouteToEndpoint(typeof(DerivedEvent), typeof(Publisher));
                 });
             }
 

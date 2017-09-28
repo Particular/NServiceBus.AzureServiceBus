@@ -33,14 +33,15 @@
         {
             public Sender()
             {
-                EndpointSetup<DefaultServer>(config =>
+                EndpointSetup<DefaultServer>(c =>
                 {
-                    var transport = config.UseTransport<AzureServiceBusTransport>();
-                    transport.Queues().LockDuration(TimeSpan.FromSeconds(LockDurationOnIncomingMessageInSeconds));
-                    transport.Queues().MaxDeliveryCount(100);
+                    var transport = c.ConfigureAzureServiceBus();
+                    var queues = transport.Queues();
+                    queues.LockDuration(TimeSpan.FromSeconds(LockDurationOnIncomingMessageInSeconds));
+                    queues.MaxDeliveryCount(100);
                     transport.MessageReceivers().AutoRenewTimeout(TimeSpan.Zero);
                     transport.Routing().RouteToEndpoint(typeof(DispatchedMessage), AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(Receiver)));
-                    config.LimitMessageProcessingConcurrencyTo(1);
+                    c.LimitMessageProcessingConcurrencyTo(1);
                 });
             }
 

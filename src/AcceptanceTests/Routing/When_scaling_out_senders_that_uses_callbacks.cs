@@ -71,8 +71,8 @@
         {
             public ScaledOutClient()
             {
-                EndpointSetup<DefaultServer>(endpointConfiguration =>
-                    endpointConfiguration.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyRequest), typeof(ServerThatRespondsToCallbacks)));
+                EndpointSetup<DefaultServer>(c =>
+                    c.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyRequest), typeof(ServerThatRespondsToCallbacks)));
             }
 
             class MyResponseHandler : IHandleMessages<MyResponse>
