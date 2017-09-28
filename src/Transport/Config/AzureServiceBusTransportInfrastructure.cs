@@ -16,7 +16,7 @@
         {
             TransactionMode = settings.SupportedTransactionMode();
             Settings = settings;
-            TopologySettings = settings.Get<TopologySettings>();
+            TopologySettings = settings.GetOrCreate<TopologySettings>();
 
             var individualizationStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
             individualization = individualizationStrategyType.CreateInstance<IIndividualizationStrategy>(Settings);

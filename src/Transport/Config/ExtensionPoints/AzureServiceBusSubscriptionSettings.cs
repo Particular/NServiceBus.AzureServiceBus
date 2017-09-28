@@ -10,7 +10,7 @@ namespace NServiceBus
     {
         internal AzureServiceBusSubscriptionSettings(SettingsHolder settings) : base(settings)
         {
-            subscriptionSettings = settings.Get<TopologySettings>().SubscriptionSettings;
+            subscriptionSettings = settings.GetOrCreate<TopologySettings>().SubscriptionSettings;
         }
 
         /// <summary>

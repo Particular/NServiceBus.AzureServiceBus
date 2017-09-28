@@ -16,7 +16,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         public void SetUp()
         {
             settings = new SettingsHolder();
-            settings.Set<TopologySettings>(new TopologySettings());
             extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
         }
 
