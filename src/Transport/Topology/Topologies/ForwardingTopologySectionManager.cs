@@ -58,10 +58,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 Namespace = n
             }).ToList();
 
-            if (!topics.Any())
-            {
-                BuildTopicBundles(namespaces, addressingLogic);
-            }
+            BuildTopicBundlesIfNecessary(namespaces);
 
             foreach (var n in namespaces)
             {
@@ -94,10 +91,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return publishDestinations.GetOrAdd(eventType, t =>
             {
                 var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
-                if (!topics.Any())
-                {
-                    BuildTopicBundles(namespaces, addressingLogic);
-                }
+                BuildTopicBundlesIfNecessary(namespaces);
 
                 return new TopologySectionInternal
                 {
@@ -206,10 +200,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             // rule name needs to be 1) based on event full name 2) unique 3) deterministic
             var ruleName = addressingLogic.Apply(eventType.FullName, EntityType.Rule).Name;
 
-            if (!topics.Any())
-            {
-                BuildTopicBundles(namespaces, addressingLogic);
-            }
+            BuildTopicBundlesIfNecessary(namespaces);
+
             var subs = new List<SubscriptionInfoInternal>();
             foreach (var topic in topics)
             {
@@ -257,8 +249,13 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        void BuildTopicBundles(RuntimeNamespaceInfo[] namespaces, AddressingLogic addressingLogic)
+        void BuildTopicBundlesIfNecessary(RuntimeNamespaceInfo[] namespaces)
         {
+            if (topics.Count != 0)
+            {
+                return;
+            }
+
             foreach (var @namespace in namespaces)
             {
                 var numberOfTopicsFound = namespaceBundleConfigurations.Value.GetNumberOfTopicInBundle(@namespace.Alias);
