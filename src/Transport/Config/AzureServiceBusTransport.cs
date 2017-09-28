@@ -35,12 +35,19 @@
 
         static ITopologyInternal GetConfiguredTopology(SettingsHolder settings)
         {
-            var configuredTopology = settings.GetOrDefault<ITopologyInternal>();
-            if (configuredTopology == null)
+            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Selected, out string configuredTopology))
             {
                 throw new Exception("Azure Service Bus transport requires a topology to be specified. Use `.UseForwardingTopology()` or `.UseEndpointOrientedTopology()` configuration API to specify topology to use.");
             }
-            return configuredTopology;
+            switch (configuredTopology)
+            {
+                case WellKnownConfigurationKeys.Topology.EndpointOrientedTopology:
+                    return new EndpointOrientedTopologyInternal();
+                case WellKnownConfigurationKeys.Topology.ForwardingTopology:
+                    return new ForwardingTopologyInternal();
+                default:
+                    throw new Exception("Azure Service Bus transport requires a topology to be specified. Use `.UseForwardingTopology()` or `.UseEndpointOrientedTopology()` configuration API to specify topology to use.");
+            }
         }
 
         void MatchSettingsToConsistencyRequirements(SettingsHolder settings)

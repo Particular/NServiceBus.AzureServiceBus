@@ -92,7 +92,6 @@
         public async Task Should_properly_set_use_subscription_description_provided_by_user()
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -104,7 +103,7 @@
                 userCustomizationsWhereInvoked = true;
             });
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
 
@@ -125,7 +124,7 @@
             var autoDeleteTime = TimeSpan.FromDays(1);
             extensions.UseForwardingTopology().Subscriptions().AutoDeleteOnIdle(autoDeleteTime);
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             const string subscriptionName = "endpoint3";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
@@ -152,7 +151,7 @@
             var timeToLive = TimeSpan.FromDays(10);
             extensions.UseForwardingTopology().Subscriptions().DefaultMessageTimeToLive(timeToLive);
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             const string subscriptionName = "endpoint4";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
@@ -174,7 +173,7 @@
 
             extensions.UseForwardingTopology().Subscriptions().EnableBatchedOperations(false);
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             const string subscriptionName = "endpoint5";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
@@ -196,7 +195,7 @@
 
             extensions.UseForwardingTopology().Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             const string subscriptionName = "endpoint6";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
@@ -218,7 +217,7 @@
 
             extensions.UseForwardingTopology().Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             const string subscriptionName = "endpoint7";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
@@ -241,7 +240,7 @@
             var lockDuration = TimeSpan.FromMinutes(2);
             extensions.UseForwardingTopology().Subscriptions().LockDuration(lockDuration);
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             const string subscriptionName = "endpoint8";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
@@ -264,7 +263,7 @@
             const int deliveryCount = 10;
             extensions.UseForwardingTopology().Subscriptions().MaxDeliveryCount(deliveryCount);
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             const string subscriptionName = "endpoint9";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
@@ -285,8 +284,7 @@
             var queueToForwardTo = await queueCreator.Create("forwardto", namespaceManager);
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(topology.Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             const string subscriptionName = "endpoint15";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, queueToForwardTo.Path);
@@ -313,7 +311,7 @@
 
             extensions.UseForwardingTopology().Subscriptions().ForwardDeadLetteredMessagesTo(topicToForwardTo.Path);
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             const string subscriptionName = "endpoint13";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
@@ -340,7 +338,7 @@
 
             extensions.UseForwardingTopology().Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "endpoint14", notUsedEntity.Path);
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
 
             const string subscriptionName = "endpoint14";
             await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
@@ -393,7 +391,7 @@
                 description.EnableDeadLetteringOnMessageExpiration = true;
             });
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
             await creator.Create(topicPath, "existingendpoint1", metadata, sqlFilter, namespaceManager, forwardToQueue);
 
             var subscriptionDescription = await namespaceManager.GetSubscription(topicPath, "existingendpoint1");
@@ -419,7 +417,7 @@
                 description.RequiresSession = false;
             });
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
             Assert.ThrowsAsync<ArgumentException>(async () => await creator.Create(topicPath, "existingendpoint2", metadata, sqlFilter, namespaceManager, forwardToQueue));
         }
 
@@ -436,7 +434,7 @@
                 description.EnableDeadLetteringOnMessageExpiration = true;
             });
 
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<ITopologyInternal>().Settings.SubscriptionSettings, settings);
+            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
             await creator.Create(topicPath, "someendpoint", metadata, sqlFilter, namespaceManager, forwardToQueue);
             await creator.Create(topicPath, "someendpoint", metadata, sqlFilter, namespaceManager, forwardToQueue);
 

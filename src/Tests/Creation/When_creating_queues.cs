@@ -7,9 +7,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
     using Transport.AzureServiceBus;
-    using Settings;
     using NUnit.Framework;
-    using Routing;
     using Transport;
 
     [TestFixture]
@@ -20,14 +18,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         public async Task Uses_queue_description_when_provided_by_user()
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var userQueueDescriptionFactoryWasInvoked = false;
             extensions.Queues().DescriptionCustomizer(qd => userQueueDescriptionFactoryWasInvoked = true);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -51,12 +49,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             // actual test
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().ForwardDeadLetteredMessagesTo("myotherqueue");
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -75,10 +73,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
             await creator.Create("myotherqueue", namespaceManager);
 
             extensions.Queues().ForwardDeadLetteredMessagesTo(name => name == "myqueue", "myotherqueue");
@@ -101,12 +99,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().EnableExpress(true);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -124,13 +122,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             //var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().EnableExpress(name => name == "myqueue", true);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -148,12 +146,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().AutoDeleteOnIdle(TimeSpan.FromDays(1));
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -174,12 +172,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             await namespaceManager.DeleteQueue("myqueue");
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().EnablePartitioning(true);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -197,12 +195,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().EnableBatchedOperations(false);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -220,12 +218,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().MaxDeliveryCount(100);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -246,9 +244,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries, numberOfImmediateRetries);
-            var topology = new FakeTopology(settings);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -272,9 +270,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var bindings = new QueueBindings();
             bindings.BindSending("myqueue");
             settings.Set<QueueBindings>(bindings);
-            var topology = new FakeTopology(settings);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -293,12 +291,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().DuplicateDetectionHistoryTimeWindow(TimeSpan.FromMinutes(20));
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -316,12 +314,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().EnableDeadLetteringOnMessageExpiration(true);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -339,12 +337,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().DefaultMessageTimeToLive(TimeSpan.FromDays(1));
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -362,12 +360,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().RequiresDuplicateDetection(true);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -385,12 +383,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().MaxSizeInMegabytes(SizeInMegabytes.Size3072);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -408,12 +406,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().LockDuration(TimeSpan.FromMinutes(5));
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -431,12 +429,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
+
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.Queues().SupportOrdering(true);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
@@ -456,7 +454,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             await namespaceManager.CreateQueue(new QueueDescription("existingqueue"));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Queues().DescriptionCustomizer(qd =>
             {
@@ -464,7 +461,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
                 qd.EnableExpress = true;
             });
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
             await creator.Create("existingqueue", namespaceManager);
 
             var queueDescription = await namespaceManager.GetQueue("existingqueue");
@@ -497,7 +494,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             Assert.IsTrue(queueDescription.RequiresDuplicateDetection);
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Queues().DescriptionCustomizer(qd =>
             {
@@ -508,7 +504,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
                 qd.RequiresSession = false;
             });
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
             await creator.Create("existingqueue", namespaceManager);
 
             queueDescription = await namespaceManager.GetQueue("existingqueue");
@@ -534,7 +530,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             }
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var topology = new FakeTopology(settings);
             settings.Set(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries, 2);
             var queueBindings = new QueueBindings();
             queueBindings.BindSending(queuePath);
@@ -543,7 +538,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Queues().MaxDeliveryCount(2);
 
-            var creator = new AzureServiceBusQueueCreator(topology.Settings.QueueSettings, settings);
+            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create(queuePath, namespaceManager);
 
@@ -553,64 +548,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             //cleanup
             await namespaceManager.DeleteQueue(queuePath);
-        }
-
-        class FakeTopology : ITopologyInternal
-        {
-            public FakeTopology(SettingsHolder settings)
-            {
-                settings.Set<ITopologyInternal>(this);
-            }
-
-            public TopologySettings Settings { get; } = new TopologySettings();
-
-            public void Initialize(SettingsHolder settings)
-            {
-                throw new NotImplementedException();
-            }
-
-            public EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Func<ICreateQueues> GetQueueCreatorFactory()
-            {
-                throw new NotImplementedException();
-            }
-
-            public Func<IPushMessages> GetMessagePumpFactory()
-            {
-                throw new NotImplementedException();
-            }
-
-            public Func<IDispatchMessages> GetDispatcherFactory()
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task<StartupCheckResult> RunPreStartupChecks()
-            {
-                throw new NotImplementedException();
-            }
-
-            public Func<IManageSubscriptions> GetSubscriptionManagerFactory()
-            {
-                throw new NotImplementedException();
-            }
-
-            public OutboundRoutingPolicy GetOutboundRoutingPolicy()
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool HasNativePubSubSupport { get; }
-            public bool HasSupportForCentralizedPubSub { get; }
-
-            public Task Stop()
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 }
