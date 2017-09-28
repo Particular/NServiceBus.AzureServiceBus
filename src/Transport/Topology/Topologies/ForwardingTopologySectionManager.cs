@@ -4,6 +4,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
 
     class ForwardingTopologySectionManager : ITopologySectionManagerInternal
@@ -20,6 +21,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         }
 
         public NamespaceBundleConfigurations BundleConfigurations { get; set; }
+
+        public Func<Task> Initialize { get; set; }
 
         public TopologySectionInternal DetermineReceiveResources(string inputQueue)
         {

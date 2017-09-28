@@ -72,6 +72,9 @@
             topologyOperator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), Settings);
         }
 
+        public override Task Start()
+        {
+            return topologyManager.Initialize();
         }
 
         public override Task Stop()

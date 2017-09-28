@@ -1,9 +1,12 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
+    using System.Threading.Tasks;
 
     interface ITopologySectionManagerInternal
     {
+        Func<Task> Initialize { get; set; } 
+
         TopologySectionInternal DetermineReceiveResources(string inputQueue);
         TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress);
 
