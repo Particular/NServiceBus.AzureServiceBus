@@ -16,11 +16,11 @@
             try
             {
                 await Scenario.Define<Context>()
-                   .WithEndpoint<MyEndpoint>(b => b.When(async bus =>
+                   .WithEndpoint<MyEndpoint>(b => b.When(async session =>
                    {
                        using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew))
                        {
-                           await bus.SendLocal(new OversizedRequest());
+                           await session.SendLocal(new OversizedRequest());
                            scope.Complete();
                        }
                    }))
@@ -40,7 +40,7 @@
         {
             public MyEndpoint()
             {
-                EndpointSetup<DefaultServer>(config => config.UseTransport<AzureServiceBusTransport>().Queues().MaxDeliveryCount(1));
+                EndpointSetup<DefaultServer>(c => c.ConfigureAzureServiceBus().Queues().MaxDeliveryCount(1));
             }
         }
 

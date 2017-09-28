@@ -30,9 +30,9 @@
         {
             public PublisherAndSubscriber()
             {
-                EndpointSetup<DefaultPublisher>(builder =>
+                EndpointSetup<DefaultPublisher>(c =>
                 {
-                    builder.OverrideLocalAddress("myinputqueue");                    
+                    c.OverrideLocalAddress("myinputqueue");                    
                 });
             }
 

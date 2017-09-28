@@ -35,12 +35,12 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         {
             public Sender()
             {
-                EndpointSetup<DefaultServer>(config =>
+                EndpointSetup<DefaultServer>(c =>
                 {
-                    var transport = config.UseTransport<AzureServiceBusTransport>();
+                    var transport = c.ConfigureAzureServiceBus();
                     transport.MessageSenders().MessageSizePaddingPercentage(0);
                     transport.UseNamespaceAliasesInsteadOfConnectionStrings();
-                    config.SendFailedMessagesTo(Conventions.EndpointNamingConvention(typeof(ErrorSpy)));
+                    c.SendFailedMessagesTo(Conventions.EndpointNamingConvention(typeof(ErrorSpy)));
                 });
             }
 
@@ -72,7 +72,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         {
             public ErrorSpy()
             {
-                EndpointSetup<DefaultServer>(config => config.LimitMessageProcessingConcurrencyTo(1));
+                EndpointSetup<DefaultServer>(c => c.LimitMessageProcessingConcurrencyTo(1));
             }
 
             class KickOffCommandMessageHandler : IHandleMessages<KickOffCommand>

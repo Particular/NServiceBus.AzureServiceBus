@@ -33,7 +33,7 @@
         {
             public MyEndpoint()
             {
-                EndpointSetup<DefaultServer>(config => config.UseTransport<AzureServiceBusTransport>().Queues().MaxDeliveryCount(1));
+                EndpointSetup<DefaultServer>(c => c.ConfigureAzureServiceBus().Queues().MaxDeliveryCount(1));
             }
         }
 

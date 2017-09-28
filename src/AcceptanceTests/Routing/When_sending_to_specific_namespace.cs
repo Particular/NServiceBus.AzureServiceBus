@@ -1,10 +1,8 @@
 namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing
 {
-    using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
-    using AcceptanceTesting.Support;
     using AzureServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
@@ -13,56 +11,38 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
 
     public class When_using_multiple_namespaces : NServiceBusAcceptanceTest
     {
+        static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+        static string targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
+
         [Test]
         public async Task Should_support_request_reply_across_namespaces_using_aliases()
         {
-            var runSettings = new RunSettings();
-            runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
-
-            var ctx = new AzureServiceBusTransportConfigContext();
-            ctx.Callback = (endpointName, extensions) =>
-            {
-                var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-                var targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
-                extensions.UseNamespaceAliasesInsteadOfConnectionStrings();
-
-                if (endpointName == Conventions.EndpointNamingConvention(typeof(EndpointInTargetNamespace)))
-                {
-                    extensions.NamespaceRouting().AddNamespace("source", connectionString);
-                    extensions.NamespacePartitioning().AddNamespace("target", targetConnectionString);
-                }
-                else
-                {
-                    extensions.NamespacePartitioning().AddNamespace("source", connectionString);
-                    extensions.NamespaceRouting().AddNamespace("target", targetConnectionString);
-                }
-
-                var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
-                if (topology == "ForwardingTopology")
-                {
-                    extensions.UseForwardingTopology();
-                }
-                else
-                {
-                    extensions.UseEndpointOrientedTopology();
-                }
-            };
-
-            runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);
-
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<EndpointInSourceNamespace>(b =>
                 {
-                    b.When(async (bus, c) =>
+                    b.CustomConfig(c =>
+                        {
+                            var transport = c.ConfigureAzureServiceBus();
+                            transport.UseNamespaceAliasesInsteadOfConnectionStrings();
+                            transport.NamespacePartitioning().AddNamespace("source", connectionString);
+                            transport.NamespaceRouting().AddNamespace("target", targetConnectionString);
+                        })
+                    .When(async (bus, c) =>
                     {
                             var sendOptions = new SendOptions();
                             sendOptions.SetDestination("usingmultiplenamespaces.endpointintargetnamespace@target");
                             await bus.Send(new MyRequest(), sendOptions);
                     });
                 })
-                .WithEndpoint<EndpointInTargetNamespace>()
+                .WithEndpoint<EndpointInTargetNamespace>(b => b.CustomConfig(c =>
+                {
+                    var transport = c.ConfigureAzureServiceBus();
+                    transport.UseNamespaceAliasesInsteadOfConnectionStrings();
+                    transport.NamespaceRouting().AddNamespace("source", connectionString);
+                    transport.NamespacePartitioning().AddNamespace("target", targetConnectionString);
+                }))
                 .Done(c => c.ReplyReceived )
-                .Run(runSettings);
+                .Run();
 
             Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
             Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
@@ -72,52 +52,30 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         [Test]
         public async Task Should_support_request_reply_across_namespaces_using_connection_strings()
         {
-            var runSettings = new RunSettings();
-            runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
-
-            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-            var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
-            
-            var ctx = new AzureServiceBusTransportConfigContext();
-            ctx.Callback = (endpointName, extensions) =>
-            {
-                   if (endpointName == Conventions.EndpointNamingConvention(typeof(EndpointInTargetNamespace)))
-                {
-                    extensions.NamespaceRouting().AddNamespace("source", connectionString);
-                    extensions.NamespacePartitioning().AddNamespace("target", targetConnectionString);
-                }
-                else
-                {
-                    extensions.NamespacePartitioning().AddNamespace("source", connectionString);
-                    extensions.NamespaceRouting().AddNamespace("target", targetConnectionString);
-                }
-
-                var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
-                if (topology == "ForwardingTopology")
-                {
-                    extensions.UseForwardingTopology();
-                }
-                else
-                {
-                    extensions.UseEndpointOrientedTopology();
-                }
-            };
-
-            runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);
-
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<EndpointInSourceNamespace>(b =>
                 {
-                    b.When(async (bus, c) =>
+                    b.CustomConfig(c =>
+                    {
+                        var transport = c.ConfigureAzureServiceBus();
+                        transport.NamespacePartitioning().AddNamespace("source", connectionString);
+                        transport.NamespaceRouting().AddNamespace("target", targetConnectionString);
+                    })
+                    .When(async (bus, c) =>
                     {
                         var sendOptions = new SendOptions();
                         sendOptions.SetDestination("usingmultiplenamespaces.endpointintargetnamespace@" + targetConnectionString);
                         await bus.Send(new MyRequest(), sendOptions);
                     });
                 })
-                .WithEndpoint<EndpointInTargetNamespace>()
+                .WithEndpoint<EndpointInTargetNamespace>(b => b.CustomConfig(c =>
+                {
+                    var transport = c.ConfigureAzureServiceBus();
+                    transport.NamespaceRouting().AddNamespace("source", connectionString);
+                    transport.NamespacePartitioning().AddNamespace("target", targetConnectionString);
+                }))
                 .Done(c => c.ReplyReceived)
-                .Run(runSettings);
+                .Run();
 
             Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
             Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
@@ -126,48 +84,26 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         [Test]
         public async Task Should_support_request_reply_across_namespaces_using_contained_endpoint()
         {
-            var runSettings = new RunSettings();
-            runSettings.TestExecutionTimeout = TimeSpan.FromMinutes(1);
-
-            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-            var targetConnectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
-
-            var ctx = new AzureServiceBusTransportConfigContext();
-            ctx.Callback = (endpointName, extensions) =>
-            {
-                if (endpointName == Conventions.EndpointNamingConvention(typeof(EndpointInTargetNamespace)))
-                {
-                    extensions.NamespaceRouting().AddNamespace("source", connectionString);
-                    extensions.NamespacePartitioning().AddNamespace("target", targetConnectionString);
-                }
-                else
-                {
-                    extensions.NamespacePartitioning().AddNamespace("source", connectionString);
-                    var targetNamespace = extensions.NamespaceRouting().AddNamespace("target", targetConnectionString);
-                    targetNamespace.RegisteredEndpoints.Add(Conventions.EndpointNamingConvention(typeof(EndpointInTargetNamespace)));
-                }
-
-                var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
-                if (topology == "ForwardingTopology")
-                {
-                    extensions.UseForwardingTopology();
-                }
-                else
-                {
-                    extensions.UseEndpointOrientedTopology();
-                }
-            };
-
-            runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);
-
-            var context = await Scenario.Define<Context>()
+           var context = await Scenario.Define<Context>()
                 .WithEndpoint<EndpointInSourceNamespace>(b =>
                 {
-                    b.When((bus, c) => bus.Send(new MyRequest()));
+                    b.CustomConfig(c =>
+                    {
+                        var transport = c.ConfigureAzureServiceBus();
+                        transport.NamespacePartitioning().AddNamespace("source", connectionString);
+                        var targetNamespace = transport.NamespaceRouting().AddNamespace("target", targetConnectionString);
+                        targetNamespace.RegisteredEndpoints.Add(Conventions.EndpointNamingConvention(typeof(EndpointInTargetNamespace)));
+                    })
+                    .When((bus, c) => bus.Send(new MyRequest()));
                 })
-                .WithEndpoint<EndpointInTargetNamespace>()
+                .WithEndpoint<EndpointInTargetNamespace>(b => b.CustomConfig(c =>
+                {
+                    var transport = c.ConfigureAzureServiceBus();
+                    transport.NamespaceRouting().AddNamespace("source", connectionString);
+                    transport.NamespacePartitioning().AddNamespace("target", targetConnectionString);
+                }))
                 .Done(c => c.ReplyReceived)
-                .Run(runSettings);
+                .Run();
 
             Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
             Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
