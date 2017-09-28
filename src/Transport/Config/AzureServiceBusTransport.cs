@@ -27,30 +27,24 @@
             MatchSettingsToConsistencyRequirements(settings);
             SetConnectivityMode(settings);
 
-            var topology = GetConfiguredTopology(settings);
-            topology.Initialize(settings);
-
-            return new AzureServiceBusTransportInfrastructure(topology, settings.SupportedTransactionMode());
+            return CreateTransportInfrastructure(settings);
         }
 
-        static ITopologyInternal GetConfiguredTopology(SettingsHolder settings)
+        static TransportInfrastructure CreateTransportInfrastructure(SettingsHolder settings)
         {
-            if (!settings.TryGet(WellKnownConfigurationKeys.Topology.Selected, out string configuredTopology))
-            {
-                throw new Exception("Azure Service Bus transport requires a topology to be specified. Use `.UseForwardingTopology()` or `.UseEndpointOrientedTopology()` configuration API to specify topology to use.");
-            }
+            settings.TryGet(WellKnownConfigurationKeys.Topology.Selected, out string configuredTopology);
             switch (configuredTopology)
             {
                 case WellKnownConfigurationKeys.Topology.EndpointOrientedTopology:
-                    return new EndpointOrientedTopologyInternal();
+                    return new EndpointOrientedTransportInfrastructure(settings);
                 case WellKnownConfigurationKeys.Topology.ForwardingTopology:
-                    return new ForwardingTopologyInternal();
+                    return new ForwardingTransportInfrastructure(settings);
                 default:
                     throw new Exception("Azure Service Bus transport requires a topology to be specified. Use `.UseForwardingTopology()` or `.UseEndpointOrientedTopology()` configuration API to specify topology to use.");
             }
         }
 
-        void MatchSettingsToConsistencyRequirements(SettingsHolder settings)
+        static void MatchSettingsToConsistencyRequirements(SettingsHolder settings)
         {
             if (settings.HasSetting<TransportTransactionMode>())
             {

@@ -7,14 +7,23 @@
     using DelayedDelivery;
     using Performance.TimeToBeReceived;
     using Routing;
+    using Settings;
 
-    class AzureServiceBusTransportInfrastructure : TransportInfrastructure
+    abstract class AzureServiceBusTransportInfrastructure : TransportInfrastructure
     {
-        public AzureServiceBusTransportInfrastructure(ITopologyInternal topology, TransportTransactionMode supportedTransactionMode)
+        protected AzureServiceBusTransportInfrastructure(SettingsHolder settings)
         {
-            this.topology = topology;
-            TransactionMode = supportedTransactionMode;
+            TransactionMode = settings.SupportedTransactionMode();
+            Settings = settings;
+            TopologySettings = settings.Get<TopologySettings>();
+
+            var individualizationStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
+            individualization = individualizationStrategyType.CreateInstance<IIndividualizationStrategy>(Settings);
         }
+
+        protected TopologySettings TopologySettings { get; }
+
+        protected SettingsHolder Settings { get; }
 
         public override IEnumerable<Type> DeliveryConstraints => new List<Type>
         {
@@ -23,18 +32,56 @@
             typeof(DiscardIfNotReceivedBefore)
         };
 
+
         public override TransportTransactionMode TransactionMode { get; }
 
-        public override OutboundRoutingPolicy OutboundRoutingPolicy => topology.GetOutboundRoutingPolicy();
+        public override OutboundRoutingPolicy OutboundRoutingPolicy { get; } = new OutboundRoutingPolicy(OutboundRoutingType.Unicast, OutboundRoutingType.Multicast, OutboundRoutingType.Unicast);
+
+        // make thread
+        void Initialize()
+        {
+            if (initialized)
+            {
+                return;
+            }
+
+            var compositionStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
+            var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(Settings);
+
+            var sanitizationStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
+            var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(Settings);
+
+            addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
+
+            defaultNamespaceAlias = Settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
+            namespaceConfigurations = Settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+
+            var partitioningStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
+            partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(Settings);
+
+            namespaceManager = new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(Settings));
+            messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(namespaceManager, Settings), Settings);
+
+            messageReceiverLifeCycleManager = new MessageReceiverLifeCycleManager(new MessageReceiverCreator(messagingFactoryLifeCycleManager, Settings), Settings);
+            senderLifeCycleManager = new MessageSenderLifeCycleManager(new MessageSenderCreator(messagingFactoryLifeCycleManager, Settings), Settings);
+
+            oversizedMessageHandler = (IHandleOversizedBrokeredMessages)Settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
+
+            topologyManager = CreateTopologySectionManager(defaultNamespaceAlias, namespaceConfigurations, partitioningStrategy, addressingLogic);
+            topologyCreator = new TopologyCreator(CreateSubscriptionCreator(), new AzureServiceBusQueueCreator(TopologySettings.QueueSettings, Settings), new AzureServiceBusTopicCreator(TopologySettings.TopicSettings), namespaceManager, Settings);
+            topologyOperator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), Settings);
+
+            initialized = true;
+        }
 
         public override Task Stop()
         {
-            return topology.Stop();
+            return messagingFactoryLifeCycleManager.CloseAll();
         }
 
         public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
         {
-            return topology.BindToLocalEndpoint(instance);
+            return new EndpointInstance(individualization.Individualize(instance.Endpoint), instance.Discriminator, instance.Properties);
         }
 
         public override string ToTransportAddress(LogicalAddress logicalAddress)
@@ -54,26 +101,61 @@
             return queue.ToString();
         }
 
+        // all dependencies required are passed in. no protected field can be assumed created
+        protected abstract ITopologySectionManagerInternal CreateTopologySectionManager(string defaultAlias, NamespaceConfigurations namespaces, INamespacePartitioningStrategy partitioning, AddressingLogic addressing);
+
+        // all dependencies required are passed in. no protected field can be assumed created
+        protected abstract ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator();
+
         public override TransportReceiveInfrastructure ConfigureReceiveInfrastructure()
         {
             return new TransportReceiveInfrastructure(
-                topology.GetMessagePumpFactory(),
-                topology.GetQueueCreatorFactory(),
-                () => topology.RunPreStartupChecks());
+                () =>
+                {
+                    Initialize();
+                    return new MessagePump(topologyOperator, messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), topologyManager, Settings);
+                },
+                () =>
+                {
+                    Initialize();
+                    return new TransportResourcesCreator(topologyCreator, topologyManager, Settings.LocalAddress());
+                },
+                () => Task.FromResult(StartupCheckResult.Success));
         }
 
         public override TransportSendInfrastructure ConfigureSendInfrastructure()
         {
             return new TransportSendInfrastructure(
-                topology.GetDispatcherFactory(),
-                () => topology.RunPreStartupChecks());
+                () =>
+                {
+                    Initialize();
+                    return new Dispatcher(new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(Settings), senderLifeCycleManager, Settings, oversizedMessageHandler), new Batcher(topologyManager, Settings));
+                },
+                () => Task.FromResult(StartupCheckResult.Success));
         }
 
         public override TransportSubscriptionInfrastructure ConfigureSubscriptionInfrastructure()
         {
-            return new TransportSubscriptionInfrastructure(topology.GetSubscriptionManagerFactory());
+            return new TransportSubscriptionInfrastructure(() =>
+            {
+                Initialize();
+                return new SubscriptionManager(topologyManager, topologyOperator, topologyCreator, Settings.LocalAddress());
+            });
         }
 
-        ITopologyInternal topology;
+        protected IOperateTopologyInternal topologyOperator;
+        protected ITopologySectionManagerInternal topologyManager;
+        protected IHandleOversizedBrokeredMessages oversizedMessageHandler;
+        protected MessageSenderLifeCycleManager senderLifeCycleManager;
+        protected MessagingFactoryLifeCycleManager messagingFactoryLifeCycleManager;
+        protected MessageReceiverLifeCycleManager messageReceiverLifeCycleManager;
+        protected IIndividualizationStrategy individualization;
+        protected string defaultNamespaceAlias;
+        protected NamespaceConfigurations namespaceConfigurations;
+        protected AddressingLogic addressingLogic;
+        protected NamespaceManagerLifeCycleManagerInternal namespaceManager;
+        protected INamespacePartitioningStrategy partitioningStrategy;
+        protected TopologyCreator topologyCreator;
+        bool initialized;
     }
 }

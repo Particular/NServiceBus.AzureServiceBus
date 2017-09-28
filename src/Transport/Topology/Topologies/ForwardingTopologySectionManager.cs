@@ -8,7 +8,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class ForwardingTopologySectionManager : ITopologySectionManagerInternal
     {
-        public ForwardingTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string originalEndpointName, int numberOfEntitiesInBundle, string bundlePrefix, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic, NamespaceManagerLifeCycleManagerInternal namespaceManagerLifeCycleManagerInternal)
+        public ForwardingTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string originalEndpointName, int numberOfEntitiesInBundle, string bundlePrefix, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic)
         {
             this.bundlePrefix = bundlePrefix;
             this.numberOfEntitiesInBundle = numberOfEntitiesInBundle;
@@ -17,15 +17,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.addressingLogic = addressingLogic;
             this.namespacePartitioningStrategy = namespacePartitioningStrategy;
             this.originalEndpointName = originalEndpointName;
-
-            namespaceBundleConfigurations = new Lazy<NamespaceBundleConfigurations>(() =>
-            {
-                // TODO: review this if having a single IO blocking operation that is cached is better than 
-                // propagating Task based interface through the chain of invocations
-                var bundleConfigurations = NumberOfTopicsInBundleCheck.Run(namespaceManagerLifeCycleManagerInternal, namespaceConfigurations, bundlePrefix).GetAwaiter().GetResult();
-                return bundleConfigurations;
-            });
         }
+
+        public NamespaceBundleConfigurations BundleConfigurations { get; set; }
 
         public TopologySectionInternal DetermineReceiveResources(string inputQueue)
         {
@@ -258,7 +252,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             foreach (var @namespace in namespaces)
             {
-                var numberOfTopicsFound = namespaceBundleConfigurations.Value.GetNumberOfTopicInBundle(@namespace.Alias);
+                var numberOfTopicsFound = BundleConfigurations.GetNumberOfTopicInBundle(@namespace.Alias);
                 var numberOfTopicsToCreate = Math.Max(numberOfEntitiesInBundle, numberOfTopicsFound);
                 for (var i = 1; i <= numberOfTopicsToCreate; i++)
                 {
@@ -276,7 +270,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         readonly ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
         readonly ConcurrentDictionary<Type, TopologySectionInternal> publishDestinations = new ConcurrentDictionary<Type, TopologySectionInternal>();
         readonly List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
-        Lazy<NamespaceBundleConfigurations> namespaceBundleConfigurations;
         string originalEndpointName;
         INamespacePartitioningStrategy namespacePartitioningStrategy;
         AddressingLogic addressingLogic;
