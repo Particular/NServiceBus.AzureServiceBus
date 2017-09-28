@@ -180,9 +180,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             return subscriptions[eventType];
         }
 
-        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
+        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType)
         {
-            if (!subscriptions.TryRemove(eventtype, out var result))
+            if (!subscriptions.TryRemove(eventType, out var result))
             {
                 result = new TopologySectionInternal
                 {

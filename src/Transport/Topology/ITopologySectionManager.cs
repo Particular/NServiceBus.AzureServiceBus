@@ -11,6 +11,6 @@
         TopologySectionInternal DetermineSendDestination(string destination);
 
         TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress);
-        TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype);
+        TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType);
     }
 }

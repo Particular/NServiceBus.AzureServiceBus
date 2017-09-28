@@ -166,7 +166,7 @@
             };
         }
 
-        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
+        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType)
         {
             throw new NotImplementedException();
         }

@@ -109,7 +109,7 @@
                 return new TopologySectionInternal();
             }
 
-            public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
+            public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventType)
             {
                 return new TopologySectionInternal();
             }
