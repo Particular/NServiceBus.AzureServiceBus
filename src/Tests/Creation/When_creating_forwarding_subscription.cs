@@ -4,7 +4,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using AzureServiceBus;
-    using Configuration;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
