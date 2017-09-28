@@ -25,6 +25,16 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                 var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
                 extensions.ConnectionString(connectionString);
                 extensions.UseNamespaceAliasesInsteadOfConnectionStrings();
+
+                var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
+                if (topology == "ForwardingTopology")
+                {
+                    extensions.UseForwardingTopology();
+                }
+                else
+                {
+                    extensions.UseEndpointOrientedTopology();
+                }
             };
 
             runSettings.Set("AzureServiceBus.AcceptanceTests.TransportConfigContext", ctx);

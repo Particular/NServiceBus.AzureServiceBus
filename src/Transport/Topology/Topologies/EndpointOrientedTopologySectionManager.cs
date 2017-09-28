@@ -197,8 +197,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         TopologySectionInternal BuildSubscriptionHierarchy(Type eventType, string localAddress)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
-
-            var topicPaths = DetermineTopicsFor(eventType);
+            
+            var publishers = publishersConfiguration.GetPublishersFor(eventType);
 
             // Using localAddress that will be provided by SubscriptionManager instead of the endpoint name.
             // Reason: endpoint name can be overridden. If the endpoint name is overridden, "originalEndpointName" will not have the override value.
@@ -209,53 +209,87 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             var topics = new List<EntityInfoInternal>();
             var subs = new List<SubscriptionInfoInternal>();
-            foreach (var topicPath in topicPaths)
+            foreach (var publisher in publishers)
             {
+                var topicPath = publisher + ".events";
                 var path = addressingLogic.Apply(topicPath, EntityType.Topic).Name;
-                topics.AddRange(namespaces.Select(ns => new EntityInfoInternal
-                {
-                    Namespace = ns,
-                    Type = EntityType.Topic,
-                    Path = path
-                }));
 
-                subs.AddRange(namespaces.Select(ns =>
+                var destinationsOutsideTopology = namespaceConfigurations.Where(c => c.RegisteredEndpoints.Contains(publisher, StringComparer.OrdinalIgnoreCase)).ToList();
+                if (destinationsOutsideTopology.Any())
                 {
-                    var sub = new SubscriptionInfoInternal
+                    topics.AddRange(destinationsOutsideTopology.Select(ns => new EntityInfoInternal
+                    {
+                        Namespace = new RuntimeNamespaceInfo(ns.Alias, ns.Connection, NamespacePurpose.Routing),
+                        Type = EntityType.Topic,
+                        Path = path
+                    }));
+
+                    subs.AddRange(destinationsOutsideTopology.Select(ns =>
+                    {
+                        var rns = new RuntimeNamespaceInfo(ns.Alias, ns.Connection, NamespacePurpose.Routing);
+                        var sub = new SubscriptionInfoInternal
+                        {
+                            Namespace = rns,
+                            Type = EntityType.Subscription,
+                            Path = subscriptionNameV6,
+                            Metadata = new SubscriptionMetadataInternal
+                            {
+                                Description = originalEndpointName + " subscribed to " + eventType.FullName,
+                                SubscriptionNameBasedOnEventWithNamespace = subscriptionName
+                            },
+                            BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                            ShouldBeListenedTo = true
+                        };
+                        sub.RelationShips.Add(new EntityRelationShipInfoInternal
+                        {
+                            Source = sub,
+                            Target = topics.First(t => t.Path == path && t.Namespace == rns),
+                            Type = EntityRelationShipTypeInternal.Subscription
+                        });
+                        return sub;
+                    }));
+                }
+                else
+                {
+                    topics.AddRange(namespaces.Select(ns => new EntityInfoInternal
                     {
                         Namespace = ns,
-                        Type = EntityType.Subscription,
-                        Path = subscriptionNameV6,
-                        Metadata = new SubscriptionMetadataInternal
-                        {
-                            Description = originalEndpointName + " subscribed to " + eventType.FullName,
-                            SubscriptionNameBasedOnEventWithNamespace = subscriptionName
-                        },
-                        BrokerSideFilter = new SqlSubscriptionFilter(eventType),
-                        ShouldBeListenedTo = true
-                    };
-                    sub.RelationShips.Add(new EntityRelationShipInfoInternal
+                        Type = EntityType.Topic,
+                        Path = path
+                    }));
+
+                    subs.AddRange(namespaces.Select(ns =>
                     {
-                        Source = sub,
-                        Target = topics.First(t => t.Path == path && t.Namespace == ns),
-                        Type = EntityRelationShipTypeInternal.Subscription
-                    });
-                    return sub;
-                }));
+                        var sub = new SubscriptionInfoInternal
+                        {
+                            Namespace = ns,
+                            Type = EntityType.Subscription,
+                            Path = subscriptionNameV6,
+                            Metadata = new SubscriptionMetadataInternal
+                            {
+                            Description = originalEndpointName + " subscribed to " + eventType.FullName,
+                                SubscriptionNameBasedOnEventWithNamespace = subscriptionName
+                            },
+                            BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                            ShouldBeListenedTo = true
+                        };
+                        sub.RelationShips.Add(new EntityRelationShipInfoInternal
+                        {
+                            Source = sub,
+                            Target = topics.First(t => t.Path == path && t.Namespace == ns),
+                            Type = EntityRelationShipTypeInternal.Subscription
+                        });
+                        return sub;
+                    }));
+                }
+
+                
             }
             return new TopologySectionInternal
             {
                 Entities = subs,
                 Namespaces = namespaces
             };
-        }
-
-        List<string> DetermineTopicsFor(Type eventType)
-        {
-            return publishersConfiguration
-                .GetPublishersFor(eventType)
-                .Select(x => string.Concat(x, ".events"))
-                .ToList();
         }
 
         ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
