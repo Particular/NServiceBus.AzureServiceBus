@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using DelayedDelivery;
     using Performance.TimeToBeReceived;
@@ -37,10 +38,9 @@
 
         public override OutboundRoutingPolicy OutboundRoutingPolicy { get; } = new OutboundRoutingPolicy(OutboundRoutingType.Unicast, OutboundRoutingType.Multicast, OutboundRoutingType.Unicast);
 
-        // make thread
-        void Initialize()
+        void InitializeIfNecessary()
         {
-            if (initialized)
+            if (Interlocked.Exchange(ref initializeSignaled, 1) != 0)
             {
                 return;
             }
@@ -70,8 +70,8 @@
             topologyManager = CreateTopologySectionManager(defaultNamespaceAlias, namespaceConfigurations, partitioningStrategy, addressingLogic);
             topologyCreator = new TopologyCreator(CreateSubscriptionCreator(), new AzureServiceBusQueueCreator(TopologySettings.QueueSettings, Settings), new AzureServiceBusTopicCreator(TopologySettings.TopicSettings), namespaceManager, Settings);
             topologyOperator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), Settings);
+        }
 
-            initialized = true;
         }
 
         public override Task Stop()
@@ -112,12 +112,12 @@
             return new TransportReceiveInfrastructure(
                 () =>
                 {
-                    Initialize();
+                    InitializeIfNecessary();
                     return new MessagePump(topologyOperator, messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), topologyManager, Settings);
                 },
                 () =>
                 {
-                    Initialize();
+                    InitializeIfNecessary();
                     return new TransportResourcesCreator(topologyCreator, topologyManager, Settings.LocalAddress());
                 },
                 () => Task.FromResult(StartupCheckResult.Success));
@@ -128,7 +128,7 @@
             return new TransportSendInfrastructure(
                 () =>
                 {
-                    Initialize();
+                    InitializeIfNecessary();
                     return new Dispatcher(new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(Settings), senderLifeCycleManager, Settings, oversizedMessageHandler), new Batcher(topologyManager, Settings));
                 },
                 () => Task.FromResult(StartupCheckResult.Success));
@@ -138,7 +138,7 @@
         {
             return new TransportSubscriptionInfrastructure(() =>
             {
-                Initialize();
+                InitializeIfNecessary();
                 return new SubscriptionManager(topologyManager, topologyOperator, topologyCreator, Settings.LocalAddress());
             });
         }
@@ -156,6 +156,6 @@
         protected NamespaceManagerLifeCycleManagerInternal namespaceManager;
         protected INamespacePartitioningStrategy partitioningStrategy;
         protected TopologyCreator topologyCreator;
-        bool initialized;
+        volatile int initializeSignaled;
     }
 }
