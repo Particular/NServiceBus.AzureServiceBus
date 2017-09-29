@@ -74,6 +74,7 @@
 
         public override Task Start()
         {
+            InitializeIfNecessary();
             return topologyManager.Initialize();
         }
 
@@ -147,7 +148,8 @@
         }
 
         protected IOperateTopologyInternal topologyOperator;
-        protected ITopologySectionManagerInternal topologyManager;
+        // exposed as internal for component tests
+        protected internal ITopologySectionManagerInternal topologyManager;
         protected IHandleOversizedBrokeredMessages oversizedMessageHandler;
         protected MessageSenderLifeCycleManager senderLifeCycleManager;
         protected MessagingFactoryLifeCycleManager messagingFactoryLifeCycleManager;
