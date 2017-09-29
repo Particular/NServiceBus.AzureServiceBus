@@ -23,7 +23,10 @@ namespace NServiceBus
             bundlePrefix = Settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
 
             topologySectionManager = new ForwardingTopologySectionManager(defaultAlias, namespaces, endpointName, numberOfEntitiesInBundle, bundlePrefix, partitioning, addressing);
-            // utter hack because we require this at resource creation time
+            // By design the topology section manager should determine the resources to create without needing information
+            // from ASB. When we realized one bundle was enough we had to call out for backward compatibility reasons to query
+            // how many bundles there are. This is async but should happen outside the actual section manager. Thus
+            // the callback was introduced.
             topologySectionManager.Initialize = async () =>
             {
                 if (Interlocked.Exchange(ref initializeSignaled, 1) != 0)
