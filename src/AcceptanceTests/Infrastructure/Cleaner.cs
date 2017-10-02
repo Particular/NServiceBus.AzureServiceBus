@@ -3,9 +3,10 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
+    using NServiceBus.AcceptanceTests;
     using NUnit.Framework;
 
-    public class Cleaner
+    public class Cleaner : NServiceBusAcceptanceTest
     {
         [Test, Explicit("Intended to be executed explicitly to delete all queues and topics.")]
         [Category("Cleanup")]
