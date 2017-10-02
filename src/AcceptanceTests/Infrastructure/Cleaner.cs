@@ -23,8 +23,8 @@
                 .ConfigureAwait(false);
 
             const int maxRetryAttempts = 5;
-            var deleteQueues = queryQueues.Result.Select(queueDescription => TryWithRetries(queueDescription.Path, namespaceManager.DeleteQueueAsync(queueDescription.Path), maxRetryAttempts));
-            var deleteTopics = queryTopics.Result.Select(topicDescription => TryWithRetries(topicDescription.Path, namespaceManager.DeleteTopicAsync(topicDescription.Path), maxRetryAttempts));
+            var deleteQueues = (await queryQueues).Select(queueDescription => TryWithRetries(queueDescription.Path, namespaceManager.DeleteQueueAsync(queueDescription.Path), maxRetryAttempts));
+            var deleteTopics = (await queryTopics).Select(topicDescription => TryWithRetries(topicDescription.Path, namespaceManager.DeleteTopicAsync(topicDescription.Path), maxRetryAttempts));
 
             await Task.WhenAll(deleteQueues.Concat(deleteTopics))
                 .ConfigureAwait(false);
