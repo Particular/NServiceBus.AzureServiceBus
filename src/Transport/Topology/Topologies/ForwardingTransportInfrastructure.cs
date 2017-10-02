@@ -1,6 +1,7 @@
 namespace NServiceBus
 {
-    using System.Threading;
+    using AzureServiceBus.Topology.MetaModel;
+    using AzureServiceBus.Utils;
     using Settings;
     using Transport.AzureServiceBus;
 
@@ -8,7 +9,7 @@ namespace NServiceBus
     {
         ForwardingTopologySectionManager topologySectionManager;
         string bundlePrefix;
-        volatile int initializeSignaled;
+        AsyncLazy<NamespaceBundleConfigurations> bundleConfigurations;
 
         public ForwardingTransportInfrastructure(SettingsHolder settings) : base(settings)
         {
@@ -23,21 +24,14 @@ namespace NServiceBus
             bundlePrefix = Settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
 
             topologySectionManager = new ForwardingTopologySectionManager(defaultAlias, namespaces, endpointName, numberOfEntitiesInBundle, bundlePrefix, partitioning, addressing);
+            bundleConfigurations = new AsyncLazy<NamespaceBundleConfigurations>(() => NumberOfTopicsInBundleCheck.Run(namespaceManager, namespaceConfigurations, bundlePrefix));
             // By design the topology section manager should determine the resources to create without needing information
             // from ASB. When we realized one bundle was enough we had to call out for backward compatibility reasons to query
             // how many bundles there are. This is async but should happen outside the actual section manager. Thus
             // the callback was introduced.
             topologySectionManager.Initialize = async () =>
             {
-                if (Interlocked.Exchange(ref initializeSignaled, 1) != 0)
-                {
-                    return;
-                }
-
-                var bundleConfigurations = await NumberOfTopicsInBundleCheck.Run(namespaceManager, namespaceConfigurations, bundlePrefix)
-                    .ConfigureAwait(false);
-
-                topologySectionManager.BundleConfigurations = bundleConfigurations;
+                topologySectionManager.BundleConfigurations = await bundleConfigurations.Value.ConfigureAwait(false);
             };
             return topologySectionManager;
         }
