@@ -20,7 +20,7 @@
         {
             TestRequires.ForwardingToplogy();
 
-            await Scenario.Define<Context>()
+            await Scenario.Define<ScenarioContext>()
                 .WithEndpoint<Endpoint>(b => b.When((session, c) => session.Unsubscribe<MyEvent>()))
                 .Done(c => c.EndpointsStarted)
                 .Run();
@@ -43,11 +43,6 @@
 
             rules = await namespaceManager.GetRulesAsync("bundle-2", endpointName);
             CollectionAssert.AreEquivalent(new[] { otherRuleName }, rules.Select(r => r.Name));
-        }
-
-        public class Context : ScenarioContext
-        {
-            public bool IsForwardingTopology { get; set; }
         }
 
         public class Endpoint : EndpointConfigurationBuilder

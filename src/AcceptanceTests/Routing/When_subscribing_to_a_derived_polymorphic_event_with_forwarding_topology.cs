@@ -34,7 +34,7 @@
 
                     c.ReceiverSubscribedToEvents = true;
                 }))
-                .Done(ctx => ctx.StopCommandWasReceived && ctx.IsForwardingTopology || !ctx.IsForwardingTopology)
+                .Done(ctx => ctx.StopCommandWasReceived)
                 .Run();
 
             Assert.That(context.SubscriberGotTheBaseEvent, Is.EqualTo(1), $"Should only receive BaseEvent once, but it was {context.SubscriberGotTheBaseEvent}");
@@ -45,7 +45,6 @@
         {
             public int SubscriberGotTheDerivedEvent { get; set; }
             public int SubscriberGotTheBaseEvent { get; set; }
-            public bool IsForwardingTopology { get; set; }
             public bool ReceiverSubscribedToEvents { get; set; }
             public bool StopCommandWasReceived { get; set; }
         }
