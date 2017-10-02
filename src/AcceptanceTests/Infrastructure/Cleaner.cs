@@ -22,14 +22,15 @@
             await Task.WhenAll(queryQueues, queryTopics)
                 .ConfigureAwait(false);
 
-            var deleteQueues = queryQueues.Result.Select(queueDescription => namespaceManager.DeleteQueueAsync(queueDescription.Path));
-            var deleteTopics = queryTopics.Result.Select(topicDescription => namespaceManager.DeleteTopicAsync(topicDescription.Path));
+            const int maxRetryAttempts = 5;
+            var deleteQueues = queryQueues.Result.Select(queueDescription => TryWithRetries(queueDescription.Path, namespaceManager.DeleteQueueAsync(queueDescription.Path), maxRetryAttempts));
+            var deleteTopics = queryTopics.Result.Select(topicDescription => TryWithRetries(topicDescription.Path, namespaceManager.DeleteTopicAsync(topicDescription.Path), maxRetryAttempts));
 
-            await TryWithRetries(Task.WhenAll(deleteQueues.Concat(deleteTopics)), 5)
+            await Task.WhenAll(deleteQueues.Concat(deleteTopics))
                 .ConfigureAwait(false);
         }
 
-        static async Task TryWithRetries(Task task, int maxRetryAttempts, int usedRetryAttempts = 0)
+        static async Task TryWithRetries(string entityPath, Task task, int maxRetryAttempts, int usedRetryAttempts = 0)
         {
             try
             {
@@ -39,15 +40,15 @@
             catch (Exception exception)
                 when (usedRetryAttempts < maxRetryAttempts && (exception is TimeoutException || exception is MessagingCommunicationException || exception is ServerBusyException))
             {
-                logger.InfoFormat("Attempt to delete all queues and topics has failed. Trying attempt {0}/{1} in 5 seconds.", usedRetryAttempts + 2, maxRetryAttempts);
+                logger.Info($"Attempt to delete '{entityPath}' has failed. Trying attempt {usedRetryAttempts + 2}/{maxRetryAttempts} in 5 seconds.");
                 await Task.Delay(5000)
                     .ConfigureAwait(false);
-                await TryWithRetries(task, maxRetryAttempts, usedRetryAttempts + 1)
+                await TryWithRetries(entityPath, task, maxRetryAttempts, usedRetryAttempts + 1)
                     .ConfigureAwait(false);
             }
             catch (Exception exception)
             {
-                logger.InfoFormat($"Failed to delete all queues and topics after {0}. Last received exception:\n{1}", usedRetryAttempts, exception.Message);
+                logger.Info($"Failed to delete '{entityPath}' after {usedRetryAttempts}. Last received exception:\n{exception.Message}");
             }
         }
 
