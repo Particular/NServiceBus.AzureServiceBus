@@ -73,9 +73,6 @@
                     // Limit message processing to a single thread to ensure that if duplicate events are sent, they are getting
                     // to the subscriber before stop command
                     c.LimitMessageProcessingConcurrencyTo(1);
-
-                    c.ConfigureTransport().Routing().RouteToEndpoint(typeof(BaseEvent), typeof(Publisher));
-                    c.ConfigureTransport().Routing().RouteToEndpoint(typeof(DerivedEvent), typeof(Publisher));
                 });
             }
 
