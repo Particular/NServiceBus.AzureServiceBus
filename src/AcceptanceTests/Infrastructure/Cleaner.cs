@@ -3,7 +3,6 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Logging;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests;
@@ -40,7 +39,7 @@
             catch (Exception exception)
                 when (usedRetryAttempts < maxRetryAttempts && (exception is TimeoutException || exception is MessagingCommunicationException || exception is ServerBusyException))
             {
-                logger.Info($"Attempt to delete '{entityPath}' has failed. Trying attempt {usedRetryAttempts + 2}/{maxRetryAttempts} in 5 seconds.");
+                TestContext.WriteLine($"Attempt to delete '{entityPath}' has failed. Trying attempt {usedRetryAttempts + 2}/{maxRetryAttempts} in 5 seconds.");
                 await Task.Delay(5000)
                     .ConfigureAwait(false);
                 await TryWithRetries(entityPath, task, maxRetryAttempts, usedRetryAttempts + 1)
@@ -48,10 +47,8 @@
             }
             catch (Exception exception)
             {
-                logger.Info($"Failed to delete '{entityPath}' after {usedRetryAttempts}. Last received exception:\n{exception.Message}");
+                TestContext.WriteLine($"Failed to delete '{entityPath}' after {usedRetryAttempts}. Last received exception:\n{exception.Message}");
             }
         }
-
-        static ILog logger = LogManager.GetLogger(typeof(Cleaner));
     }
 }
