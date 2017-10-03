@@ -10,7 +10,7 @@
     {
         internal AzureServiceBusTopicSettings(SettingsHolder settings) : base(settings)
         {
-            topicSettings = settings.Get<ITopologyInternal>().Settings.TopicSettings;
+            topicSettings = settings.GetOrCreate<TopologySettings>().TopicSettings;
         }
 
         /// <summary>

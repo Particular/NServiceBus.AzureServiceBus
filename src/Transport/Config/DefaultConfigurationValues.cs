@@ -12,6 +12,8 @@
         {
             Guard.AgainstUnsetSerializerSetting(settings);
 
+            settings.SetDefault<TopologySettings>(new TopologySettings());
+
             ApplyDefaultsForExtensibility(settings);
             ApplyDefaultsForConnectivity(settings);
             ApplyDefaultValuesForAddressing(settings);

@@ -14,7 +14,7 @@
         [Test]
         public async Task Should_remove_subscription_from_topology()
         {
-            await Scenario.Define<Context>()
+            await Scenario.Define<ScenarioContext>()
                 .WithEndpoint<Endpoint>(b => b.When((session, c) => session.Unsubscribe<MyEvent>()))
                 .Done(c => c.EndpointsStarted)
                 .Run();
@@ -33,14 +33,9 @@
             }
             else // EndpointOrientedTopology
             {
-                var isSubscriptionFound = await namespaceManager.SubscriptionExistsAsync(endpointName + ".events", $"{endpointName}.{nameof(MyEvent)}");
+                var isSubscriptionFound = await namespaceManager.SubscriptionExistsAsync($"{endpointName}.events", $"{endpointName}.{nameof(MyEvent)}");
                 Assert.IsFalse(isSubscriptionFound, "Subscription should have been deleted, but it wasn't.");
             }
-        }
-
-        public class Context : ScenarioContext
-        {
-            public bool IsForwardingTopology { get; set; }
         }
 
         public class Endpoint : EndpointConfigurationBuilder

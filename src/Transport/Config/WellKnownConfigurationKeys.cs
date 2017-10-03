@@ -7,6 +7,9 @@ namespace NServiceBus.Transport.AzureServiceBus
         public static class Topology
         {
             public const string Publishers = "AzureServiceBus.Settings.Topology.Publishers";
+            public const string Selected = "AzureServiceBus.Settings.Topology.Selected";
+            public const string ForwardingTopology = "ForwardingTopology";
+            public const string EndpointOrientedTopology = "EndpointOrientedTopology";
 
             public static class Addressing
             {

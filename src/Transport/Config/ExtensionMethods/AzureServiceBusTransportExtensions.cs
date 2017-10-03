@@ -10,14 +10,14 @@ namespace NServiceBus
         public static AzureServiceBusForwardingTopologySettings UseForwardingTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();
-            settings.Set<ITopologyInternal>(new ForwardingTopologyInternal());
+            settings.Set(WellKnownConfigurationKeys.Topology.Selected, WellKnownConfigurationKeys.Topology.ForwardingTopology);
             return new AzureServiceBusForwardingTopologySettings(settings);
         }
 
         public static AzureServiceBusEndpointOrientedTopologySettings UseEndpointOrientedTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();
-            settings.Set<ITopologyInternal>(new EndpointOrientedTopologyInternal());
+            settings.Set(WellKnownConfigurationKeys.Topology.Selected, WellKnownConfigurationKeys.Topology.EndpointOrientedTopology);
             return new AzureServiceBusEndpointOrientedTopologySettings(settings);
         }
 

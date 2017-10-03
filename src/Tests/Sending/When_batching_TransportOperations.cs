@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using AzureServiceBus;
     using Tests;
     using Transport.AzureServiceBus;
@@ -128,6 +129,8 @@
 
     class FakeTopolySectionManager : ITopologySectionManagerInternal
     {
+        public Func<Task> Initialize { get; set; } = () => TaskEx.Completed;
+
         public TopologySectionInternal DetermineReceiveResources(string inputQueue)
         {
             throw new NotImplementedException();

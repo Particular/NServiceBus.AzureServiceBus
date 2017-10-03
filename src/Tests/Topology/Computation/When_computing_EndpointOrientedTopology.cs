@@ -2,6 +2,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using AzureServiceBus;
     using Transport.AzureServiceBus;
     using Settings;
@@ -16,7 +17,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         static string Name = "name";
 
         [Test]
-        public void Determines_the_namespace_from_partitioning_strategy()
+        public async Task Determines_the_namespace_from_partitioning_strategy()
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<Conventions>(new Conventions());
@@ -25,7 +26,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var definition = DetermineResourcesToCreate(settings);
+            var definition = await DetermineResourcesToCreate(settings);
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring);
@@ -33,7 +34,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         }
 
         [Test]
-        public void Determines_there_should_be_a_queue_with_same_name_as_endpointname()
+        public async Task Determines_there_should_be_a_queue_with_same_name_as_endpointname()
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<Conventions>(new Conventions());
@@ -42,32 +43,31 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var definition = DetermineResourcesToCreate(settings);
+            var definition = await DetermineResourcesToCreate(settings);
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == Connectionstring));
         }
 
         [TestCase("Path is too long", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")]
         [TestCase("Path contains invalid character", "input%queue")]
-        public void Should_fail_sanitization_for_invalid_endpoint_name(string reasonToFail, string endpointName)
+        public async Task Should_fail_sanitization_for_invalid_endpoint_name(string reasonToFail, string endpointName)
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            settings.Set<Conventions>(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var topology = new ForwardingTopologyInternal();
+            var topology = new EndpointOrientedTransportInfrastructure(settings);
+            await topology.Start();
 
-            topology.Initialize(settings);
-
-            var sectionManager = topology.TopologySectionManager;
+            var sectionManager = topology.topologyManager;
             Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings(), endpointName), "Was expected to fail: " + reasonToFail);
         }
 
-
         [Test]
-        public void Determines_there_should_be_a_topic_with_same_name_as_endpointname_followed_by_dot_events()
+        public async Task Determines_there_should_be_a_topic_with_same_name_as_endpointname_followed_by_dot_events()
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<Conventions>(new Conventions());
@@ -76,18 +76,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
-            var definition = DetermineResourcesToCreate(settings);
+            var definition = await DetermineResourcesToCreate(settings);
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales.events" && ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring));
         }
 
-        static TopologySectionInternal DetermineResourcesToCreate(SettingsHolder settings)
+        static async Task<TopologySectionInternal> DetermineResourcesToCreate(SettingsHolder settings)
         {
-            var topology = new EndpointOrientedTopologyInternal();
+            var topology = new EndpointOrientedTransportInfrastructure(settings);
+            await topology.Start();
 
-            topology.Initialize(settings);
-
-            var sectionManager = topology.TopologySectionManager;
+            var sectionManager = topology.topologyManager;
 
             var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings(), "sales");
             return definition;

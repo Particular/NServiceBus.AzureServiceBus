@@ -15,7 +15,6 @@
         public void Should_set_DeliveryCount_for_queues_to_10_attempts_for_no_immediate_retries_configured()
         {
             var settings = SettingsHolderFactory.BuildWithSerializer();
-            settings.Set<TopologySettings>(new TopologySettings());
 
             DefaultConfigurationValues.Apply(settings);
 
@@ -26,7 +25,6 @@
         public void Should_set_DeliveryCount_for_subscriptions_to_10_attempts_for_no_immediate_retries_configured()
         {
             var settings = SettingsHolderFactory.BuildWithSerializer();
-            settings.Set<TopologySettings>(new TopologySettings());
 
             DefaultConfigurationValues.Apply(settings);
 
@@ -37,7 +35,6 @@
         public void Should_throw_exception_when_no_serializer_was_set()
         {
             var settings = new SettingsHolder();
-            settings.Set<TopologySettings>(new TopologySettings());
 
             var exception = Assert.Throws<Exception>(() => DefaultConfigurationValues.Apply(settings));
 

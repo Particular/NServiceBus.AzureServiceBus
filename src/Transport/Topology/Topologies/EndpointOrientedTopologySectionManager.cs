@@ -4,6 +4,8 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
+    using NServiceBus.AzureServiceBus;
 
     class EndpointOrientedTopologySectionManager : ITopologySectionManagerInternal
     {
@@ -16,6 +18,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.namespacePartitioningStrategy = namespacePartitioningStrategy;
             this.publishersConfiguration = publishersConfiguration;
         }
+
+        public Func<Task> Initialize { get; set; } = () => TaskEx.Completed;
 
         public TopologySectionInternal DetermineReceiveResources(string inputQueue)
         {

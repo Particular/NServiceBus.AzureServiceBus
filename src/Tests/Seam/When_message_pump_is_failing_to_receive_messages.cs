@@ -77,6 +77,8 @@
 
         class FakeTopologyManager : ITopologySectionManagerInternal
         {
+            public Func<Task> Initialize { get; set; } = () => TaskEx.Completed;
+
             public TopologySectionInternal DetermineReceiveResources(string inputQueue)
             {
                 return new TopologySectionInternal

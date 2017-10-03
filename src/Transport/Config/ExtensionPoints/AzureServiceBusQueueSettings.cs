@@ -10,7 +10,7 @@
     {
         internal AzureServiceBusQueueSettings(SettingsHolder settings) : base(settings)
         {
-            queueSettings = settings.Get<ITopologyInternal>().Settings.QueueSettings;
+            queueSettings = settings.GetOrCreate<TopologySettings>().QueueSettings;
         }
 
         /// <summary>
