@@ -10,6 +10,7 @@
     using NUnit.Framework;
     using NServiceBus.AcceptanceTests;
     using AcceptanceTesting.Customization;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 
@@ -20,17 +21,19 @@
         {
             TestRequires.ForwardingToplogy();
 
-            await Scenario.Define<ScenarioContext>()
-                .WithEndpoint<Endpoint>(b => b.When((session, c) => session.Unsubscribe<MyEvent>()))
-                .Done(c => c.EndpointsStarted)
-                .Run();
-
             var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
             var rawEndpointName = Conventions.EndpointNamingConvention(typeof(Endpoint));
             var endpointName = MD5HashBuilder.Build(rawEndpointName);
             var sanitizedEventFullName = typeof(MyOtherEvent).FullName.Replace("+", string.Empty);
             var otherRuleName = MD5HashBuilder.Build(sanitizedEventFullName);
+
+            await CreateSecondTopicInBundleForBackwardsCompatibilityTesting(namespaceManager, endpointName, connectionString, otherRuleName);
+
+            await Scenario.Define<ScenarioContext>()
+                .WithEndpoint<Endpoint>(b => b.When((session, c) => session.Unsubscribe<MyEvent>()))
+                .Done(c => c.EndpointsStarted)
+                .Run();
 
             var isSubscriptionFound = await namespaceManager.SubscriptionExistsAsync("bundle-1", endpointName);
             Assert.IsTrue(isSubscriptionFound, "Subscription under 'bundle-1' should have been found, but it wasn't.");
@@ -43,6 +46,30 @@
 
             rules = await namespaceManager.GetRulesAsync("bundle-2", endpointName);
             CollectionAssert.AreEquivalent(new[] { otherRuleName }, rules.Select(r => r.Name));
+        }
+
+        static async Task CreateSecondTopicInBundleForBackwardsCompatibilityTesting(NamespaceManager namespaceManager, string endpointName, string connectionString, string ruleForMyOtherEvent)
+        {
+            const string topicPath = "bundle-2";
+            if (!await namespaceManager.TopicExistsAsync(topicPath))
+            {
+                await namespaceManager.CreateTopicAsync(topicPath);
+            }
+
+            var subscriptionClient = SubscriptionClient.CreateFromConnectionString(connectionString, topicPath, endpointName);
+            Task CreateRuleForMyEvent() => subscriptionClient.AddRuleAsync(MD5HashBuilder.Build(typeof(MyEvent).FullName.Replace("+", string.Empty)), new TrueFilter());
+
+            if (!await namespaceManager.SubscriptionExistsAsync(topicPath, endpointName))
+            {
+                await namespaceManager.CreateSubscriptionAsync(topicPath, endpointName);
+                await subscriptionClient.RemoveRuleAsync(RuleDescription.DefaultRuleName);
+                await subscriptionClient.AddRuleAsync(ruleForMyOtherEvent, new TrueFilter());
+                await CreateRuleForMyEvent();
+            }
+            else
+            {
+                await CreateRuleForMyEvent();
+            }
         }
 
         public class Endpoint : EndpointConfigurationBuilder
@@ -70,12 +97,8 @@
             }
         }
 
-        public class MyEvent : IEvent
-        {
-        }
-        public class MyOtherEvent : IEvent
-        {
-        }
+        public class MyEvent : IEvent {}
+        public class MyOtherEvent : IEvent {}
     }
 
     static class MD5HashBuilder
@@ -92,5 +115,4 @@
             }
         }
     }
-
 }
