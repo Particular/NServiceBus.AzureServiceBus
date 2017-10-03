@@ -14,7 +14,7 @@
         [Test]
         public async Task Should_handle_each_event_once_only()
         {
-            TestRequires.ForwardingToplogy();
+            Requires.ForwardingToplogy();
 
             var context = await Scenario.Define<Context>()
                 // Publish event only when it was signaled that events went out

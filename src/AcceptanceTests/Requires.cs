@@ -2,7 +2,7 @@
 {
     using NUnit.Framework;
 
-    public static class TestRequires
+    public static partial class Requires
     {
         public static void ForwardingToplogy()
         {

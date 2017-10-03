@@ -17,7 +17,7 @@
         [Test]
         public async Task Should_receive_event()
         {
-            TestRequires.EndpointOrientedToplogy();
+            Requires.EndpointOrientedToplogy();
 
             var context = await Scenario.Define<Context>()
                 // Publish event only when it was signaled that events went out
