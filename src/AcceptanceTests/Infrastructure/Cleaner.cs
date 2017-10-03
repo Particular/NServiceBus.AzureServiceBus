@@ -4,9 +4,9 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
-    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests;
     using NUnit.Framework;
+    using Utils;
 
     public class Cleaner : NServiceBusAcceptanceTest
     {
@@ -37,9 +37,9 @@
                     .ConfigureAwait(false);
             }
             catch (Exception exception)
-                when (usedRetryAttempts < maxRetryAttempts && (exception is TimeoutException || exception is MessagingCommunicationException || exception is ServerBusyException))
+                when (usedRetryAttempts < maxRetryAttempts && (exception is TimeoutException || exception.IsTransientException()))
             {
-                TestContext.WriteLine($"Attempt to delete '{entityPath}' has failed. Trying attempt {usedRetryAttempts + 2}/{maxRetryAttempts} in 5 seconds.");
+                TestContext.WriteLine($"Attempt to delete '{entityPath}' has failed. Retrying attempt {usedRetryAttempts + 1}/{maxRetryAttempts} in 5 seconds.");
                 await Task.Delay(5000)
                     .ConfigureAwait(false);
                 await TryWithRetries(entityPath, task, maxRetryAttempts, usedRetryAttempts + 1)
