@@ -5,15 +5,41 @@
 
     static class TestUtility
     {
-        public static string GetDefaultConnectionString()
+        static string connectionString;
+        static string fallbackConnectionString;
+
+        public static string DefaultConnectionString
         {
-            var environmentVariableName = $"{nameof(AzureServiceBusTransport)}.ConnectionString";
-            var connectionString = EnvironmentHelper.GetEnvironmentVariable(environmentVariableName);
-            if (string.IsNullOrEmpty(connectionString))
+            get
             {
-                throw new Exception($"Oh no! Could not find an environment variable '{environmentVariableName}'.");
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    var environmentVariableName = $"{nameof(AzureServiceBusTransport)}.ConnectionString";
+                    connectionString = EnvironmentHelper.GetEnvironmentVariable(environmentVariableName);
+                    if (string.IsNullOrEmpty(connectionString))
+                    {
+                        throw new Exception($"Oh no! Could not find an environment variable '{environmentVariableName}'.");
+                    }
+                }
+                return connectionString;
             }
-            return connectionString;
+        }
+
+        public static string FallbackConnectionString
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(fallbackConnectionString))
+                {
+                    var environmentVariableName = $"{nameof(AzureServiceBusTransport)}.ConnectionString";
+                    fallbackConnectionString = EnvironmentHelper.GetEnvironmentVariable(environmentVariableName);
+                    if (string.IsNullOrEmpty(fallbackConnectionString))
+                    {
+                        throw new Exception($"Oh no! Could not find an environment variable '{environmentVariableName}'.");
+                    }
+                }
+                return fallbackConnectionString;
+            }
         }
     }
 }
