@@ -25,7 +25,10 @@
             var deleteQueues = (await queryQueues).Select(queueDescription => TryWithRetries(queueDescription.Path, namespaceManager.DeleteQueueAsync(queueDescription.Path), maxRetryAttempts));
             var deleteTopics = (await queryTopics).Select(topicDescription => TryWithRetries(topicDescription.Path, namespaceManager.DeleteTopicAsync(topicDescription.Path), maxRetryAttempts));
 
-            await Task.WhenAll(deleteQueues.Concat(deleteTopics))
+            await Task.WhenAll(deleteQueues)
+                .ConfigureAwait(false);
+            
+            await Task.WhenAll(deleteTopics)
                 .ConfigureAwait(false);
         }
 
