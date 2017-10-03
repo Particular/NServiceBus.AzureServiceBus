@@ -27,54 +27,84 @@ namespace NServiceBus.Transport.AzureServiceBus
         public TopologySectionInternal DetermineReceiveResources(string inputQueue)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Receiving).ToArray();
-
             var inputQueuePath = addressingLogic.Apply(inputQueue, EntityType.Queue).Name;
-            var entities = namespaces.Select(n => new EntityInfoInternal
+
+            var entities = new List<EntityInfoInternal>();
+            foreach (var n in namespaces)
             {
-                Path = inputQueuePath,
-                Type = EntityType.Queue,
-                Namespace = n
-            }).ToList();
+                entities.Add(new EntityInfoInternal
+                {
+                    Path = inputQueuePath,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                });
+            }
 
             return new TopologySectionInternal
             {
                 Namespaces = namespaces,
-                Entities = entities.ToArray()
+                Entities = entities
             };
         }
 
-        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress)
+        public TopologySectionInternal DetermineTopicsToCreate(string localAddress)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
+            var entities = new List<EntityInfoInternal>();
 
-            var inputQueuePath = addressingLogic.Apply(localAddress, EntityType.Queue).Name;
-            var inputQueues = namespaces.Select(n => new EntityInfoInternal
+            foreach (var @namespace in namespaces)
             {
-                Path = inputQueuePath,
-                Type = EntityType.Queue,
-                Namespace = n
-            }).ToList();
+                var numberOfTopicsFound = BundleConfigurations.GetNumberOfTopicInBundle(@namespace.Alias);
+                var numberOfTopicsToCreate = Math.Max(numberOfEntitiesInBundle, numberOfTopicsFound);
+                for (var i = 1; i <= numberOfTopicsToCreate; i++)
+                {
+                    entities.AddRange(namespaces.Select(n => new EntityInfoInternal
+                    {
+                        Path = addressingLogic.Apply(bundlePrefix + i, EntityType.Topic).Name,
+                        Type = EntityType.Topic,
+                        Namespace = @namespace
+                    }));
+                }
+            }
 
-            BuildTopicBundlesIfNecessary(namespaces);
+            topics = entities;
+
+            return new TopologySectionInternal
+            {
+                Namespaces = namespaces,
+                Entities = entities
+            };
+        }
+
+        public TopologySectionInternal DetermineQueuesToCreate(QueueBindings queueBindings, string localAddress)
+        {
+            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
+            var inputQueuePath = addressingLogic.Apply(localAddress, EntityType.Queue).Name;
+            var entities = new List<EntityInfoInternal>();
 
             foreach (var n in namespaces)
             {
-                inputQueues.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfoInternal
+                entities.Add(new EntityInfoInternal
+                {
+                    Path = inputQueuePath,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                });
+
+                entities.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfoInternal
                 {
                     Path = addressingLogic.Apply(p, EntityType.Queue).Name,
                     Type = EntityType.Queue,
                     Namespace = n
                 }));
 
-                inputQueues.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfoInternal
+                entities.AddRange(queueBindings.SendingAddresses.Select(p => new EntityInfoInternal
                 {
                     Path = addressingLogic.Apply(p, EntityType.Queue).Name,
                     Type = EntityType.Queue,
                     Namespace = n
                 }));
             }
-
-            var entities = inputQueues.Concat(topics).ToArray();
 
             return new TopologySectionInternal
             {
@@ -88,7 +118,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             return publishDestinations.GetOrAdd(eventType, t =>
             {
                 var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
-                BuildTopicBundlesIfNecessary(namespaces);
 
                 return new TopologySectionInternal
                 {
@@ -146,17 +175,22 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     throw new Exception($"Could not determine namespace for destination `{d}`.");
                 }
-                var inputQueues = namespaces.Select(n => new EntityInfoInternal
+
+                var entities = new List<EntityInfoInternal>();
+                foreach (var n in namespaces)
                 {
-                    Path = inputQueueAddress.Name,
-                    Type = EntityType.Queue,
-                    Namespace = n
-                }).ToArray();
+                    entities.Add(new EntityInfoInternal
+                    {
+                        Path = inputQueueAddress.Name,
+                        Type = EntityType.Queue,
+                        Namespace = n
+                    });
+                }
 
                 return new TopologySectionInternal
                 {
                     Namespaces = namespaces,
-                    Entities = inputQueues
+                    Entities = entities
                 };
             });
         }
@@ -196,8 +230,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             // rule name needs to be 1) based on event full name 2) unique 3) deterministic
             var ruleName = addressingLogic.Apply(eventType.FullName, EntityType.Rule).Name;
-
-            BuildTopicBundlesIfNecessary(namespaces);
 
             var subs = new List<SubscriptionInfoInternal>();
             foreach (var topic in topics)
@@ -246,33 +278,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        void BuildTopicBundlesIfNecessary(RuntimeNamespaceInfo[] namespaces)
-        {
-            if (topics.Count != 0)
-            {
-                return;
-            }
-
-            foreach (var @namespace in namespaces)
-            {
-                var numberOfTopicsFound = BundleConfigurations.GetNumberOfTopicInBundle(@namespace.Alias);
-                var numberOfTopicsToCreate = Math.Max(numberOfEntitiesInBundle, numberOfTopicsFound);
-                for (var i = 1; i <= numberOfTopicsToCreate; i++)
-                {
-                    topics.AddRange(namespaces.Select(n => new EntityInfoInternal
-                    {
-                        Path = addressingLogic.Apply(bundlePrefix + i, EntityType.Topic).Name,
-                        Type = EntityType.Topic,
-                        Namespace = @namespace
-                    }));
-                }
-            }
-        }
-
         readonly ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
         readonly ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
         readonly ConcurrentDictionary<Type, TopologySectionInternal> publishDestinations = new ConcurrentDictionary<Type, TopologySectionInternal>();
-        readonly List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
+        List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
         string originalEndpointName;
         INamespacePartitioningStrategy namespacePartitioningStrategy;
         AddressingLogic addressingLogic;

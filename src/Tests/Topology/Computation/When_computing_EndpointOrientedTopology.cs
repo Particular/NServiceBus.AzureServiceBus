@@ -23,6 +23,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             settings.Set<Conventions>(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
 
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
@@ -39,8 +40,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<Conventions>(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
+
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = await DetermineResourcesToCreate(settings);
@@ -55,15 +57,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<Conventions>(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
 
-            settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new EndpointOrientedTransportInfrastructure(settings);
             await topology.Start();
 
             var sectionManager = topology.topologyManager;
-            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings(), endpointName), "Was expected to fail: " + reasonToFail);
+            Assert.Throws<Exception>(() => sectionManager.DetermineQueuesToCreate(new QueueBindings(), endpointName), "Was expected to fail: " + reasonToFail);
         }
 
         [Test]
@@ -72,8 +75,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<Conventions>(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
+
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var definition = await DetermineResourcesToCreate(settings);
@@ -88,8 +92,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
 
             var sectionManager = topology.topologyManager;
 
-            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings(), "sales");
-            return definition;
+            var queueDefinition = sectionManager.DetermineQueuesToCreate(new QueueBindings(), "sales");
+            var topicDefinition = sectionManager.DetermineTopicsToCreate("sales");
+            return new TopologySectionInternal
+            {
+                Namespaces = queueDefinition.Namespaces.Union(topicDefinition.Namespaces),
+                Entities = queueDefinition.Entities.Union(topicDefinition.Entities)
+            };
         }
     }
 }

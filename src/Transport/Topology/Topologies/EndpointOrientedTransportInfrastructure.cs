@@ -13,7 +13,7 @@ namespace NServiceBus
         {
             var conventions = Settings.Get<Conventions>();
             var publishersConfiguration = new PublishersConfiguration(conventions, Settings);
-            var endpointName = SettingsExtensions.EndpointName(Settings);
+            var endpointName = Settings.EndpointName();
 
             return new EndpointOrientedTopologySectionManager(defaultAlias, @namespaces, endpointName, publishersConfiguration, partitioning, addressing);
         }

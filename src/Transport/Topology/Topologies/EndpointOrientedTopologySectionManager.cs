@@ -24,47 +24,64 @@ namespace NServiceBus.Transport.AzureServiceBus
         public TopologySectionInternal DetermineReceiveResources(string inputQueue)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Receiving).ToArray();
-
             var inputQueuePath = addressingLogic.Apply(inputQueue, EntityType.Queue).Name;
-            var entities = namespaces.Select(n => new EntityInfoInternal
+            var entities = new List<EntityInfoInternal>();
+
+            foreach (var n in namespaces)
             {
-                Path = inputQueuePath,
-                Type = EntityType.Queue,
-                Namespace = n
-            }).ToList();
+                entities.Add(new EntityInfoInternal
+                {
+                    Path = inputQueuePath,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                });
+            }
 
             return new TopologySectionInternal
             {
                 Namespaces = namespaces,
-                Entities = entities.ToArray()
+                Entities = entities
             };
         }
 
-        public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress)
+        public TopologySectionInternal DetermineTopicsToCreate(string localAddress)
         {
-            // computes the topologySectionManager
-
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
-
-            var inputQueuePath = addressingLogic.Apply(localAddress, EntityType.Queue).Name;
-            var entities = namespaces.Select(n => new EntityInfoInternal
-            {
-                Path = inputQueuePath,
-                Type = EntityType.Queue,
-                Namespace = n
-            }).ToList();
-
             var topicPath = addressingLogic.Apply(localAddress + ".events", EntityType.Topic).Name;
-            var topics = namespaces.Select(n => new EntityInfoInternal
-            {
-                Path = topicPath,
-                Type = EntityType.Topic,
-                Namespace = n
-            }).ToArray();
-            entities.AddRange(topics);
+            var entities = new List<EntityInfoInternal>();
 
             foreach (var n in namespaces)
             {
+                entities.Add(new EntityInfoInternal
+                {
+                    Path = topicPath,
+                    Type = EntityType.Topic,
+                    Namespace = n
+                });
+            }
+
+            return new TopologySectionInternal
+            {
+                Namespaces = namespaces,
+                Entities = entities
+            };
+        }
+
+        public TopologySectionInternal DetermineQueuesToCreate(QueueBindings queueBindings, string localAddress)
+        {
+            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
+            var inputQueuePath = addressingLogic.Apply(localAddress, EntityType.Queue).Name;
+            var entities = new List<EntityInfoInternal>();
+
+            foreach (var n in namespaces)
+            {
+                entities.Add(new EntityInfoInternal
+                {
+                    Path = inputQueuePath,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                });
+
                 entities.AddRange(queueBindings.ReceivingAddresses.Select(p => new EntityInfoInternal
                 {
                     Path = addressingLogic.Apply(p, EntityType.Queue).Name,
@@ -80,12 +97,11 @@ namespace NServiceBus.Transport.AzureServiceBus
                     Namespace = n
                 }));
             }
-
-
+            
             return new TopologySectionInternal
             {
                 Namespaces = namespaces,
-                Entities = entities.ToArray()
+                Entities = entities
             };
         }
 
@@ -95,17 +111,22 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
             	var topicPath = addressingLogic.Apply(localAddress + ".events", EntityType.Topic).Name;
-                var topics = namespaces.Select(n => new EntityInfoInternal
+                var entities = new List<EntityInfoInternal>();
+
+                foreach (var n in namespaces)
                 {
-                    Path = topicPath,
-                    Type = EntityType.Topic,
-                    Namespace = n
-                }).ToArray();
+                    entities.Add(new EntityInfoInternal
+                    {
+                        Path = topicPath,
+                        Type = EntityType.Topic,
+                        Namespace = n
+                    });
+                }
 
                 return new TopologySectionInternal
                 {
                     Namespaces = namespaces,
-                    Entities = topics
+                    Entities = entities
                 };
             });
         }
@@ -159,17 +180,23 @@ namespace NServiceBus.Transport.AzureServiceBus
                     throw new Exception($"Could not determine namespace for destination '{d}'");
                 }
 
-                var inputQueues = namespaces.Select(n => new EntityInfoInternal
+                var entities = new List<EntityInfoInternal>();
+
+                foreach (var n in namespaces)
                 {
-                    Path = inputQueueAddress.Name,
-                    Type = EntityType.Queue,
-                    Namespace = n
-                }).ToArray();
+                    entities.Add(new EntityInfoInternal
+                    {
+                        Path = inputQueueAddress.Name,
+                        Type = EntityType.Queue,
+                        Namespace = n
+                    });
+                }
+
 
                 return new TopologySectionInternal
                 {
                     Namespaces = namespaces,
-                    Entities = inputQueues
+                    Entities = entities
                 };
             });
         }

@@ -8,7 +8,10 @@
         Func<Task> Initialize { get; set; } 
 
         TopologySectionInternal DetermineReceiveResources(string inputQueue);
-        TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress);
+
+        TopologySectionInternal DetermineTopicsToCreate(string localAddress);
+
+        TopologySectionInternal DetermineQueuesToCreate(QueueBindings queueBindings, string localAddress);
 
         TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress);
         TopologySectionInternal DetermineSendDestination(string destination);

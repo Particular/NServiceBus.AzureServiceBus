@@ -91,7 +91,12 @@
                 };
             }
 
-            public TopologySectionInternal DetermineResourcesToCreate(QueueBindings queueBindings, string localAddress)
+            public TopologySectionInternal DetermineTopicsToCreate(string localAddress)
+            {
+                return new TopologySectionInternal();
+            }
+
+            public TopologySectionInternal DetermineQueuesToCreate(QueueBindings queueBindings, string localAddress)
             {
                 return new TopologySectionInternal();
             }
