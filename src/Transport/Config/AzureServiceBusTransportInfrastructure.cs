@@ -20,6 +20,14 @@
 
             var individualizationStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Individualization.Strategy);
             individualization = individualizationStrategyType.CreateInstance<IIndividualizationStrategy>(Settings);
+
+            var compositionStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
+            var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(Settings);
+
+            var sanitizationStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
+            var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(Settings);
+
+            addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
         }
 
         protected TopologySettings TopologySettings { get; }
@@ -44,15 +52,7 @@
             {
                 return;
             }
-
-            var compositionStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Composition.Strategy);
-            var compositionStrategy = compositionStrategyType.CreateInstance<ICompositionStrategy>(Settings);
-
-            var sanitizationStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy);
-            var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(Settings);
-
-            addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
-
+            
             defaultNamespaceAlias = Settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
             namespaceConfigurations = Settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
 
@@ -94,15 +94,15 @@
 
             if (logicalAddress.EndpointInstance.Discriminator != null)
             {
-                queue.Append("-" + logicalAddress.EndpointInstance.Discriminator);
+                queue.Append($"-{logicalAddress.EndpointInstance.Discriminator}");
             }
 
             if (logicalAddress.Qualifier != null)
             {
-                queue.Append("." + logicalAddress.Qualifier);
+                queue.Append($".{logicalAddress.Qualifier}");
             }
 
-            return queue.ToString();
+            return addressingLogic.Apply(queue.ToString(), EntityType.Queue).ToString();
         }
 
         // all dependencies required are passed in. no protected field can be assumed created
