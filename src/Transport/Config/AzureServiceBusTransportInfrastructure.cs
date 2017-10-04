@@ -72,10 +72,13 @@
             topologyOperator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), Settings);
         }
 
-        public override Task Start()
+        public override async Task Start()
         {
             InitializeIfNecessary();
-            return topologyManager.Initialize();
+
+            await topologyManager.Initialize().ConfigureAwait(false);
+            var topicsToCreate = topologyManager.DetermineTopicsToCreate(Settings.LocalAddress());
+            await topologyCreator.Create(topicsToCreate).ConfigureAwait(false);
         }
 
         public override Task Stop()

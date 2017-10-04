@@ -20,15 +20,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
+
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTransportInfrastructure(settings);
             await topology.Start();
 
             var sectionManager = topology.topologyManager;
-            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings(), "sales");
+            var definition = sectionManager.DetermineQueuesToCreate(new QueueBindings(), "sales");
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var namespaceInfo = new RuntimeNamespaceInfo(Name, Connectionstring);
@@ -40,15 +41,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
+
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTransportInfrastructure(settings);
             await topology.Start();
 
             var sectionManager = topology.topologyManager;
-            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings(), "sales");
+            var definition = sectionManager.DetermineQueuesToCreate(new QueueBindings(), "sales");
 
             Assert.AreEqual(1, definition.Entities.Count(ei => ei.Path == "sales" && ei.Type == EntityType.Queue && ei.Namespace.ConnectionString == Connectionstring));
         }
@@ -59,15 +61,16 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+            settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
 
-            settings.SetDefault("NServiceBus.Routing.EndpointName", endpointName);
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTransportInfrastructure(settings);
             await topology.Start();
 
             var sectionManager = topology.topologyManager;
-            Assert.Throws<Exception>(() => sectionManager.DetermineResourcesToCreate(new QueueBindings(), endpointName), "Was expected to fail: " + reasonToFail);
+            Assert.Throws<Exception>(() => sectionManager.DetermineQueuesToCreate(new QueueBindings(), endpointName), "Was expected to fail: " + reasonToFail);
         }
 
         [Test]
@@ -75,15 +78,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
+
             extensions.NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTransportInfrastructure(settings);
             await topology.Start();
 
             var sectionManager = topology.topologyManager;
-            var definition = sectionManager.DetermineResourcesToCreate(new QueueBindings(), "sales");
+            sectionManager.DetermineQueuesToCreate(new QueueBindings(), "sales");
+            var definition = sectionManager.DetermineTopicsToCreate("sales");
 
             var result = definition.Entities.Where(ei => ei.Type == EntityType.Topic && ei.Namespace.ConnectionString == Connectionstring && ei.Path.StartsWith("bundle-"));
 
@@ -96,15 +101,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
+
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTransportInfrastructure(settings);
             await topology.Start();
 
             var sectionManager = topology.topologyManager;
-            sectionManager.DetermineResourcesToCreate(new QueueBindings(), "sales");
+            sectionManager.DetermineQueuesToCreate(new QueueBindings(), "sales");
+            sectionManager.DetermineTopicsToCreate("sales");
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent), "sales");
 
@@ -116,15 +123,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
+
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTransportInfrastructure(settings);
             await topology.Start();
 
             var sectionManager = topology.topologyManager;
-            sectionManager.DetermineResourcesToCreate(new QueueBindings(), "sales");
+            sectionManager.DetermineQueuesToCreate(new QueueBindings(), "sales");
+            sectionManager.DetermineTopicsToCreate("sales");
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent), "sales");
 
@@ -136,15 +145,17 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
+            settings.SetDefault("NServiceBus.SharedQueue", "sales");
+
             extensions.UseForwardingTopology().NamespacePartitioning().AddNamespace(Name, Connectionstring);
 
             var topology = new ForwardingTransportInfrastructure(settings);
             await topology.Start();
 
             var sectionManager = topology.topologyManager;
-            sectionManager.DetermineResourcesToCreate(new QueueBindings(), "sales");
+            sectionManager.DetermineQueuesToCreate(new QueueBindings(), "sales");
+            sectionManager.DetermineTopicsToCreate("sales");
 
             var section = sectionManager.DetermineResourcesToSubscribeTo(typeof(SomeTestEvent), "sales");
 
