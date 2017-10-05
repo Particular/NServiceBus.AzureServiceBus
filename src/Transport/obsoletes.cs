@@ -1,4 +1,5 @@
-﻿namespace NServiceBus
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+namespace NServiceBus
 {
     using System;
     using System.Reflection;
@@ -367,3 +368,4 @@ namespace NServiceBus.Transport.AzureServiceBus
         }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
