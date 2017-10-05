@@ -4,7 +4,7 @@
 
     public static partial class Requires
     {
-        public static void ForwardingToplogy()
+        public static void ForwardingTopology()
         {
             if (!TestSuiteConstraints.Current.IsForwardingTopology)
             {
@@ -12,7 +12,7 @@
             }
         }
 
-        public static void EndpointOrientedToplogy()
+        public static void EndpointOrientedTopology()
         {
             if (!TestSuiteConstraints.Current.IsEndpointOrientedTopology)
             {

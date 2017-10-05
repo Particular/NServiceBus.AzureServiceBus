@@ -19,7 +19,7 @@
         [Test]
         public async Task Should_remove_subscription_rule_from_topology()
         {
-            Requires.ForwardingToplogy();
+            Requires.ForwardingTopology();
 
             var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
