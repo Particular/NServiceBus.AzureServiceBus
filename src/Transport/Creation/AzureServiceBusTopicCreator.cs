@@ -26,7 +26,6 @@
                 EnableBatchedOperations = topicSettings.EnableBatchedOperations,
                 EnablePartitioning = topicSettings.EnablePartitioning,
                 AutoDeleteOnIdle = topicSettings.AutoDeleteOnIdle,
-                EnableExpress = topicSettings.EnableExpress,
                 EnableFilteringMessagesBeforePublishing = topicSettings.EnableFilteringMessagesBeforePublishing
             };
 

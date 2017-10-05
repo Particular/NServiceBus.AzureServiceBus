@@ -63,25 +63,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         }
 
         [Test]
-        public void Should_be_able_to_set_EnableExpress()
-        {
-            extensions.Queues().EnableExpress(true);
-
-            Assert.IsTrue(settings.Get<TopologySettings>().QueueSettings.EnableExpress);
-        }
-
-        [Test]
-        public void Should_be_able_to_set_EnableExpress_conditionally()
-        {
-            Func<string, bool> condition = name => name != "expressqueue";
-            extensions.Queues().EnableExpress(condition, true);
-
-            Assert.IsTrue(settings.Get<TopologySettings>().QueueSettings.EnableExpress);
-            Assert.AreEqual(condition, settings.Get<TopologySettings>().QueueSettings.EnableExpressCondition);
-        }
-
-
-        [Test]
         public void Should_be_able_to_set_EnablePartitioning()
         {
             extensions.Queues().EnablePartitioning(true);

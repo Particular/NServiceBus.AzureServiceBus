@@ -108,7 +108,13 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings DuplicateDetectionHistoryTimeWindow(System.TimeSpan duplicateDetectionHistoryTimeWindow) { }
         public NServiceBus.AzureServiceBusQueueSettings EnableBatchedOperations(bool enableBatchedOperations) { }
         public NServiceBus.AzureServiceBusQueueSettings EnableDeadLetteringOnMessageExpiration(bool enableDeadLetteringOnMessageExpiration) { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<QueueDescription>)` inst" +
+            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
+            "ersion 9.0.0.", true)]
         public NServiceBus.AzureServiceBusQueueSettings EnableExpress(bool enableExpress) { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<QueueDescription>)` inst" +
+            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
+            "ersion 9.0.0.", true)]
         public NServiceBus.AzureServiceBusQueueSettings EnableExpress(System.Func<string, bool> condition, bool enableExpress) { }
         public NServiceBus.AzureServiceBusQueueSettings EnablePartitioning(bool enablePartitioning) { }
         public NServiceBus.AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo) { }
@@ -169,7 +175,13 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusTopicSettings DescriptionFactory(System.Func<string, string, NServiceBus.Settings.ReadOnlySettings, Microsoft.ServiceBus.Messaging.TopicDescription> factory) { }
         public NServiceBus.AzureServiceBusTopicSettings DuplicateDetectionHistoryTimeWindow(System.TimeSpan duplicateDetectionHistoryTimeWindow) { }
         public NServiceBus.AzureServiceBusTopicSettings EnableBatchedOperations(bool enableBatchedOperations) { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<TopicDescription>)` inst" +
+            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
+            "ersion 9.0.0.", true)]
         public NServiceBus.AzureServiceBusTopicSettings EnableExpress(bool enableExpress) { }
+        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<TopicDescription>)` inst" +
+            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
+            "ersion 9.0.0.", true)]
         public NServiceBus.AzureServiceBusTopicSettings EnableExpress(System.Func<string, bool> condition, bool enableExpress) { }
         public NServiceBus.AzureServiceBusTopicSettings EnableFilteringMessagesBeforePublishing(bool enableFilteringMessagesBeforePublishing) { }
         public NServiceBus.AzureServiceBusTopicSettings EnablePartitioning(bool enablePartitioning) { }

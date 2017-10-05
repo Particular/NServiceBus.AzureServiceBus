@@ -328,7 +328,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var topologyTopicSettings = new TopologyTopicSettings
             {
                 AutoDeleteOnIdle = TimeSpan.FromMinutes(100),
-                EnableExpress = true
+                DefaultMessageTimeToLive = TimeSpan.FromMinutes(5)
             };
             var creator = new AzureServiceBusTopicCreator(topologyTopicSettings);
             await creator.Create("existingtopic1", namespaceManager);
