@@ -28,5 +28,6 @@
 
     <Reference Include="System.Configuration" />
     <Reference Include="System.Transactions" />
+    <PackageReference Include="GitVersionTask" Version="4.0.0-beta0012" PrivateAssets="All" />
   </ItemGroup>
 </Project>
