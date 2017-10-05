@@ -1,26 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(SolutionDir)NServiceBus.snk</AssemblyOriginatorKeyFile>
-    <NoWarn>PCR0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ApiApprover\**" />
-    <EmbeddedResource Remove="ApiApprover\**" />
-    <None Remove="ApiApprover\**" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Remove="NServiceBus.Azure.Transports.WindowsAzureServiceBus.approved.cs" />
-    <Compile Remove="NServiceBus.Azure.Transports.WindowsAzureServiceBus.received.cs" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ApprovalTests" Version="3.0.13" />
     <PackageReference Include="ApprovalUtilities" Version="3.0.13" />
     <PackageReference Include="FakeItEasy" Version="2.*" />
@@ -33,7 +26,5 @@
     <!-- TODO: replace with "3.*" when NUnit bug is fixed -->
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.*" />
-  
-    <Reference Include="System.Configuration" />
   </ItemGroup>
 </Project>
