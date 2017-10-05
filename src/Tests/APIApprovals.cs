@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Reflection;
     using System.Runtime.CompilerServices;
-    using ApprovalTests;
+    using AzureServiceBus.Tests;
     using NUnit.Framework;
     using PublicApiGenerator;
 
@@ -19,7 +19,7 @@
             var combine = Path.Combine(TestContext.CurrentContext.TestDirectory, "NServiceBus.Azure.Transports.WindowsAzureServiceBus.dll");
             var assembly = Assembly.LoadFile(combine);
             var publicApi = Filter(ApiGenerator.GeneratePublicApi(assembly));
-            Approvals.Verify(publicApi);
+            TestApprover.Verify(publicApi);
         }
 
         string Filter(string text)
