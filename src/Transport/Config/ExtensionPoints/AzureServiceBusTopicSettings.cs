@@ -72,26 +72,6 @@
         /// <summary>
         /// <remarks> Default is false.</remarks>
         /// </summary>
-        public AzureServiceBusTopicSettings EnableExpress(bool enableExpress)
-        {
-            topicSettings.EnableExpress = enableExpress;
-            return this;
-        }
-
-        /// <summary>
-        /// <remarks> Default is false.</remarks>
-        /// </summary>
-        // TODO: needs to be deprecated
-        public AzureServiceBusTopicSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
-        {
-            topicSettings.EnableExpress = enableExpress;
-            topicSettings.EnableExpressCondition = condition;
-            return this;
-        }
-
-        /// <summary>
-        /// <remarks> Default is false.</remarks>
-        /// </summary>
         public AzureServiceBusTopicSettings EnableFilteringMessagesBeforePublishing(bool enableFilteringMessagesBeforePublishing)
         {
             topicSettings.EnableFilteringMessagesBeforePublishing = enableFilteringMessagesBeforePublishing;

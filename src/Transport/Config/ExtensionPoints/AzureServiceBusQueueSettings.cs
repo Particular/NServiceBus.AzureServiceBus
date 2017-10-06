@@ -44,28 +44,6 @@
         }
 
         /// <summary>
-        /// <remarks> Default is false.</remarks>
-        /// </summary>
-        public AzureServiceBusQueueSettings EnableExpress(bool enableExpress)
-        {
-            queueSettings.EnableExpress = enableExpress;
-
-            return this;
-        }
-
-        /// <summary>
-        /// <remarks> Default is false.</remarks>
-        /// </summary>
-        // TODO: needs to be deprecated
-        public AzureServiceBusQueueSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
-        {
-            queueSettings.EnableExpress = enableExpress;
-            queueSettings.EnableExpressCondition = condition;
-
-            return this;
-        }
-
-        /// <summary>
         /// <remarks> Default is TimeSpan.MaxValue.</remarks>
         /// </summary>
         public AzureServiceBusQueueSettings AutoDeleteOnIdle(TimeSpan autoDeleteOnIdle)

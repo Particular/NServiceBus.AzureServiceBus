@@ -114,12 +114,50 @@ namespace NServiceBus
         {
             throw new NotImplementedException();
         }
+
+
+        /// <summary>
+        /// <remarks> Default is false.</remarks>
+        /// </summary>
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "DescriptionCustomizer(Action<QueueDescription>)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusQueueSettings EnableExpress(bool enableExpress)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <remarks> Default is false.</remarks>
+        /// </summary>
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "DescriptionCustomizer(Action<QueueDescription>)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusQueueSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public partial class AzureServiceBusTopicSettings
     {
         [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "DescriptionCustomizer(Action<TopicDescription>)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public AzureServiceBusTopicSettings DescriptionFactory(Func<string, string, ReadOnlySettings, TopicDescription> factory)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// <remarks> Default is false.</remarks>
+        /// </summary>
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "DescriptionCustomizer(Action<TopicDescription>)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusTopicSettings EnableExpress(bool enableExpress)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <remarks> Default is false.</remarks>
+        /// </summary>
+        [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "DescriptionCustomizer(Action<TopicDescription>)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusTopicSettings EnableExpress(Func<string, bool> condition, bool enableExpress)
         {
             throw new NotImplementedException();
         }

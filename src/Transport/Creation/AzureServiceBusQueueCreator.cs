@@ -36,8 +36,6 @@
                 EnablePartitioning = queueSettings.EnablePartitioning,
                 SupportOrdering = queueSettings.SupportOrdering,
                 AutoDeleteOnIdle = queueSettings.AutoDeleteOnIdle,
-
-                EnableExpress = queueSettings.EnableExpress,
                 ForwardDeadLetteredMessagesTo = queueSettings.ForwardDeadLetteredMessagesTo
             };
 

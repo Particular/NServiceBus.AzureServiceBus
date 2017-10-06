@@ -94,53 +94,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         }
 
         [Test]
-        public async Task Properly_sets_EnableExpress_on_the_created_entity()
-        {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.Queues().EnableExpress(true);
-
-            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-
-            await creator.Create("myqueue", namespaceManager);
-
-            var real = await namespaceManager.GetQueue("myqueue");
-
-            Assert.IsTrue(real.EnableExpress);
-
-            //cleanup
-            await namespaceManager.DeleteQueue("myqueue");
-        }
-
-        [Test]
-        public async Task Properly_sets_EnableExpress_on_the_created_entity_that_qualifies_condition()
-        {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-
-            //var topology = new FakeTopology(settings);
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            extensions.Queues().EnableExpress(name => name == "myqueue", true);
-
-            var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
-
-            await creator.Create("myqueue", namespaceManager);
-
-            var real = await namespaceManager.GetQueue("myqueue");
-
-            Assert.IsTrue(real.EnableExpress, "Queue should be marked as express, but it wasn't.");
-
-            //cleanup
-            await namespaceManager.DeleteQueue("myqueue");
-        }
-
-        [Test]
         public async Task Properly_sets_AutoDeleteOnIdle_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));

@@ -18,11 +18,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         public bool EnablePartitioning { get; set; } = false;
         public TimeSpan AutoDeleteOnIdle { get; set; } = TimeSpan.MaxValue;
 
-        public bool EnableExpress { get; set; } = false;
-
-        // TODO: no longer relevant since factory is replace with Customizer
-        public Func<string, bool> EnableExpressCondition { get; set; } = name => true;
-
         public string ForwardDeadLetteredMessagesTo { get; set; } = null;
 
         // TODO: no longer relevant since factory is replace with Customizer

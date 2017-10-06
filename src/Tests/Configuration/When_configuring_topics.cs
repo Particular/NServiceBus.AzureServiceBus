@@ -55,24 +55,6 @@
         }
 
         [Test]
-        public void Should_be_able_to_set_EnableExpress()
-        {
-            extensions.Topics().EnableExpress(true);
-
-            Assert.IsTrue(settings.Get<TopologySettings>().TopicSettings.EnableExpress);
-        }
-
-        [Test]
-        public void Should_be_able_to_set_EnableExpress_conditionally()
-        {
-            Func<string, bool> condition = name => name != "expresstopic";
-            extensions.Topics().EnableExpress(condition, true);
-
-            Assert.IsTrue(settings.Get<TopologySettings>().TopicSettings.EnableExpress);
-            Assert.AreEqual(condition, settings.Get<TopologySettings>().TopicSettings.EnableExpressCondition);
-        }
-
-        [Test]
         public void Should_be_able_to_set_EnableFilteringMessagesBeforePublishing()
         {
             extensions.Topics().EnableFilteringMessagesBeforePublishing(true);
