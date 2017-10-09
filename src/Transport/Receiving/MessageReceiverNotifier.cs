@@ -42,6 +42,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             wrapInScope = settings.TransportTransactionMode == TransportTransactionMode.SendsAtomicWithReceive;
+            // batching will be applied for transaction modes other than SendsAtomicWithReceive
             completionCanBeBatched = !wrapInScope;
 
             var numberOfClients = settings.NumberOfClients;
@@ -54,14 +55,16 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             internalReceivers = new IMessageReceiverInternal[numberOfClients];
             onMessageOptions = new OnMessageOptions[numberOfClients];
-            completion = new MultiProducerConcurrentCompletion<Guid>(1000, TimeSpan.FromSeconds(1), 6, numberOfClients);
+
+            // when we don't batch we don't need the completion infrastructure
+            completion = completionCanBeBatched ? new MultiProducerConcurrentCompletion<Guid>(1000, TimeSpan.FromSeconds(1), 6, numberOfClients) : null;
         }
 
         public void Start()
         {
             stopping = false;
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
-            completion.Start(CompletionCallback, internalReceivers);
+            completion?.Start(CompletionCallback, internalReceivers);
 
             // Offloading here to make sure calling thread is not used for sync path inside
             // async call stack.
@@ -105,7 +108,10 @@ namespace NServiceBus.Transport.AzureServiceBus
                 logger.Error("The receiver failed to stop with in the time allowed (30s)");
             }
 
-            await completion.Complete().ConfigureAwait(false);
+            if (completion != null)
+            {
+                await completion.Complete().ConfigureAwait(false);
+            }
 
             var closeTasks = new List<Task>();
             foreach (var internalReceiver in internalReceivers)
@@ -173,7 +179,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     logger.Info($"OptionsOnExceptionReceived invoked, action: '{exceptionReceivedEventArgs.Action}', with non-transient exception.", exceptionReceivedEventArgs.Exception);
 
-                    await errorCallback.Invoke(exceptionReceivedEventArgs.Exception).ConfigureAwait(false);
+                    await errorCallback(exceptionReceivedEventArgs.Exception).ConfigureAwait(false);
                 }
             }
             catch
