@@ -12,7 +12,6 @@
   <PropertyGroup>
     <PackageId>NServiceBus.Azure.Transports.WindowsAzureServiceBus</PackageId>
     <Description>NServiceBus Transport for the Windows Azure Servicebus</Description>
-    <!-- <GeneratePackageOnBuild>true</GeneratePackageOnBuild> -->
   </PropertyGroup>
 
   <ItemGroup>
