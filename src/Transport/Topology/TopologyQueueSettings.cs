@@ -20,7 +20,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public string ForwardDeadLetteredMessagesTo { get; set; } = null;
 
-        // TODO: no longer relevant since factory is replace with Customizer
         public Func<string, bool> ForwardDeadLetteredMessagesToCondition { get; set; } = name => true;
     }
 }
