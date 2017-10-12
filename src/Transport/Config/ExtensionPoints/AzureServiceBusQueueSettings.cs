@@ -34,7 +34,6 @@
         /// <summary>
         /// <remarks> Default is set not to forward.</remarks>
         /// </summary>
-        // TODO: needs to be deprecated
         public AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(Func<string, bool> condition, string forwardDeadLetteredMessagesTo)
         {
             queueSettings.ForwardDeadLetteredMessagesTo = forwardDeadLetteredMessagesTo;
