@@ -5,6 +5,10 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Sanitization strategy using user-defined sanitization and hasing algorithm to remove invalid characters and shorten entity path/name.
+    /// <remarks>First step, invalid characters are removed. Second step, hashing is applied if length is still exceeding the maximum allowed length.</remarks>
+    /// </summary>
     public class ValidateAndHashIfNeeded : ISanitizationStrategy
     {
         internal ValidateAndHashIfNeeded(ReadOnlySettings settings)
@@ -125,6 +129,7 @@
             }
         }
 
+        /// <summary></summary>
         public string Sanitize(string entityPathOrName, EntityType entityType)
         {
             // remove characters invalid in v6

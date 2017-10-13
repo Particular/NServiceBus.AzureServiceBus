@@ -4,6 +4,10 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Sanitization strategy throwing exception for an invalid entity path/name.
+    /// <remarks>Validation rules can be adjusted by providing custom validation rules per entity type.</remarks>
+    /// </summary>
     public class ThrowOnFailedValidation : ISanitizationStrategy
     {
         internal ThrowOnFailedValidation(ReadOnlySettings settings)
@@ -103,6 +107,7 @@ namespace NServiceBus
             }
         }
 
+        /// <summary></summary>
         public string Sanitize(string entityPathOrName, EntityType entityType)
         {
             Func<string, ValidationResult> validator;
