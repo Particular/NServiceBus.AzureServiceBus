@@ -4,6 +4,9 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    ///  Strategy to modify the name of the endpoint by appending a discriminator value to the end.
+    /// </summary>
     public class DiscriminatorBasedIndividualization : IIndividualizationStrategy
     {
         internal DiscriminatorBasedIndividualization(ReadOnlySettings settings)
@@ -16,6 +19,9 @@ namespace NServiceBus
             }
         }
 
+        /// <summary>
+        ///  Modifies the <param name="endpointName" /> of the endpoint by appending a discriminator value to the end.
+        /// </summary>
         public string Individualize(string endpointName)
         {
             var discriminator = discriminatorGenerator(endpointName);
