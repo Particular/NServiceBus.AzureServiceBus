@@ -7,6 +7,9 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Message receivers configuration settings.
+    /// </summary>
     public class AzureServiceBusMessageReceiverSettings : ExposeSettings
     {
         internal AzureServiceBusMessageReceiverSettings(SettingsHolder settings) : base(settings)

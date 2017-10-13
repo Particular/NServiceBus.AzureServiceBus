@@ -9,12 +9,23 @@
     using Transport;
     using Transport.AzureServiceBus;
 
+    /// <summary>Transport definition for Azure Service Bus.</summary>
     public class AzureServiceBusTransport : TransportDefinition
     {
+        /// <summary>
+        /// <see cref="TransportDefinition.ExampleConnectionStringForErrorMessage" />.
+        /// </summary>
         public override bool RequiresConnectionString { get; } = false;
 
+        /// <summary>
+        /// <see cref="TransportDefinition.ExampleConnectionStringForErrorMessage" />.
+        /// </summary>
         public override string ExampleConnectionStringForErrorMessage { get; } = "Endpoint=sb://[namespace].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[secret_key]";
 
+        /// <summary>
+        /// Initializes the transport infrastructure for Azure Service Bus.
+        /// </summary>
+        /// <returns>the transport infrastructure forAzure Service Bus.</returns>
         public override TransportInfrastructure Initialize(SettingsHolder settings, string connectionString)
         {
             DefaultConfigurationValues.Apply(settings);

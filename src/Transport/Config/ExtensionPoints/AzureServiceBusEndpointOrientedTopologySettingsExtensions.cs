@@ -7,14 +7,21 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary></summary>
     public static partial class AzureServiceBusEndpointOrientedTopologySettingsExtensions
     {
+        /// <summary>Register publisher endpoint name for a give event type.</summary>
+        /// <param name="topologySettings"></param>
+        /// <param name="type"></param>
+        /// <param name="publisherName"></param>
+        /// <returns></returns>
         public static AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this AzureServiceBusEndpointOrientedTopologySettings topologySettings, Type type, string publisherName)
         {
             AddScannerForPublisher(topologySettings.GetSettings(), publisherName, new SingleTypeScanner(type));
             return topologySettings;
         }
 
+        /// <summary>Register publisher endpoint name for a give assembly.</summary>
         public static AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this AzureServiceBusEndpointOrientedTopologySettings topologySettings, Assembly assembly, string publisherName)
         {
             AddScannerForPublisher(topologySettings.GetSettings(), publisherName, new AssemblyTypesScanner(assembly));

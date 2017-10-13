@@ -6,6 +6,9 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Queue configuration settings.
+    /// </summary>
     public partial class AzureServiceBusQueueSettings : ExposeSettings
     {
         internal AzureServiceBusQueueSettings(SettingsHolder settings) : base(settings)

@@ -4,6 +4,9 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Sanitization configuration settings.
+    /// </summary>
     public class AzureServiceBusSanitizationSettings : ExposeSettings
     {
         internal AzureServiceBusSanitizationSettings(SettingsHolder settings) : base(settings)

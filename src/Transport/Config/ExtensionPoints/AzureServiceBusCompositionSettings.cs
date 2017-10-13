@@ -4,6 +4,7 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>Composition settings.</summary>
     public class AzureServiceBusCompositionSettings : ExposeSettings
     {
         internal AzureServiceBusCompositionSettings(SettingsHolder settings) : base(settings)

@@ -5,6 +5,7 @@
 
     public partial class NamespaceInfo : IEquatable<NamespaceInfo>
     {
+        /// <summary></summary>
         public NamespaceInfo(string alias, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
         {
             if (string.IsNullOrWhiteSpace(alias))
@@ -23,14 +24,19 @@
             RegisteredEndpoints = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
+        /// <summary></summary>
         public string Alias { get; }
 
+        /// <summary></summary>
         public NamespacePurpose Purpose { get; }
 
+        /// <summary></summary>
         public string Connection => connectionString;
 
+        /// <summary></summary>
         public HashSet<string> RegisteredEndpoints { get; }
 
+        /// <summary></summary>
         public bool Equals(NamespaceInfo other)
         {
             return other != null
@@ -38,12 +44,14 @@
                    && connectionString.Equals(other.connectionString);
         }
 
+        /// <summary></summary>
         public override bool Equals(object obj)
         {
             var target = obj as NamespaceInfo;
             return Equals(target);
         }
 
+        /// <summary></summary>
         public override int GetHashCode()
         {
             var name = Alias.ToLower();
