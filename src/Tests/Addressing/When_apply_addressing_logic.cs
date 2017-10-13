@@ -58,11 +58,11 @@
         {
             public string ProvidedEntityName { get; private set; }
 
-            public string GetEntityPath(string entityname, EntityType entityType)
+            public string GetEntityPath(string entityName, EntityType entityType)
             {
-                ProvidedEntityName = entityname;
+                ProvidedEntityName = entityName;
 
-                return entityname;
+                return entityName;
             }
         }
     }

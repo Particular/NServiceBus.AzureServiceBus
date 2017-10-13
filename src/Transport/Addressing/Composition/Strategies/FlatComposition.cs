@@ -2,11 +2,16 @@ namespace NServiceBus
 {
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Composition strategy resulting in a flat namespace hierarchy.
+    /// </summary>
     public class FlatComposition : ICompositionStrategy
     {
-        public string GetEntityPath(string entityname, EntityType entityType)
+        /// <summary></summary>
+        /// <returns>Returns <param name="entityName"/> as-is, irregardless of the <param name="entityType" />.</returns>
+        public string GetEntityPath(string entityName, EntityType entityType)
         {
-            return entityname;
+            return entityName;
         }
     }
 }
