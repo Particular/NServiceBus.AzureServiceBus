@@ -6,10 +6,10 @@
     using System.Linq;
     using Logging;
 
-    /// <summary> </summary>
+    /// <summary>Namespace configurations to track registered namespace with their aliases, connection strings, and <see cref="NamespacePurpose"/> they are used for.</summary>
     public class NamespaceConfigurations : IEnumerable<NamespaceInfo>
     {
-        /// <summary> </summary>
+        /// <summary>Default constructor.</summary>
         public NamespaceConfigurations()
         {
             inner = new List<NamespaceInfo>();
@@ -20,10 +20,10 @@
             inner = configurations;
         }
 
-        /// <summary> </summary>
+        /// <summary>Number of registered namespace configurations.</summary>
         public int Count => inner.Count;
 
-        /// <summary> </summary>
+        /// <summary>Return enumerator.</summary>
         public IEnumerator<NamespaceInfo> GetEnumerator()
         {
             return inner.GetEnumerator();
@@ -34,7 +34,7 @@
             return GetEnumerator();
         }
 
-        /// <summary> </summary>
+        /// <summary>Add a namespace with its alias, connections string, and <see cref="NamespacePurpose"/>.</summary>
         public NamespaceInfo Add(string alias, string connectionString, NamespacePurpose purpose)
         {
             var definition = new NamespaceInfo(alias, connectionString, purpose);
@@ -56,7 +56,7 @@
             return definition;
         }
 
-        /// <summary> </summary>
+        /// <summary>Get connection string for an alias.</summary>
         public string GetConnectionString(string name)
         {
             try

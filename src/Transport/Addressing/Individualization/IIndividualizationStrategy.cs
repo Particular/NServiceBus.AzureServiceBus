@@ -6,7 +6,7 @@
     public interface IIndividualizationStrategy
     {
         /// <summary>
-        /// 
+        /// Individualize endpoint name.
         /// </summary>
         /// <param name="endpointName">Original endpoint name.</param>
         /// <returns>Individualized endpoint name.</returns>
