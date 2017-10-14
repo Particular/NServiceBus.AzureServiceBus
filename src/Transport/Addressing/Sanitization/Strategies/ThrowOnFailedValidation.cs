@@ -107,7 +107,8 @@ namespace NServiceBus
             }
         }
 
-        /// <summary></summary>
+        /// <summary>Validate  <param name="entityPathOrName"/> of type <param name="entityType"/>.</summary>
+        /// <returns>Value as-is if passed validation. Otherwise, throws.</returns>
         public string Sanitize(string entityPathOrName, EntityType entityType)
         {
             Func<string, ValidationResult> validator;
