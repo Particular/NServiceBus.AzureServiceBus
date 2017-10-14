@@ -559,6 +559,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         public string LengthError { get; set; }
         public bool LengthIsValid { get; }
         public void AddErrorForInvalidCharacters(string error) { }
-        public void AddErrorForInvalidLenth(string error) { }
+        public void AddErrorForInvalidLength(string error) { }
     }
 }

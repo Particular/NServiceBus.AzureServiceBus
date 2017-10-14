@@ -29,7 +29,7 @@
                     if (queuePath.Length > maximumQueuePathLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Queue path `{queuePath}` exceeds maximum length of {maximumQueuePathLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Queue path `{queuePath}` exceeds maximum length of {maximumQueuePathLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -57,7 +57,7 @@
                     if (topicPath.Length > topicPathMaximumLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Topic path `{topicPath}` exceeds maximum length of {topicPathMaximumLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Topic path `{topicPath}` exceeds maximum length of {topicPathMaximumLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -85,7 +85,7 @@
                     if (subscriptionName.Length > subscriptionNameMaximumLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Subscription name `{subscriptionName}` exceeds maximum length of {subscriptionNameMaximumLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Subscription name `{subscriptionName}` exceeds maximum length of {subscriptionNameMaximumLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -112,7 +112,7 @@
                     if (ruleName.Length > ruleNameMaximumLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Rule name `{ruleName}` exceeds maximum length of {ruleNameMaximumLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Rule name `{ruleName}` exceeds maximum length of {ruleNameMaximumLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
