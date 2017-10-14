@@ -451,7 +451,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public NamespaceConfigurations() { }
         public int Count { get; }
         public NServiceBus.Transport.AzureServiceBus.NamespaceInfo Add(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose) { }
-        public string GetConnectionString(string name) { }
+        public string GetConnectionString(string alias) { }
         public System.Collections.Generic.IEnumerator<NServiceBus.Transport.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
     }
     public class NamespaceInfo : System.IEquatable<NServiceBus.Transport.AzureServiceBus.NamespaceInfo>
