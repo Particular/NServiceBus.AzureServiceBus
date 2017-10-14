@@ -11,10 +11,6 @@
     public static partial class AzureServiceBusEndpointOrientedTopologySettingsExtensions
     {
         /// <summary>Register publisher endpoint name for a give event type.</summary>
-        /// <param name="topologySettings"></param>
-        /// <param name="type"></param>
-        /// <param name="publisherName"></param>
-        /// <returns></returns>
         public static AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this AzureServiceBusEndpointOrientedTopologySettings topologySettings, Type type, string publisherName)
         {
             AddScannerForPublisher(topologySettings.GetSettings(), publisherName, new SingleTypeScanner(type));
