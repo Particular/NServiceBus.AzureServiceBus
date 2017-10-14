@@ -40,7 +40,7 @@
             };
         }
 
-        /// <summary></summary>
+        /// <summary>Current mode.</summary>
         public FailOverMode Mode { get; set; }
 
         /// <summary>

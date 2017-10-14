@@ -5,9 +5,9 @@
     /// </summary>
     public enum FailOverMode
     {
-        /// <summary></summary>
+        /// <summary>Primary namespace is used.</summary>
         Primary,
-        /// <summary></summary>
+        /// <summary>Secondary namespace is used.</summary>
         Secondary
     }
 }
