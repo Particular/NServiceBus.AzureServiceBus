@@ -4,7 +4,7 @@
     using Configuration.AdvancedExtensibility;
     using Transport.AzureServiceBus;
 
-    /// <summary></summary>
+    /// <summary><see cref="DiscriminatorBasedIndividualization"/> specific settings.</summary>
     public static class AzureServiceBusDiscriminatorBasedIndividualizationSettingsExtensions
     {
         /// <summary>

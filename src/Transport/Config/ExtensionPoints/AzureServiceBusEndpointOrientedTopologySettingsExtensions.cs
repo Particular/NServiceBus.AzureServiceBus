@@ -7,7 +7,7 @@
     using Settings;
     using Transport.AzureServiceBus;
 
-    /// <summary></summary>
+    /// <summary><see cref="EndpointOrientedTopology"/> specific settings.</summary>
     public static partial class AzureServiceBusEndpointOrientedTopologySettingsExtensions
     {
         /// <summary>Register publisher endpoint name for a give event type.</summary>
