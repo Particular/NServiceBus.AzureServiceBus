@@ -6,6 +6,9 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Topics configuration settings.
+    /// </summary>
     public partial class AzureServiceBusTopicSettings : ExposeSettings
     {
         internal AzureServiceBusTopicSettings(SettingsHolder settings) : base(settings)

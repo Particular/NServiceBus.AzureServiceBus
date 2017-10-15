@@ -4,6 +4,10 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Sanitization strategy throwing exception for an invalid entity path/name.
+    /// <remarks>Validation rules can be adjusted by providing custom validation rules per entity type.</remarks>
+    /// </summary>
     public class ThrowOnFailedValidation : ISanitizationStrategy
     {
         internal ThrowOnFailedValidation(ReadOnlySettings settings)
@@ -24,7 +28,7 @@ namespace NServiceBus
                     if (queuePath.Length > maximumQueuePathLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Queue path `{queuePath}` exceeds maximum length of {maximumQueuePathLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Queue path `{queuePath}` exceeds maximum length of {maximumQueuePathLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -48,7 +52,7 @@ namespace NServiceBus
                     if (topicPath.Length > topicPathMaximumLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Topic path `{topicPath}` exceeds maximum length of {topicPathMaximumLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Topic path `{topicPath}` exceeds maximum length of {topicPathMaximumLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -72,7 +76,7 @@ namespace NServiceBus
                     if (subscriptionName.Length > subscriptionNameMaximumLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Subscription name `{subscriptionName}` exceeds maximum length of {subscriptionNameMaximumLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Subscription name `{subscriptionName}` exceeds maximum length of {subscriptionNameMaximumLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -95,7 +99,7 @@ namespace NServiceBus
                     if (ruleName.Length > ruleNameMaximumLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Rule name `{ruleName}` exceeds maximum length of {ruleNameMaximumLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Rule name `{ruleName}` exceeds maximum length of {ruleNameMaximumLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -103,6 +107,8 @@ namespace NServiceBus
             }
         }
 
+        /// <summary>Validate  <param name="entityPathOrName"/> of type <param name="entityType"/>.</summary>
+        /// <returns>Value as-is if passed validation. Otherwise, throws.</returns>
         public string Sanitize(string entityPathOrName, EntityType entityType)
         {
             Func<string, ValidationResult> validator;

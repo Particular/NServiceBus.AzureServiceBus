@@ -23,7 +23,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
         class MyCompositionStrategy : ICompositionStrategy
         {
-            public string GetEntityPath(string entityname, EntityType entityType)
+            public string GetEntityPath(string entityName, EntityType entityType)
             {
                 throw new NotImplementedException(); // not relevant to the test
             }

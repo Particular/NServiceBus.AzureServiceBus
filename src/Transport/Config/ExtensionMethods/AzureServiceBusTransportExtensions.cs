@@ -5,8 +5,14 @@ namespace NServiceBus
     using Microsoft.ServiceBus.Messaging;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Azure Service Bus transport extensions API.
+    /// </summary>
     public static partial class AzureServiceBusTransportExtensions
     {
+        /// <summary>
+        /// Configures Azure Service Bus to use <see cref="ForwardingTopology"/> topology.
+        /// </summary>
         public static AzureServiceBusForwardingTopologySettings UseForwardingTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();
@@ -14,6 +20,9 @@ namespace NServiceBus
             return new AzureServiceBusForwardingTopologySettings(settings);
         }
 
+        /// <summary>
+        /// Configures Azure Service Bus to use <see cref="UseEndpointOrientedTopology"/> topology.
+        /// </summary>
         public static AzureServiceBusEndpointOrientedTopologySettings UseEndpointOrientedTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {
             var settings = transportExtensions.GetSettings();

@@ -4,6 +4,9 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Namespace routing configuration settings.
+    /// </summary>
     public class AzureServiceBusNamespaceRoutingSettings : ExposeSettings
     {
         internal AzureServiceBusNamespaceRoutingSettings(SettingsHolder settings) : base(settings)

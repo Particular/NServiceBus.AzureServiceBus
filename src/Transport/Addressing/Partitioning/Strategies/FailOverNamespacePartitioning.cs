@@ -6,6 +6,10 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Strategy using primary and secondary namespaces. The secondary namespace is used as a fallback in case of problems with the primary namespace.
+    /// <remarks>Assumes all entities are in the primary and secondary namespaces, where only the primary is in use by default.</remarks>
+    /// </summary>
     public class FailOverNamespacePartitioning : INamespacePartitioningStrategy
     {
         internal FailOverNamespacePartitioning(ReadOnlySettings settings)
@@ -36,8 +40,12 @@
             };
         }
 
+        /// <summary>Current mode.</summary>
         public FailOverMode Mode { get; set; }
 
+        /// <summary>
+        /// Return a set of namespaces required by strategy for <see cref="PartitioningIntent"/>.
+        /// </summary>
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {
             return runtimeNamespaces;

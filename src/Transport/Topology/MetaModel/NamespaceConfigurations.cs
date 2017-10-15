@@ -6,8 +6,10 @@
     using System.Linq;
     using Logging;
 
+    /// <summary>Namespace configurations to track registered namespace with their aliases, connection strings, and <see cref="NamespacePurpose"/> they are used for.</summary>
     public class NamespaceConfigurations : IEnumerable<NamespaceInfo>
     {
+        /// <summary>Default constructor.</summary>
         public NamespaceConfigurations()
         {
             inner = new List<NamespaceInfo>();
@@ -18,8 +20,10 @@
             inner = configurations;
         }
 
+        /// <summary>Number of registered namespace configurations.</summary>
         public int Count => inner.Count;
 
+        /// <summary>Return enumerator.</summary>
         public IEnumerator<NamespaceInfo> GetEnumerator()
         {
             return inner.GetEnumerator();
@@ -30,6 +34,7 @@
             return GetEnumerator();
         }
 
+        /// <summary>Add a namespace with its alias, connections string, and <see cref="NamespacePurpose"/>.</summary>
         public NamespaceInfo Add(string alias, string connectionString, NamespacePurpose purpose)
         {
             var definition = new NamespaceInfo(alias, connectionString, purpose);
@@ -51,16 +56,17 @@
             return definition;
         }
 
-        public string GetConnectionString(string name)
+        /// <summary>Get connection string for an alias.</summary>
+        public string GetConnectionString(string alias)
         {
             try
             {
-                var selected = inner.Single(x => x.Alias.Equals(name, StringComparison.OrdinalIgnoreCase));
+                var selected = inner.Single(x => x.Alias.Equals(alias, StringComparison.OrdinalIgnoreCase));
                 return selected.Connection;
             }
             catch (InvalidOperationException ex)
             {
-                throw new KeyNotFoundException($"Namespace with alias `{name}` hasn't been registered", ex);
+                throw new KeyNotFoundException($"Namespace with alias `{alias}` hasn't been registered", ex);
             }
         }
 

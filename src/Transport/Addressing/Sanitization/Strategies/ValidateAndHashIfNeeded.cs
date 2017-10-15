@@ -5,6 +5,10 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Sanitization strategy using user-defined sanitization and hashing algorithm to remove invalid characters and shorten entity path/name.
+    /// <remarks>First step, invalid characters are removed. Second step, hashing is applied if length is still exceeding the maximum allowed length.</remarks>
+    /// </summary>
     public class ValidateAndHashIfNeeded : ISanitizationStrategy
     {
         internal ValidateAndHashIfNeeded(ReadOnlySettings settings)
@@ -25,7 +29,7 @@
                     if (queuePath.Length > maximumQueuePathLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Queue path `{queuePath}` exceeds maximum length of {maximumQueuePathLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Queue path `{queuePath}` exceeds maximum length of {maximumQueuePathLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -53,7 +57,7 @@
                     if (topicPath.Length > topicPathMaximumLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Topic path `{topicPath}` exceeds maximum length of {topicPathMaximumLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Topic path `{topicPath}` exceeds maximum length of {topicPathMaximumLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -81,7 +85,7 @@
                     if (subscriptionName.Length > subscriptionNameMaximumLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Subscription name `{subscriptionName}` exceeds maximum length of {subscriptionNameMaximumLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Subscription name `{subscriptionName}` exceeds maximum length of {subscriptionNameMaximumLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -108,7 +112,7 @@
                     if (ruleName.Length > ruleNameMaximumLength)
                     {
                         validationResult = validationResult ?? new ValidationResult();
-                        validationResult.AddErrorForInvalidLenth($"Rule name `{ruleName}` exceeds maximum length of {ruleNameMaximumLength} characters.");
+                        validationResult.AddErrorForInvalidLength($"Rule name `{ruleName}` exceeds maximum length of {ruleNameMaximumLength} characters.");
                     }
 
                     return validationResult ?? ValidationResult.Empty;
@@ -125,6 +129,8 @@
             }
         }
 
+        /// <summary>Sanitize <param name="entityPathOrName"/> of type <param name="entityType"/>.</summary>
+        /// <returns>Sanitized value.</returns>
         public string Sanitize(string entityPathOrName, EntityType entityType)
         {
             // remove characters invalid in v6

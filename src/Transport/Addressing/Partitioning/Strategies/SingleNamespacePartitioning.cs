@@ -6,6 +6,9 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Strategy for all entities in a single namespace.
+    /// </summary>
     public class SingleNamespacePartitioning : INamespacePartitioningStrategy
     {
         internal SingleNamespacePartitioning(ReadOnlySettings settings)
@@ -29,6 +32,9 @@ namespace NServiceBus
             };
         }
 
+        /// <summary>
+        /// Return a set of namespaces required by strategy for <see cref="PartitioningIntent"/>.
+        /// </summary>
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {
             return runtimeNamespaces;

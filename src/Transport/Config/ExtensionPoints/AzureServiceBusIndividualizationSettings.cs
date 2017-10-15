@@ -4,6 +4,9 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Individualization API settings.
+    /// </summary>
     public class AzureServiceBusIndividualizationSettings : ExposeSettings
     {
         internal AzureServiceBusIndividualizationSettings(SettingsHolder settings) : base(settings)

@@ -6,6 +6,9 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Namespace managers configuration settings.
+    /// </summary>
     public class AzureServiceBusNamespaceManagersSettings : ExposeSettings
     {
         internal AzureServiceBusNamespaceManagersSettings(SettingsHolder settings) : base(settings)

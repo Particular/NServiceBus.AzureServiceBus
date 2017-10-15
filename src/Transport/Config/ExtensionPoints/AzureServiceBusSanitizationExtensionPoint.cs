@@ -5,6 +5,9 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Sanitization configuration settings.
+    /// </summary>
     public class AzureServiceBusSanitizationExtensionPoint<T> : ExposeSettings where T : ISanitizationStrategy
     {
         internal AzureServiceBusSanitizationExtensionPoint(SettingsHolder settings) : base(settings)
@@ -12,6 +15,9 @@ namespace NServiceBus
             this.settings = settings;
         }
 
+        /// <summary>
+        /// Queue path validator to be used.
+        /// </summary>
         public AzureServiceBusSanitizationExtensionPoint<T> QueuePathValidation(Func<string, ValidationResult> queuePathValidator)
         {
             Guard.AgainstNull(nameof(queuePathValidator), queuePathValidator);
@@ -19,6 +25,9 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Topic path validator to be used.
+        /// </summary>
         public AzureServiceBusSanitizationExtensionPoint<T> TopicPathValidation(Func<string, ValidationResult> topicPathValidator)
         {
             Guard.AgainstNull(nameof(topicPathValidator), topicPathValidator);
@@ -26,12 +35,19 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Subscription name validator to be used.
+        /// </summary>
         public AzureServiceBusSanitizationExtensionPoint<T> SubscriptionNameValidation(Func<string, ValidationResult> subscriptionNameValidator)
         {
             Guard.AgainstNull(nameof(subscriptionNameValidator), subscriptionNameValidator);
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameValidator, subscriptionNameValidator);
             return this;
         }
+
+        /// <summary>
+        /// Rule name validator to be used.
+        /// </summary>
 
         public AzureServiceBusSanitizationExtensionPoint<T> RuleNameValidation(Func<string, ValidationResult> ruleNameValidator)
         {
@@ -40,6 +56,9 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Queue path sanitizer to be used.
+        /// </summary>
         public AzureServiceBusSanitizationExtensionPoint<T> QueuePathSanitization(Func<string, string> queuePathSanitizer)
         {
             Guard.AgainstNull(nameof(queuePathSanitizer), queuePathSanitizer);
@@ -47,6 +66,9 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Topic path sanitizer to be used.
+        /// </summary>
         public AzureServiceBusSanitizationExtensionPoint<T> TopicPathSanitization(Func<string, string> topicPathSanitizer)
         {
             Guard.AgainstNull(nameof(topicPathSanitizer), topicPathSanitizer);
@@ -54,6 +76,9 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Subscription name sanitizer to be used.
+        /// </summary>
         public AzureServiceBusSanitizationExtensionPoint<T> SubscriptionNameSanitization(Func<string, string> subscriptionNameSanitizer)
         {
             Guard.AgainstNull(nameof(subscriptionNameSanitizer), subscriptionNameSanitizer);
@@ -61,6 +86,9 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Rule name sanitizer to be used.
+        /// </summary>
         public AzureServiceBusSanitizationExtensionPoint<T> RuleNameSanitization(Func<string, string> ruleNameSanitizer)
         {
             Guard.AgainstNull(nameof(ruleNameSanitizer), ruleNameSanitizer);
@@ -68,6 +96,9 @@ namespace NServiceBus
             return this;
         }
 
+        /// <summary>
+        /// Hasing algorithm to use for shortening.
+        /// </summary>
         public AzureServiceBusSanitizationExtensionPoint<T> Hash(Func<string, string> hash)
         {
             Guard.AgainstNull(nameof(hash), hash);

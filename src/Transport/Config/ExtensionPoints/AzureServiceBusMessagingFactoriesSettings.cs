@@ -7,6 +7,9 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Messaging factories configuration settings.
+    /// </summary>
     public class AzureServiceBusMessagingFactoriesSettings : ExposeSettings
     {
         internal AzureServiceBusMessagingFactoriesSettings(SettingsHolder settings) : base(settings)

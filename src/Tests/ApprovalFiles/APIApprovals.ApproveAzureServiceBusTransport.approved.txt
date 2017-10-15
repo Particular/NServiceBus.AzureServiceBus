@@ -277,7 +277,7 @@ namespace NServiceBus
     public class FlatComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
     {
         public FlatComposition() { }
-        public string GetEntityPath(string entityname, NServiceBus.EntityType entityType) { }
+        public string GetEntityPath(string entityName, NServiceBus.EntityType entityType) { }
     }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public class ForwardingTopology : NServiceBus.Transport.AzureServiceBus.ITopology
@@ -364,7 +364,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface IClientSideSubscriptionFilter { }
     public interface ICompositionStrategy
     {
-        string GetEntityPath(string entityname, NServiceBus.EntityType entityType);
+        string GetEntityPath(string entityName, NServiceBus.EntityType entityType);
     }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public interface IConvertBrokeredMessagesToIncomingMessages { }
@@ -451,7 +451,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         public NamespaceConfigurations() { }
         public int Count { get; }
         public NServiceBus.Transport.AzureServiceBus.NamespaceInfo Add(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose) { }
-        public string GetConnectionString(string name) { }
+        public string GetConnectionString(string alias) { }
         public System.Collections.Generic.IEnumerator<NServiceBus.Transport.AzureServiceBus.NamespaceInfo> GetEnumerator() { }
     }
     public class NamespaceInfo : System.IEquatable<NServiceBus.Transport.AzureServiceBus.NamespaceInfo>
@@ -559,6 +559,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         public string LengthError { get; set; }
         public bool LengthIsValid { get; }
         public void AddErrorForInvalidCharacters(string error) { }
-        public void AddErrorForInvalidLenth(string error) { }
+        public void AddErrorForInvalidLength(string error) { }
     }
 }

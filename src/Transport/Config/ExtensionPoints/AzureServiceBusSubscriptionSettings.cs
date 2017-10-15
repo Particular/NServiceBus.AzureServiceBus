@@ -6,6 +6,9 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Subscriptions configuration settings.
+    /// </summary>
     public partial class AzureServiceBusSubscriptionSettings : ExposeSettings
     {
         internal AzureServiceBusSubscriptionSettings(SettingsHolder settings) : base(settings)

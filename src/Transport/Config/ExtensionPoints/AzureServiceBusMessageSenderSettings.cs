@@ -6,6 +6,9 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Message senders configuration settings.
+    /// </summary>
     public class AzureServiceBusMessageSenderSettings : ExposeSettings
     {
         internal AzureServiceBusMessageSenderSettings(SettingsHolder settings) : base(settings)

@@ -7,6 +7,10 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Strategy utilizing multiple namespaces in a Round-Robin manner. 
+    /// <remarks>Assumes all entities are found in all namespaces.</remarks>
+    /// </summary>
     public class RoundRobinNamespacePartitioning : INamespacePartitioningStrategy
     {
         internal RoundRobinNamespacePartitioning(ReadOnlySettings settings)
@@ -27,6 +31,9 @@ namespace NServiceBus
             Array.ForEach(namespaces.ToArray(), x => this.namespaces.Put(x));
         }
 
+        /// <summary>
+        /// Return a set of namespaces required by strategy for <see cref="PartitioningIntent"/>.
+        /// </summary>
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {
             if (partitioningIntent == PartitioningIntent.Sending)

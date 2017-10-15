@@ -4,6 +4,9 @@
     using Settings;
     using Transport.AzureServiceBus;
 
+    /// <summary>
+    /// Namespace partitioning configuration settings.
+    /// </summary>
     public class AzureServiceBusNamespacePartitioningSettings : ExposeSettings
     {
         internal AzureServiceBusNamespacePartitioningSettings(SettingsHolder settings) : base(settings)
