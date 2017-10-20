@@ -52,7 +52,9 @@
             {
                 return;
             }
-            
+
+            Guard.AgainstUnsetSerializerSetting(Settings);
+
             defaultNamespaceAlias = Settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
             namespaceConfigurations = Settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
 
