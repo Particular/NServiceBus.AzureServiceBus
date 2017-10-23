@@ -10,8 +10,6 @@
     {
         public static SettingsHolder Apply(SettingsHolder settings)
         {
-            Guard.AgainstUnsetSerializerSetting(settings);
-
             settings.SetDefault<TopologySettings>(new TopologySettings());
 
             ApplyDefaultsForExtensibility(settings);

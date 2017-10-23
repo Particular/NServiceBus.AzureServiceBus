@@ -1,10 +1,8 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
-    using System;
     using AzureServiceBus;
     using Transport.AzureServiceBus;
     using NUnit.Framework;
-    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -29,16 +27,6 @@
             DefaultConfigurationValues.Apply(settings);
 
             Assert.That(settings.Get<TopologySettings>().QueueSettings.MaxDeliveryCount, Is.EqualTo(10));
-        }
-
-        [Test]
-        public void Should_throw_exception_when_no_serializer_was_set()
-        {
-            var settings = new SettingsHolder();
-
-            var exception = Assert.Throws<Exception>(() => DefaultConfigurationValues.Apply(settings));
-
-            Assert.IsTrue(exception.Message.StartsWith("Use 'endpointConfiguration.UseSerialization<T>();'"), $"Incorrect exception message: {exception.Message}");
         }
     }
 }
