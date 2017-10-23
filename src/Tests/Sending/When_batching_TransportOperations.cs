@@ -11,19 +11,11 @@
     using Routing;
     using Transport;
     using NUnit.Framework;
-    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_batching_TransportOperations
     {
-        static SettingsHolder BuildSettingsWithDefaultConfigurationValuesApplied()
-        {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set("NServiceBus.SharedQueue", "dummy");
-            return settings;
-        }
-
         [Test]
         public void Should_not_batch_different_types_of_transport_operations_together()
         {
@@ -36,9 +28,7 @@
 
             var transportOperations = new TransportOperations(operation1, operation2);
 
-            var settings = BuildSettingsWithDefaultConfigurationValuesApplied();
-
-            var batcher = new Batcher(new FakeTopolySectionManager(), settings);
+            var batcher = new Batcher(new FakeTopolySectionManager(), 5, "dummy");
             var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(2));
@@ -60,9 +50,7 @@
 
             var transportOperations = new TransportOperations(operation1, operation2, operation3, operation4);
 
-            var settings = BuildSettingsWithDefaultConfigurationValuesApplied();
-
-            var batcher = new Batcher(new FakeTopolySectionManager(), settings);
+            var batcher = new Batcher(new FakeTopolySectionManager(), 5, "dummy");
             var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(2));
@@ -84,9 +72,7 @@
 
             var transportOperations = new TransportOperations(operation1, operation2, operation3, operation4);
 
-            var settings = BuildSettingsWithDefaultConfigurationValuesApplied();
-
-            var batcher = new Batcher(new FakeTopolySectionManager(), settings);
+            var batcher = new Batcher(new FakeTopolySectionManager(), 5, "dummy");
             var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(4));
@@ -108,9 +94,7 @@
 
             var transportOperations = new TransportOperations(operation1, operation2);
 
-            var settings = BuildSettingsWithDefaultConfigurationValuesApplied();
-
-            var batcher = new Batcher(new FakeTopolySectionManager(), settings);
+            var batcher = new Batcher(new FakeTopolySectionManager(), 5, "dummy");
             var batches = batcher.ToBatches(transportOperations);
 
             Assert.That(batches.Count, Is.EqualTo(2));
@@ -136,7 +120,7 @@
             throw new NotImplementedException();
         }
 
-        public TopologySectionInternal DetermineTopicsToCreate(string localAddress)
+        public TopologySectionInternal DetermineTopicsToCreate(string translatedEndpointName)
         {
             throw new NotImplementedException();
         }
@@ -146,7 +130,7 @@
             throw new NotImplementedException();
         }
 
-        public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
+        public TopologySectionInternal DeterminePublishDestination(Type eventType, string translatedEndpointName)
         {
             return new TopologySectionInternal
             {
