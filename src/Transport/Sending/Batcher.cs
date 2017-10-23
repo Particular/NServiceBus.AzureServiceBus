@@ -2,15 +2,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Settings;
 
     class Batcher : IBatcherInternal
     {
-        public Batcher(ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings)
+        public Batcher(ITopologySectionManagerInternal topologySectionManager, int messageSizePaddingPercentage, string localAddress)
         {
             this.topologySectionManager = topologySectionManager;
-            messageSizePaddingPercentage = settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage);
-            localAddress = settings.LocalAddress();
+            this.messageSizePaddingPercentage = messageSizePaddingPercentage;
+            this.localAddress = localAddress;
         }
 
         public IList<BatchInternal> ToBatches(TransportOperations operations)

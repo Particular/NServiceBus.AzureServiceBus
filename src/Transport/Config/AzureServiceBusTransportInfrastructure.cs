@@ -57,6 +57,9 @@
 
             defaultNamespaceAlias = Settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
             namespaceConfigurations = Settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
+            messageSizePaddingPercentage = Settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage);
+            var sendOnly = Settings.GetOrDefault<bool>("Endpoint.SendOnly");
+            localAddress = sendOnly ? ToTransportAddress(LogicalAddress.CreateLocalAddress(Settings.EndpointName(), new Dictionary<string, string>())) : Settings.LocalAddress();
 
             var partitioningStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
             partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(Settings);
@@ -79,7 +82,7 @@
             InitializeIfNecessary();
 
             await topologyManager.Initialize().ConfigureAwait(false);
-            var topicsToCreate = topologyManager.DetermineTopicsToCreate(Settings.LocalAddress());
+            var topicsToCreate = topologyManager.DetermineTopicsToCreate(localAddress);
             await topologyCreator.Create(topicsToCreate).ConfigureAwait(false);
         }
 
@@ -127,7 +130,7 @@
                 () =>
                 {
                     InitializeIfNecessary();
-                    return new TransportResourcesCreator(topologyCreator, topologyManager, Settings.LocalAddress());
+                    return new TransportResourcesCreator(topologyCreator, topologyManager, localAddress);
                 },
                 () => Task.FromResult(StartupCheckResult.Success));
         }
@@ -138,7 +141,7 @@
                 () =>
                 {
                     InitializeIfNecessary();
-                    return new Dispatcher(new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(Settings), senderLifeCycleManager, Settings, oversizedMessageHandler), new Batcher(topologyManager, Settings));
+                    return new Dispatcher(new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(Settings), senderLifeCycleManager, Settings, oversizedMessageHandler), new Batcher(topologyManager, messageSizePaddingPercentage, localAddress));
                 },
                 () => Task.FromResult(StartupCheckResult.Success));
         }
@@ -148,7 +151,7 @@
             return new TransportSubscriptionInfrastructure(() =>
             {
                 InitializeIfNecessary();
-                return new SubscriptionManager(topologyManager, topologyOperator, topologyCreator, Settings.LocalAddress());
+                return new SubscriptionManager(topologyManager, topologyOperator, topologyCreator, localAddress);
             });
         }
 
@@ -167,5 +170,7 @@
         protected INamespacePartitioningStrategy partitioningStrategy;
         protected TopologyCreator topologyCreator;
         volatile int initializeSignaled;
+        string localAddress;
+        int messageSizePaddingPercentage;
     }
 }

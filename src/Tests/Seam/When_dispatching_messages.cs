@@ -26,7 +26,7 @@
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             settings.Set<TopologySettings>(new TopologySettings());
-            settings.Set("NServiceBus.SharedQueue", "myqueue");
+            settings.Set("NServiceBus.Routing.EndpointName", "myqueue");
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 

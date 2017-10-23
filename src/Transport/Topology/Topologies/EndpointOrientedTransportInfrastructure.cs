@@ -15,7 +15,7 @@ namespace NServiceBus
             var publishersConfiguration = new PublishersConfiguration(conventions, Settings);
             var endpointName = Settings.EndpointName();
 
-            return new EndpointOrientedTopologySectionManager(defaultAlias, @namespaces, endpointName, publishersConfiguration, partitioning, addressing);
+            return new EndpointOrientedTopologySectionManager(defaultAlias, namespaces, endpointName, publishersConfiguration, partitioning, addressing);
         }
 
         protected override ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator()
