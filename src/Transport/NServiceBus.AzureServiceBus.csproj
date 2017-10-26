@@ -93,6 +93,7 @@
     <Compile Include="Creation\Clients\ManageTopicClientsLifeCycle.cs" />
     <Compile Include="Creation\ICreateQueues.cs" />
     <Compile Include="Receiving\CreationExceptionHandling.cs" />
+    <Compile Include="Receiving\ExceptionExtensions.cs" />
     <Compile Include="Receiving\RetriableSendExceptionHandling.cs" />
     <Compile Include="Topology\AzureServiceBusTopologyCreator.cs" />
     <Compile Include="Creation\Resources\ICreateNamespaceManagers.cs" />
