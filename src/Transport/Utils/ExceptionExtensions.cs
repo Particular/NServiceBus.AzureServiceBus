@@ -9,7 +9,7 @@
         public static bool IsTransientException(this Exception exception)
         {
             var messagingException = exception as MessagingException;
-            return messagingException?.IsTransient ?? exception is TimeoutException;
+            return messagingException?.IsTransient ?? (exception is TimeoutException || exception is OperationCanceledException);
         }
     }
 }
