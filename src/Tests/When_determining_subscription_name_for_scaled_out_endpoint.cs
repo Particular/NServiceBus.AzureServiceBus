@@ -24,6 +24,7 @@
 
             Guid guid;
             Assert.IsTrue(Guid.TryParse(subscriptionName.Substring(0, 36), out guid), "expected to have a guid, but got: " + subscriptionName);
+            Assert.NotNull(guid);
         }
 
         [Test]
@@ -38,6 +39,7 @@
 
             Guid guid;
             Assert.IsTrue(Guid.TryParse(subscriptionName, out guid), "expected to have a guid, but got: " + subscriptionName);
+            Assert.NotNull(guid);
         }
     }
 }
