@@ -17,7 +17,7 @@
             Guid guid;
             Assert.IsFalse(Guid.TryParse(subscriptionName, out guid));
             Assert.AreEqual(endpointName + "." + eventName.Name, subscriptionName);
-            Assert.Null(guid);
+            Assert.AreEqual(guid, default(Guid));
         }
 
         [Test]
@@ -28,7 +28,7 @@
 
             Guid guid;
             Assert.IsTrue(Guid.TryParse(subscriptionname, out guid));
-            Assert.NotNull(guid);
+            Assert.AreNotEqual(guid, default(Guid));
         }
     }
 

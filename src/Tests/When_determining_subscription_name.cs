@@ -15,7 +15,7 @@
             var subscriptionName = NamingConventions.SubscriptionNamingConvention(null, null, endpointName);
             Guid result;
             Assert.AreEqual(shouldBeConvertedToGuid, Guid.TryParse(subscriptionName, out result));
-            Assert.NotNull(result);
+            Assert.AreNotEqual(result, default(Guid));
         }
     }
 }
