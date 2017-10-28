@@ -22,8 +22,7 @@
             Assert.True(subscriptionName.Length <= 50);
             Assert.True(subscriptionName.EndsWith("-" + RuntimeEnvironment.MachineName), "expected subscription name to end with machine name, but it didn't. Subscription name: " + subscriptionName + " machine name: " + Environment.MachineName);
 
-            Guid guid;
-            Assert.IsTrue(Guid.TryParse(subscriptionName.Substring(0, 36), out guid), "expected to have a guid, but got: " + subscriptionName);
+            Assert.IsTrue(Guid.TryParse(subscriptionName.Substring(0, 36), out var guid), "expected to have a guid, but got: " + subscriptionName);
             Assert.AreNotEqual(guid, default(Guid));
         }
 
@@ -37,8 +36,7 @@
             settings.Set("ScaleOut.UseSingleBrokerQueue", false);
             var subscriptionName = NamingConventions.SubscriptionNamingConvention(settings, eventType, endpointName);
 
-            Guid guid;
-            Assert.IsTrue(Guid.TryParse(subscriptionName, out guid), "expected to have a guid, but got: " + subscriptionName);
+            Assert.IsTrue(Guid.TryParse(subscriptionName, out var guid), "expected to have a guid, but got: " + subscriptionName);
             Assert.AreNotEqual(guid, default(Guid));
         }
     }

@@ -15,11 +15,10 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         public int ParseIndexFrom(string id)
         {
             var idArray = id.Split('.');
-            int index;
-            if (!int.TryParse((idArray[idArray.Length - 1]), out index))
+            if (!int.TryParse(idArray[idArray.Length - 1], out var index))
             {
                 idArray = id.Split('_');
-                index = int.Parse((idArray[idArray.Length - 1]));
+                index = int.Parse(idArray[idArray.Length - 1]);
             }
             return index;
         }

@@ -255,8 +255,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
             var key = CreateKeyFor(eventType, original);
             if (!notifiers.ContainsKey(key)) return;
 
-            INotifyReceivedBrokeredMessages toRemove;
-            if (notifiers.TryRemove(key, out toRemove))
+            if (notifiers.TryRemove(key, out var toRemove))
             {
                 toRemove.Faulted -= NotifierFaulted;
                 toRemove.Stop();
@@ -274,8 +273,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
         public INotifyReceivedBrokeredMessages GetNotifier(Type eventType, Address original)
         {
             var key = CreateKeyFor(eventType, original);
-            INotifyReceivedBrokeredMessages notifier;
-            notifiers.TryGetValue(key, out notifier);
+            notifiers.TryGetValue(key, out var notifier);
             return notifier;
         }
 

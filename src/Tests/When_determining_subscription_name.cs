@@ -13,8 +13,7 @@
         {
             var endpointName = new string('x', endpointNameLength);
             var subscriptionName = NamingConventions.SubscriptionNamingConvention(null, null, endpointName);
-            Guid result;
-            Assert.AreEqual(shouldBeConvertedToGuid, Guid.TryParse(subscriptionName, out result));
+            Assert.AreEqual(shouldBeConvertedToGuid, Guid.TryParse(subscriptionName, out var result));
             Assert.NotNull(result);
         }
     }
