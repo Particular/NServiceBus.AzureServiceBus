@@ -26,8 +26,8 @@
                                 .Run();
             Assert.True(context.WasCalled, "The message handler should be called");
             Assert.AreEqual("SenderForEnsureProperHeadersTest", context.ReceivedHeaders[Headers.OriginatingEndpoint], "Message should contain the Originating endpoint");
-            Assert.IsNotNullOrEmpty(context.ReceivedHeaders[Headers.OriginatingHostId], "OriginatingHostId cannot be null or empty");
-            Assert.IsNotNullOrEmpty(context.ReceivedHeaders[Headers.OriginatingMachine], "Endpoint machine name cannot be null or empty");
+            Assert.True(string.IsNullOrEmpty(context.ReceivedHeaders[Headers.OriginatingHostId]) == false, "OriginatingHostId cannot be null or empty");
+            Assert.True(string.IsNullOrEmpty(context.ReceivedHeaders[Headers.OriginatingMachine]) == false, "Endpoint machine name cannot be null or empty");
         }
 
         public class Context : ScenarioContext

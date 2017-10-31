@@ -14,9 +14,9 @@
             var eventName = typeof(SomeEventWithAnInsanelyLongName);
             var subscriptionName = NamingConventions.SubscriptionNamingConvention(null, eventName, endpointName);
 
-            Guid guid;
-            Assert.IsFalse(Guid.TryParse(subscriptionName, out guid));
+            Assert.IsFalse(Guid.TryParse(subscriptionName, out var guid));
             Assert.AreEqual(endpointName + "." + eventName.Name, subscriptionName);
+            Assert.AreEqual(guid, default(Guid));
         }
 
         [Test]
@@ -25,8 +25,8 @@
             const string endpointName = "Should_not_exceed_50_characters_and_replace_by_a_deterministic_guid";
             var subscriptionname = NamingConventions.SubscriptionNamingConvention(null, typeof(SomeEventWithAnInsanelyLongName), endpointName);
 
-            Guid guid;
-            Assert.IsTrue(Guid.TryParse(subscriptionname, out guid));
+            Assert.IsTrue(Guid.TryParse(subscriptionname, out var guid));
+            Assert.AreNotEqual(guid, default(Guid));
         }
     }
 
