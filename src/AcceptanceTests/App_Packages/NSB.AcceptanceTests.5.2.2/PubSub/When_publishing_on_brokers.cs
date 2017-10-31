@@ -8,7 +8,7 @@
 
     public class When_publishing_on_brokers : NServiceBusAcceptanceTest
     {
-        [Test, Ignore] // Ignore because, test this test is unreliable. Passed on the build server without the core fix!
+        [Test, Ignore("Ignore because, test this test is unreliable. Passed on the build server without the core fix!")]
         public void Should_be_delivered_to_allsubscribers_without_the_need_for_config()
         {
             Scenario.Define<Context>()
