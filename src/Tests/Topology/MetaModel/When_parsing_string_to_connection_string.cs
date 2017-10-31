@@ -214,5 +214,16 @@
 
             Assert.AreEqual(hashCode1, hashCode2);
         }
+
+        [Test]
+        [TestCase("Endpoint=sb://namespacename.servicebus.windows.net;SharedAccessKeyName=name;SharedAccessKey=key")]
+        [TestCase("Endpoint=sb://namespacename.usgovcloudapi.net;SharedAccessKeyName=name;SharedAccessKey=key")]
+        [TestCase("Endpoint=sb://namespacename.servicebus.cloudapi.de;SharedAccessKeyName=name;SharedAccessKey=key")]
+        public void Should_be_able_to_parse_various_domain_names(string connectionStringString)
+        {
+            ConnectionStringInternal.TryParse(connectionStringString, out var connectionString);
+
+            Assert.AreEqual("namespacename", connectionString.NamespaceName);
+        }
     }
 }
