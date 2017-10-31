@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <SignAssembly>true</SignAssembly>
@@ -10,21 +11,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Configuration" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="ApprovalTests" Version="3.0.13" />
-    <PackageReference Include="ApprovalUtilities" Version="3.0.13" />
     <PackageReference Include="FakeItEasy" Version="2.*" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="4.*" />
-    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.*" />
-    <PackageReference Include="Mono.Cecil" Version="0.10.0-*" />
-    <PackageReference Include="PublicApiGenerator" Version="6.1.0-*" />
+    <PackageReference Include="PublicApiGenerator" Version="6.*" />
     <PackageReference Include="NServiceBus" Version="7.0.0-*" />
     <PackageReference Include="NUnit" Version="3.*" />
     <!-- TODO: replace with "3.*" when NUnit bug is fixed -->
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.*" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
   </ItemGroup>
+
 </Project>

@@ -1,23 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
-    <DebugSymbols>True</DebugSymbols>
-    <NoWarn>PCR0001</NoWarn>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>WorkaroundKey.snk</AssemblyOriginatorKeyFile>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.*" />
-    <PackageReference Include="NServiceBus" Version="7.0.0-*" />
-    <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="2.0.0-*" />
-    <PackageReference Include="NServiceBus.AcceptanceTesting" Version="7.0.0-*" />
-    <PackageReference Include="NServiceBus.AcceptanceTests.Sources" Version="7.0.0-*" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.*" />
-    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.*" />
-    <PackageReference Include="NUnit" Version="3.*" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="4.*" />
+    <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="2.0.0-*" />
+    <PackageReference Include="NServiceBus.AcceptanceTests.Sources" Version="7.0.0-*" />
+    <PackageReference Include="NUnit" Version="3.*" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+  </ItemGroup>
+
 </Project>

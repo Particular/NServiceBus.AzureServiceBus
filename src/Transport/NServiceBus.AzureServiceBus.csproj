@@ -1,11 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <AssemblyName>NServiceBus.Azure.Transports.WindowsAzureServiceBus</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(SolutionDir)NServiceBus.snk</AssemblyOriginatorKeyFile>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -14,17 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Transactions" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Janitor.Fody" Version="1.*" PrivateAssets="All" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="[4.1.0, 5.0.0)" />
     <PackageReference Include="NServiceBus" Version="[7.0.0-*, 8.0.0)" />
-    <PackageReference Include="Obsolete.Fody" Version="4.*" PrivateAssets="All" />
     <PackageReference Include="Fody" Version="2.*" PrivateAssets="All" />
+    <PackageReference Include="Janitor.Fody" Version="1.*" PrivateAssets="All" />
+    <PackageReference Include="Obsolete.Fody" Version="4.*" PrivateAssets="All" />
     <PackageReference Include="Particular.CodeRules" Version="*" PrivateAssets="All" />
-    <PackageReference Include="Particular.Packaging" Version="*" PrivateAssets="All" />    
+    <PackageReference Include="Particular.Packaging" Version="*" PrivateAssets="All" />
   </ItemGroup>
+
 </Project>
