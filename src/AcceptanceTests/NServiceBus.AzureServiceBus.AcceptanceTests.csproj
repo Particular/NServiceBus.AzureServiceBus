@@ -50,9 +50,8 @@
     <Reference Include="NServiceBus.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9fc386479f8a226c, processorArchitecture=MSIL">
       <HintPath>..\packages\NServiceBus.6.2.0\lib\net452\NServiceBus.Core.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="nunit.framework, Version=3.8.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.8.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -263,6 +262,7 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.2.0\Tx\When_receiving_with_the_default_settings.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.2.0\Tx\When_sending_within_an_ambient_transaction.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.2.0\Versioning\When_multiple_versions_of_a_message_is_published.cs" />
+    <Compile Include="Cleaner.cs" />
     <Compile Include="ConfigureEndpointAzureServiceBusTransport.cs" />
     <Compile Include="Infrastructure\TestIndependenceBehavior.cs" />
     <Compile Include="Issues\When_publisher_and_subscriber_bundles_are_misconfigured.cs" />
