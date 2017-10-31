@@ -7,7 +7,7 @@
     [SetUpFixture]
     public class SetupAcceptanceTests
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             When_doing_flr_with_dtc_on.X = () => 4;
