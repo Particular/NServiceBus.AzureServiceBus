@@ -117,7 +117,7 @@
         {
             var namespace1 = string.Format(Template, "namespace1", "RootManageSharedAccessKey", "YourSecret");
             var namespace2 = string.Format(Template, "namespace2", "RootManageSharedAccessKey", "YourSecret");
-            
+
             var connectionString1 = new ConnectionString(namespace1);
             var connectionString2 = new ConnectionString(namespace2);
 
@@ -220,6 +220,18 @@
             var hashCode2 = connectionString2.GetHashCode();
 
             Assert.AreEqual(hashCode1, hashCode2);
+        }
+
+        [Test]
+        [TestCase("Endpoint=sb://namespacename.servicebus.windows.net;SharedAccessKeyName=name;SharedAccessKey=key")]
+        [TestCase("Endpoint=sb://namespacename.usgovcloudapi.net;SharedAccessKeyName=name;SharedAccessKey=key")]
+        [TestCase("Endpoint=sb://namespacename.servicebus.cloudapi.de;SharedAccessKeyName=name;SharedAccessKey=key")]
+        public void Should_be_able_to_parse_various_domain_names(string connectionStringString)
+        {
+            ConnectionString connectionString;
+            ConnectionString.TryParse(connectionStringString, out connectionString);
+
+            Assert.AreEqual("namespacename", connectionString.NamespaceName);
         }
     }
 }
