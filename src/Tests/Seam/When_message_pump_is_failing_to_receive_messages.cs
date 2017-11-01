@@ -40,7 +40,7 @@
                 return TaskEx.Completed;
             });
 
-            var pump = new MessagePump(fakeTopologyOperator, null, null, new FakeTopologyManager(), settings, TimeSpan.FromSeconds(1));
+            var pump = new MessagePump(fakeTopologyOperator, null, null, new FakeTopologyManager(), settings, "sales", TimeSpan.FromSeconds(1));
             await pump.Init(context => TaskEx.Completed, null, criticalError, new PushSettings("sales", "error", false, TransportTransactionMode.ReceiveOnly));
 
             pump.Start(new PushRuntimeSettings(1));
