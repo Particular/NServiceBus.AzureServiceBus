@@ -10,18 +10,18 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessagePump : IPushMessages, IDisposable
     {
-        public MessagePump(IOperateTopologyInternal defaultOperator, MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings) : this(defaultOperator, clientEntities, brokeredMessageConverter, topologySectionManager, settings, TimeSpan.FromSeconds(30))
+        public MessagePump(IOperateTopologyInternal defaultOperator, MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings, string localAddress) : this(defaultOperator, clientEntities, brokeredMessageConverter, topologySectionManager, settings, localAddress, TimeSpan.FromSeconds(30))
         {
         }
 
-        internal MessagePump(IOperateTopologyInternal defaultOperator, MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings, TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker)
+        internal MessagePump(IOperateTopologyInternal defaultOperator, MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings, string localAddress, TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker)
         {
             this.defaultOperator = defaultOperator;
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.topologySectionManager = topologySectionManager;
             this.settings = settings;
-            localAddress = settings.LocalAddress();
+            this.localAddress = localAddress;
             timeToWaitBeforeTriggering = timeToWaitBeforeTriggeringTheCircuitBreaker;
         }
 

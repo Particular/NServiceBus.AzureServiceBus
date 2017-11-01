@@ -55,11 +55,21 @@
 
             Guard.AgainstUnsetSerializerSetting(Settings);
 
+            var sendOnly = Settings.GetOrDefault<bool>("Endpoint.SendOnly");
+            var localAddressForSendOnlyEndpoint = ToTransportAddress(LogicalAddress.CreateLocalAddress(Settings.EndpointName(), new Dictionary<string, string>()));
+            try
+            {
+                localAddress = sendOnly ? localAddressForSendOnlyEndpoint : Settings.LocalAddress();
+            }
+            catch
+            {
+                // For tests other than Acceptance tests, LocalAddress() will throw
+                localAddress = localAddressForSendOnlyEndpoint;
+            }
+
             defaultNamespaceAlias = Settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
             namespaceConfigurations = Settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             messageSizePaddingPercentage = Settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MessageSizePaddingPercentage);
-            var sendOnly = Settings.GetOrDefault<bool>("Endpoint.SendOnly");
-            localAddress = sendOnly ? ToTransportAddress(LogicalAddress.CreateLocalAddress(Settings.EndpointName(), new Dictionary<string, string>())) : Settings.LocalAddress();
 
             var partitioningStrategyType = (Type)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy);
             partitioningStrategy = partitioningStrategyType.CreateInstance<INamespacePartitioningStrategy>(Settings);
@@ -125,7 +135,7 @@
                 () =>
                 {
                     InitializeIfNecessary();
-                    return new MessagePump(topologyOperator, messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), topologyManager, Settings);
+                    return new MessagePump(topologyOperator, messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), topologyManager, Settings, localAddress);
                 },
                 () =>
                 {
