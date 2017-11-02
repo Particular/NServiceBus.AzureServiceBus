@@ -27,7 +27,7 @@
         public void Two_scanners_should_be_not_equal_if_they_reference_two_different_assemblies()
         {
             var scanner1 = new AssemblyTypesScanner(Assembly.GetExecutingAssembly());
-            var scanner2 = new AssemblyTypesScanner(Assembly.Load("Microsoft.WindowsAzure.Configuration, version=3.0.0.0, culture=neutral, PublicKeyToken=31bf3856ad364e35"));
+            var scanner2 = new AssemblyTypesScanner(typeof(AzureServiceBusTransport).Assembly);
 
             Assert.AreNotEqual(scanner1, scanner2);
 
