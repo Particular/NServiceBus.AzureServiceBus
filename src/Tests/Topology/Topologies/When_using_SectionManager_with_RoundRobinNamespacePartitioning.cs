@@ -48,8 +48,6 @@
                 {SecondaryName, 1}
             };
 
-            // for publish destinations topics need to be created first
-            sectionManager.DetermineTopicsToCreate("sales");
             sectionManager.DeterminePublishDestination(typeof(SomeEvent), "sales");
             var publishDestination2 = sectionManager.DeterminePublishDestination(typeof(SomeEvent), "sales");
             Assert.AreEqual(SecondaryName, publishDestination2.Entities.First().Namespace.Alias, "Should have different namespace");
@@ -65,8 +63,6 @@
             var publishersConfiguration = new PublishersConfiguration(conventions, new SettingsHolder());
             var sectionManager = new EndpointOrientedTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", publishersConfiguration, namespacePartitioningStrategy, addressingLogic);
 
-            // for publish destinations topics need to be created first
-            sectionManager.DetermineTopicsToCreate("sales");
             sectionManager.DeterminePublishDestination(typeof(SomeEvent), "sales");
             var publishDestination2 = sectionManager.DeterminePublishDestination(typeof(SomeEvent), "sales");
             Assert.AreEqual(SecondaryName, publishDestination2.Entities.First().Namespace.Alias, "Should have different namespace");

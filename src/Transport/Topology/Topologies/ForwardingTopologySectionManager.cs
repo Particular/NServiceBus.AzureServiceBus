@@ -152,18 +152,19 @@ namespace NServiceBus.Transport.AzureServiceBus
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
 
             var entities = new List<EntityInfoInternal>();
+
             foreach (var @namespace in namespaces)
             {
-                foreach (var topic in topics)
+                var numberOfTopicsFound = BundleConfigurations.GetNumberOfTopicInBundle(@namespace.Alias);
+                var numberOfTopicsToCreate = Math.Max(numberOfEntitiesInBundle, numberOfTopicsFound);
+                for (var i = 1; i <= numberOfTopicsToCreate; i++)
                 {
-                    if (topic.Namespace.Alias != @namespace.Alias)
+                    entities.AddRange(namespaces.Select(n => new EntityInfoInternal
                     {
-                        continue;
-                    }
-
-                    // first in bundle
-                    entities.Add(topic);
-                    break;
+                        Path = addressingLogic.Apply($"{bundlePrefix}{i}", EntityType.Topic).Name,
+                        Type = EntityType.Topic,
+                        Namespace = @namespace
+                    }));
                 }
             }
 
