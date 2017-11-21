@@ -36,7 +36,7 @@
         }
 
         [Test]
-        public void Should_alternate_between_namespaces_for_ForwardingTopologySectionManager()
+        public void Should_alternate_between_namespaces_for_ForwardingTopologySectionManager_for_publishing()
         {
             var namespaceConfigurations = new NamespaceConfigurations();
             var addressingLogic = new AddressingLogic(new ThrowOnFailedValidation(settings), new FlatComposition());
@@ -55,7 +55,7 @@
         }
 
         [Test]
-        public void Should_alternate_between_namespaces_for_EndpointOrientedTopologySectionManager()
+        public void Should_alternate_between_namespaces_for_EndpointOrientedTopologySectionManager_for_publishing()
         {
             var namespaceConfigurations = new NamespaceConfigurations();
             var addressingLogic = new AddressingLogic(new ThrowOnFailedValidation(settings), new FlatComposition());
@@ -73,6 +73,38 @@
 
         class SomeEvent : IEvent
         {
+        }
+
+        [Test]
+        public void Should_alternate_between_namespaces_for_ForwardingTopologySectionManager_for_sending()
+        {
+            var namespaceConfigurations = new NamespaceConfigurations();
+            var addressingLogic = new AddressingLogic(new ThrowOnFailedValidation(settings), new FlatComposition());
+            var sectionManager = new ForwardingTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", 1, "bundle", namespacePartitioningStrategy, addressingLogic);
+            sectionManager.BundleConfigurations = new NamespaceBundleConfigurations
+            {
+                {PrimaryName, 1},
+                {SecondaryName, 1}
+            };
+
+            sectionManager.DetermineSendDestination($"sales@{PrimaryName}");
+            var publishDestination2 = sectionManager.DetermineSendDestination($"sales@{PrimaryName}");
+            Assert.AreEqual(SecondaryName, publishDestination2.Entities.First().Namespace.Alias, "Should have different namespace");
+        }
+
+        [Test]
+        public void Should_alternate_between_namespaces_for_EndpointOrientedTopologySectionManager_for_sending()
+        {
+            var namespaceConfigurations = new NamespaceConfigurations();
+            var addressingLogic = new AddressingLogic(new ThrowOnFailedValidation(settings), new FlatComposition());
+            var conventions = new Conventions();
+            conventions.AddSystemMessagesConventions(type => type != typeof(SomeEvent));
+            var publishersConfiguration = new PublishersConfiguration(conventions, new SettingsHolder());
+            var sectionManager = new EndpointOrientedTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", publishersConfiguration, namespacePartitioningStrategy, addressingLogic);
+
+            sectionManager.DetermineSendDestination($"sales@{PrimaryName}");
+            var publishDestination2 = sectionManager.DetermineSendDestination($"sales@{PrimaryName}");
+            Assert.AreEqual(SecondaryName, publishDestination2.Entities.First().Namespace.Alias, "Should have different namespace");
         }
     }
 }
