@@ -4,14 +4,15 @@
     using AzureServiceBus.Topology.MetaModel;
     using NUnit.Framework;
     using Settings;
+    using TestUtils;
     using Transport.AzureServiceBus;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_using_SectionManager_with_RoundRobinNamespacePartitioning
     {
-        static string PrimaryConnectionString = "Endpoint=sb://namespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
-        static string SecondaryConnectionString = "Endpoint=sb://namespace2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string PrimaryConnectionString = AzureServiceBusConnectionString.Value;
+        static string SecondaryConnectionString = AzureServiceBusConnectionString.Fallback;
         static string PrimaryName = "namespace1";
         static string SecondaryName = "namespace2";
 

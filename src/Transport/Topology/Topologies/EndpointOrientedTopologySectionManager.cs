@@ -97,7 +97,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     Namespace = n
                 }));
             }
-            
+
             return new TopologySectionInternal
             {
                 Namespaces = namespaces,
@@ -107,98 +107,12 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
         {
-            return publishDestinations.GetOrAdd(eventType, t =>
-            {
-                var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
-            	var topicPath = addressingLogic.Apply(localAddress + ".events", EntityType.Topic).Name;
-                var entities = new List<EntityInfoInternal>();
-
-                foreach (var n in namespaces)
-                {
-                    entities.Add(new EntityInfoInternal
-                    {
-                        Path = topicPath,
-                        Type = EntityType.Topic,
-                        Namespace = n
-                    });
-                }
-
-                return new TopologySectionInternal
-                {
-                    Namespaces = namespaces,
-                    Entities = entities
-                };
-            });
+            return namespacePartitioningStrategy.SendingCacheable ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish(localAddress)) : CreateSectionForPublish(localAddress);
         }
 
         public TopologySectionInternal DetermineSendDestination(string destination)
         {
-            return sendDestinations.GetOrAdd(destination, d =>
-            {
-                var inputQueueAddress = addressingLogic.Apply(d, EntityType.Queue);
-
-                RuntimeNamespaceInfo[] namespaces = null;
-                if (inputQueueAddress.HasSuffix && inputQueueAddress.Suffix != defaultNameSpaceAlias) // sending to specific namespace
-                {
-                    if (inputQueueAddress.HasConnectionString)
-                    {
-                        namespaces = new[]
-                        {
-                            new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing)
-                        };
-                    }
-                    else
-                    {
-                        var configured = namespaceConfigurations.FirstOrDefault(n => n.Alias == inputQueueAddress.Suffix);
-                        if (configured != null)
-                        {
-                            namespaces = new[]
-                            {
-                                new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose)
-                            };
-                        }
-                    }
-                }
-                else
-                {
-                    var namespaceToRouteTo = namespaceConfigurations.FirstOrDefault(n => n.RegisteredEndpoints.Contains(d, StringComparer.OrdinalIgnoreCase));
-                    if (namespaceToRouteTo != null)
-                    {
-                        namespaces = new[]
-                        {
-                            new RuntimeNamespaceInfo(namespaceToRouteTo.Alias, namespaceToRouteTo.Connection, namespaceToRouteTo.Purpose),
-                        };
-                    }
-                    else // sending to the partition
-                    {
-                        namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
-                    }
-                }
-
-                if (namespaces == null)
-                {
-                    throw new Exception($"Could not determine namespace for destination '{d}'");
-                }
-
-                var entities = new List<EntityInfoInternal>();
-
-                foreach (var n in namespaces)
-                {
-                    entities.Add(new EntityInfoInternal
-                    {
-                        Path = inputQueueAddress.Name,
-                        Type = EntityType.Queue,
-                        Namespace = n
-                    });
-                }
-
-
-                return new TopologySectionInternal
-                {
-                    Namespaces = namespaces,
-                    Entities = entities
-                };
-            });
+            return namespacePartitioningStrategy.SendingCacheable ? sendDestinations.GetOrAdd(destination, d => CreateSectionForSend(d)) : CreateSectionForSend(destination);
         }
 
         public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
@@ -225,24 +139,128 @@ namespace NServiceBus.Transport.AzureServiceBus
             return result;
         }
 
+        TopologySectionInternal CreateSectionForPublish(string localAddress)
+        {
+            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+
+            var topicPath = addressingLogic.Apply($"{localAddress}.events", EntityType.Topic).Name;
+            var entities = new List<EntityInfoInternal>();
+
+            foreach (var n in namespaces)
+            {
+                entities.Add(new EntityInfoInternal
+                {
+                    Path = topicPath,
+                    Type = EntityType.Topic,
+                    Namespace = n
+                });
+            }
+
+            return new TopologySectionInternal
+            {
+                Namespaces = namespaces,
+                Entities = entities
+            };
+        }
+
+        TopologySectionInternal CreateSectionForSend(string destination)
+        {
+            var inputQueueAddress = addressingLogic.Apply(destination, EntityType.Queue);
+
+            RuntimeNamespaceInfo[] namespaces = null;
+            if (inputQueueAddress.HasSuffix && inputQueueAddress.Suffix != defaultNameSpaceAlias) // sending to specific namespace
+            {
+                if (inputQueueAddress.HasConnectionString)
+                {
+                    namespaces = new[]
+                    {
+                        new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing)
+                    };
+                }
+                else
+                {
+                    NamespaceInfo configured = null;
+                    foreach (var namespaceConfiguration in namespaceConfigurations)
+                    {
+                        if (namespaceConfiguration.Alias == inputQueueAddress.Suffix)
+                        {
+                            configured = namespaceConfiguration;
+                        }
+                    }
+                    if (configured != null)
+                    {
+                        namespaces = new[]
+                        {
+                            new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose)
+                        };
+                    }
+                }
+            }
+            else
+            {
+                NamespaceInfo configured = null;
+                foreach (var namespaceConfiguration in namespaceConfigurations)
+                {
+                    if (namespaceConfiguration.RegisteredEndpoints.Contains(destination, StringComparer.OrdinalIgnoreCase))
+                    {
+                        configured = namespaceConfiguration;
+                    }
+                }
+
+                if (configured != null)
+                {
+                    namespaces = new[]
+                    {
+                        new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose)
+                    };
+                }
+                else // sending to the partition
+                {
+                    namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
+                }
+            }
+
+            if (namespaces == null)
+            {
+                throw new Exception($"Could not determine namespace for destination `{destination}`.");
+            }
+
+            var entities = new List<EntityInfoInternal>(namespaces.Length);
+            foreach (var n in namespaces)
+            {
+                entities.Add(new EntityInfoInternal
+                {
+                    Path = inputQueueAddress.Name,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                });
+            }
+
+            return new TopologySectionInternal
+            {
+                Namespaces = namespaces,
+                Entities = entities
+            };
+        }
+
         TopologySectionInternal BuildSubscriptionHierarchy(Type eventType, string localAddress)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
-            
+
             var publishers = publishersConfiguration.GetPublishersFor(eventType);
 
             // Using localAddress that will be provided by SubscriptionManager instead of the endpoint name.
             // Reason: endpoint name can be overridden. If the endpoint name is overridden, "originalEndpointName" will not have the override value.
-            var subscriptionNameCandidateV6 = localAddress + "." + eventType.Name;
+            var subscriptionNameCandidateV6 = $"{localAddress}.{eventType.Name}";
             var subscriptionNameV6 = addressingLogic.Apply(subscriptionNameCandidateV6, EntityType.Subscription).Name;
-            var subscriptionNameCandidate = localAddress + "." + eventType.FullName;
+            var subscriptionNameCandidate = $"{localAddress}.{eventType.FullName}";
             var subscriptionName = addressingLogic.Apply(subscriptionNameCandidate, EntityType.Subscription).Name;
 
             var topics = new List<EntityInfoInternal>();
             var subs = new List<SubscriptionInfoInternal>();
             foreach (var publisher in publishers)
             {
-                var topicPath = publisher + ".events";
+                var topicPath = $"{publisher}.events";
                 var path = addressingLogic.Apply(topicPath, EntityType.Topic).Name;
 
                 var destinationsOutsideTopology = namespaceConfigurations.Where(c => c.RegisteredEndpoints.Contains(publisher, StringComparer.OrdinalIgnoreCase)).ToList();
@@ -265,7 +283,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             Path = subscriptionNameV6,
                             Metadata = new SubscriptionMetadataInternal
                             {
-                                Description = originalEndpointName + " subscribed to " + eventType.FullName,
+                                Description = $"{originalEndpointName} subscribed to {eventType.FullName}",
                                 SubscriptionNameBasedOnEventWithNamespace = subscriptionName
                             },
                             BrokerSideFilter = new SqlSubscriptionFilter(eventType),
@@ -298,7 +316,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             Path = subscriptionNameV6,
                             Metadata = new SubscriptionMetadataInternal
                             {
-                            Description = originalEndpointName + " subscribed to " + eventType.FullName,
+                                Description = $"{originalEndpointName} subscribed to {eventType.FullName}",
                                 SubscriptionNameBasedOnEventWithNamespace = subscriptionName
                             },
                             BrokerSideFilter = new SqlSubscriptionFilter(eventType),
@@ -313,8 +331,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                         return sub;
                     }));
                 }
-
-                
             }
             return new TopologySectionInternal
             {

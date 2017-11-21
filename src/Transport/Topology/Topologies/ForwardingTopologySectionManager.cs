@@ -60,7 +60,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     entities.AddRange(namespaces.Select(n => new EntityInfoInternal
                     {
-                        Path = addressingLogic.Apply(bundlePrefix + i, EntityType.Topic).Name,
+                        Path = addressingLogic.Apply($"{bundlePrefix}{i}", EntityType.Topic).Name,
                         Type = EntityType.Topic,
                         Namespace = @namespace
                     }));
@@ -115,86 +115,12 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
         {
-            return publishDestinations.GetOrAdd(eventType, t =>
-            {
-                // Filtering out passive namespaces since publishes should only be done to the active ones regardless what is being returned from the strategy
-                // i.ex. for the failover strategy a single publish destination should be used which is the currently active namespace.
-                var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
-
-                return new TopologySectionInternal
-                {
-                    Entities = new [] { topics[0] }, // first in bundle
-                    Namespaces = namespaces
-                };
-            });
+            return namespacePartitioningStrategy.SendingCacheable ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish()) : CreateSectionForPublish();
         }
 
         public TopologySectionInternal DetermineSendDestination(string destination)
         {
-            return sendDestinations.GetOrAdd(destination, d =>
-            {
-                var inputQueueAddress = addressingLogic.Apply(d, EntityType.Queue);
-
-                RuntimeNamespaceInfo[] namespaces = null;
-                if (inputQueueAddress.HasSuffix && inputQueueAddress.Suffix != defaultNameSpaceAlias) // sending to specific namespace
-                {
-                    if (inputQueueAddress.HasConnectionString)
-                    {
-                        namespaces = new[]
-                        {
-                            new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing)
-                        };
-                    }
-                    else
-                    {
-                        var configured = namespaceConfigurations.FirstOrDefault(n => n.Alias == inputQueueAddress.Suffix);
-                        if (configured != null)
-                        {
-                            namespaces = new[]
-                            {
-                                new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose)
-                            };
-                        }
-                    }
-                }
-                else
-                {
-                    var configured = namespaceConfigurations.FirstOrDefault(n => n.RegisteredEndpoints.Contains(d, StringComparer.OrdinalIgnoreCase));
-                    if (configured != null)
-                    {
-                        namespaces = new[]
-                        {
-                            new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose),
-                        };
-                    }
-                    else // sending to the partition
-                    {
-                        namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
-                    }
-                }
-
-                if (namespaces == null)
-                {
-                    throw new Exception($"Could not determine namespace for destination `{d}`.");
-                }
-
-                var entities = new List<EntityInfoInternal>();
-                foreach (var n in namespaces)
-                {
-                    entities.Add(new EntityInfoInternal
-                    {
-                        Path = inputQueueAddress.Name,
-                        Type = EntityType.Queue,
-                        Namespace = n
-                    });
-                }
-
-                return new TopologySectionInternal
-                {
-                    Namespaces = namespaces,
-                    Entities = entities
-                };
-            });
+            return namespacePartitioningStrategy.SendingCacheable ? sendDestinations.GetOrAdd(destination, d => CreateSectionForSend(d)) : CreateSectionForSend(destination);
         }
 
         public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
@@ -219,6 +145,113 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             return result;
+        }
+
+        TopologySectionInternal CreateSectionForPublish()
+        {
+            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+
+            var entities = new List<EntityInfoInternal>();
+            foreach (var @namespace in namespaces)
+            {
+                foreach (var topic in topics)
+                {
+                    if (topic.Namespace.Alias != @namespace.Alias)
+                    {
+                        continue;
+                    }
+
+                    // first in bundle
+                    entities.Add(topic);
+                    break;
+                }
+            }
+
+            return new TopologySectionInternal
+            {
+                Entities = entities,
+                Namespaces = namespaces
+            };
+        }
+
+        TopologySectionInternal CreateSectionForSend(string destination)
+        {
+            var inputQueueAddress = addressingLogic.Apply(destination, EntityType.Queue);
+
+            RuntimeNamespaceInfo[] namespaces = null;
+            if (inputQueueAddress.HasSuffix && inputQueueAddress.Suffix != defaultNameSpaceAlias) // sending to specific namespace
+            {
+                if (inputQueueAddress.HasConnectionString)
+                {
+                    namespaces = new[]
+                    {
+                        new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing)
+                    };
+                }
+                else
+                {
+                    NamespaceInfo configured = null;
+                    foreach (var namespaceConfiguration in namespaceConfigurations)
+                    {
+                        if (namespaceConfiguration.Alias == inputQueueAddress.Suffix)
+                        {
+                            configured = namespaceConfiguration;
+                        }
+                    }
+                    if (configured != null)
+                    {
+                        namespaces = new[]
+                        {
+                            new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose)
+                        };
+                    }
+                }
+            }
+            else
+            {
+                NamespaceInfo configured = null;
+                foreach (var namespaceConfiguration in namespaceConfigurations)
+                {
+                    if (namespaceConfiguration.RegisteredEndpoints.Contains(destination, StringComparer.OrdinalIgnoreCase))
+                    {
+                        configured = namespaceConfiguration;
+                    }
+                }
+
+                if (configured != null)
+                {
+                    namespaces = new[]
+                    {
+                        new RuntimeNamespaceInfo(configured.Alias, configured.Connection, configured.Purpose)
+                    };
+                }
+                else // sending to the partition
+                {
+                    namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
+                }
+            }
+
+            if (namespaces == null)
+            {
+                throw new Exception($"Could not determine namespace for destination `{destination}`.");
+            }
+
+            var entities = new List<EntityInfoInternal>(namespaces.Length);
+            foreach (var n in namespaces)
+            {
+                entities.Add(new EntityInfoInternal
+                {
+                    Path = inputQueueAddress.Name,
+                    Type = EntityType.Queue,
+                    Namespace = n
+                });
+            }
+
+            return new TopologySectionInternal
+            {
+                Namespaces = namespaces,
+                Entities = entities
+            };
         }
 
         TopologySectionInternal BuildSubscriptionHierarchy(Type eventType, string localAddress)

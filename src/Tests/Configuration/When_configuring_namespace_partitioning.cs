@@ -39,6 +39,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
         class MyNamespacePartitioningStrategy : INamespacePartitioningStrategy
         {
+            public bool SendingCacheable { get; }
+
             public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
             {
                 throw new NotImplementedException(); // not relevant for the test
