@@ -50,29 +50,11 @@ namespace NServiceBus.Transport.AzureServiceBus
         public TopologySectionInternal DetermineTopicsToCreate(string localAddress)
         {
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
-            var entities = new List<EntityInfoInternal>();
-
-            foreach (var @namespace in namespaces)
-            {
-                var numberOfTopicsFound = BundleConfigurations.GetNumberOfTopicInBundle(@namespace.Alias);
-                var numberOfTopicsToCreate = Math.Max(numberOfEntitiesInBundle, numberOfTopicsFound);
-                for (var i = 1; i <= numberOfTopicsToCreate; i++)
-                {
-                    entities.AddRange(namespaces.Select(n => new EntityInfoInternal
-                    {
-                        Path = addressingLogic.Apply($"{bundlePrefix}{i}", EntityType.Topic).Name,
-                        Type = EntityType.Topic,
-                        Namespace = @namespace
-                    }));
-                }
-            }
-
-            topics = entities;
 
             return new TopologySectionInternal
             {
                 Namespaces = namespaces,
-                Entities = entities
+                Entities = CreateTopics(namespaces)
             };
         }
 
@@ -147,12 +129,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             return result;
         }
 
-        TopologySectionInternal CreateSectionForPublish()
+        List<EntityInfoInternal> CreateTopics(RuntimeNamespaceInfo[] namespaces)
         {
-            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
-
             var entities = new List<EntityInfoInternal>();
-
             foreach (var @namespace in namespaces)
             {
                 var numberOfTopicsFound = BundleConfigurations.GetNumberOfTopicInBundle(@namespace.Alias);
@@ -167,10 +146,16 @@ namespace NServiceBus.Transport.AzureServiceBus
                     }));
                 }
             }
+            return entities;
+        }
+
+        TopologySectionInternal CreateSectionForPublish()
+        {
+            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
 
             return new TopologySectionInternal
             {
-                Entities = entities,
+                Entities = CreateTopics(namespaces),
                 Namespaces = namespaces
             };
         }
@@ -268,6 +253,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var ruleName = addressingLogic.Apply(eventType.FullName, EntityType.Rule).Name;
 
             var subs = new List<SubscriptionInfoInternal>();
+            var topics = CreateTopics(namespaces);
             foreach (var topic in topics)
             {
                 subs.AddRange(namespaces.Select(ns =>
@@ -317,7 +303,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         readonly ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
         readonly ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
         readonly ConcurrentDictionary<Type, TopologySectionInternal> publishDestinations = new ConcurrentDictionary<Type, TopologySectionInternal>();
-        List<EntityInfoInternal> topics = new List<EntityInfoInternal>();
         string originalEndpointName;
         INamespacePartitioningStrategy namespacePartitioningStrategy;
         AddressingLogic addressingLogic;
