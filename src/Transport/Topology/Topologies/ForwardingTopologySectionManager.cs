@@ -151,13 +151,18 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         TopologySectionInternal CreateSectionForPublish()
         {
-			// Filtering out passive namespaces since publishes should only be done to the active ones regardless what is being returned from the strategy
-			// i.ex. for the fail-over strategy a single publish destination should be used which is the currently active namespace.
-            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
+
+            var entityInfoInternals = CreateTopics(namespaces);
+
+            var passiveTopics = entityInfoInternals.Where(e => e.Namespace.Mode == NamespaceMode.Passive);
+
+            var activeTopics = entityInfoInternals.Where(e => e.Namespace.Mode == NamespaceMode.Active).GroupBy(e => e.Namespace.Alias)
+                .Select(g => g.First());
 
             return new TopologySectionInternal
             {
-                Entities = CreateTopics(namespaces),
+                Entities = passiveTopics.Union(activeTopics),
                 Namespaces = namespaces
             };
         }
