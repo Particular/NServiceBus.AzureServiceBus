@@ -141,7 +141,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         TopologySectionInternal CreateSectionForPublish(string localAddress)
         {
-            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+            var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
 
             var topicPath = addressingLogic.Apply($"{localAddress}.events", EntityType.Topic).Name;
             var entities = new List<EntityInfoInternal>();
