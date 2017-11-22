@@ -40,6 +40,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                 {
                     b.When(async (bus, c) =>
                     {
+                        await bus.Unsubscribe(typeof(MyEvent));
                         await waitToSubscribe.Task;
                         await bus.Subscribe(typeof(MyEvent));
                         subscribed.SetResult(true);
