@@ -91,6 +91,10 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                     }
 
                     transport.Topics().EnableFilteringMessagesBeforePublishing(true);
+
+                }, metadata =>
+                {
+                    metadata.RegisterPublisherFor<MyEvent>(typeof(Publisher));
                 });
             }
 

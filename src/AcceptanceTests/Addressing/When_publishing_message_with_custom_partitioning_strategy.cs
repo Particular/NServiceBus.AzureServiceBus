@@ -29,9 +29,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                     b.When(async (bus, c) =>
                     {
                         await bus.Publish(new MyEvent());
+                        await bus.Publish(new MyEvent());
                         waitToSubscribe.SetResult(true);
                         await subscribed.Task;
-                        await bus.Publish(new MyEvent());
+                        await bus.Publish(new MyEvent()); 
+                        await bus.Publish(new MyEvent()); 
                         await bus.Publish(new MyEvent());
                         await bus.Publish(new MyEvent());
                     });
@@ -40,7 +42,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                 {
                     b.When(async (bus, c) =>
                     {
-                        await bus.Unsubscribe(typeof(MyEvent));
                         await waitToSubscribe.Task;
                         await bus.Subscribe(typeof(MyEvent));
                         subscribed.SetResult(true);
@@ -55,13 +56,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                         c.EnableFeature<AutoSubscribe>();
                     });
                 })
-                .Done(c => c.RequestsReceived == 4 && c.NamespaceNames.Count == 4)
+                .Done(c => c.RequestsReceived == 6 && c.NamespaceNames.Count == 6)
                 .Run();
 
             CollectionAssert.AreEquivalent(new[]
             {
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
+                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1",
+                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1"
             }, context.NamespaceNames);
@@ -121,7 +124,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                     }
 
                     transport.Topics().EnableFilteringMessagesBeforePublishing(true);
-                });
+                }, metadata => metadata.RegisterPublisherFor<MyEvent>(typeof(Publisher)));
             }
 
             class MyRequestHandler : IHandleMessages<MyEvent>

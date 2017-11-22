@@ -75,6 +75,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                 EndpointSetup<DefaultServer>(c =>
                 {
                     c.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyResponse), typeof(Publisher));
+                }, metadata =>
+                {
+                    metadata.RegisterPublisherFor<MyEvent>(typeof(Publisher));
                 });
             }
 

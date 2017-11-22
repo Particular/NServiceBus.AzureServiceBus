@@ -6,6 +6,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
+    using Configuration.AdvancedExtensibility;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -19,6 +20,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
         [Test]
         public async Task Should_send_to_one_namespace_only()
         {
+            Requires.ForwardingTopology(); // for now until we find an option to conditionally register the publisher on just namespace1
+
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<Publisher>(b =>
                 {
@@ -70,7 +73,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
         {
             public TargetEndpoint()
             {
-                EndpointSetup<DefaultServer>(c => c.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyResponse), typeof(Publisher)));
+                EndpointSetup<DefaultServer>(
+                    c => c.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyResponse), typeof(Publisher)), 
+                    metadata => metadata.RegisterPublisherFor<MyEvent>(typeof(Publisher)));
             }
 
             class MyRequestHandler : IHandleMessages<MyEvent>
