@@ -97,8 +97,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
         {
-                // Filtering out passive namespaces since publishes should only be done to the active ones regardless what is being returned from the strategy
-                // i.ex. for the failover strategy a single publish destination should be used which is the currently active namespace.
             return namespacePartitioningStrategy.SendingCacheable ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish()) : CreateSectionForPublish();
         }
 
