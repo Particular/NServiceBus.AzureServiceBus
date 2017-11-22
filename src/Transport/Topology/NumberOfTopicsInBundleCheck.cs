@@ -1,10 +1,8 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
-    using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
 
     static class NumberOfTopicsInBundleCheck
@@ -23,17 +21,12 @@
                 {
                     var filter = $"startswith(path, '{bundlePrefix}') eq true";
                     var foundTopics = await namespaceManager.GetTopics(filter).ConfigureAwait(false);
-                    numberOfTopics = CountTopicsInBundle(topicInBundleNameRegex, foundTopics);
+                    numberOfTopics = foundTopics.Count(topic => topicInBundleNameRegex.IsMatch(topic.Path));
                 }
                 namespaceBundleConfigurations.Add(namespaceConfiguration.Alias, numberOfTopics);
             }
 
             return namespaceBundleConfigurations;
-        }
-
-        public static int CountTopicsInBundle(Regex topicInBundleNameRegex, IEnumerable<TopicDescription> topics)
-        {
-            return topics.Count(topic => topicInBundleNameRegex.IsMatch(topic.Path));
         }
     }
 }
