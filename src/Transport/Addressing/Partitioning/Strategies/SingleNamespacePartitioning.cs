@@ -31,13 +31,13 @@ namespace NServiceBus
                 new RuntimeNamespaceInfo(@namespace.Alias, @namespace.Connection, @namespace.Purpose, NamespaceMode.Active)
             };
 
-            SendingCacheable = true;
+            SendingNamespacesCanBeCached = true;
         }
 
         /// <summary>
-        /// Gets whether the information returned by the strategy for <see cref="PartitioningIntent.Sending"/> is cacheable.
+        /// Gets whether the information returned by the strategy for <see cref="PartitioningIntent.Sending"/> is cache-able.
         /// </summary>
-        public bool SendingCacheable { get; }
+        public bool SendingNamespacesCanBeCached { get; }
 
         /// <summary>
         /// Return a set of namespaces required by strategy for <see cref="PartitioningIntent"/>.

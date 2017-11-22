@@ -39,7 +39,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
         class MyNamespacePartitioningStrategy : INamespacePartitioningStrategy
         {
-            public bool SendingCacheable { get; }
+            public bool SendingNamespacesCanBeCached { get; }
 
             public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
             {

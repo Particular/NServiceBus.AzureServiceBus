@@ -99,8 +99,8 @@
             var sectionManager = new EndpointOrientedTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", publishersConfiguration, namespacePartitioningStrategy, addressingLogic);
 
             sectionManager.DetermineSendDestination($"sales@{PrimaryName}");
-            var publishDestination2 = sectionManager.DetermineSendDestination($"sales@{PrimaryName}");
-            Assert.AreEqual(SecondaryName, publishDestination2.Entities.First().Namespace.Alias, "Should have different namespace");
+            var sendDestination2 = sectionManager.DetermineSendDestination($"sales@{PrimaryName}");
+            Assert.AreEqual(SecondaryName, sendDestination2.Entities.First().Namespace.Alias, "Should have different namespace");
         }
     }
 }

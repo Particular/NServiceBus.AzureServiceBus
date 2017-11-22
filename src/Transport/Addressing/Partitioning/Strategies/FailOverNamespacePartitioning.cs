@@ -39,16 +39,16 @@
                 new RuntimeNamespaceInfo(secondary.Alias, secondary.Connection, secondary.Purpose, Mode == FailOverMode.Secondary ? NamespaceMode.Active : NamespaceMode.Passive)
             };
 
-            SendingCacheable = true;
+            SendingNamespacesCanBeCached = true;
         }
 
         /// <summary>Current mode.</summary>
         public FailOverMode Mode { get; set; }
 
         /// <summary>
-        /// Gets whether the information returned by the strategy for <see cref="PartitioningIntent.Sending"/> is cacheable.
+        /// Gets whether the information returned by the strategy for <see cref="PartitioningIntent.Sending"/> is cache-able.
         /// </summary>
-        public bool SendingCacheable { get; }
+        public bool SendingNamespacesCanBeCached { get; }
 
         /// <summary>
         /// Return a set of namespaces required by strategy for <see cref="PartitioningIntent"/>.

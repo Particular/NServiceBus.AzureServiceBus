@@ -97,12 +97,12 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
         {
-            return namespacePartitioningStrategy.SendingCacheable ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish()) : CreateSectionForPublish();
+            return namespacePartitioningStrategy.SendingNamespacesCanBeCached ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish()) : CreateSectionForPublish();
         }
 
         public TopologySectionInternal DetermineSendDestination(string destination)
         {
-            return namespacePartitioningStrategy.SendingCacheable ? sendDestinations.GetOrAdd(destination, d => CreateSectionForSend(d)) : CreateSectionForSend(destination);
+            return namespacePartitioningStrategy.SendingNamespacesCanBeCached ? sendDestinations.GetOrAdd(destination, d => CreateSectionForSend(d)) : CreateSectionForSend(destination);
         }
 
         public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
@@ -152,7 +152,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         TopologySectionInternal CreateSectionForPublish()
         {
 			// Filtering out passive namespaces since publishes should only be done to the active ones regardless what is being returned from the strategy
-			// i.ex. for the failover strategy a single publish destination should be used which is the currently active namespace.
+			// i.ex. for the fail-over strategy a single publish destination should be used which is the currently active namespace.
             var namespaces = namespacePartitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
 
             return new TopologySectionInternal
