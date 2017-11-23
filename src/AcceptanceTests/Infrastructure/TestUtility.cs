@@ -31,7 +31,7 @@
             {
                 if (string.IsNullOrEmpty(fallbackConnectionString))
                 {
-                    var environmentVariableName = $"AzureServiceBus.ConnectionString.Fallback";
+                    var environmentVariableName = "AzureServiceBus.ConnectionString.Fallback";
                     fallbackConnectionString = EnvironmentHelper.GetEnvironmentVariable(environmentVariableName);
                     if (string.IsNullOrEmpty(fallbackConnectionString))
                     {
