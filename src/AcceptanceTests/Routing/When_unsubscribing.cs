@@ -6,8 +6,8 @@
     using NUnit.Framework;
     using NServiceBus.AcceptanceTests;
     using AcceptanceTesting.Customization;
+    using AzureServiceBus.AcceptanceTests.Infrastructure;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 
     public class When_unsubscribing : NServiceBusAcceptanceTest
     {
@@ -19,7 +19,7 @@
                 .Done(c => c.EndpointsStarted)
                 .Run();
 
-            var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+            var connectionString = TestUtility.DefaultConnectionString;
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
             var endpointName = Conventions.EndpointNamingConvention(typeof(Endpoint));
 

@@ -4,15 +4,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
+    using AzureServiceBus.AcceptanceTests.Infrastructure;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
 
     public class When_using_multiple_namespaces : NServiceBusAcceptanceTest
     {
-        static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-        static string targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
+        static string connectionString = connectionString = TestUtility.DefaultConnectionString;
+        static string targetConnectionString = TestUtility.FallbackConnectionString;
 
         [Test]
         public async Task Should_support_request_reply_across_namespaces_using_aliases()

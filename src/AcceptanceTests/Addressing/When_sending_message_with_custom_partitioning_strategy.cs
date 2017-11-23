@@ -6,10 +6,10 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
+    using AzureServiceBus.AcceptanceTests.Infrastructure;
     using Microsoft.ServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
     using Transport.AzureServiceBus;
 
@@ -94,8 +94,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
             }, context.NamespaceNames);
         }
 
-        static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-        static string targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
+        static string connectionString = connectionString = TestUtility.DefaultConnectionString;
+        static string targetConnectionString = TestUtility.FallbackConnectionString;
 
         public class SourceEndpoint : EndpointConfigurationBuilder
         {

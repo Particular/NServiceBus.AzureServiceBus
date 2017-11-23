@@ -10,9 +10,9 @@
     using NUnit.Framework;
     using NServiceBus.AcceptanceTests;
     using AcceptanceTesting.Customization;
+    using AzureServiceBus.AcceptanceTests.Infrastructure;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
 
     public class When_unsubscribing_from_one_of_the_events_for_ForwardingTopology : NServiceBusAcceptanceTest
     {
@@ -21,7 +21,7 @@
         {
             Requires.ForwardingTopology();
 
-            var connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+            var connectionString = TestUtility.DefaultConnectionString;
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
             var rawEndpointName = Conventions.EndpointNamingConvention(typeof(Endpoint));
             var endpointName = MD5HashBuilder.Build(rawEndpointName);

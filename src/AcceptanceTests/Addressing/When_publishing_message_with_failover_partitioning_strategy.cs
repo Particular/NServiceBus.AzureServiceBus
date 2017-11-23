@@ -7,12 +7,12 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
+    using AzureServiceBus.AcceptanceTests.Infrastructure;
     using Configuration.AdvancedExtensibility;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
     using Transport.AzureServiceBus;
 
@@ -59,8 +59,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
             return Task.WhenAll(namespaceManager1.DeleteTopicAsync(TopicForwardingTopology), namespaceManager2.DeleteTopicAsync(TopicForwardingTopology), namespaceManager1.DeleteTopicAsync(topicEndpointOrientedTopology), namespaceManager2.DeleteTopicAsync(topicEndpointOrientedTopology));
         }
 
-        static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-        static string targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
+        static string connectionString = connectionString = TestUtility.DefaultConnectionString;
+        static string targetConnectionString = TestUtility.FallbackConnectionString;
         static string BundlePrefix = $"bundle{DateTime.UtcNow.Ticks}-";
         static string TopicForwardingTopology = $"{BundlePrefix}1";
 

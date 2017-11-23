@@ -21,7 +21,7 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
 
         configuration.UseSerialization<NewtonsoftSerializer>();
 
-        var connectionString = EnvironmentHelper.GetEnvironmentVariable($"{nameof(AzureServiceBusTransport)}.ConnectionString");
+        var connectionString = TestUtility.DefaultConnectionString;
         var topology = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
 
         configuration.GetSettings().Set("AzureServiceBus.AcceptanceTests.UsedTopology", topology);

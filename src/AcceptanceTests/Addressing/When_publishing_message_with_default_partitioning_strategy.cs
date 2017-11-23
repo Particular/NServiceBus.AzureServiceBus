@@ -6,11 +6,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
+    using AzureServiceBus.AcceptanceTests.Infrastructure;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
 
     public class When_publishing_message_with_default_partitioning_strategy : NServiceBusAcceptanceTest
@@ -56,9 +56,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
             return namespaceManager2.DeleteTopicAsync(topicEndpointOrientedTopology);
         }
 
-        static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-        static string targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
-
+        static string connectionString = connectionString = TestUtility.DefaultConnectionString;
+        static string targetConnectionString = TestUtility.FallbackConnectionString;
 
         public class Publisher : EndpointConfigurationBuilder
         {
