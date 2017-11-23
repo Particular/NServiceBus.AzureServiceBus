@@ -6,6 +6,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
+    using Microsoft.ServiceBus;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -16,6 +18,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
         [Test]
         public async Task Should_round_robin_between_active_namespaces()
         {
+            if (TestSuiteConstraints.Current.IsEndpointOrientedTopology)
+            {
+                var namespaceManager1 = NamespaceManager.CreateFromConnectionString(connectionString);
+                var namespaceManager2 = NamespaceManager.CreateFromConnectionString(targetConnectionString);
+
+                var topicEndpointOrientedTopology = $"{Conventions.EndpointNamingConvention(typeof(Publisher))}.events";
+                await Task.WhenAll(namespaceManager1.CreateTopicAsync(new TopicDescription(topicEndpointOrientedTopology)), namespaceManager2.CreateTopicAsync(new TopicDescription(topicEndpointOrientedTopology)));
+            }
+
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<Publisher>(b =>
                 {
@@ -35,6 +46,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1"
             }, context.NamespaceNames);
+        }
+
+        [TearDown]
+        public Task TearDown()
+        {
+            var namespaceManager1 = NamespaceManager.CreateFromConnectionString(connectionString);
+            var namespaceManager2 = NamespaceManager.CreateFromConnectionString(targetConnectionString);
+            var topicEndpointOrientedTopology = $"{Conventions.EndpointNamingConvention(typeof(Publisher))}.events";
+            return Task.WhenAll(namespaceManager1.DeleteTopicAsync(topicEndpointOrientedTopology), namespaceManager2.DeleteTopicAsync(topicEndpointOrientedTopology));
         }
 
         static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");

@@ -9,6 +9,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AzureServiceBus;
     using Configuration.AdvancedExtensibility;
     using Microsoft.ServiceBus;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -20,6 +21,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
         [Test]
         public async Task Should_failover_in_case_of_failure()
         {
+            if (TestSuiteConstraints.Current.IsEndpointOrientedTopology)
+            {
+                var namespaceManager1 = NamespaceManager.CreateFromConnectionString(connectionString);
+                var namespaceManager2 = NamespaceManager.CreateFromConnectionString(targetConnectionString);
+
+                var topicEndpointOrientedTopology = $"{Conventions.EndpointNamingConvention(typeof(Publisher))}.events";
+                await Task.WhenAll(namespaceManager1.CreateTopicAsync(new TopicDescription(topicEndpointOrientedTopology)), namespaceManager2.CreateTopicAsync(new TopicDescription(topicEndpointOrientedTopology)));
+            }
+
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<Publisher>(b =>
                 {
@@ -43,15 +53,16 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
         [TearDown]
         public Task TearDown()
         {
-            var namespaceManager1 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(connectionString));
-            var namespaceManager2 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(targetConnectionString));
-            var topic = $"{BundlePrefix}1";
-            return Task.WhenAll(namespaceManager1.DeleteTopic(topic), namespaceManager2.DeleteTopic(topic));
+            var namespaceManager1 = NamespaceManager.CreateFromConnectionString(connectionString);
+            var namespaceManager2 = NamespaceManager.CreateFromConnectionString(targetConnectionString);
+            var topicEndpointOrientedTopology = $"{Conventions.EndpointNamingConvention(typeof(Publisher))}.events";
+            return Task.WhenAll(namespaceManager1.DeleteTopicAsync(TopicForwardingTopology), namespaceManager2.DeleteTopicAsync(TopicForwardingTopology), namespaceManager1.DeleteTopicAsync(topicEndpointOrientedTopology), namespaceManager2.DeleteTopicAsync(topicEndpointOrientedTopology));
         }
 
         static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
         static string targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
         static string BundlePrefix = $"bundle{DateTime.UtcNow.Ticks}-";
+        static string TopicForwardingTopology = $"{BundlePrefix}1";
 
         public class Publisher : EndpointConfigurationBuilder
         {

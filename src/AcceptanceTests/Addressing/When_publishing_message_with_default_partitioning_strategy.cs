@@ -6,6 +6,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
+    using Microsoft.ServiceBus;
+    using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -16,7 +18,13 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
         [Test]
         public async Task Should_send_to_one_namespace_only()
         {
-            Requires.ForwardingTopology(); // for now until we find an option to conditionally register the publisher on just namespace1
+            if (TestSuiteConstraints.Current.IsEndpointOrientedTopology)
+            {
+                var topicEndpointOrientedTopology = $"{Conventions.EndpointNamingConvention(typeof(Publisher))}.events";
+
+                var namespaceManager2 = NamespaceManager.CreateFromConnectionString(targetConnectionString);
+                await namespaceManager2.CreateTopicAsync(new TopicDescription(topicEndpointOrientedTopology));
+            }
 
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<Publisher>(b =>
@@ -37,6 +45,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1",
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1"
             }, context.NamespaceNames);
+        }
+
+        [TearDown]
+        public Task TearDown()
+        {
+            var topicEndpointOrientedTopology = $"{Conventions.EndpointNamingConvention(typeof(Publisher))}.events";
+
+            var namespaceManager2 = NamespaceManager.CreateFromConnectionString(targetConnectionString);
+            return namespaceManager2.DeleteTopicAsync(topicEndpointOrientedTopology);
         }
 
         static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
