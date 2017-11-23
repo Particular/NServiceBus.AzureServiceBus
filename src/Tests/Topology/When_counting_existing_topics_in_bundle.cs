@@ -39,7 +39,7 @@
             namespaceConfigurations.Add(namespaceAlias, AzureServiceBusConnectionString.Value, NamespacePurpose.Routing);
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaceConfigurations);
 
-            var result = await NumberOfTopicsInBundleCheck.Run(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), namespaceConfigurations, "bundle-");
+            var result = await NumberOfTopicsInBundleCheck.Run(new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(settings)), namespaceConfigurations, bundlePrefix);
             Assert.AreEqual(0, result.GetNumberOfTopicInBundle(namespaceAlias));
         }
 
