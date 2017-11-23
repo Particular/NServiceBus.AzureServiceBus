@@ -9,6 +9,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AzureServiceBus;
     using Configuration.AdvancedExtensibility;
     using Features;
+    using Microsoft.ServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -32,8 +33,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                         await bus.Publish(new MyEvent());
                         waitToSubscribe.SetResult(true);
                         await subscribed.Task;
-                        await bus.Publish(new MyEvent()); 
-                        await bus.Publish(new MyEvent()); 
+                        await bus.Publish(new MyEvent());
+                        await bus.Publish(new MyEvent());
                         await bus.Publish(new MyEvent());
                         await bus.Publish(new MyEvent());
                     });
@@ -70,6 +71,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
             }, context.NamespaceNames);
         }
 
+        [TearDown]
+        public Task TearDown()
+        {
+            var namespaceManager1 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(connectionString));
+            var namespaceManager2 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(targetConnectionString));
+            var topic = $"{BundlePrefix}1";
+            return Task.WhenAll(namespaceManager1.DeleteTopic(topic), namespaceManager2.DeleteTopic(topic));
+        }
+        
         static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
         static string targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
         static string BundlePrefix = $"bundle{DateTime.UtcNow.Ticks}-";

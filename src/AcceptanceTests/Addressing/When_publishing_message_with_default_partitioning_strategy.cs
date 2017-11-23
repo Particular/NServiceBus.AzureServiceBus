@@ -6,7 +6,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
-    using Configuration.AdvancedExtensibility;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -14,9 +13,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
 
     public class When_publishing_message_with_default_partitioning_strategy : NServiceBusAcceptanceTest
     {
-        static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-        static string targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
-
         [Test]
         public async Task Should_send_to_one_namespace_only()
         {
@@ -39,9 +35,12 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
             CollectionAssert.AreEquivalent(new[]
             {
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1",
-                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1",
+                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1"
             }, context.NamespaceNames);
         }
+
+        static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
+        static string targetConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
 
 
         public class Publisher : EndpointConfigurationBuilder
@@ -74,7 +73,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
             public TargetEndpoint()
             {
                 EndpointSetup<DefaultServer>(
-                    c => c.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyResponse), typeof(Publisher)), 
+                    c => c.ConfigureTransport().Routing().RouteToEndpoint(typeof(MyResponse), typeof(Publisher)),
                     metadata => metadata.RegisterPublisherFor<MyEvent>(typeof(Publisher)));
             }
 
@@ -100,7 +99,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
 
         class Context : ScenarioContext
         {
-            long received;
             public Context()
             {
                 NamespaceNames = new ConcurrentBag<string>();
@@ -114,6 +112,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
             {
                 Interlocked.Increment(ref received);
             }
+
+            long received;
         }
     }
 }

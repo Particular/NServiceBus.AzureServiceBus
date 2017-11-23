@@ -6,20 +6,22 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
+    using Microsoft.ServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
+    using Transport.AzureServiceBus;
 
     public class When_sending_message_with_custom_partitioning_strategy : NServiceBusAcceptanceTest
     {
         [Test]
-        public async Task Should_honor_strategy()
+        public async Task Should_fail_over_to_available_namespace()
         {
-            // It is not possible to late start an endpoint therefore the switch over to namespace1 cannot be tested
-            // Testing that scenario is only possible with pub/sub because there it is possible to subscribe at a later point in time
+            var namespaceManager1 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(targetConnectionString));
+            await namespaceManager1.DeleteQueue(Conventions.EndpointNamingConvention(typeof(TargetEndpoint)));
 
-            var context = await Scenario.Define<Context>()
+            var contextWithOnlyNamespace1Available = await Scenario.Define<Context>()
                 .WithEndpoint<SourceEndpoint>(b =>
                 {
                     b.When(async (bus, c) =>
@@ -29,20 +31,65 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                         await bus.Send(new MyRequest());
                     });
                 })
-                .WithEndpoint<TargetEndpoint>(b =>
+                .WithEndpoint<TargetEndpoint>(b => b.CustomConfig(c => c.ConfigureAzureServiceBus().ConnectionString(connectionString)))
+                .Done(c => c.RequestsReceived == 3 && c.NamespaceNames.Count == 3)
+                .Run();
+
+            var namespaceManager2 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(connectionString));
+            await namespaceManager2.DeleteQueue(Conventions.EndpointNamingConvention(typeof(TargetEndpoint)));
+
+            var contextWithOnlyNamespace2Available = await Scenario.Define<Context>()
+                .WithEndpoint<SourceEndpoint>(b =>
                 {
-                    b.CustomConfig(c =>
+                    b.When(async (bus, c) =>
                     {
-                        c.ConfigureAzureServiceBus().ConnectionString(targetConnectionString);
+                        await bus.Send(new MyRequest());
+                        await bus.Send(new MyRequest());
+                        await bus.Send(new MyRequest());
                     });
                 })
+                .WithEndpoint<TargetEndpoint>(b => b.CustomConfig(c => c.ConfigureAzureServiceBus().ConnectionString(targetConnectionString)))
                 .Done(c => c.RequestsReceived == 3 && c.NamespaceNames.Count == 3)
                 .Run();
 
             CollectionAssert.AreEquivalent(new[]
             {
+                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1",
+                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1",
+                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1",
+            }, contextWithOnlyNamespace1Available.NamespaceNames);
+            CollectionAssert.AreEquivalent(new[]
+            {
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
+                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
+            }, contextWithOnlyNamespace2Available.NamespaceNames);
+        }
+
+        [Test]
+        public async Task Should_round_robin()
+        {
+            var context = await Scenario.Define<Context>()
+                .WithEndpoint<SourceEndpoint>(b =>
+                {
+                    b.When(async (bus, c) =>
+                    {
+                        await bus.Send(new MyRequest());
+                        await bus.Send(new MyRequest());
+                        await bus.Send(new MyRequest());
+                        await bus.Send(new MyRequest());
+                    });
+                })
+                .WithEndpoint<TargetEndpoint>(b => b.CustomConfig(c => c.ConfigureAzureServiceBus().ConnectionString(connectionString)))
+                .WithEndpoint<TargetEndpoint>(b => b.CustomConfig(c => c.ConfigureAzureServiceBus().ConnectionString(targetConnectionString)))
+                .Done(c => c.RequestsReceived == 4 && c.NamespaceNames.Count == 4)
+                .Run();
+
+            CollectionAssert.AreEquivalent(new[]
+            {
+                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1",
+                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
+                $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1",
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
             }, context.NamespaceNames);
         }

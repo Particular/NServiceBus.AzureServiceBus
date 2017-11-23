@@ -8,6 +8,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
     using Configuration.AdvancedExtensibility;
+    using Microsoft.ServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -37,6 +38,15 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2",
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace2"
             }, context.NamespaceNames);
+        }
+
+        [TearDown]
+        public Task TearDown()
+        {
+            var namespaceManager1 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(connectionString));
+            var namespaceManager2 = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(targetConnectionString));
+            var topic = $"{BundlePrefix}1";
+            return Task.WhenAll(namespaceManager1.DeleteTopic(topic), namespaceManager2.DeleteTopic(topic));
         }
 
         static string connectionString = connectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
@@ -91,11 +101,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                     }
 
                     transport.Topics().EnableFilteringMessagesBeforePublishing(true);
-
-                }, metadata =>
-                {
-                    metadata.RegisterPublisherFor<MyEvent>(typeof(Publisher));
-                });
+                }, metadata => { metadata.RegisterPublisherFor<MyEvent>(typeof(Publisher)); });
             }
 
             class MyRequestHandler : IHandleMessages<MyEvent>
