@@ -91,7 +91,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
         }
 
         static string connectionString = connectionString = TestUtility.DefaultConnectionString;
-        static string targetConnectionString = TestUtility.FallbackConnectionString; static string BundlePrefix = $"bundle{DateTime.UtcNow.Ticks}-";
+        static string targetConnectionString = TestUtility.FallbackConnectionString;
+        static string BundlePrefix = $"bundle{DateTime.UtcNow.Ticks}-";
         static string TopicForwardingTopology = $"{BundlePrefix}1";
 
         public class Publisher : EndpointConfigurationBuilder
