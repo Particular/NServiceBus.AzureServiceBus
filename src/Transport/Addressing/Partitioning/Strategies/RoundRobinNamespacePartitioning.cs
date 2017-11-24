@@ -29,7 +29,14 @@ namespace NServiceBus
 
             this.namespaces = new CircularBuffer<NamespaceInfo>(namespaces.Count);
             Array.ForEach(namespaces.ToArray(), x => this.namespaces.Put(x));
+
+            SendingNamespacesCanBeCached = false;
         }
+
+        /// <summary>
+        /// Gets whether the information returned by the strategy for <see cref="PartitioningIntent.Sending"/> is cache-able.
+        /// </summary>
+        public bool SendingNamespacesCanBeCached { get; }
 
         /// <summary>
         /// Return a set of namespaces required by strategy for <see cref="PartitioningIntent"/>.

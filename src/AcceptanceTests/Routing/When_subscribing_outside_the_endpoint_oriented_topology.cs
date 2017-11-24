@@ -2,17 +2,17 @@
 {
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using AzureServiceBus.AcceptanceTests.Infrastructure;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using Conventions = AcceptanceTesting.Customization.Conventions;
     using Features;
-    using NServiceBus.AcceptanceTests.ScenarioDescriptors;
     using NUnit.Framework;
 
     public class When_subscribing_outside_the_endpoint_oriented_topology : NServiceBusAcceptanceTest
     {
-        static string publisherConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.ConnectionString");
-        static string subscriberConnectionString = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBus.ConnectionString.Fallback");
+        static string publisherConnectionString = TestUtility.DefaultConnectionString;
+        static string subscriberConnectionString = TestUtility.FallbackConnectionString;
 
         [Test]
         public async Task Should_receive_event()
