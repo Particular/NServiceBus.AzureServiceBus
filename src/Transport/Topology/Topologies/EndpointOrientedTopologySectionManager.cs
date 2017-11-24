@@ -13,6 +13,9 @@ namespace NServiceBus.Transport.AzureServiceBus
         ITransportPartsContainer container;
         ConcurrentDictionary<Type, TopologySection> subscriptions = new ConcurrentDictionary<Type, TopologySection>();
 
+        ConcurrentDictionary<string, TopologySection> sendDestinations = new ConcurrentDictionary<string, TopologySection>();
+        ConcurrentDictionary<Type, TopologySection> publishDestinations = new ConcurrentDictionary<Type, TopologySection>();
+
         public EndpointOrientedTopologySectionManager(SettingsHolder settings, ITransportPartsContainer container)
         {
             this.settings = settings;
@@ -50,7 +53,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             var inputQueuePath = addressingLogic.Apply(endpointName, EntityType.Queue).Name;
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
-            var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
+            var topicPath = addressingLogic.Apply($"{endpointName}.events", EntityType.Topic).Name;
             var topics = namespaces.Select(n => new EntityInfo {Path = topicPath, Type = EntityType.Topic, Namespace = n}).ToArray();
             entities.AddRange(topics);
 
@@ -73,7 +76,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
 
-            return new TopologySection()
+            return new TopologySection
             {
                 Namespaces = namespaces,
                 Entities = entities.ToArray()
@@ -82,15 +85,27 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySection DeterminePublishDestination(Type eventType)
         {
+            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
+            var canCache = (partitioningStrategy as ICacheableNamespacePartitioningStrategy)?.SendingNamespacesCanBeCached ?? true;
+
+            return canCache ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish(partitioningStrategy)) : CreateSectionForPublish(partitioningStrategy);
+        }
+
+        TopologySection CreateSectionForPublish(INamespacePartitioningStrategy partitioningStrategy)
+        {
             var endpointName = settings.EndpointName();
 
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
+            var addressingLogic = (AddressingLogic) container.Resolve(typeof(AddressingLogic));
 
-            var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+            var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
 
-            var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
-            var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
+            var topicPath = addressingLogic.Apply($"{endpointName}.events", EntityType.Topic).Name;
+            var topics = namespaces.Select(n => new EntityInfo
+            {
+                Path = topicPath,
+                Type = EntityType.Topic,
+                Namespace = n
+            }).ToArray();
 
             return new TopologySection
             {
@@ -102,7 +117,15 @@ namespace NServiceBus.Transport.AzureServiceBus
         public TopologySection DetermineSendDestination(string destination)
         {
             var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
+            var canCache = (partitioningStrategy as ICacheableNamespacePartitioningStrategy)?.SendingNamespacesCanBeCached ?? true;
+
+            return canCache ? sendDestinations.GetOrAdd(destination, dest => CreateSectionForSend(dest)) : CreateSectionForSend(destination);
+        }
+
+        TopologySection CreateSectionForSend(string destination)
+        {
+            var partitioningStrategy = (INamespacePartitioningStrategy) container.Resolve(typeof(INamespacePartitioningStrategy));
+            var addressingLogic = (AddressingLogic) container.Resolve(typeof(AddressingLogic));
             var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
 
             var inputQueueAddress = addressingLogic.Apply(destination, EntityType.Queue);
@@ -112,7 +135,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 if (inputQueueAddress.HasConnectionString)
                 {
-                    namespaces = new[]{
+                    namespaces = new[]
+                    {
                         new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing, NamespaceMode.Active)
                     };
                 }
@@ -142,7 +166,12 @@ namespace NServiceBus.Transport.AzureServiceBus
                 throw new Exception($"Could not determine namespace for destination {destination}");
             }
 
-            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueueAddress.Name, Type = EntityType.Queue, Namespace = n }).ToArray();
+            var inputQueues = namespaces.Select(n => new EntityInfo
+            {
+                Path = inputQueueAddress.Name,
+                Type = EntityType.Queue,
+                Namespace = n
+            }).ToArray();
 
             return new TopologySection
             {

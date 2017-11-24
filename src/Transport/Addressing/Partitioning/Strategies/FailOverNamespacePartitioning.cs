@@ -6,7 +6,7 @@
     using Transport.AzureServiceBus;
     using Settings;
 
-    public class FailOverNamespacePartitioning : INamespacePartitioningStrategy
+    public class FailOverNamespacePartitioning : INamespacePartitioningStrategy, ICacheableNamespacePartitioningStrategy
     {
         NamespaceConfigurations namespaces;
 
@@ -28,9 +28,16 @@
             {
                 throw new ConfigurationErrorsException($"The '{nameof(FailOverNamespacePartitioning)}' strategy requires exactly two namespaces for the purpose of partitioning, found {namespaces.Count}, please register less namespaces.");
             }
+
+            SendingNamespacesCanBeCached = true;
         }
 
         public FailOverMode Mode { get; set; }
+
+        /// <summary>
+        /// Gets whether the information returned by the strategy for <see cref="PartitioningIntent.Sending"/> is cache-able.
+        /// </summary>
+        public bool SendingNamespacesCanBeCached { get; }
 
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {
