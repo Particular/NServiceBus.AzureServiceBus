@@ -13,9 +13,7 @@
     [Category("AzureServiceBus")]
     public class When_counting_existing_topics_in_bundle
     {
-#pragma warning disable 618
-        NamespaceManagerAdapter namespaceManager;
-#pragma warning restore 618
+        NamespaceManager namespaceManager;
         string nonBundledTopic;
 
         [Test]
@@ -24,13 +22,11 @@
             var bundlePrefix = $"bundle{DateTime.Now.Ticks}-";
             nonBundledTopic = $"{bundlePrefix}x";
 
-#pragma warning disable 618
-            namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-#pragma warning restore 618
+            namespaceManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);
 
             try
             {
-                await namespaceManager.CreateTopic(new TopicDescription(nonBundledTopic));
+                await namespaceManager.CreateTopicAsync(new TopicDescription(nonBundledTopic));
             }
             catch (MessagingEntityAlreadyExistsException)
             {
@@ -38,7 +34,7 @@
             }
 
             var filter = $"startswith(path, '{bundlePrefix}') eq true";
-            var foundTopics = await namespaceManager.GetTopics(filter).ConfigureAwait(false);
+            var foundTopics = await namespaceManager.GetTopicsAsync(filter).ConfigureAwait(false);
 
             var topicsInBundle = NumberOfTopicsInBundleCheck.CountTopicsInBundle(new Regex($@"^{bundlePrefix}\d+$", RegexOptions.CultureInvariant), foundTopics);
             Assert.AreEqual(0, topicsInBundle);
@@ -47,7 +43,7 @@
         [TearDown]
         public Task TearDown()
         {
-            return namespaceManager.DeleteTopic(nonBundledTopic);
+            return namespaceManager.DeleteTopicAsync(nonBundledTopic);
         }
     }
 }
