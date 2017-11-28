@@ -1,11 +1,11 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology
 {
     using System;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using NUnit.Framework;
+    using Settings;
     using TestUtils;
     using Transport.AzureServiceBus;
 
@@ -33,11 +33,14 @@
                 // ignore if topic already exists
             }
 
-            var filter = $"startswith(path, '{bundlePrefix}') eq true";
-            var foundTopics = await namespaceManager.GetTopicsAsync(filter).ConfigureAwait(false);
+            var settings = new SettingsHolder();
+            var namespaceConfigurations = new NamespaceConfigurations();
+            var namespaceAlias = "namespace1";
+            namespaceConfigurations.Add(namespaceAlias, AzureServiceBusConnectionString.Value, NamespacePurpose.Routing);
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaceConfigurations);
 
-            var topicsInBundle = NumberOfTopicsInBundleCheck.CountTopicsInBundle(new Regex($@"^{bundlePrefix}\d+$", RegexOptions.CultureInvariant), foundTopics);
-            Assert.AreEqual(0, topicsInBundle);
+            var result = await NumberOfTopicsInBundleCheck.Run(new NamespaceManagerLifeCycleManager(new NamespaceManagerCreator(settings)), namespaceConfigurations, bundlePrefix);
+            Assert.AreEqual(0, result.GetNumberOfTopicInBundle(namespaceAlias));
         }
 
         [TearDown]
