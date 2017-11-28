@@ -6,7 +6,7 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class SingleNamespacePartitioning : INamespacePartitioningStrategy, ICacheableNamespacePartitioningStrategy
+    public class SingleNamespacePartitioning : INamespacePartitioningStrategy, ICacheSendingNamespaces
     {
         NamespaceConfigurations namespaces;
 

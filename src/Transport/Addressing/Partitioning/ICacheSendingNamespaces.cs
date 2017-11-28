@@ -1,6 +1,6 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
-    public interface ICacheableNamespacePartitioningStrategy
+    public interface ICacheSendingNamespaces
     {
         /// <summary>
         /// Gets whether the information returned by the strategy for <see cref="PartitioningIntent.Sending" /> is cache-able.

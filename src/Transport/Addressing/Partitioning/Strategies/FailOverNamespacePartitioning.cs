@@ -6,7 +6,7 @@
     using Transport.AzureServiceBus;
     using Settings;
 
-    public class FailOverNamespacePartitioning : INamespacePartitioningStrategy, ICacheableNamespacePartitioningStrategy
+    public class FailOverNamespacePartitioning : INamespacePartitioningStrategy, ICacheSendingNamespaces
     {
         NamespaceConfigurations namespaces;
 

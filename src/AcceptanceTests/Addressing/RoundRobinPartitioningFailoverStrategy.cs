@@ -6,7 +6,7 @@
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class RoundRobinPartitioningFailoverStrategy : INamespacePartitioningStrategy, ICacheableNamespacePartitioningStrategy
+    public class RoundRobinPartitioningFailoverStrategy : INamespacePartitioningStrategy, ICacheSendingNamespaces
     {
         public RoundRobinPartitioningFailoverStrategy(ReadOnlySettings settings)
         {

@@ -7,7 +7,7 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class RoundRobinNamespacePartitioning : INamespacePartitioningStrategy, ICacheableNamespacePartitioningStrategy
+    public class RoundRobinNamespacePartitioning : INamespacePartitioningStrategy, ICacheSendingNamespaces
     {
         CircularBuffer<NamespaceInfo> namespaces;
 
