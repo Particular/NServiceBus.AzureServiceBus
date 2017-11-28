@@ -314,7 +314,7 @@
         Subscription = 2,
         Rule = 3,
     }
-    public class FailOverNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.ICacheableNamespacePartitioningStrategy, NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
+    public class FailOverNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.ICacheSendingNamespaces, NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
     {
         [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
             "sion 8.0.0. Will be removed in version 9.0.0.", false)]
@@ -351,7 +351,7 @@
         public HierarchyComposition(NServiceBus.Settings.ReadOnlySettings settings) { }
         public string GetEntityPath(string entityname, NServiceBus.EntityType entityType) { }
     }
-    public class RoundRobinNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.ICacheableNamespacePartitioningStrategy, NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
+    public class RoundRobinNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.ICacheSendingNamespaces, NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
     {
         [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
             "sion 8.0.0. Will be removed in version 9.0.0.", false)]
@@ -360,7 +360,7 @@
         [System.Runtime.CompilerServices.IteratorStateMachineAttribute(typeof(NServiceBus.RoundRobinNamespacePartitioning.<GetNamespaces>d__5))]
         public System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent) { }
     }
-    public class SingleNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.ICacheableNamespacePartitioningStrategy, NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
+    public class SingleNamespacePartitioning : NServiceBus.Transport.AzureServiceBus.ICacheSendingNamespaces, NServiceBus.Transport.AzureServiceBus.INamespacePartitioningStrategy
     {
         [System.ObsoleteAttribute("Internal contract that shouldn\'t be exposed. Will be treated as an error from ver" +
             "sion 8.0.0. Will be removed in version 9.0.0.", false)]
@@ -489,7 +489,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         string Serialize();
     }
-    public interface ICacheableNamespacePartitioningStrategy
+    public interface ICacheSendingNamespaces
     {
         bool SendingNamespacesCanBeCached { get; }
     }
