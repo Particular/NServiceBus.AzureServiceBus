@@ -87,7 +87,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySection DeterminePublishDestination(Type eventType)
         {
-            var canPartitioningStrategyBeCached = (partitioningStrategy.Value as ICacheableNamespacePartitioningStrategy)?.SendingNamespacesCanBeCached ?? true;
+            var canPartitioningStrategyBeCached = (partitioningStrategy.Value as ICacheableNamespacePartitioningStrategy)?.SendingNamespacesCanBeCached ?? false;
 
             return canPartitioningStrategyBeCached ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish()) : CreateSectionForPublish();
         }
@@ -117,7 +117,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySection DetermineSendDestination(string destination)
         {
-            var canPartitioningStrategyBeCached = (partitioningStrategy.Value as ICacheableNamespacePartitioningStrategy)?.SendingNamespacesCanBeCached ?? true;
+            var canPartitioningStrategyBeCached = (partitioningStrategy.Value as ICacheableNamespacePartitioningStrategy)?.SendingNamespacesCanBeCached ?? false;
 
             return canPartitioningStrategyBeCached ? sendDestinations.GetOrAdd(destination, dest => CreateSectionForSend(dest)) : CreateSectionForSend(destination);
         }
