@@ -11,6 +11,7 @@ namespace NServiceBus
     {
         public const string InternalizedContract = "Internal contract.";
         public const string ReplaceWithNewAPI = "Replaced with new API.";
+        public const string DeprecatedAndNoLongerRequired = "Deprecated and no longer required.";
     }
 
     [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
@@ -404,6 +405,13 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             get { throw new NotImplementedException(); }
         }
+    }
+
+    [ObsoleteEx(Message = ObsoleteMessages.DeprecatedAndNoLongerRequired, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+    public interface ICacheSendingNamespaces
+    {
+        [ObsoleteEx(Message = ObsoleteMessages.DeprecatedAndNoLongerRequired, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        bool SendingNamespacesCanBeCached { get; }
     }
 }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
