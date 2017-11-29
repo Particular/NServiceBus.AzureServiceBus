@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
 
@@ -9,6 +10,7 @@
         public static async Task<NamespaceBundleConfigurations> Run(IManageNamespaceManagerLifeCycle manageNamespaceManagerLifeCycle, NamespaceConfigurations namespaceConfigurations, string bundlePrefix)
         {
             var namespaceBundleConfigurations = new NamespaceBundleConfigurations();
+            var topicInBundleNameRegex = new Regex($@"^{bundlePrefix}\d+$", RegexOptions.CultureInvariant);
 
             foreach (var namespaceConfiguration in namespaceConfigurations)
             {
@@ -26,7 +28,7 @@
                 {
                     var filter = $"startswith(path, '{bundlePrefix}') eq true";
                     var foundTopics = await namespaceManagerThatCanQueryAndFilterTopics.GetTopics(filter).ConfigureAwait(false);
-                    numberOfTopics = foundTopics.Count();
+                    numberOfTopics = foundTopics.Count(topic => topicInBundleNameRegex.IsMatch(topic.Path));
                 }
                 namespaceBundleConfigurations.Add(namespaceConfiguration.Alias, numberOfTopics);
             }

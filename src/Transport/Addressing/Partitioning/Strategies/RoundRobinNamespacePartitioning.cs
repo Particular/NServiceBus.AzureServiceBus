@@ -7,7 +7,7 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class RoundRobinNamespacePartitioning : INamespacePartitioningStrategy
+    public class RoundRobinNamespacePartitioning : INamespacePartitioningStrategy, ICacheSendingNamespaces
     {
         CircularBuffer<NamespaceInfo> namespaces;
 
@@ -29,7 +29,14 @@ namespace NServiceBus
 
             this.namespaces = new CircularBuffer<NamespaceInfo>(namespaces.Count);
             Array.ForEach(namespaces.ToArray(), x => this.namespaces.Put(x));
+
+            SendingNamespacesCanBeCached = false;
         }
+
+        /// <summary>
+        /// Gets whether the information returned by the strategy for <see cref="PartitioningIntent.Sending"/> is cache-able.
+        /// </summary>
+        public bool SendingNamespacesCanBeCached { get; }
 
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {

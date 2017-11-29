@@ -6,7 +6,7 @@ namespace NServiceBus
     using Settings;
     using Transport.AzureServiceBus;
 
-    public class SingleNamespacePartitioning : INamespacePartitioningStrategy
+    public class SingleNamespacePartitioning : INamespacePartitioningStrategy, ICacheSendingNamespaces
     {
         NamespaceConfigurations namespaces;
 
@@ -24,7 +24,14 @@ namespace NServiceBus
             {
                 throw new ConfigurationErrorsException($"The '{nameof(SingleNamespacePartitioning)}' strategy requires exactly one namespace for the purpose of partitioning, found {namespaces.Count}. Please remove additional namespace registrations.");
             }
+
+            SendingNamespacesCanBeCached = true;
         }
+
+        /// <summary>
+        /// Gets whether the information returned by the strategy for <see cref="PartitioningIntent.Sending"/> is cache-able.
+        /// </summary>
+        public bool SendingNamespacesCanBeCached { get; }
 
         public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
         {

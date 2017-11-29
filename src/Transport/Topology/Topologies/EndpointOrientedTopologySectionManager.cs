@@ -13,18 +13,24 @@ namespace NServiceBus.Transport.AzureServiceBus
         ITransportPartsContainer container;
         ConcurrentDictionary<Type, TopologySection> subscriptions = new ConcurrentDictionary<Type, TopologySection>();
 
+        ConcurrentDictionary<string, TopologySection> sendDestinations = new ConcurrentDictionary<string, TopologySection>();
+        ConcurrentDictionary<Type, TopologySection> publishDestinations = new ConcurrentDictionary<Type, TopologySection>();
+        Lazy<INamespacePartitioningStrategy> partitioningStrategy;
+
         public EndpointOrientedTopologySectionManager(SettingsHolder settings, ITransportPartsContainer container)
         {
             this.settings = settings;
             this.container = container;
+
+            partitioningStrategy = new Lazy<INamespacePartitioningStrategy>(() => (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy)));
         }
 
         public TopologySection DetermineReceiveResources(string inputQueue)
         {
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
+            
             var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
 
-            var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Receiving).ToArray();
+            var namespaces = partitioningStrategy.Value.GetNamespaces(PartitioningIntent.Receiving).ToArray();
 
             var inputQueuePath = addressingLogic.Apply(inputQueue, EntityType.Queue).Name;
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
@@ -42,15 +48,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             var endpointName = settings.EndpointName();
 
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
             var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
 
-            var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
+            var namespaces = partitioningStrategy.Value.GetNamespaces(PartitioningIntent.Creating).ToArray();
 
             var inputQueuePath = addressingLogic.Apply(endpointName, EntityType.Queue).Name;
             var entities = namespaces.Select(n => new EntityInfo { Path = inputQueuePath, Type = EntityType.Queue, Namespace = n }).ToList();
 
-            var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
+            var topicPath = addressingLogic.Apply($"{endpointName}.events", EntityType.Topic).Name;
             var topics = namespaces.Select(n => new EntityInfo {Path = topicPath, Type = EntityType.Topic, Namespace = n}).ToArray();
             entities.AddRange(topics);
 
@@ -73,7 +78,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
 
-            return new TopologySection()
+            return new TopologySection
             {
                 Namespaces = namespaces,
                 Entities = entities.ToArray()
@@ -82,15 +87,26 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySection DeterminePublishDestination(Type eventType)
         {
+            var canPartitioningStrategyBeCached = (partitioningStrategy.Value as ICacheSendingNamespaces)?.SendingNamespacesCanBeCached ?? false;
+
+            return canPartitioningStrategyBeCached ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish()) : CreateSectionForPublish();
+        }
+
+        TopologySection CreateSectionForPublish()
+        {
             var endpointName = settings.EndpointName();
 
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
+            var addressingLogic = (AddressingLogic) container.Resolve(typeof(AddressingLogic));
 
-            var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).Where(n => n.Mode == NamespaceMode.Active).ToArray();
+            var namespaces = partitioningStrategy.Value.GetNamespaces(PartitioningIntent.Sending).ToArray();
 
-            var topicPath = addressingLogic.Apply(endpointName + ".events", EntityType.Topic).Name;
-            var topics = namespaces.Select(n => new EntityInfo { Path = topicPath, Type = EntityType.Topic, Namespace = n }).ToArray();
+            var topicPath = addressingLogic.Apply($"{endpointName}.events", EntityType.Topic).Name;
+            var topics = namespaces.Select(n => new EntityInfo
+            {
+                Path = topicPath,
+                Type = EntityType.Topic,
+                Namespace = n
+            }).ToArray();
 
             return new TopologySection
             {
@@ -101,8 +117,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public TopologySection DetermineSendDestination(string destination)
         {
-            var partitioningStrategy = (INamespacePartitioningStrategy)container.Resolve(typeof(INamespacePartitioningStrategy));
-            var addressingLogic = (AddressingLogic)container.Resolve(typeof(AddressingLogic));
+            var canPartitioningStrategyBeCached = (partitioningStrategy.Value as ICacheSendingNamespaces)?.SendingNamespacesCanBeCached ?? false;
+
+            return canPartitioningStrategyBeCached ? sendDestinations.GetOrAdd(destination, dest => CreateSectionForSend(dest)) : CreateSectionForSend(destination);
+        }
+
+        TopologySection CreateSectionForSend(string destination)
+        {
+            var addressingLogic = (AddressingLogic) container.Resolve(typeof(AddressingLogic));
             var defaultName = settings.Get<string>(WellKnownConfigurationKeys.Topology.Addressing.DefaultNamespaceAlias);
 
             var inputQueueAddress = addressingLogic.Apply(destination, EntityType.Queue);
@@ -112,7 +134,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 if (inputQueueAddress.HasConnectionString)
                 {
-                    namespaces = new[]{
+                    namespaces = new[]
+                    {
                         new RuntimeNamespaceInfo(inputQueueAddress.Suffix, inputQueueAddress.Suffix, NamespacePurpose.Routing, NamespaceMode.Active)
                     };
                 }
@@ -134,7 +157,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
             else // sending to the partition
             {
-                namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Sending).ToArray();
+                namespaces = partitioningStrategy.Value.GetNamespaces(PartitioningIntent.Sending).ToArray();
             }
 
             if (namespaces == null)
@@ -142,7 +165,12 @@ namespace NServiceBus.Transport.AzureServiceBus
                 throw new Exception($"Could not determine namespace for destination {destination}");
             }
 
-            var inputQueues = namespaces.Select(n => new EntityInfo { Path = inputQueueAddress.Name, Type = EntityType.Queue, Namespace = n }).ToArray();
+            var inputQueues = namespaces.Select(n => new EntityInfo
+            {
+                Path = inputQueueAddress.Name,
+                Type = EntityType.Queue,
+                Namespace = n
+            }).ToArray();
 
             return new TopologySection
             {
@@ -163,16 +191,15 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         TopologySection BuildSubscriptionHierarchy(Type eventType)
         {
-            var partitioningStrategy = (INamespacePartitioningStrategy) container.Resolve(typeof(INamespacePartitioningStrategy));
             var endpointName = settings.EndpointName();
-            var namespaces = partitioningStrategy.GetNamespaces(PartitioningIntent.Creating).ToArray();
+            var namespaces = partitioningStrategy.Value.GetNamespaces(PartitioningIntent.Creating).ToArray();
             var addressingLogic = (AddressingLogic) container.Resolve(typeof(AddressingLogic));
 
             var topicPaths = DetermineTopicsFor(eventType);
 
-            var subscriptionNameCandidateV6 = endpointName + "." + eventType.Name;
+            var subscriptionNameCandidateV6 = $"{endpointName}.{eventType.Name}";
             var subscriptionNameV6 = addressingLogic.Apply(subscriptionNameCandidateV6, EntityType.Subscription).Name;
-            var subscriptionNameCandidate = endpointName + "." + eventType.FullName;
+            var subscriptionNameCandidate = $"{endpointName}.{eventType.FullName}";
             var subscriptionName = addressingLogic.Apply(subscriptionNameCandidate, EntityType.Subscription).Name;
 
             var topics = new List<EntityInfo>();

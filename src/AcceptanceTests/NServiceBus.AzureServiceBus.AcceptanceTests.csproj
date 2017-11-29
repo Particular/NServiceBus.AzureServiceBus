@@ -36,6 +36,12 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>WorkaroundKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.ServiceBus, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAzure.ServiceBus.4.0.0\lib\net45-full\Microsoft.ServiceBus.dll</HintPath>
@@ -69,9 +75,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Transport\Utils\TaskEx.cs">
-      <Link>TaskEx.cs</Link>
-    </Compile>
+    <Compile Include="Addressing\RoundRobinPartitioningFailoverStrategy.cs" />
+    <Compile Include="Addressing\When_publishing_message_with_custom_partitioning_strategy.cs" />
+    <Compile Include="Addressing\When_publishing_message_with_default_partitioning_strategy.cs" />
+    <Compile Include="Addressing\When_publishing_message_with_failover_partitioning_strategy.cs" />
+    <Compile Include="Addressing\When_publishing_message_with_roundrobin_partitioning_strategy.cs" />
+    <Compile Include="Addressing\When_sending_message_with_custom_partitioning_strategy.cs" />
+    <Compile Include="Addressing\When_sending_message_with_default_partitioning_strategy.cs" />
+    <Compile Include="Addressing\When_sending_message_with_failover_partitioning_strategy.cs" />
+    <Compile Include="Addressing\When_sending_message_with_roundrobin_partitioning_strategy.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.2.0\Audit\When_auditing.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.2.0\Audit\When_auditing_message_with_TimeToBeReceived.cs" />
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.2.0\Audit\When_audit_is_overridden_in_code.cs" />
@@ -264,7 +276,9 @@
     <Compile Include="App_Packages\NSB.AcceptanceTests.6.2.0\Versioning\When_multiple_versions_of_a_message_is_published.cs" />
     <Compile Include="Cleaner.cs" />
     <Compile Include="ConfigureEndpointAzureServiceBusTransport.cs" />
+    <Compile Include="CustomEndpointConfigurationExtensions.cs" />
     <Compile Include="Infrastructure\TestIndependenceBehavior.cs" />
+    <Compile Include="Infrastructure\TestUtility.cs" />
     <Compile Include="Issues\When_publisher_and_subscriber_bundles_are_misconfigured.cs" />
     <Compile Include="OldTests\When_sending_a_message_with_no_correlation_id.cs" />
     <Compile Include="OldTests\When_sending_an_oversized_message_without_a_transaction_scope.cs" />
@@ -281,6 +295,7 @@
     <Compile Include="Routing\When_using_single_namespace.cs" />
     <Compile Include="Sending\When_sending_more_than_100_messages_in_a_transaction.cs" />
     <Compile Include="Serialization\When_using_default_serialization.cs" />
+    <Compile Include="TestRequires.cs" />
     <Compile Include="TestSuiteConstraints.cs" />
     <Compile Include="TransportEncoding\When_receiving_a_message_with_unknown_transport_encoding.cs" />
     <Compile Include="TransportEncoding\When_sending_to_an_endpoint_with_different_transport_encoding.cs" />
@@ -295,6 +310,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="WorkaroundKey.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Transport\NServiceBus.AzureServiceBus.csproj">

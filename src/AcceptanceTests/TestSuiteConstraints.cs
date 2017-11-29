@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AcceptanceTests
 {
     using AcceptanceTesting.Support;
+    using ScenarioDescriptors;
 
     public partial class TestSuiteConstraints
     {
@@ -11,5 +12,11 @@
         public bool SupportsOutbox { get; } = false;
         public IConfigureEndpointTestExecution TransportConfiguration { get; } = new ConfigureEndpointAzureServiceBusTransport();
         public IConfigureEndpointTestExecution PersistenceConfiguration { get; } = new ConfigureEndpointInMemoryPersistence();
+
+        public string Topology { get; } = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
+
+        public bool IsEndpointOrientedTopology => Topology != "ForwardingTopology";
+
+        public bool IsForwardingTopology => Topology == "ForwardingTopology";
     }
 }

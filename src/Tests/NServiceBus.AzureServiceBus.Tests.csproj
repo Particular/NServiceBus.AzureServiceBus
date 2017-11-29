@@ -180,6 +180,7 @@
     <Compile Include="Topology\Sending\When_sending_through_ForwardingTopology.cs" />
     <Compile Include="Topology\Sending\When_sending_through_EndpointOrientedTopology.cs" />
     <Compile Include="Topology\When_configuring_publishers.cs" />
+    <Compile Include="Topology\When_counting_existing_topics_in_bundle.cs" />
     <Compile Include="Utils\When_getting_items_from_circular_buffer.cs" />
     <Compile Include="Utils\When_putting_items_into_circular_buffer.cs" />
   </ItemGroup>
