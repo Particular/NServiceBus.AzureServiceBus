@@ -360,6 +360,12 @@ namespace NServiceBus.Transport.AzureServiceBus
     public interface IBatcher { }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public interface IBrokerSideSubscriptionFilter { }
+    [System.ObsoleteAttribute("Deprecated and no longer required. Will be removed in version 9.0.0.", true)]
+    public interface ICacheSendingNamespaces
+    {
+        [System.ObsoleteAttribute("Deprecated and no longer required. Will be removed in version 9.0.0.", true)]
+        bool SendingNamespacesCanBeCached { get; }
+    }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public interface IClientEntity { }
     [System.ObsoleteAttribute("Internal unutilized contract that shouldn\'t be exposed. Will be removed in versio" +
