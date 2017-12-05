@@ -120,6 +120,8 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(System.Func<string, bool> condition, string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusQueueSettings LockDuration(System.TimeSpan duration) { }
+        [System.ObsoleteAttribute("Deprecated and no longer required. The member currently throws a NotImplementedEx" +
+            "ception. Will be removed in version 9.0.0.", true)]
         public NServiceBus.AzureServiceBusQueueSettings MaxDeliveryCount(int maxDeliveryCount) { }
         public NServiceBus.AzureServiceBusQueueSettings MaxSizeInMegabytes(NServiceBus.SizeInMegabytes maxSizeInMegabytes) { }
         public NServiceBus.AzureServiceBusQueueSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
@@ -162,6 +164,8 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusSubscriptionSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings ForwardDeadLetteredMessagesTo(System.Func<string, bool> condition, string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings LockDuration(System.TimeSpan lockDuration) { }
+        [System.ObsoleteAttribute("Deprecated and no longer required. The member currently throws a NotImplementedEx" +
+            "ception. Will be removed in version 9.0.0.", true)]
         public NServiceBus.AzureServiceBusSubscriptionSettings MaxDeliveryCount(int maxDeliveryCount) { }
     }
     public class AzureServiceBusTopicSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
