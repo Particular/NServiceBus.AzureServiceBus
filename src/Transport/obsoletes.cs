@@ -12,7 +12,7 @@ namespace NServiceBus
         public const string InternalizedContract = "Internal contract.";
         public const string ReplaceWithNewAPI = "Replaced with new API.";
         public const string DeprecatedAndNoLongerRequired = "Deprecated and no longer required.";
-        public const string MaxDeliveryCountDeprecatedInFavourOfRecoverabilityAndImmediateRetries = "MaxDeliveryCount is automatically set and controlled by Recoverability and Immediate retries.";
+        public const string MaxDeliveryCountDeprecatedInFavorOfRecoverabilityAndImmediateRetries = "MaxDeliveryCount is automatically set to the maximum and not required. Overriding is not recommended, but possible using AzureServiceBusQueueSettings.DescriptionCustomizer().";
     }
 
     [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
@@ -139,7 +139,7 @@ namespace NServiceBus
         /// <summary>
         /// <remarks> Default is 10.</remarks>
         /// </summary>
-        [ObsoleteEx(Message = ObsoleteMessages.MaxDeliveryCountDeprecatedInFavourOfRecoverabilityAndImmediateRetries, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        [ObsoleteEx(Message = ObsoleteMessages.MaxDeliveryCountDeprecatedInFavorOfRecoverabilityAndImmediateRetries, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public AzureServiceBusQueueSettings MaxDeliveryCount(int maxDeliveryCount)
         {
             throw new NotImplementedException();
@@ -185,7 +185,7 @@ namespace NServiceBus
         /// <summary>
         /// <remarks> Default is 10.</remarks>
         /// </summary>
-        [ObsoleteEx(Message = ObsoleteMessages.MaxDeliveryCountDeprecatedInFavourOfRecoverabilityAndImmediateRetries, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        [ObsoleteEx(Message = ObsoleteMessages.MaxDeliveryCountDeprecatedInFavorOfRecoverabilityAndImmediateRetries, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public AzureServiceBusSubscriptionSettings MaxDeliveryCount(int maxDeliveryCount)
         {
             throw new NotImplementedException();
