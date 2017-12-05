@@ -233,5 +233,15 @@
 
             Assert.AreEqual("namespacename", connectionString.NamespaceName);
         }
+
+        [Test]
+        [TestCase("Endpoint=sb://namespacename.servicebus.windows.net")]
+        public void Shared_access_key_should_be_optional(string connectionStringString)
+        {
+            ConnectionString connectionString;
+            ConnectionString.TryParse(connectionStringString, out connectionString);
+
+            Assert.AreEqual("namespacename", connectionString.NamespaceName);
+        }
     }
 }
