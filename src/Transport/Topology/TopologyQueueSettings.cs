@@ -13,7 +13,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         public TimeSpan DefaultMessageTimeToLive { get; set; } = TimeSpan.MaxValue;
         public bool EnableDeadLetteringOnMessageExpiration { get; set; } = false;
         public TimeSpan DuplicateDetectionHistoryTimeWindow { get; set; } = TimeSpan.FromMinutes(10);
-        public int MaxDeliveryCount { get; set; } = 10;
         public bool EnableBatchedOperations { get; set; } = true;
         public bool EnablePartitioning { get; set; } = false;
         public TimeSpan AutoDeleteOnIdle { get; set; } = TimeSpan.MaxValue;

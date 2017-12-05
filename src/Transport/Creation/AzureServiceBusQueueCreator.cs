@@ -18,7 +18,8 @@
             // TODO: remove ReadOnlySettings when the rest of setting is available
             systemQueueAddresses = settings.GetOrDefault<QueueBindings>()?.SendingAddresses ?? new List<string>();
             numberOfImmediateRetries = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries);
-            numberOfImmediateRetries = numberOfImmediateRetries > 0 ? numberOfImmediateRetries + 1 : queueSettings.MaxDeliveryCount;
+            // If immediate retries are disabled (0), use 1. Otherwise, immediate retries + 1
+            numberOfImmediateRetries = Math.Max(1, numberOfImmediateRetries + 1);
         }
 
         public async Task<QueueDescription> Create(string queuePath, INamespaceManagerInternal namespaceManager)
