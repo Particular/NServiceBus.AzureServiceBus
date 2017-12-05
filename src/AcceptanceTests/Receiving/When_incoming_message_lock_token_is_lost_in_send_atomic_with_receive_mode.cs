@@ -38,7 +38,6 @@
                     var transport = c.ConfigureAzureServiceBus();
                     var queues = transport.Queues();
                     queues.LockDuration(TimeSpan.FromSeconds(LockDurationOnIncomingMessageInSeconds));
-                    queues.MaxDeliveryCount(100);
                     transport.MessageReceivers().AutoRenewTimeout(TimeSpan.Zero);
                     transport.Routing().RouteToEndpoint(typeof(DispatchedMessage), AcceptanceTesting.Customization.Conventions.EndpointNamingConvention(typeof(Receiver)));
                     c.LimitMessageProcessingConcurrencyTo(1);
