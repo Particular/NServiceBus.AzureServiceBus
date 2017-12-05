@@ -62,7 +62,7 @@
             Assert.IsFalse(subscriptionDescription.EnableDeadLetteringOnFilterEvaluationExceptions);
             Assert.IsFalse(subscriptionDescription.EnableDeadLetteringOnMessageExpiration);
             Assert.IsFalse(subscriptionDescription.RequiresSession);
-            Assert.AreEqual(10, subscriptionDescription.MaxDeliveryCount);
+            Assert.AreEqual(1, subscriptionDescription.MaxDeliveryCount);
             Assert.IsNull(subscriptionDescription.ForwardDeadLetteredMessagesTo);
             Assert.IsNull(subscriptionDescription.ForwardTo);
 
@@ -225,29 +225,6 @@
             var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
 
             Assert.AreEqual(lockDuration, foundDescription.LockDuration);
-
-            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
-        }
-
-        [Test]
-        public async Task Should_properly_set_MaxDeliveryCount_on_the_created_entity()
-        {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            const int deliveryCount = 10;
-            extensions.Subscriptions().MaxDeliveryCount(deliveryCount);
-
-            var creator = new AzureServiceBusSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
-
-            const string subscriptionName = "sub9";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
-
-            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
-
-            Assert.AreEqual(deliveryCount, foundDescription.MaxDeliveryCount);
 
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
         }

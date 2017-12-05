@@ -98,14 +98,5 @@
 
             Assert.AreEqual(lockDuration, settings.Get<TopologySettings>().SubscriptionSettings.LockDuration);
         }
-
-        [Test]
-        public void Should_be_able_to_set_MaxDeliveryCount()
-        {
-            const int selectedMaxDeliveryCount = 6;
-            extensions.Subscriptions().MaxDeliveryCount(selectedMaxDeliveryCount);
-
-            Assert.AreEqual(selectedMaxDeliveryCount, settings.Get<TopologySettings>().SubscriptionSettings.MaxDeliveryCount);
-        }
     }
 }

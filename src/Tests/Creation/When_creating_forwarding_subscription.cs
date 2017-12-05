@@ -252,29 +252,6 @@
         }
 
         [Test]
-        public async Task Should_properly_set_MaxDeliveryCount_on_the_created_entity()
-        {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
-
-            const int deliveryCount = 10;
-            extensions.UseForwardingTopology().Subscriptions().MaxDeliveryCount(deliveryCount);
-
-            var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings, settings);
-
-            const string subscriptionName = "endpoint9";
-            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, forwardToQueue);
-
-            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
-
-            Assert.AreEqual(deliveryCount, foundDescription.MaxDeliveryCount);
-
-            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
-        }
-
-        [Test]
         public async Task Should_set_forwarding_to_an_explicitly_provided_forwardto()
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
