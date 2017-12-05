@@ -40,7 +40,6 @@
         {
             public MyEndpoint()
             {
-                // set delivery count to 1
                 EndpointSetup<DefaultServer>(c => c.Recoverability().Immediate(settings => settings.NumberOfRetries(0)));
             }
         }
