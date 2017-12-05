@@ -10,13 +10,15 @@
 
     class AzureServiceBusSubscriptionCreator
     {
+        internal const int DefaultMaxDeliveryCountForNoImmediateRetries = 1;
+
         public AzureServiceBusSubscriptionCreator(TopologySubscriptionSettings subscriptionSettings, ReadOnlySettings settings)
         {
             this.subscriptionSettings = subscriptionSettings;
             // TODO: remove ReadOnlySettings when the rest of setting is available
             numberOfImmediateRetries = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries);
             // If immediate retries are disabled (0), use 1. Otherwise, immediate retries + 1
-            numberOfImmediateRetries = Math.Max(1, numberOfImmediateRetries + 1);
+            numberOfImmediateRetries = Math.Max(DefaultMaxDeliveryCountForNoImmediateRetries, numberOfImmediateRetries + 1);
         }
 
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo = null)

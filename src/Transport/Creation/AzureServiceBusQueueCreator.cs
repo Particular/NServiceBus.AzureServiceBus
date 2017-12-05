@@ -12,6 +12,8 @@
 
     class AzureServiceBusQueueCreator
     {
+        internal const int DefaultMaxDeliveryCountForNoImmediateRetries = 1;
+
         public AzureServiceBusQueueCreator(TopologyQueueSettings queueSettings, ReadOnlySettings settings)
         {
             this.queueSettings = queueSettings;
@@ -19,7 +21,7 @@
             systemQueueAddresses = settings.GetOrDefault<QueueBindings>()?.SendingAddresses ?? new List<string>();
             numberOfImmediateRetries = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries);
             // If immediate retries are disabled (0), use 1. Otherwise, immediate retries + 1
-            numberOfImmediateRetries = Math.Max(1, numberOfImmediateRetries + 1);
+            numberOfImmediateRetries = Math.Max(DefaultMaxDeliveryCountForNoImmediateRetries, numberOfImmediateRetries + 1);
         }
 
         public async Task<QueueDescription> Create(string queuePath, INamespaceManagerInternal namespaceManager)

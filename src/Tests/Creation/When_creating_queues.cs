@@ -178,7 +178,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             var real = await namespaceManager.GetQueue("myqueue");
 
-            Assert.AreEqual(1, real.MaxDeliveryCount);
+            Assert.AreEqual(AzureServiceBusQueueCreator.DefaultMaxDeliveryCountForNoImmediateRetries, real.MaxDeliveryCount);
 
             //cleanup
             await namespaceManager.DeleteQueue("myqueue");
