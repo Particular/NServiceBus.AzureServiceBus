@@ -185,41 +185,33 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         }
 
         [Test]
-        public async Task Should_set_MaxDeliveryCount_to_number_of_immediate_retries_plus_1_for_non_system_queues()
+        public async Task Should_set_MaxDeliveryCount_to_maximum()
         {
-            const int numberOfImmediateRetries = 3;
-
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries, numberOfImmediateRetries);
-
-
+           
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);
 
             var real = await namespaceManager.GetQueue("myqueue");
 
-            Assert.That(real.MaxDeliveryCount, Is.EqualTo(numberOfImmediateRetries + 1));
+            Assert.That(real.MaxDeliveryCount, Is.EqualTo(AzureServiceBusQueueCreator.DefaultMaxDeliveryCountForNoImmediateRetries));
 
             //cleanup
             await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
-        public async Task Should_set_MaxDeliveryCount_to_10_for_system_queues()
+        public async Task Should_set_MaxDeliveryCount_to_maximum_for_system_queues()
         {
-            const int numberOfImmediateRetries = 3;
-
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries, numberOfImmediateRetries);
             var bindings = new QueueBindings();
             bindings.BindSending("myqueue");
             settings.Set<QueueBindings>(bindings);
-
 
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
@@ -227,7 +219,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             var real = await namespaceManager.GetQueue("myqueue");
 
-            Assert.That(real.MaxDeliveryCount, Is.EqualTo(10));
+            Assert.That(real.MaxDeliveryCount, Is.EqualTo(AzureServiceBusQueueCreator.DefaultMaxDeliveryCountForNoImmediateRetries));
 
             //cleanup
             await namespaceManager.DeleteQueue("myqueue");
