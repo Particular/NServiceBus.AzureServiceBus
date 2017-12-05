@@ -134,6 +134,15 @@ namespace NServiceBus
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// <remarks> Default is 10.</remarks>
+        /// </summary>
+        [ObsoleteEx(Message = ObsoleteMessages.DeprecatedAndNoLongerRequired, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusQueueSettings MaxDeliveryCount(int maxDeliveryCount)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public partial class AzureServiceBusTopicSettings
@@ -168,6 +177,15 @@ namespace NServiceBus
     {
         [ObsoleteEx(Message = ObsoleteMessages.ReplaceWithNewAPI, ReplacementTypeOrMember = "DescriptionCustomizer(Action<SubscriptionDescription>)", TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public AzureServiceBusSubscriptionSettings DescriptionFactory(Func<string, string, ReadOnlySettings, SubscriptionDescription> factory)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <remarks> Default is 10.</remarks>
+        /// </summary>
+        [ObsoleteEx(Message = ObsoleteMessages.DeprecatedAndNoLongerRequired, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
+        public AzureServiceBusSubscriptionSettings MaxDeliveryCount(int maxDeliveryCount)
         {
             throw new NotImplementedException();
         }

@@ -94,15 +94,6 @@ namespace NServiceBus
         }
 
         /// <summary>
-        /// <remarks> Default is 10.</remarks>
-        /// </summary>
-        public AzureServiceBusSubscriptionSettings MaxDeliveryCount(int maxDeliveryCount)
-        {
-            subscriptionSettings.MaxDeliveryCount = maxDeliveryCount;
-            return this;
-        }
-
-        /// <summary>
         /// <remarks> Default is false.</remarks>
         /// </summary>
         public AzureServiceBusSubscriptionSettings AutoDeleteOnIdle(TimeSpan autoDeleteOnIdle)
