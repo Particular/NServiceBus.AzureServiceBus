@@ -6,13 +6,12 @@
     using Logging;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
-    using Settings;
 
     class AzureServiceBusSubscriptionCreator
     {
         internal const int DefaultMaxDeliveryCountForNoImmediateRetries = int.MaxValue;
 
-        public AzureServiceBusSubscriptionCreator(TopologySubscriptionSettings subscriptionSettings, ReadOnlySettings settings)
+        public AzureServiceBusSubscriptionCreator(TopologySubscriptionSettings subscriptionSettings)
         {
             this.subscriptionSettings = subscriptionSettings;
         }

@@ -44,7 +44,7 @@ namespace NServiceBus
 
         protected override ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator()
         {
-            return new AzureServiceBusForwardingSubscriptionCreator(TopologySettings.SubscriptionSettings, Settings);
+            return new AzureServiceBusForwardingSubscriptionCreator(TopologySettings.SubscriptionSettings);
         }
     }
 }
