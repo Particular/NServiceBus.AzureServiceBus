@@ -72,8 +72,7 @@ namespace NServiceBus
         }
     }
 
-    [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-    public static class AzureServiceBusForwardingTopologySettingsExtensions
+    public static partial class AzureServiceBusForwardingTopologySettingsExtensions
     {
         [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public static AzureServiceBusTopologySettings<ForwardingTopology> NumberOfEntitiesInBundle(this AzureServiceBusTopologySettings<ForwardingTopology> topologySettings, int number)
@@ -89,12 +88,6 @@ namespace NServiceBus
 
         [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
         public static AzureServiceBusForwardingTopologySettings NumberOfEntitiesInBundle(this AzureServiceBusForwardingTopologySettings topologySettings, int number)
-        {
-            throw new NotImplementedException();
-        }
-
-        [ObsoleteEx(Message = ObsoleteMessages.InternalizedContract, TreatAsErrorFromVersion = "8.0", RemoveInVersion = "9.0")]
-        public static AzureServiceBusForwardingTopologySettings BundlePrefix(this AzureServiceBusForwardingTopologySettings topologySettings, string prefix)
         {
             throw new NotImplementedException();
         }
