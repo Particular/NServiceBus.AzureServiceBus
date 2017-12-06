@@ -225,5 +225,27 @@
 
             Assert.AreEqual("namespacename", connectionString.NamespaceName);
         }
+
+        [Test]
+        public void Should_equal_on_absence_of_sas_in_both()
+        {
+            ConnectionStringInternal connectionString1, connectionString2;
+            ConnectionStringInternal.TryParse("Endpoint=sb://namespacename.servicebus.windows.net", out connectionString1);
+            ConnectionStringInternal.TryParse("Endpoint=sb://namespacename.servicebus.windows.net", out connectionString2);
+
+            var areEqual = connectionString1.Equals(connectionString2);
+            Assert.IsTrue(areEqual);
+        }
+
+        [Test]
+        public void Should_not_equal_on_absence_of_sas_in_one()
+        {
+            ConnectionStringInternal connectionString1, connectionString2;
+            ConnectionStringInternal.TryParse("Endpoint=sb://namespacename.servicebus.windows.net", out connectionString1);
+            ConnectionStringInternal.TryParse("Endpoint=sb://namespacename.servicebus.windows.net;SharedAccessKeyName=name;SharedAccessKey=key", out connectionString2);
+
+            var areEqual = connectionString1.Equals(connectionString2);
+            Assert.IsFalse(areEqual);
+        }
     }
 }
