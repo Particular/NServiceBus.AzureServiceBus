@@ -256,7 +256,7 @@
         }
 
         [Test]
-        public void Should_not_equal_on_absence_of_sas_in_one(string connectionStringString1, string connectionStringString2)
+        public void Should_not_equal_on_absence_of_sas_in_one()
         {
             ConnectionString connectionString1, connectionString2;
             ConnectionString.TryParse("Endpoint=sb://namespacename.servicebus.windows.net", out connectionString1);
