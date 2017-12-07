@@ -40,7 +40,7 @@
         {
             public MyEndpoint()
             {
-                EndpointSetup<DefaultServer>(c => c.ConfigureAzureServiceBus().Queues().MaxDeliveryCount(1));
+                EndpointSetup<DefaultServer>(c => c.Recoverability().Immediate(settings => settings.NumberOfRetries(0)));
             }
         }
 

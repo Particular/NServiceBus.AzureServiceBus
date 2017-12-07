@@ -2,7 +2,6 @@
 {
     using System;
     using System.Threading.Tasks;
-    using AzureServiceBus;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using TestUtils;
@@ -38,9 +37,7 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(Ns1.ReusedEvent).Name), new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize());
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-
-            var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings(), settings);
+            var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings());
             var metadata1 = new SubscriptionMetadataInternal
             {
                 SubscriptionNameBasedOnEventWithNamespace = typeof(Ns1.ReusedEvent).FullName,

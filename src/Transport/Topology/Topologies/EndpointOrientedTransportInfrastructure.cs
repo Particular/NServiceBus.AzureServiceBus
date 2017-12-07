@@ -20,7 +20,7 @@ namespace NServiceBus
 
         protected override ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator()
         {
-            return new AzureServiceBusSubscriptionCreatorV6(TopologySettings.SubscriptionSettings, Settings);
+            return new AzureServiceBusSubscriptionCreatorV6(TopologySettings.SubscriptionSettings);
         }
     }
 }

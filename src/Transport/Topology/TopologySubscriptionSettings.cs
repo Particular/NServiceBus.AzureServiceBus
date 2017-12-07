@@ -12,7 +12,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         public bool EnableDeadLetteringOnFilterEvaluationExceptions { get; set; } = false;
         public bool EnableDeadLetteringOnMessageExpiration { get; set; } = false;
         public TimeSpan LockDuration { get; set; } = TimeSpan.FromSeconds(30);
-        public int MaxDeliveryCount { get; set; } = 10;
 
         public string ForwardDeadLetteredMessagesTo { get; set; } = null;
 

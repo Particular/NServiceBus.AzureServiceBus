@@ -12,13 +12,13 @@
 
     class AzureServiceBusQueueCreator
     {
+        internal const int DefaultMaxDeliveryCountForNoImmediateRetries = int.MaxValue;
+
         public AzureServiceBusQueueCreator(TopologyQueueSettings queueSettings, ReadOnlySettings settings)
         {
             this.queueSettings = queueSettings;
             // TODO: remove ReadOnlySettings when the rest of setting is available
             systemQueueAddresses = settings.GetOrDefault<QueueBindings>()?.SendingAddresses ?? new List<string>();
-            numberOfImmediateRetries = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries);
-            numberOfImmediateRetries = numberOfImmediateRetries > 0 ? numberOfImmediateRetries + 1 : queueSettings.MaxDeliveryCount;
         }
 
         public async Task<QueueDescription> Create(string queuePath, INamespaceManagerInternal namespaceManager)
@@ -31,7 +31,7 @@
                 DefaultMessageTimeToLive = queueSettings.DefaultMessageTimeToLive,
                 EnableDeadLetteringOnMessageExpiration = queueSettings.EnableDeadLetteringOnMessageExpiration,
                 DuplicateDetectionHistoryTimeWindow = queueSettings.DuplicateDetectionHistoryTimeWindow,
-                MaxDeliveryCount = IsSystemQueue(queuePath) ? 10 : numberOfImmediateRetries,
+                MaxDeliveryCount = DefaultMaxDeliveryCountForNoImmediateRetries,
                 EnableBatchedOperations = queueSettings.EnableBatchedOperations,
                 EnablePartitioning = queueSettings.EnablePartitioning,
                 SupportOrdering = queueSettings.SupportOrdering,
@@ -165,6 +165,5 @@
         TopologyQueueSettings queueSettings;
         ILog logger = LogManager.GetLogger(typeof(AzureServiceBusQueueCreator));
         IReadOnlyCollection<string> systemQueueAddresses;
-        int numberOfImmediateRetries;
     }
 }

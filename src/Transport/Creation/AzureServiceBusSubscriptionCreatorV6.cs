@@ -4,13 +4,12 @@
     using System.Threading.Tasks;
     using Logging;
     using Microsoft.ServiceBus.Messaging;
-    using Settings;
 
     class AzureServiceBusSubscriptionCreatorV6 : ICreateAzureServiceBusSubscriptionsInternal
     {
-        public AzureServiceBusSubscriptionCreatorV6(TopologySubscriptionSettings subscriptionSettings, ReadOnlySettings settings)
+        public AzureServiceBusSubscriptionCreatorV6(TopologySubscriptionSettings subscriptionSettings)
         {
-            creator = new AzureServiceBusSubscriptionCreator(subscriptionSettings, settings);
+            creator = new AzureServiceBusSubscriptionCreator(subscriptionSettings);
         }
 
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo = null)

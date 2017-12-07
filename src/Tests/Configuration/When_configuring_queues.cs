@@ -98,15 +98,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         }
 
         [Test]
-        public void Should_be_able_to_set_MaxDeliveryCount()
-        {
-            const int selectedMaxDeliveryCount = 6;
-            extensions.Queues().MaxDeliveryCount(selectedMaxDeliveryCount);
-
-            Assert.AreEqual(selectedMaxDeliveryCount, settings.Get<TopologySettings>().QueueSettings.MaxDeliveryCount);
-        }
-
-        [Test]
         public void Should_be_able_to_set_MaxSizeInMegabytes()
         {
             const long maxTopicSizeInMB = 2048;

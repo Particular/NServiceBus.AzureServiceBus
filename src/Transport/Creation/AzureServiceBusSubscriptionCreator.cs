@@ -6,16 +6,14 @@
     using Logging;
     using Microsoft.ServiceBus.Messaging;
     using NServiceBus.AzureServiceBus;
-    using Settings;
 
     class AzureServiceBusSubscriptionCreator
     {
-        public AzureServiceBusSubscriptionCreator(TopologySubscriptionSettings subscriptionSettings, ReadOnlySettings settings)
+        internal const int DefaultMaxDeliveryCountForNoImmediateRetries = int.MaxValue;
+
+        public AzureServiceBusSubscriptionCreator(TopologySubscriptionSettings subscriptionSettings)
         {
             this.subscriptionSettings = subscriptionSettings;
-            // TODO: remove ReadOnlySettings when the rest of setting is available
-            numberOfImmediateRetries = settings.GetOrDefault<int>(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries);
-            numberOfImmediateRetries = numberOfImmediateRetries > 0 ? numberOfImmediateRetries + 1 : subscriptionSettings.MaxDeliveryCount;
         }
 
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo = null)
@@ -29,7 +27,7 @@
                 EnableDeadLetteringOnMessageExpiration = subscriptionSettings.EnableDeadLetteringOnMessageExpiration,
                 ForwardDeadLetteredMessagesTo = subscriptionSettings.ForwardDeadLetteredMessagesTo,
                 LockDuration = subscriptionSettings.LockDuration,
-                MaxDeliveryCount = numberOfImmediateRetries
+                MaxDeliveryCount = DefaultMaxDeliveryCountForNoImmediateRetries
             };
 
             subscriptionSettings.DescriptionCustomizer(subscriptionDescription);
@@ -173,7 +171,6 @@
         }
 
         TopologySubscriptionSettings subscriptionSettings;
-        int numberOfImmediateRetries;
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();
         ILog logger = LogManager.GetLogger<AzureServiceBusSubscriptionCreator>();
     }

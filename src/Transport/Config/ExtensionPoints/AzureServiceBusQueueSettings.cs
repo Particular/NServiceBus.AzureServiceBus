@@ -77,16 +77,6 @@
         }
 
         /// <summary>
-        /// <remarks> Default is 10.</remarks>
-        /// </summary>
-        public AzureServiceBusQueueSettings MaxDeliveryCount(int maxDeliveryCount)
-        {
-            queueSettings.MaxDeliveryCount = maxDeliveryCount;
-
-            return this;
-        }
-
-        /// <summary>
         /// <remarks> Default is 10 minutes.</remarks>
         /// </summary>
         public AzureServiceBusQueueSettings DuplicateDetectionHistoryTimeWindow(TimeSpan duplicateDetectionHistoryTimeWindow)
