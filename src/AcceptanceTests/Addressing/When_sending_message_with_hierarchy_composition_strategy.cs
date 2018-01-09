@@ -1,11 +1,14 @@
 namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Addressing
 {
     using System.Collections.Concurrent;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
     using AzureServiceBus;
+    using AzureServiceBus.AcceptanceTests.Infrastructure;
+    using Microsoft.ServiceBus;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NUnit.Framework;
@@ -24,13 +27,13 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                     });
                 })
                 .WithEndpoint<TargetEndpoint>()
-                .Done(c => c.RequestsReceived == 1 && c.NamespaceNames.Count == 1)
+                .Done(c => c.RequestsReceived == 1 && c.ResponsesReceived == 1)
                 .Run();
 
-            CollectionAssert.AreEquivalent(new[]
-            {
-                $"scadapter/{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@default",
-            }, context.NamespaceNames);
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(TestUtility.DefaultConnectionString);
+            var namespaces = context.ReplyToAddresses.Select(x => x.Replace("@default", "")).ToArray();
+            Assert.IsTrue(await namespaceManager.QueueExistsAsync(namespaces[0]));
+            Assert.IsTrue(await namespaceManager.QueueExistsAsync(namespaces[1]));
         }
 
 
@@ -53,7 +56,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
 
                 public Task Handle(MyResponse message, IMessageHandlerContext context)
                 {
-                    Context.NamespaceNames.Add(context.ReplyToAddress);
+                    Context.ReplyToAddresses.Push(context.ReplyToAddress);
+                    Context.ReceivedResponse();
                     return TaskEx.Completed;
                 }
             }
@@ -76,7 +80,8 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
 
                 public Task Handle(MyRequest message, IMessageHandlerContext context)
                 {
-                    Context.Received();
+                    Context.ReplyToAddresses.Push(context.ReplyToAddress);
+                    Context.ReceivedRequest();
                     return context.Reply(new MyResponse());
                 }
             }
@@ -96,19 +101,26 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
 
         class Context : ScenarioContext
         {
-            long received;
+            long receivedRequest;
+            long receivedResponse;
+
             public Context()
             {
-                NamespaceNames = new ConcurrentBag<string>();
+                ReplyToAddresses = new ConcurrentStack<string>();
             }
 
-            public long RequestsReceived => Interlocked.Read(ref received);
+            public long RequestsReceived => Interlocked.Read(ref receivedRequest);
+            public long ResponsesReceived => Interlocked.Read(ref receivedResponse);
 
-            public ConcurrentBag<string> NamespaceNames { get; }
+            public ConcurrentStack<string> ReplyToAddresses { get; }
 
-            public void Received()
+            public void ReceivedRequest()
             {
-                Interlocked.Increment(ref received);
+                Interlocked.Increment(ref receivedRequest);
+            }
+            public void ReceivedResponse()
+            {
+                Interlocked.Increment(ref receivedResponse);
             }
         }
     }
