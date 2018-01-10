@@ -25,10 +25,17 @@ namespace NServiceBus
             {
                 case EntityType.Queue:
                 case EntityType.Topic:
-                    return pathGenerator(entityName) + entityName;
+                    var prefix = pathGenerator(entityName);
+                    if (entityName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return entityName;
+                    }
+                    return prefix + entityName;
+
                 case EntityType.Subscription:
                 case EntityType.Rule:
                     return entityName;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
             }

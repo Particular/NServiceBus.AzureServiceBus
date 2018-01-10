@@ -35,6 +35,18 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
             Assert.AreEqual(prefix + entityname, strategy.GetEntityPath(entityname, EntityType.Topic));
         }
 
+        [TestCase("my/path/", "my/path/myQueue", EntityType.Queue)]
+        [TestCase("my/path/", "my/path/myTopic", EntityType.Topic)]
+        public void Hierarchy_composition_will_NOT_prefix_entity_name_if_prefix_is_already_applied(string prefix, string entityPath, EntityType entityType)
+        {
+            var settings = new SettingsHolder();
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
+            var strategy = new HierarchyComposition(settings);
+
+            Assert.AreEqual(entityPath, strategy.GetEntityPath(entityPath, entityType));
+        }
+        
+
         [Test]
         public void Hierarchy_composition_will_not_prefix_entity_name_with_path_for_subscriptions()
         {
