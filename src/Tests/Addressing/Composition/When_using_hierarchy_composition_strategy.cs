@@ -29,7 +29,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
 
         [TestCase("my/path/myQueue", EntityType.Queue)]
         [TestCase("my/path/myTopic", EntityType.Topic)]
-        public void Hierarchy_composition_will_NOT_prefix_entity_name_if_prefix_is_already_applied_to_queues_and_topics(string entityPath, EntityType entityType)
+        public void Hierarchy_composition_will_not_prefix_entity_name_if_prefix_is_already_applied_to_queues_and_topics(string entityPath, EntityType entityType)
         {
             Assert.AreEqual(entityPath, strategy.GetEntityPath(entityPath, entityType));
         }

@@ -30,7 +30,7 @@ namespace NServiceBus
                     {
                         return entityName;
                     }
-                    return prefix + entityName;
+                    return $"{prefix}{entityName}";
 
                 case EntityType.Subscription:
                 case EntityType.Rule:
