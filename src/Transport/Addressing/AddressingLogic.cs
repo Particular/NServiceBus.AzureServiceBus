@@ -18,11 +18,11 @@
                 return address;
             }
 
-            var path = addresses.GetOrAdd(value, x =>
+            var path = cachedPaths.GetOrAdd(value, x =>
             {
                 var newPath = composition.GetEntityPath(x, entityType);
                 newPath = sanitizationStrategy.Sanitize(newPath, entityType);
-                addresses.TryAdd(newPath, newPath);
+                cachedPaths.TryAdd(newPath, newPath);
                 return newPath;
             });
 
@@ -31,6 +31,6 @@
 
         readonly ICompositionStrategy composition;
         readonly ISanitizationStrategy sanitizationStrategy;
-        ConcurrentDictionary<string, string> addresses = new ConcurrentDictionary<string, string>();
+        ConcurrentDictionary<string, string> cachedPaths = new ConcurrentDictionary<string, string>();
     }
 }
