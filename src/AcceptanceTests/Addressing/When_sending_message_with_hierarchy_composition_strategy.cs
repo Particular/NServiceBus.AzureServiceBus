@@ -31,9 +31,11 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                 .Run();
 
             var namespaceManager = NamespaceManager.CreateFromConnectionString(TestUtility.DefaultConnectionString);
-            var namespaces = context.ReplyToAddresses.Select(x => x.Replace("@default", "")).ToArray();
-            Assert.IsTrue(await namespaceManager.QueueExistsAsync(namespaces[0]));
-            Assert.IsTrue(await namespaceManager.QueueExistsAsync(namespaces[1]));
+            var queueNames = context.ReplyToAddresses.Select(x => x.Replace("@default", "")).ToArray();
+
+            var results = await Task.WhenAll(namespaceManager.QueueExistsAsync(queueNames[0]), namespaceManager.QueueExistsAsync(queueNames[1]));
+
+            CollectionAssert.AreEquivalent(new[] {true, true}, results, "'{0}' and '{1}' queues were expected to exist, but were not found.", queueNames);
         }
 
 
