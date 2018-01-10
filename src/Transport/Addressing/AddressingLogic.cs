@@ -1,5 +1,7 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
+    using System.Collections.Concurrent;
+
     class AddressingLogic
     {
         public AddressingLogic(ISanitizationStrategy sanitizationStrategy, ICompositionStrategy composition)
@@ -11,6 +13,11 @@
         public EntityAddress Apply(string value, EntityType entityType)
         {
             var address = new EntityAddress(value);
+            if (address.HasSuffix)
+            {
+                return address;
+            }
+
             var path = addresses.GetOrAdd(value, x =>
             {
                 var newPath = composition.GetEntityPath(x, entityType);
