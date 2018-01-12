@@ -10,15 +10,12 @@
 
         public EntityAddress Apply(string value, EntityType entityType)
         {
-            var address = new EntityAddress(value);
-            if (address.HasSuffix)
-            {
-                return address;
-            }
+            var originalAddress = new EntityAddress(value);
 
-            var path = composition.GetEntityPath(address.Name, entityType);
+            var path = composition.GetEntityPath(originalAddress.Name, entityType);
             path = sanitizationStrategy.Sanitize(path, entityType);
-            return new EntityAddress(path, address.Suffix);
+
+            return new EntityAddress(path, originalAddress.Suffix);
         }
 
         readonly ICompositionStrategy composition;

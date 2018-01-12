@@ -24,12 +24,12 @@
         [TestCase("validendpoint@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey")]
         [TestCase("endpoint$name@namespaceName")]
         [TestCase("endpoint$name@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey")]
-        public void Composition_and_sanitization_should_NOT_be_invoked_for_values_with_suffix(string endpointName)
+        public void Composition_and_sanitization_should_be_invoked_for_values_with_suffix(string endpointName)
         {
             addressingLogic.Apply(endpointName, EntityType.Queue);
 
-            Assert.IsFalse(compositionStrategy.WasInvoked);
-            Assert.IsFalse(sanitizationStrategy.WasInvoked);
+            Assert.IsTrue(compositionStrategy.WasInvoked);
+            Assert.IsTrue(sanitizationStrategy.WasInvoked);
         }
 
         class SanitizationStrategy : ISanitizationStrategy
