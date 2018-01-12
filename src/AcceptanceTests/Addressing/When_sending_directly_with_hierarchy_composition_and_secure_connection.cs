@@ -1,5 +1,8 @@
 ﻿namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Addressing
 {
+    using System;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using AcceptanceTesting;
@@ -7,9 +10,12 @@
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NUnit.Framework;
+    using Transport.AzureServiceBus;
 
     public class When_sending_directly_with_hierarchy_composition_and_secure_connection : NServiceBusAcceptanceTest
     {
+        const string NamespaceHierarchyPrefix = "scadapter/";
+
         [Test]
         public async Task Should_send_and_receive_message()
         {
@@ -36,8 +42,9 @@
                 EndpointSetup<DefaultServer>(c =>
                 {
                     var transport = c.ConfigureAzureServiceBus();
-                    transport.Composition().UseStrategy<HierarchyComposition>().PathGenerator(path => "scadapter/");
+                    transport.Composition().UseStrategy<HierarchyComposition>().PathGenerator(path => NamespaceHierarchyPrefix);
                     transport.UseNamespaceAliasesInsteadOfConnectionStrings();
+                    transport.Sanitization().UseStrategy<CustomSanitization>();
                 });
             }
         }
@@ -49,8 +56,9 @@
                 EndpointSetup<DefaultServer>(c =>
                 {
                     var transport = c.ConfigureAzureServiceBus();
-                    transport.Composition().UseStrategy<HierarchyComposition>().PathGenerator(path => "scadapter/");
+                    transport.Composition().UseStrategy<HierarchyComposition>().PathGenerator(path => NamespaceHierarchyPrefix);
                     transport.UseNamespaceAliasesInsteadOfConnectionStrings();
+                    transport.Sanitization().UseStrategy<CustomSanitization>();
                 });
             }
 
@@ -64,6 +72,52 @@
                     return Task.FromResult(0);
                 }
             }
+        }
+
+        class CustomSanitization : ISanitizationStrategy
+        {
+            public string Sanitize(string entityPathOrName, EntityType entityType)
+            {
+                var entityPathOrNameMaxLength = 0;
+
+                switch (entityType)
+                {
+                    case EntityType.Queue:
+                    case EntityType.Topic:
+                    case EntityType.Subscription:
+                    case EntityType.Rule:
+                        entityPathOrNameMaxLength = 50;
+                        break;
+                }
+
+                if (entityPathOrName.Length > entityPathOrNameMaxLength)
+                {
+                    var pathWithoutNamespaceHierarchyPrefix = entityPathOrName.Remove(0, NamespaceHierarchyPrefix.Length);
+                    entityPathOrName = MD5DeterministicNameBuilder.Build(pathWithoutNamespaceHierarchyPrefix);
+
+                    // sanitization took place, restore namespace hierarchy prefix
+                    if (entityType == EntityType.Queue || entityType == EntityType.Topic)
+                    {
+                        return $"{NamespaceHierarchyPrefix}{entityPathOrName}";
+                    }
+                }
+
+                return entityPathOrName;
+            }
+
+            static class MD5DeterministicNameBuilder
+            {
+                public static string Build(string input)
+                {
+                    var inputBytes = Encoding.Default.GetBytes(input);
+                    using (var provider = new MD5CryptoServiceProvider())
+                    {
+                        var hashBytes = provider.ComputeHash(inputBytes);
+                        return new Guid(hashBytes).ToString();
+                    }
+                }
+            }
+
         }
 
         public class MyRequest : IMessage
