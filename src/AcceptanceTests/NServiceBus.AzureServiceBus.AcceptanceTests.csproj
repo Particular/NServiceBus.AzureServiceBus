@@ -289,6 +289,7 @@
     <Compile Include="Routing\AzureServiceBusTransportConfigContext.cs" />
     <Compile Include="Routing\When_scaling_out_senders_that_uses_callbacks.cs" />
     <Compile Include="Routing\When_sending_to_specific_namespace.cs" />
+    <Compile Include="Routing\When_subscribing_to_an_event_its_name_is_a_prefix_of_another_event_not_subscribed_to.cs" />
     <Compile Include="Routing\When_subscribing_to_a_derived_polymorphic_event_with_forwarding_topology.cs" />
     <Compile Include="Routing\When_unsubscribing_from_one_of_the_events_for_ForwardingTopology.cs" />
     <Compile Include="Routing\When_unsubscribing.cs" />
