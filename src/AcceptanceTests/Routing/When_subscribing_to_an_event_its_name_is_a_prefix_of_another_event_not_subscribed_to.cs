@@ -43,7 +43,8 @@
         {
             public Subscriber()
             {
-                EndpointSetup<DefaultServer>(c => c.SendFailedMessagesTo("error"));
+                EndpointSetup<DefaultServer>(c => c.SendFailedMessagesTo("error"), 
+                    publisherMetadata => publisherMetadata.RegisterPublisherFor<Event>(typeof(Publisher)));
             }
 
             public class MyEventHandler : IHandleMessages<Event>
