@@ -12,12 +12,12 @@
         public async Task Should_not_subscribe_to_another_event()
         {
             var context = await Scenario.Define<Context>()
+                .WithEndpoint<Subscriber>()
+                .WithEndpoint<ErrorSpy>()
                 .WithEndpoint<Publisher>(b => b.When(async bus =>
                 {
                     await bus.Publish<EventSubscriberNotInterestedIn>();
                 }))
-                .WithEndpoint<Subscriber>()
-                .WithEndpoint<ErrorSpy>()
                 .Done(ctx => ctx.ReceivedIncorrectEvent)
                 .Run();
 
@@ -44,7 +44,11 @@
             public Subscriber()
             {
                 EndpointSetup<DefaultServer>(c => c.SendFailedMessagesTo("error"), 
-                    publisherMetadata => publisherMetadata.RegisterPublisherFor<Event>(typeof(Publisher)));
+                    publisherMetadata =>
+                    {
+                        publisherMetadata.RegisterPublisherFor<Event>(typeof(Publisher));
+                        publisherMetadata.RegisterPublisherFor<EventSubscriberNotInterestedIn>(typeof(Publisher));
+                    });
             }
 
             public class MyEventHandler : IHandleMessages<Event>
