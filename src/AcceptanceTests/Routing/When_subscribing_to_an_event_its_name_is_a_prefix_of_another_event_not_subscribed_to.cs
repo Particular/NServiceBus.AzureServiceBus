@@ -12,7 +12,7 @@
         public async Task Should_not_subscribe_to_another_event()
         {
             var context = await Scenario.Define<Context>()
-                .WithEndpoint<Subscriber>()
+                .WithEndpoint<Subscriber>(b => b.DoNotFailOnErrorMessages())
                 .WithEndpoint<ErrorSpy>()
                 .WithEndpoint<Publisher>(b => b.When(async bus =>
                 {
