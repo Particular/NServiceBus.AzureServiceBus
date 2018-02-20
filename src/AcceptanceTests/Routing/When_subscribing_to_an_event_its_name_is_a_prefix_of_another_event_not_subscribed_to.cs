@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using AcceptanceTesting;
+    using Features;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NUnit.Framework;
@@ -66,7 +67,8 @@
         {
             public ErrorSpy()
             {
-                EndpointSetup<DefaultServer>().CustomEndpointName("error");
+                EndpointSetup<DefaultServer>(endpointConfiguration => endpointConfiguration.DisableFeature<AutoSubscribe>())
+                    .CustomEndpointName("error");
             }
 
             class Handler : IHandleMessages<EventSubscriberNotInterestedIn>
