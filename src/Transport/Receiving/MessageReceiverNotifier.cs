@@ -50,7 +50,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             maxConcurrentCalls = concurrency > 1 ? (int)Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
             if (Math.Abs(maxConcurrentCalls - concurrency) > 0)
             {
-                logger.InfoFormat("The maximum concurrency on message receiver instance for '{0}' has been adjusted to '{1}', because the total maximum concurrency '{2}' wasn't divisable by the number of clients '{3}'", fullPath, maxConcurrentCalls, maximumConcurrency, numberOfClients);
+                logger.InfoFormat("The maximum concurrency on message receiver instance for '{0}' has been adjusted to '{1}', because the total maximum concurrency '{2}' wasn't divisible by the number of clients '{3}'", fullPath, maxConcurrentCalls, maximumConcurrency, numberOfClients);
             }
 
             internalReceivers = new IMessageReceiverInternal[numberOfClients];
