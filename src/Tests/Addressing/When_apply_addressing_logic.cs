@@ -20,48 +20,36 @@
         }
 
         [Test]
-        [TestCase("validendpoint@namespaceName", "validendpoint")]
-        [TestCase("validendpoint@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "validendpoint")]
-        [TestCase("endpoint$name@namespaceName", "endpoint$name")]
-        [TestCase("endpoint$name@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "endpoint$name")]
-        public void Sanitization_strategy_should_receive_value_without_suffix(string endpointName, string expectedEndpointName)
+        [TestCase("validendpoint@namespaceName")]
+        [TestCase("validendpoint@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey")]
+        [TestCase("endpoint$name@namespaceName")]
+        [TestCase("endpoint$name@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey")]
+        public void Composition_and_sanitization_should_be_invoked_for_values_with_suffix(string endpointName)
         {
             addressingLogic.Apply(endpointName, EntityType.Queue);
 
-            Assert.AreEqual(expectedEndpointName, sanitizationStrategy.ProvidedEntityPathOrName);
-        }
-
-        [Test]
-        [TestCase("validendpoint@namespaceName", "validendpoint")]
-        [TestCase("validendpoint@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "validendpoint")]
-        [TestCase("endpoint$name@namespaceName", "endpoint$name")]
-        [TestCase("endpoint$name@Endpoint=sb://namespaceName.servicebus.windows.net;SharedAccessKeyName=SharedAccessKeyName;SharedAccessKey=SharedAccessKey", "endpoint$name")]
-        public void Composition_strategy_should_receive_value_without_suffix(string endpointName, string expectedEndpointName)
-        {
-            addressingLogic.Apply(endpointName, EntityType.Queue);
-
-            Assert.AreEqual(expectedEndpointName, compositionStrategy.ProvidedEntityName);
+            Assert.IsTrue(compositionStrategy.WasInvoked);
+            Assert.IsTrue(sanitizationStrategy.WasInvoked);
         }
 
         class SanitizationStrategy : ISanitizationStrategy
         {
-            public string ProvidedEntityPathOrName { get; private set; }
+            public bool WasInvoked { get; private set; }
 
             public string Sanitize(string entityPathOrName, EntityType entityType)
             {
-                ProvidedEntityPathOrName = entityPathOrName;
+                WasInvoked = true;
                 return entityPathOrName;
             }
         }
 
         class CompositionStrategy : ICompositionStrategy
         {
-            public string ProvidedEntityName { get; private set; }
+            public bool WasInvoked { get; private set; }
 
             public string GetEntityPath(string entityName, EntityType entityType)
             {
-                ProvidedEntityName = entityName;
-
+                WasInvoked = true;
                 return entityName;
             }
         }

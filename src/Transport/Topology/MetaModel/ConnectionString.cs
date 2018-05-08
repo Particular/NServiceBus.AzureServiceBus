@@ -75,7 +75,7 @@
 
         public static bool IsConnectionString(string value)
         {
-            return TryParse(value, out ConnectionStringInternal _);
+            return TryParse(value, out var _);
         }
 
         public static implicit operator string(ConnectionStringInternal connectionString)

@@ -9,56 +9,37 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
     [Category("AzureServiceBus")]
     public class When_using_hierarchy_composition_strategy
     {
-        [Test]
-        public void Hierarchy_composition_will_prefix_entity_name_with_path_for_queues()
+        const string Prefix = "my/path/";
+        HierarchyComposition strategy;
+
+        [SetUp]
+        public void Setup()
         {
-            var prefix = "/my/path/";
-            var entityname = "myqueue";
-
             var settings = new SettingsHolder();
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
-            var strategy = new HierarchyComposition(settings);
-
-            Assert.AreEqual(prefix + entityname, strategy.GetEntityPath(entityname, EntityType.Queue));
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => Prefix));
+            strategy = new HierarchyComposition(settings);
         }
 
-        [Test]
-        public void Hierarchy_composition_will_prefix_entity_name_with_path_for_topics()
+        [TestCase("myQueue", EntityType.Queue)]
+        [TestCase("myTopic", EntityType.Topic)]
+        public void Hierarchy_composition_will_prefix_entity_name_with_path_for_queues_and_topics(string entityPath, EntityType entityType)
         {
-            var prefix = "/my/path/";
-            var entityname = "mytopic";
-
-            var settings = new SettingsHolder();
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
-            var strategy = new HierarchyComposition(settings);
-
-            Assert.AreEqual(prefix + entityname, strategy.GetEntityPath(entityname, EntityType.Topic));
+            Assert.AreEqual($"{Prefix}{entityPath}", strategy.GetEntityPath(entityPath, entityType));
         }
 
-        [Test]
-        public void Hierarchy_composition_will_not_prefix_entity_name_with_path_for_subscriptions()
+        [TestCase("my/path/myQueue", EntityType.Queue)]
+        [TestCase("my/path/myTopic", EntityType.Topic)]
+        public void Hierarchy_composition_will_not_prefix_entity_name_if_prefix_is_already_applied_to_queues_and_topics(string entityPath, EntityType entityType)
         {
-            var prefix = "/my/path/";
-            var entityname = "myqueue";
-
-            var settings = new SettingsHolder();
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
-            var strategy = new HierarchyComposition(settings);
-
-            Assert.AreEqual(entityname, strategy.GetEntityPath(entityname, EntityType.Subscription));
+            Assert.AreEqual(entityPath, strategy.GetEntityPath(entityPath, entityType));
         }
 
-        [Test]
-        public void Hierarchy_composition_will_not_prefix_entity_name_with_path_for_rules()
+
+        [TestCase("mySubscription", EntityType.Subscription)]
+        [TestCase("myRule", EntityType.Rule)]
+        public void Hierarchy_composition_will_not_prefix_entity_name_with_path_for_subscriptions_and_rules(string entityName, EntityType entityType)
         {
-            var prefix = "/my/path/";
-            var entityname = "myrule";
-
-            var settings = new SettingsHolder();
-            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Composition.HierarchyCompositionPathGenerator, (Func<string, string>)(s => prefix));
-            var strategy = new HierarchyComposition(settings);
-
-            Assert.AreEqual(entityname, strategy.GetEntityPath(entityname, EntityType.Rule));
+            Assert.AreEqual(entityName, strategy.GetEntityPath(entityName, entityType));
         }
     }
 }

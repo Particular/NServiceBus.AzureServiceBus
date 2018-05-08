@@ -202,7 +202,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             processTask.ContinueWith((t, state) =>
             {
                 var invocations = (ConcurrentDictionary<Task, Task>)state;
-                invocations.TryRemove(t, out Task _);
+                invocations.TryRemove(t, out var _);
             }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously).Ignore();
             return processTask;
         }

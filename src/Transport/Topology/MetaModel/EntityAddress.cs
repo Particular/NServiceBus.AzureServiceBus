@@ -42,7 +42,7 @@
             Suffix = suffix;
 
             HasSuffix = !string.IsNullOrWhiteSpace(Suffix);
-            HasConnectionString = ConnectionStringInternal.TryParse(Suffix, out ConnectionStringInternal _);
+            HasConnectionString = ConnectionStringInternal.TryParse(Suffix, out var _);
         }
 
         public EntityAddress(string value)
@@ -66,7 +66,7 @@
             }
 
             HasSuffix = !string.IsNullOrWhiteSpace(Suffix);
-            HasConnectionString = ConnectionStringInternal.TryParse(Suffix, out ConnectionStringInternal _);
+            HasConnectionString = ConnectionStringInternal.TryParse(Suffix, out var _);
         }
 
         public string Name { get; }
