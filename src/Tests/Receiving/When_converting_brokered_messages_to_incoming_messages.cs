@@ -154,7 +154,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         }
 
         [Test]
-        public void Should_extract_body_as_stream_when_configured()
+        [TestCase("application/octect-stream")]
+        [TestCase("application/octet-stream")]
+        public void Should_extract_body_as_stream_when_configured(string transportEncoding)
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
@@ -170,7 +172,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             stream.Position = 0;
 
             var brokeredMessage = new BrokeredMessage(stream);
-            brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = "application/octect-stream";
+            brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] = transportEncoding;
 
             var incomingMessage = converter.Convert(brokeredMessage);
 
