@@ -15,7 +15,6 @@
             
             // NOTE: At least property must be set for the brokered message converter to try and retrieve the intent
             brokeredMessage.Properties["SomeProperty"] = "SomeValue";
-            //brokeredMessage.Properties[Headers.MessageIntent] = MessageIntentEnum.Publish;
             
             Assert.DoesNotThrow(() => brokeredMessage.ToTransportMessage());
         }
