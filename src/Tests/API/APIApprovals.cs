@@ -1,25 +1,32 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.API
 {
-    using System.IO;
+    using System;
+    using System.Linq;
     using System.Runtime.CompilerServices;
-    using ApiApprover;
     using ApprovalTests;
-    using ApprovalTests.Reporters;
-    using Mono.Cecil;
     using NUnit.Framework;
+    using PublicApiGenerator;
 
     [TestFixture]
     public class APIApprovals
     {
         [Test]
         [MethodImpl(MethodImplOptions.NoInlining)]
-        [UseReporter(typeof(DiffReporter), typeof(ClipboardReporter))]
         public void ApproveAzureServiceBusTransport()
         {
-            var assemblyPath = Path.GetFullPath(typeof(AzureServiceBusTransport).Assembly.Location);
-            var asm = AssemblyDefinition.ReadAssembly(assemblyPath);
-            var publicApi = PublicApiGenerator.CreatePublicApiForAssembly(asm, definition => true, false);
+            var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(AzureServiceBusTransport).Assembly));
             Approvals.Verify(publicApi);
+        }
+
+        string Filter(string text)
+        {
+            return string.Join(Environment.NewLine, text.Split(new[]
+                {
+                    Environment.NewLine
+                }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(l => !l.StartsWith("[assembly: ReleaseDateAttribute("))
+                .Where(l => !string.IsNullOrWhiteSpace(l))
+            );
         }
     }
 }
