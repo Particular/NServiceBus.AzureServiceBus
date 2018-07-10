@@ -21,11 +21,17 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus
                     headers[Headers.ReplyToAddress] = message.ReplyTo;
                 }
 
+                var intent = default(MessageIntentEnum);
+                if (message.Properties.TryGetValue(Headers.MessageIntent, out var intentProperty))
+                {
+                    intent = (MessageIntentEnum) Enum.Parse(typeof(MessageIntentEnum), intentProperty.ToString());
+                }
+
                 t = new TransportMessage(message.MessageId, headers)
                 {
                     CorrelationId = message.CorrelationId,
                     TimeToBeReceived = message.TimeToLive,
-                    MessageIntent = (MessageIntentEnum)Enum.Parse(typeof(MessageIntentEnum), message.Properties[Headers.MessageIntent].ToString()),
+                    MessageIntent = intent,
                     Body = rawMessage
                 };
             }
