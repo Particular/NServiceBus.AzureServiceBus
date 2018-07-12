@@ -10,10 +10,10 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class TopologyOperator : IOperateTopologyInternal, IDisposable
     {
-        public TopologyOperator(MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ReadOnlySettings settings)
+        public TopologyOperator(MessageReceiverCreator messageReceiverCreator, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ReadOnlySettings settings)
         {
             this.brokeredMessageConverter = brokeredMessageConverter;
-            messageReceiverLifeCycle = clientEntities;
+            this.messageReceiverCreator = messageReceiverCreator;
 
             messageReceiverNotifierSettings = new MessageReceiverNotifierSettings(
                 settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode),
@@ -110,7 +110,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (type == EntityType.Queue || type == EntityType.Subscription)
             {
-                return new MessageReceiverNotifier(messageReceiverLifeCycle, brokeredMessageConverter, messageReceiverNotifierSettings);
+                return new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, messageReceiverNotifierSettings);
             }
 
             throw new NotSupportedException("Entity type " + type + " not supported");
@@ -144,7 +144,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
 
         int maxConcurrency;
-        MessageReceiverLifeCycleManager messageReceiverLifeCycle;
+        MessageReceiverCreator messageReceiverCreator;
         BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter;
         MessageReceiverNotifierSettings messageReceiverNotifierSettings;
         Action<Exception> onCriticalError;

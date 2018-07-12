@@ -77,14 +77,14 @@
             namespaceManager = new NamespaceManagerLifeCycleManagerInternal(new NamespaceManagerCreator(Settings));
             messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(new MessagingFactoryCreator(namespaceManager, Settings), Settings);
 
-            messageReceiverLifeCycleManager = new MessageReceiverLifeCycleManager(new MessageReceiverCreator(messagingFactoryLifeCycleManager, Settings), Settings);
             senderLifeCycleManager = new MessageSenderLifeCycleManager(new MessageSenderCreator(messagingFactoryLifeCycleManager, Settings), Settings);
 
             oversizedMessageHandler = (IHandleOversizedBrokeredMessages)Settings.Get(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance);
 
             topologyManager = CreateTopologySectionManager(defaultNamespaceAlias, namespaceConfigurations, partitioningStrategy, addressingLogic);
             topologyCreator = new TopologyCreator(CreateSubscriptionCreator(), new AzureServiceBusQueueCreator(TopologySettings.QueueSettings, Settings), new AzureServiceBusTopicCreator(TopologySettings.TopicSettings), namespaceManager, Settings);
-            topologyOperator = new TopologyOperator(messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), Settings);
+            messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, Settings);
+            topologyOperator = new TopologyOperator(messageReceiverCreator, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), Settings);
         }
 
         public override async Task Start()
@@ -135,7 +135,7 @@
                 () =>
                 {
                     InitializeIfNecessary();
-                    return new MessagePump(topologyOperator, messageReceiverLifeCycleManager, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), topologyManager, Settings, localAddress);
+                    return new MessagePump(topologyOperator, messageReceiverCreator, new BrokeredMessagesToIncomingMessagesConverter(Settings, new DefaultConnectionStringToNamespaceAliasMapper(Settings)), topologyManager, Settings, localAddress);
                 },
                 () =>
                 {
@@ -171,7 +171,7 @@
         protected IHandleOversizedBrokeredMessages oversizedMessageHandler;
         protected MessageSenderLifeCycleManager senderLifeCycleManager;
         protected MessagingFactoryLifeCycleManager messagingFactoryLifeCycleManager;
-        protected MessageReceiverLifeCycleManager messageReceiverLifeCycleManager;
+        protected MessageReceiverCreator messageReceiverCreator;
         protected IIndividualizationStrategy individualization;
         protected string defaultNamespaceAlias;
         protected NamespaceConfigurations namespaceConfigurations;

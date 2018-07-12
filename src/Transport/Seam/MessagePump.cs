@@ -10,14 +10,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessagePump : IPushMessages, IDisposable
     {
-        public MessagePump(IOperateTopologyInternal defaultOperator, MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings, string localAddress) : this(defaultOperator, clientEntities, brokeredMessageConverter, topologySectionManager, settings, localAddress, TimeSpan.FromSeconds(30))
+        public MessagePump(IOperateTopologyInternal defaultOperator, MessageReceiverCreator messageReceiverCreator, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings, string localAddress) : this(defaultOperator, messageReceiverCreator, brokeredMessageConverter, topologySectionManager, settings, localAddress, TimeSpan.FromSeconds(30))
         {
         }
 
-        internal MessagePump(IOperateTopologyInternal defaultOperator, MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings, string localAddress, TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker)
+        internal MessagePump(IOperateTopologyInternal defaultOperator, MessageReceiverCreator messageReceiverCreator, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, ITopologySectionManagerInternal topologySectionManager, ReadOnlySettings settings, string localAddress, TimeSpan timeToWaitBeforeTriggeringTheCircuitBreaker)
         {
             this.defaultOperator = defaultOperator;
-            this.clientEntities = clientEntities;
+            this.messageReceiverCreator = messageReceiverCreator;
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.topologySectionManager = topologySectionManager;
             this.settings = settings;
@@ -105,13 +105,13 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (pushSettingsInputQueue != localAddress)
             {
-                return new TopologyOperator(clientEntities, brokeredMessageConverter, settings);
+                return new TopologyOperator(messageReceiverCreator, brokeredMessageConverter, settings);
             }
 
             return defaultOperator;
         }
 
-        readonly MessageReceiverLifeCycleManager clientEntities;
+        readonly MessageReceiverCreator messageReceiverCreator;
         readonly BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter;
         ITopologySectionManagerInternal topologySectionManager;
         IOperateTopologyInternal topologyOperator;
