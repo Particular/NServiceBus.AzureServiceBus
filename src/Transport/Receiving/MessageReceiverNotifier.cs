@@ -14,9 +14,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     class MessageReceiverNotifier : INotifyIncomingMessagesInternal
     {
-        public MessageReceiverNotifier(MessageReceiverLifeCycleManager clientEntities, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, MessageReceiverNotifierSettings settings)
+        public MessageReceiverNotifier(MessageReceiverCreator receiverCreator, BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter, MessageReceiverNotifierSettings settings)
         {
-            this.clientEntities = clientEntities;
+            messageReceiverCreator = receiverCreator;
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.settings = settings;
             RefCount = 1;
@@ -131,29 +131,42 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         async Task InitializeAndStartReceiver(int i, ConcurrentQueue<Exception> exceptions)
         {
-            try
+            var attempt = 0;
+            do
             {
-                var internalReceiver = await clientEntities.Get(fullPath, entity.Namespace.Alias)
-                    .ConfigureAwait(false);
-
-                var options = new OnMessageOptions
+                try
                 {
-                    AutoComplete = false,
-                    AutoRenewTimeout = settings.AutoRenewTimeout,
-                    MaxConcurrentCalls = maxConcurrentCalls
-                };
-                options.ExceptionReceived += OptionsOnExceptionReceived;
-                internalReceivers[i] = internalReceiver ?? throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
-                onMessageOptions[i] = options;
+                    var internalReceiver = await messageReceiverCreator.Create(fullPath, entity.Namespace.Alias)
+                        .ConfigureAwait(false);
 
-                internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, i, pipelineInvocationTasks), options);
+                    var options = new OnMessageOptions
+                    {
+                        AutoComplete = false,
+                        AutoRenewTimeout = settings.AutoRenewTimeout,
+                        MaxConcurrentCalls = maxConcurrentCalls
+                    };
+                    options.ExceptionReceived += OptionsOnExceptionReceived;
+                    internalReceivers[i] = internalReceiver ?? throw new Exception($"MessageReceiverNotifier did not get a MessageReceiver instance for entity path {fullPath}, this is probably due to a misconfiguration of the topology");
+                    onMessageOptions[i] = options;
 
-                isRunning = true;
-            }
-            catch (Exception ex)
-            {
-                exceptions.Enqueue(ex);
-            }
+                    if (internalReceiver.IsClosed)
+                    {
+                        throw new Exception($"MessageReceiverNotifier did not get an open MessageReceiver instance for entity path {fullPath}");
+                    }
+
+                    internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, i, pipelineInvocationTasks), options);
+                    isRunning = true;
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    attempt++;
+                    if (attempt == 2)
+                    {
+                        exceptions.Enqueue(ex);
+                    }
+                }
+            } while (attempt < 2);
         }
 
         // Intentionally made async void since we don't care about the outcome here
@@ -347,7 +360,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             return TaskEx.Completed;
         }
 
-        MessageReceiverLifeCycleManager clientEntities;
         BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter;
         IMessageReceiverInternal[] internalReceivers;
         OnMessageOptions[] onMessageOptions;
@@ -367,5 +379,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
         Task startTask;
         Action<Exception> criticalError;
+        readonly MessageReceiverCreator messageReceiverCreator;
     }
 }
