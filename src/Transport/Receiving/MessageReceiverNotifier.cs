@@ -136,8 +136,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 try
                 {
+                    logger.Info($"Notifier{i} for '{fullPath}' starting");
                     var internalReceiver = await messageReceiverCreator.Create(fullPath, entity.Namespace.Alias)
                         .ConfigureAwait(false);
+                    logger.Info($"Notifier{i} for '{fullPath}' started");
 
                     var options = new OnMessageOptions
                     {
@@ -154,15 +156,19 @@ namespace NServiceBus.Transport.AzureServiceBus
                         throw new Exception($"MessageReceiverNotifier did not get an open MessageReceiver instance for entity path {fullPath}");
                     }
 
+                    logger.Info($"Notifier{i} for '{fullPath}' hooking up");
                     internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, i, pipelineInvocationTasks), options);
+                    logger.Info($"Notifier{i} for '{fullPath}' hooked up");
                     isRunning = true;
                     return;
                 }
                 catch (Exception ex)
                 {
+                    logger.Info($"Notifier{i} for '{fullPath}' attempt #{attempt}");
                     attempt++;
                     if (attempt == 2)
                     {
+                        logger.Info($"Notifier{i} for '{fullPath}' giving up on attempt #{attempt}", ex);
                         exceptions.Enqueue(ex);
                     }
                 }
