@@ -44,7 +44,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(new TopologyQueueSettings(), settings);
 
             var brokeredMessageConverter = new BrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
@@ -76,7 +75,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var expected = 1000 - faulted;
             // sending messages to the queue is done
 
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, messageReceiverNotifierSettings);
+            var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, messageReceiverNotifierSettings);
             notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 (message, context) =>
                 {

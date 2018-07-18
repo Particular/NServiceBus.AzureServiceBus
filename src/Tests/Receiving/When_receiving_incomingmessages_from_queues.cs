@@ -29,7 +29,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             var brokeredMessageConverter = new BrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
@@ -39,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
+            var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
             notifier.Initialize(new EntityInfoInternal { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, null, 10);
 
@@ -65,7 +64,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             var brokeredMessageConverter = new BrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
@@ -75,7 +73,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
+            var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
             notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, null, 10);
 
@@ -106,7 +104,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             var brokeredMessageConverter = new BrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
@@ -120,7 +117,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await sender.Send(new BrokeredMessage());
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
+            var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
             var completed = new AsyncManualResetEvent(false);
             var error = new AsyncManualResetEvent(false);
@@ -174,12 +171,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceLifecycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
 
             var brokeredMessageConverter = new BrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
+            var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
             var completed = new AsyncManualResetEvent(false);
             var error = new AsyncManualResetEvent(false);
