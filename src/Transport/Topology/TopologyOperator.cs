@@ -33,14 +33,14 @@ namespace NServiceBus.Transport.AzureServiceBus
             topology = topologySection;
 
             StartNotifiersFor(topology.Entities);
+            
+            running = true;
 
-            foreach (var operation in pendingStartOperations)
+            Action operation;
+            while (pendingStartOperations.TryTake(out operation))
             {
                 operation();
             }
-
-            pendingStartOperations = new List<Action>();
-            running = true;
         }
 
         public Task Stop()
@@ -102,14 +102,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     return n;
                 });
 
-                if (!notifier.IsRunning)
-                {
-                    notifier.Start();
-                }
-                else
-                {
-                    notifier.RefCount++;
-                }
+                notifier.Start();
             }
         }
 
@@ -129,16 +122,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 notifiers.TryGetValue(entity, out var notifier);
 
-                if (notifier == null || !notifier.IsRunning)
+                if (notifier == null)
                 {
                     continue;
                 }
 
-                notifier.RefCount--;
-                if (notifier.RefCount <= 0)
-                {
-                    await notifier.Stop().ConfigureAwait(false);
-                }
+                await notifier.Stop().ConfigureAwait(false);
             }
         }
 
@@ -150,8 +139,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         ConcurrentDictionary<EntityInfoInternal, INotifyIncomingMessagesInternal> notifiers = new ConcurrentDictionary<EntityInfoInternal, INotifyIncomingMessagesInternal>();
 
-        bool running;
-        List<Action> pendingStartOperations = new List<Action>();
+        volatile bool running;
+        ConcurrentBag<Action> pendingStartOperations = new ConcurrentBag<Action>();
         ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
 
         int maxConcurrency;
