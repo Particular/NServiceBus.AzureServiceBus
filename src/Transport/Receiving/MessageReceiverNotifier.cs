@@ -19,12 +19,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.clientEntities = clientEntities;
             this.brokeredMessageConverter = brokeredMessageConverter;
             this.settings = settings;
-            RefCount = 1;
         }
-
-        public bool IsRunning => isRunning;
-
-        public int RefCount { get; set; }
 
         public void Initialize(EntityInfoInternal entity, Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> callback, Func<Exception, Task> errorCallback, Action<Exception> criticalError, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
         {
@@ -62,6 +57,14 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public void Start()
         {
+            if (Interlocked.Increment(ref refCount) == 1)
+            {
+                StartInternal();                
+            }
+        }
+
+        void StartInternal()
+        {
             stopping = false;
             pipelineInvocationTasks = new ConcurrentDictionary<Task, Task>();
             completion?.Start(CompletionCallback, internalReceivers);
@@ -76,6 +79,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     tasks[i] = InitializeAndStartReceiver(i, exceptions);
                 }
+
                 await Task.WhenAll(tasks)
                     .ConfigureAwait(false);
 
@@ -87,6 +91,14 @@ namespace NServiceBus.Transport.AzureServiceBus
         }
 
         public async Task Stop()
+        {
+            if (Interlocked.Decrement(ref refCount) == 0)
+            {
+                await StopInternal().ConfigureAwait(false);
+            }
+        }
+
+        async Task StopInternal()
         {
             stopping = true;
 
@@ -118,6 +130,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 closeTasks.Add(internalReceiver.CloseAsync());
             }
+
             await Task.WhenAll(closeTasks).ConfigureAwait(false);
 
             pipelineInvocationTasks.Clear();
@@ -125,8 +138,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             Array.Clear(onMessageOptions, 0, onMessageOptions.Length);
 
             logger.Info($"Notifier for '{fullPath}' stopped");
-
-            isRunning = false;
         }
 
         async Task InitializeAndStartReceiver(int i, ConcurrentQueue<Exception> exceptions)
@@ -147,8 +158,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                 onMessageOptions[i] = options;
 
                 internalReceiver.OnMessage(m => ReceiveMessage(internalReceiver, m, i, pipelineInvocationTasks), options);
-
-                isRunning = true;
             }
             catch (Exception ex)
             {
@@ -356,8 +365,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         ConcurrentDictionary<Task, Task> pipelineInvocationTasks;
         string fullPath;
         EntityInfoInternal entity;
+        long refCount;
         volatile bool stopping;
-        volatile bool isRunning;
         Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback;
         MultiProducerConcurrentCompletion<Guid> completion;
         int maxConcurrentCalls;
