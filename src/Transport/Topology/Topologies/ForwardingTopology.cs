@@ -55,7 +55,6 @@ namespace NServiceBus
             container.RegisterSingleton<MessagingFactoryCreator>();
             container.RegisterSingleton<MessagingFactoryLifeCycleManager>();
             container.RegisterSingleton<MessageReceiverCreator>();
-            container.RegisterSingleton<MessageReceiverLifeCycleManager>();
             container.RegisterSingleton<MessageSenderCreator>();
             container.RegisterSingleton<MessageSenderLifeCycleManager>();
             container.RegisterSingleton<AzureServiceBusQueueCreator>();

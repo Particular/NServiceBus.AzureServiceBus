@@ -152,7 +152,6 @@
     <Compile Include="Connectivity\When_creating_message_receivers.cs" />
     <Compile Include="Connectivity\When_creating_messaging_factories.cs" />
     <Compile Include="Connectivity\When_creating_namespace_managers.cs" />
-    <Compile Include="Connectivity\When_managing_client_entity_lifecycle.cs" />
     <Compile Include="Connectivity\When_managing_factory_lifecycle.cs" />
     <Compile Include="Connectivity\When_managing_namespace_manager_lifecycle.cs" />
     <Compile Include="Creation\When_creating_subscription.cs" />

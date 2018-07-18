@@ -29,7 +29,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
@@ -39,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, settings);
 
             notifier.Initialize(new EntityInfo { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, 10);
 
@@ -64,7 +63,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var messagingFactoryCreator = new MessagingFactoryCreator(namespaceManagerLifeCycleManager, settings);
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
@@ -74,7 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, settings);
 
             notifier.Initialize(new EntityInfo { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, 10);
 
@@ -104,7 +102,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             var messagingFactoryLifeCycleManager = new MessagingFactoryLifeCycleManager(messagingFactoryCreator, settings);
             var messageReceiverCreator = new MessageReceiverCreator(messagingFactoryLifeCycleManager, settings);
             var messageSenderCreator = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var clientEntityLifeCycleManager = new MessageReceiverLifeCycleManager(messageReceiverCreator, settings);
             var creator = new AzureServiceBusQueueCreator(settings);
 
             var brokeredMessageConverter = new DefaultBrokeredMessagesToIncomingMessagesConverter(settings, new PassThroughMapper(settings));
@@ -118,7 +115,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await sender.Send(new BrokeredMessage());
 
             // perform the test
-            var notifier = new MessageReceiverNotifier(clientEntityLifeCycleManager, brokeredMessageConverter, settings);
+            var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, settings);
 
             var completed = new AsyncManualResetEvent(false);
             var error = new AsyncManualResetEvent(false);
