@@ -175,7 +175,6 @@
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessageReceiverSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessageSenderSettings.cs" />
     <Compile Include="Config\ExtensionPoints\AzureServiceBusMessagingFactoriesSettings.cs" />
-    <Compile Include="Connectivity\MessageReceiverLifeCycleManager.cs" />
     <Compile Include="Connectivity\IClientEntity.cs" />
     <Compile Include="Connectivity\IManageMessageReceiverLifeCycle.cs" />
     <Compile Include="Connectivity\IManageMessagingFactoryLifeCycle.cs" />
