@@ -287,7 +287,7 @@
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "sub14", topicToForwardTo.Path);
+            extensions.Subscriptions().ForwardDeadLetteredMessagesTo(subPath => subPath.EndsWith("/sub14"), topicToForwardTo.Path);
 
             var creator = new AzureServiceBusSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings);
 

@@ -311,7 +311,7 @@
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
-            extensions.UseForwardingTopology().Subscriptions().ForwardDeadLetteredMessagesTo(subName => subName == "endpoint14", notUsedEntity.Path);
+            extensions.UseForwardingTopology().Subscriptions().ForwardDeadLetteredMessagesTo(subPath => subPath.EndsWith("endpoint14"), notUsedEntity.Path);
 
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings);
 
