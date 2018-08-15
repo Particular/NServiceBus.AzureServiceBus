@@ -32,10 +32,14 @@
                 DefaultMessageTimeToLive = subscriptionSettings.DefaultMessageTimeToLive,
                 EnableDeadLetteringOnFilterEvaluationExceptions = subscriptionSettings.EnableDeadLetteringOnFilterEvaluationExceptions,
                 EnableDeadLetteringOnMessageExpiration = subscriptionSettings.EnableDeadLetteringOnMessageExpiration,
-                ForwardDeadLetteredMessagesTo = subscriptionSettings.ForwardDeadLetteredMessagesTo,
                 LockDuration = subscriptionSettings.LockDuration,
                 MaxDeliveryCount = DefaultMaxDeliveryCountForNoImmediateRetries
             };
+
+            if (subscriptionSettings.ForwardDeadLetteredMessagesToCondition(SubscriptionClient.FormatSubscriptionPath(topicPath, subscriptionName)))
+            {
+                subscriptionDescription.ForwardDeadLetteredMessagesTo = subscriptionSettings.ForwardDeadLetteredMessagesTo;
+            }
 
             subscriptionSettings.DescriptionCustomizer(subscriptionDescription);
 
