@@ -211,7 +211,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var bindings = new QueueBindings();
             bindings.BindSending("myqueue");
-            settings.Set<QueueBindings>(bindings);
+            settings.Set(bindings);
 
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
@@ -474,7 +474,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             settings.Set(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries, 2);
             var queueBindings = new QueueBindings();
             queueBindings.BindSending(queuePath);
-            settings.Set<QueueBindings>(queueBindings);
+            settings.Set(queueBindings);
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Queues().LockDuration(TimeSpan.FromMinutes(4));

@@ -12,7 +12,7 @@ class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfra
     {
         settings.Set("Transport.ConnectionString", Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString"));
         var connectionString = settings.Get<string>("Transport.ConnectionString");
-        settings.Set<Conventions>(new Conventions());
+        settings.Set(new Conventions());
         settings.Set(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new XmlSerializer(), settings));
         settings.Set("NServiceBus.SharedQueue", settings.Get("NServiceBus.Routing.EndpointName"));
         var topologyName = Environment.GetEnvironmentVariable("AzureServiceBusTransport.Topology", EnvironmentVariableTarget.User);
