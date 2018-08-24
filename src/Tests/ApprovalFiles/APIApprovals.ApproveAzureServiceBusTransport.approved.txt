@@ -306,6 +306,7 @@ namespace NServiceBus
         public static NServiceBus.SizeInMegabytes Size4096;
         public static NServiceBus.SizeInMegabytes Size5120;
         public static NServiceBus.SizeInMegabytes Create(long sizeInMegabytes) { }
+        public static long op_Implicit(NServiceBus.SizeInMegabytes size) { }
     }
     public class ThrowOnFailedValidation : NServiceBus.Transport.AzureServiceBus.ISanitizationStrategy
     {
@@ -517,6 +518,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public bool Equals(NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
+        public static bool ==(NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo left, NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo right) { }
+        public static bool !=(NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo left, NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo right) { }
     }
     [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
     public class SubscriptionInfo : NServiceBus.Transport.AzureServiceBus.EntityInfo
