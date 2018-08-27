@@ -102,7 +102,7 @@
 
         public override Task Stop()
         {
-            return messagingFactoryLifeCycleManager.CloseAll();
+            return messagingFactoryLifeCycleManager?.CloseAll();
         }
 
         public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
