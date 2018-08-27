@@ -6,6 +6,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using DelayedDelivery;
+    using Features;
+    using NServiceBus.AzureServiceBus;
     using Performance.TimeToBeReceived;
     using Routing;
     using Settings;
@@ -28,6 +30,8 @@
             var sanitizationStrategy = sanitizationStrategyType.CreateInstance<ISanitizationStrategy>(Settings);
 
             addressingLogic = new AddressingLogic(sanitizationStrategy, compositionStrategy);
+
+            settings.EnableFeatureByDefault<TransactionScopeSuppressFeature>();
         }
 
         protected TopologySettings TopologySettings { get; }
