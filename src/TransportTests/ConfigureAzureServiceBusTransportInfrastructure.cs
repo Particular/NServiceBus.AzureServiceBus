@@ -10,7 +10,6 @@ class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfra
 {
     public TransportConfigurationResult Configure(SettingsHolder settings, TransportTransactionMode transactionMode)
     {
-        var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString");
         settings.Set(new Conventions());
         settings.Set(WellKnownConfigurationKeys.Core.MainSerializerSettingsKey, Tuple.Create<SerializationDefinition, SettingsHolder>(new XmlSerializer(), settings));
         settings.Set("NServiceBus.SharedQueue", settings.Get("NServiceBus.Routing.EndpointName"));
@@ -28,6 +27,7 @@ class ConfigureAzureServiceBusTransportInfrastructure : IConfigureTransportInfra
         }
 
         var transport = new AzureServiceBusTransport();
+        var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString");
         var infrastructure = transport.Initialize(settings, connectionString);
 
         return new TransportConfigurationResult
