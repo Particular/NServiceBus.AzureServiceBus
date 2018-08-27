@@ -148,7 +148,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
-            Assert.IsTrue(queue.MessageCount == 2);
+            Assert.AreEqual(2, queue.MessageCount);
 
             //cleanup
             await namespaceManager.DeleteQueue("myqueue");
@@ -219,7 +219,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
-            Assert.IsTrue(queue.MessageCount == 2);
+            Assert.AreEqual(2, queue.MessageCount);
 
             //cleanup
             await namespaceManager.DeleteQueue("myqueue");
