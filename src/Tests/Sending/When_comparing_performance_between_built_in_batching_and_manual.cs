@@ -13,6 +13,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
     [TestFixture]
     [Category("AzureServiceBus")]
+    [Ignore("ASB now throttles offending namespace. These tests may not run successfully.")]
     public class When_comparing_performance_between_built_in_batching_and_manual
     {
         [Test]
