@@ -88,9 +88,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
             Assert.IsTrue(queue.MessageCount > 0, "expected to have messages in the queue, but there were no messages");
-
-            //cleanup
-            await namespaceManager.DeleteQueue("myqueue");
         }
 
         [Test]
@@ -154,12 +151,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                     }
             };
 
+            var messagesBefore = (await namespaceManager.GetQueue("myqueue")).MessageCount;
+
             // perform the test
             await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
-            Assert.AreEqual(2, queue.MessageCount);
+            Assert.AreEqual(2, queue.MessageCount - messagesBefore);
         }
 
         [Test]
@@ -222,12 +221,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                     }
             };
 
+            var messagesBefore = (await namespaceManager.GetQueue("myqueue")).MessageCount;
+
             // perform the test
             await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
-            Assert.AreEqual(2, queue.MessageCount);
+            Assert.AreEqual(2, queue.MessageCount - messagesBefore);
         }
 
         [Test]
