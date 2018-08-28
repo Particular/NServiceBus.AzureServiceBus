@@ -25,6 +25,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             {
                 await namespaceManager.DeleteQueueAsync("myqueue");
             }
+
+            var fallbackNamespaceManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback);
+            if (await fallbackNamespaceManager.QueueExistsAsync("myqueue"))
+            {
+                await fallbackNamespaceManager.DeleteQueueAsync("myqueue");
+            }
         }
 
         [Test]
@@ -82,12 +88,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                     }
             };
 
+            var messagesBefore = (await namespaceManager.GetQueue("myqueue")).MessageCount;
+
             // perform the test
             await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             //validate
             var queue = await namespaceManager.GetQueue("myqueue");
-            Assert.IsTrue(queue.MessageCount > 0, "expected to have messages in the queue, but there were no messages");
+            Assert.AreEqual(1, queue.MessageCount - messagesBefore, "expected to have messages in the queue, but there were no messages");
         }
 
         [Test]
@@ -422,18 +430,18 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                     }
             };
 
+            var messagesBeforeInPrimary = (await primaryNamespaceManager.GetQueue("myqueue")).MessageCount;
+            var messagesBeforeInFallback = (await fallbackNamespaceManager.GetQueue("myqueue")).MessageCount;
+
             // perform the test
             await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             //validate
             var queueOnPrimaryNamespace = await primaryNamespaceManager.GetQueue("myqueue");
-            Assert.IsTrue(queueOnPrimaryNamespace.MessageCount > 0, "expected to have messages in the primary queue, but there were no messages");
+            Assert.AreEqual(1, queueOnPrimaryNamespace.MessageCount - messagesBeforeInPrimary, "expected to have messages in the primary queue, but there were no messages");
 
             var queueOnSecondaryNamespace = await fallbackNamespaceManager.GetQueue("myqueue");
-            Assert.IsTrue(queueOnSecondaryNamespace.MessageCount == 0, "expected NOT to have messages in the secondary queue, but there were no messages");
-
-            //cleanup
-            await fallbackNamespaceManager.DeleteQueue("myqueue");
+            Assert.AreEqual(0, queueOnSecondaryNamespace.MessageCount - messagesBeforeInFallback, "expected NOT to have messages in the secondary queue, but there were no messages");
         }
 
         [Test]
@@ -500,15 +508,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                     }
             };
 
+            var messagesBeforeInFallback = (await fallbackNamespaceManager.GetQueue("myqueue")).MessageCount;
+
             // perform the test
             await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             //validate
             var queue = await fallbackNamespaceManager.GetQueue("myqueue");
-            Assert.IsTrue(queue.MessageCount > 0, "expected to have messages in the queue, but there were no messages");
-
-            //cleanup
-            await fallbackNamespaceManager.DeleteQueue("myqueue");
+            Assert.AreEqual(1, queue.MessageCount - messagesBeforeInFallback, "expected to have messages in the queue, but there were no messages");
         }
 
         [Test]
@@ -579,10 +586,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await router.RouteBatch(batch, null, DispatchConsistency.Default);
 
             // validate
-            Assert.True(oversizedHandler.InvocationCount == 1);
-
-            //cleanup
-            await fallbackNamespaceManager.DeleteQueue("myqueue");
+            Assert.AreEqual(1, oversizedHandler.InvocationCount);
         }
 
         [Test]
