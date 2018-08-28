@@ -5,13 +5,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using System.Text;
     using System.Threading.Tasks;
     using AzureServiceBus;
-    using Microsoft.ServiceBus.Messaging;
-    using TestUtils;
-    using Transport.AzureServiceBus;
     using DeliveryConstraints;
+    using Microsoft.ServiceBus.Messaging;
+    using NUnit.Framework;
+    using TestUtils;
     using Microsoft.ServiceBus;
     using Transport;
-    using NUnit.Framework;
+    using Transport.AzureServiceBus;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -38,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<TopologySettings>(new TopologySettings());
+            settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
@@ -84,7 +84,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         {
                             Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
-                        },
+                        }
                     }
             };
 
@@ -103,7 +103,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<TopologySettings>(new TopologySettings());
+            settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
@@ -174,7 +174,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<TopologySettings>(new TopologySettings());
+            settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
@@ -244,7 +244,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<TopologySettings>(new TopologySettings());
+            settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
@@ -304,7 +304,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<TopologySettings>(new TopologySettings());
+            settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 
@@ -369,7 +369,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<TopologySettings>(new TopologySettings());
+            settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
             namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
@@ -426,7 +426,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         {
                             Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
-                        },
+                        }
                     }
             };
 
@@ -449,7 +449,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<TopologySettings>(new TopologySettings());
+            settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
             namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
@@ -504,7 +504,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                         {
                             Message = new OutgoingMessage("SomeId", new Dictionary<string, string>(), bytes),
                             DeliveryConstraints = new List<DeliveryConstraint>()
-                        },
+                        }
                     }
             };
 
@@ -523,7 +523,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<TopologySettings>(new TopologySettings());
+            settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
             namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
@@ -549,7 +549,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
 
             // setup the batch
             var @namespace = new RuntimeNamespaceInfo("primary", AzureServiceBusConnectionString.Value);
-            var @fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, mode: NamespaceMode.Passive);
+            var fallback = new RuntimeNamespaceInfo("fallback", AzureServiceBusConnectionString.Value, mode: NamespaceMode.Passive);
             var bytes = Enumerable.Range(0, settings.Get<int>(WellKnownConfigurationKeys.Connectivity.MessageSenders.MaximumMessageSizeInKilobytes) * 1024).Select(x => (byte)(x % 256)).ToArray();
 
             var batch = new BatchInternal
@@ -568,7 +568,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
                     Namespaces = new List<RuntimeNamespaceInfo>
                         {
                             @namespace,
-                            @fallback
+                            fallback
                         }
                 },
                 RequiredDispatchConsistency = DispatchConsistency.Default,
@@ -594,7 +594,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             // default settings
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<TopologySettings>(new TopologySettings());
+            settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
             namespacesDefinition.Add("fallback", AzureServiceBusConnectionString.Fallback, NamespacePurpose.Partitioning);
