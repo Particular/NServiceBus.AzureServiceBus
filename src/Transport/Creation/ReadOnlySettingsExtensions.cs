@@ -33,7 +33,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 return (T)result;
             }
 
-            return default(T);
+            return default;
         }
     }
 }
