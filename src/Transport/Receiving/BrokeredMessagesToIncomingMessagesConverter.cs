@@ -1,6 +1,7 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -23,9 +24,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                 logger.Debug($"Incoming BrokeredMessage with id=`{brokeredMessage.MessageId}` had no `{BrokeredMessageHeaders.TransportEncoding}` header.");
             }
 
-            var headers = brokeredMessage.Properties
-                .Where(kvp => kvp.Key != BrokeredMessageHeaders.TransportEncoding)
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
 
             var transportEncodingWasSpecified = brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding);
             var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : defaultTransportEncoding;
@@ -55,6 +53,15 @@ namespace NServiceBus.Transport.AzureServiceBus
                     throw new UnsupportedBrokeredMessageBodyTypeException("Unsupported brokered message body type configured");
             }
 
+            return new IncomingMessageDetailsInternal(brokeredMessage.MessageId, GetHeaders(brokeredMessage), body);
+        }
+
+        public Dictionary<string, string> GetHeaders(BrokeredMessage brokeredMessage)
+        {
+            var headers = brokeredMessage.Properties
+                .Where(kvp => kvp.Key != BrokeredMessageHeaders.TransportEncoding)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
+
             var replyToHeaderValue = headers.ContainsKey(Headers.ReplyToAddress) ? headers[Headers.ReplyToAddress] : brokeredMessage.ReplyTo;
 
             if (!string.IsNullOrWhiteSpace(replyToHeaderValue))
@@ -72,7 +79,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 headers[Headers.TimeToBeReceived] = brokeredMessage.TimeToLive.ToString("c", CultureInfo.InvariantCulture);
             }
 
-            return new IncomingMessageDetailsInternal(brokeredMessage.MessageId, headers, body);
+            return headers;
         }
 
         static string GetDefaultTransportEncoding(ReadOnlySettings settings)
