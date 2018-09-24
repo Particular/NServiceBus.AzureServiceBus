@@ -15,7 +15,7 @@
             {
                 return false;
             }
-            return obj is EntityAddress && Equals((EntityAddress)obj);
+            return obj is EntityAddress address && Equals(address);
         }
 
         public override int GetHashCode()

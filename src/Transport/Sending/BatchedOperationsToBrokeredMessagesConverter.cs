@@ -123,15 +123,13 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             if (deliveryConstraint != null)
             {
-                var delay = deliveryConstraint as DelayDeliveryWith;
-                if (delay != null)
+                if (deliveryConstraint is DelayDeliveryWith delay)
                 {
                     scheduledEnqueueTime = Time.UtcNow() + delay.Delay;
                 }
                 else
                 {
-                    var exact = deliveryConstraint as DoNotDeliverBefore;
-                    if (exact != null)
+                    if (deliveryConstraint is DoNotDeliverBefore exact)
                     {
                         scheduledEnqueueTime = exact.At;
                     }
@@ -171,7 +169,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         BrokeredMessage CreateBrokeredMessage(OutgoingMessage outgoingMessage)
         {
             BrokeredMessage brokeredMessage;
-            
+
             switch (configuredBodyType)
             {
                 case SupportedBrokeredMessageBodyTypes.ByteArray:
