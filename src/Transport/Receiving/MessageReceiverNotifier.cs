@@ -59,7 +59,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (Interlocked.Increment(ref refCount) == 1)
             {
-                StartInternal();                
+                StartInternal();
             }
         }
 
@@ -251,7 +251,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
 
                 var context = new BrokeredMessageReceiveContextInternal(message, entity, internalReceiver.Mode);
-             
+
                     var scope = wrapInScope
                         ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
                         {
@@ -283,7 +283,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                                 // pass the context into the error pipeline
                                 var transportTransaction = new TransportTransaction();
                                 transportTransaction.Set(context);
-                                var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
+                                var errorContext = new ErrorContext(exception, brokeredMessageConverter.GetHeaders(message), incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
 
                                 var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
                                 if (result == ErrorHandleResult.RetryRequired)
@@ -304,7 +304,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             }
                         }
                     }
-                
+
             }
             catch (Exception onErrorException)
             {
