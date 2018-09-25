@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>net46</TargetFramework>
     <AssemblyName>NServiceBus.Azure.Transports.WindowsAzureServiceBus</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(SolutionDir)NServiceBus.snk</AssemblyOriginatorKeyFile>
@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="[4.1.0, 5.0.0)" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="[5.0.0, 6.0.0)" />
     <PackageReference Include="NServiceBus" Version="[7.0.0, 8.0.0)" />
     <PackageReference Include="Fody" Version="2.2.1" PrivateAssets="All" />
     <PackageReference Include="Janitor.Fody" Version="1.5.2" PrivateAssets="All" />
