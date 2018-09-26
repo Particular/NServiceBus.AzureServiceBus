@@ -6,8 +6,6 @@ namespace NServiceBus.AzureServiceBus
     {
         protected override void Setup(FeatureConfigurationContext context)
         {
-            context.Container.ConfigureComponent(b => new TransactionScopeSuppressBehavior(), DependencyLifecycle.InstancePerCall);
-
             context.Pipeline.Register(new TransactionScopeSuppressBehavior.Registration());
         }
     }
