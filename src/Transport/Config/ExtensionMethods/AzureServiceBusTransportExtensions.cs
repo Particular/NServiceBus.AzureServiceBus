@@ -8,10 +8,10 @@ namespace NServiceBus
     /// <summary>
     /// Azure Service Bus transport extensions API.
     /// </summary>
-    public static partial class AzureServiceBusTransportExtensions
+    public static class AzureServiceBusTransportExtensions
     {
         /// <summary>
-        /// Configures Azure Service Bus to use <see cref="ForwardingTopology"/> topology.
+        /// Configures Azure Service Bus to use Forwarding topology.
         /// </summary>
         public static AzureServiceBusForwardingTopologySettings UseForwardingTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
         {

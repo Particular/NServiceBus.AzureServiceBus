@@ -9,7 +9,7 @@ namespace NServiceBus
     /// <summary>
     /// Subscriptions configuration settings.
     /// </summary>
-    public partial class AzureServiceBusSubscriptionSettings : ExposeSettings
+    public class AzureServiceBusSubscriptionSettings : ExposeSettings
     {
         internal AzureServiceBusSubscriptionSettings(SettingsHolder settings) : base(settings)
         {

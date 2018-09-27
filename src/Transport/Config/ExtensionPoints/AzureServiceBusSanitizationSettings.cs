@@ -58,8 +58,7 @@ namespace NServiceBus
         /// <summary>
         /// Strategy to use for sanitization of entity paths/names.
         /// <remarks>
-        /// Default is <see cref="ThrowOnFailedValidation" />. For backward compatibility with
-        /// <see cref="EndpointOrientedTopology" /> use <see cref="ValidateAndHashIfNeeded" />.
+        /// Default is <see cref="ThrowOnFailedValidation" />. For backward compatibility with Endpoint-Oriented topology use <see cref="ValidateAndHashIfNeeded" />.
         /// </remarks>
         /// </summary>
         public AzureServiceBusSanitizationExtensionPoint<T> UseStrategy<T>() where T : ISanitizationStrategy
