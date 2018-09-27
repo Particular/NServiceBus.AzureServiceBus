@@ -19,7 +19,7 @@
             catch (MessageLockLostException ex)
             {
                 // It's too late to compensate the loss of a message lock. We should just ignore it so that it does not break the receive loop.
-                Log.Warn($"A message lock lost exception occurred while trying to complete a batch of messages, you may consider to increase the lock duration or reduce the batch size, the exception was {ex.Message}", ex);
+                Log.Warn($"A message lock lost exception occurred while trying to complete a batch of messages, you may consider to increase the lock duration or reduce the prefetch count, the exception was {ex.Message}", ex);
             }
             catch (MessagingException ex)
             {

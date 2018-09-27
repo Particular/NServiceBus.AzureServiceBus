@@ -45,7 +45,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             maxConcurrentCalls = concurrency > 1 ? (int)Math.Round(concurrency, MidpointRounding.AwayFromZero) : 1;
             if (Math.Abs(maxConcurrentCalls - concurrency) > 0)
             {
-                logger.InfoFormat("The maximum concurrency on message receiver instance for '{0}' has been adjusted to '{1}', because the total maximum concurrency '{2}' wasn't divisable by the number of clients '{3}'", fullPath, maxConcurrentCalls, maximumConcurrency, numberOfClients);
+                logger.InfoFormat("The maximum concurrency on message receiver instance for '{0}' has been adjusted to '{1}', because the total maximum concurrency '{2}' wasn't divisible by the number of clients '{3}'", fullPath, maxConcurrentCalls, maximumConcurrency, numberOfClients);
             }
 
             internalReceivers = new IMessageReceiverInternal[numberOfClients];
@@ -59,7 +59,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (Interlocked.Increment(ref refCount) == 1)
             {
-                StartInternal();                
+                StartInternal();
             }
         }
 
@@ -251,8 +251,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 }
 
                 var context = new BrokeredMessageReceiveContextInternal(message, entity, internalReceiver.Mode);
-                try
-                {
+
                     var scope = wrapInScope
                         ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
                         {
@@ -262,15 +261,42 @@ namespace NServiceBus.Transport.AzureServiceBus
                     {
                         using (scope)
                         {
-                            await incomingCallback(incomingMessage, context).ConfigureAwait(false);
+                            var wasCompleted = false;
+                            try
+                            {
+                                await incomingCallback(incomingMessage, context).ConfigureAwait(false);
 
-                            if (context.CancellationToken.IsCancellationRequested)
-                            {
-                                await AbandonOnCancellation(message).ConfigureAwait(false);
+                                if (context.CancellationToken.IsCancellationRequested)
+                                {
+                                    await AbandonOnCancellation(message).ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
+                                }
                             }
-                            else
+                            catch (Exception exception) when (!stopping)
                             {
-                                var wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
+                                // and go into recovery mode so that no new messages are added to the transfer queue
+                                context.Recovering = true;
+
+                                // pass the context into the error pipeline
+                                var transportTransaction = new TransportTransaction();
+                                transportTransaction.Set(context);
+                                var errorContext = new ErrorContext(exception, brokeredMessageConverter.GetHeaders(message), incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
+
+                                var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
+                                if (result == ErrorHandleResult.RetryRequired)
+                                {
+                                    await Abandon(message, exception).ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
+                                }
+                            }
+                            finally
+                            {
                                 if (wasCompleted)
                                 {
                                     scope?.Complete();
@@ -278,27 +304,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             }
                         }
                     }
-                }
-                catch (Exception exception) when (!stopping)
-                {
-                    // and go into recovery mode so that no new messages are added to the transfer queue
-                    context.Recovering = true;
 
-                    // pass the context into the error pipeline
-                    var transportTransaction = new TransportTransaction();
-                    transportTransaction.Set(context);
-                    var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
-
-                    var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
-                    if (result == ErrorHandleResult.RetryRequired)
-                    {
-                        await Abandon(message, exception).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
-                    }
-                }
             }
             catch (Exception onErrorException)
             {

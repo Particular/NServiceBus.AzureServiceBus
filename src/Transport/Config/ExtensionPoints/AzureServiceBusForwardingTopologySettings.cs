@@ -2,7 +2,7 @@
 {
     using Settings;
 
-    /// <summary><see cref="ForwardingTopology"/> specific settings.</summary>
+    /// <summary>Forwarding topology specific settings.</summary>
     public class AzureServiceBusForwardingTopologySettings : TransportExtensions<AzureServiceBusTransport>
     {
         internal AzureServiceBusForwardingTopologySettings(SettingsHolder settings) : base(settings)

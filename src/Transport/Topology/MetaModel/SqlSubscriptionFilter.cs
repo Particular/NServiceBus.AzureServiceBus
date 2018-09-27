@@ -11,7 +11,7 @@
 
         public string Serialize()
         {
-            return string.Format("[{0}] LIKE '{1}%' OR [{0}] LIKE '%{1}%' OR [{0}] LIKE '%{1}' OR [{0}] = '{1}'", Headers.EnclosedMessageTypes, eventType.FullName);
+            return $"[{Headers.EnclosedMessageTypes}] LIKE '%{eventType.FullName}%'";
         }
 
         Type eventType;

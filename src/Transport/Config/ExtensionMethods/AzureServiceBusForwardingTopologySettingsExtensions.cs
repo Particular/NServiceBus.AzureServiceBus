@@ -6,7 +6,7 @@ namespace NServiceBus
     /// <summary>
     /// Settings for the forwarding topology
     /// </summary>
-    public static partial class AzureServiceBusForwardingTopologySettingsExtensions
+    public static class AzureServiceBusForwardingTopologySettingsExtensions
     {
         /// <summary>
         /// Allows to set the bundle prefix

@@ -23,9 +23,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 return routeOutgoingBatches.RouteBatches(outgoingBatches, null, DispatchConsistency.Default);
             }
 
-            var brokeredMessageReceiveContext = receiveContext as BrokeredMessageReceiveContextInternal;
-
-            if (brokeredMessageReceiveContext != null) // apply brokered message specific dispatching rules
+            if (receiveContext is BrokeredMessageReceiveContextInternal brokeredMessageReceiveContext) // apply brokered message specific dispatching rules
             {
                 return DispatchBatches(outgoingBatches, brokeredMessageReceiveContext);
             }

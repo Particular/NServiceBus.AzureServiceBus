@@ -5,19 +5,21 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Transactions;
     using AzureServiceBus;
     using Microsoft.ServiceBus.Messaging;
-    using TestUtils;
-    using Transport.AzureServiceBus;
-    using Settings;
     using NUnit.Framework;
+    using Settings;
+    using TestUtils;
+    using Transport;
+    using Transport.AzureServiceBus;
 
     [TestFixture]
     [Category("AzureServiceBus")]
-    public class When_incoming_message_processing_takes_longer_than_LockDuration
+    public class When_completion_fails_after_processing_failure
     {
         [Test]
-        public async Task AutoRenewTimeout_will_extend_lock_for_processing_to_finish()
+        public async Task Should_have_rolled_back_message_to_error_queue()
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // default settings
@@ -33,7 +35,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // default values set by DefaultConfigurationValues.Apply - shouldn't hardcode those here, so OK to use settings
             var messageReceiverNotifierSettings = new MessageReceiverNotifierSettings(
                 ReceiveMode.PeekLock,
-                settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode(),
+                TransportTransactionMode.SendsAtomicWithReceive,
                 settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
                 settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
 
@@ -49,14 +51,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             // create the queue
             var namespaceManager = namespaceLifecycleManager.Get("namespace");
-            await creator.Create("autorenewtimeout", namespaceManager);
+            await creator.Create("completionfailure", namespaceManager);
 
-            var receivedMessages = 0;
             var completed = new AsyncManualResetEvent(false);
 
             // sending messages to the queue
             var senderFactory = new MessageSenderCreator(messagingFactoryLifeCycleManager, settings);
-            var sender = await senderFactory.Create("autorenewtimeout", null, "namespace");
+            var sender = await senderFactory.Create("completionfailure", null, "namespace");
             var messageToSend = new BrokeredMessage(Encoding.UTF8.GetBytes("Whatever"))
             {
                 MessageId = Guid.NewGuid().ToString()
@@ -64,21 +65,27 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             await sender.Send(messageToSend);
             // sending messages to the queue is done
 
+            var rolledBack = new RollbackDetection();
+
             var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, messageReceiverNotifierSettings);
-            notifier.Initialize(new EntityInfoInternal { Path = "autorenewtimeout", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
-                async (message, context) =>
+            notifier.Initialize(new EntityInfoInternal { Path = "completionfailure", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
+                (message, context) =>
                 {
                     if (message.MessageId == messageToSend.MessageId)
                     {
-                        Interlocked.Increment(ref receivedMessages);
-                        if (receivedMessages > 1)
-                        {
-                            Assert.Fail("Callback should only receive one message once, but it did more than that.");
-                        }
-                        await Task.Delay(TimeSpan.FromSeconds(5), cts.Token);
+                        Transaction.Current.EnlistVolatile(new EmulateCompletionFailure(), EnlistmentOptions.EnlistDuringPrepareRequired);
+                        throw new Exception("Force processing failure");
+                    }
+                    return TaskEx.Completed;
+                }, null, null, context =>
+                {
+                    if (context.Message.MessageId == messageToSend.MessageId)
+                    {
+                        Transaction.Current.EnlistVolatile(rolledBack, EnlistmentOptions.None);
                         completed.Set();
                     }
-                }, null, null, null, 1);
+                    return Task.FromResult(ErrorHandleResult.Handled);
+                }, 1);
 
 
             var sw = new Stopwatch();
@@ -89,11 +96,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             await notifier.Stop();
 
-            Assert.AreEqual(1, receivedMessages, $"Expected to receive message once, but got {receivedMessages}.");
+            Assert.IsTrue(rolledBack.RolledBack, "Should have rolled back the error message.");
             Console.WriteLine($"Callback processing took {sw.ElapsedMilliseconds} milliseconds");
 
             //cleanup
-            await namespaceManager.DeleteQueue("autorenewtimeout");
+            await namespaceManager.DeleteQueue("completionfailure");
         }
 
         class PassThroughMapper : DefaultConnectionStringToNamespaceAliasMapper
@@ -105,6 +112,55 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             public override EntityAddress Map(EntityAddress value)
             {
                 return value;
+            }
+        }
+
+        public class EmulateCompletionFailure : IEnlistmentNotification
+        {
+            public void Prepare(PreparingEnlistment preparingEnlistment)
+            {
+                preparingEnlistment.ForceRollback();
+            }
+
+            public void Commit(Enlistment enlistment)
+            {
+               enlistment.Done();
+            }
+
+            public void Rollback(Enlistment enlistment)
+            {
+               enlistment.Done();
+            }
+
+            public void InDoubt(Enlistment enlistment)
+            {
+                enlistment.Done();
+            }
+        }
+
+        public class RollbackDetection : IEnlistmentNotification
+        {
+            public bool RolledBack { get; set; }
+
+            public void Prepare(PreparingEnlistment preparingEnlistment)
+            {
+                preparingEnlistment.Prepared();
+            }
+
+            public void Commit(Enlistment enlistment)
+            {
+                enlistment.Done();
+            }
+
+            public void Rollback(Enlistment enlistment)
+            {
+                RolledBack = true;
+                enlistment.Done();
+            }
+
+            public void InDoubt(Enlistment enlistment)
+            {
+                enlistment.Done();
             }
         }
     }
