@@ -22,26 +22,11 @@ namespace NServiceBus
     {
         public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings topologySettings, System.Type type, string publisherName) { }
         public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings topologySettings, System.Reflection.Assembly assembly, string publisherName) { }
-        [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
-            " removed in version 9.0.0.", true)]
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> topologySettings, System.Type type, string publisherName) { }
-        [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
-            " removed in version 9.0.0.", true)]
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> RegisterPublisher(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.EndpointOrientedTopology> topologySettings, System.Reflection.Assembly assembly, string publisherName) { }
     }
     public class AzureServiceBusForwardingTopologySettings : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> { }
     public class static AzureServiceBusForwardingTopologySettingsExtensions
     {
         public static NServiceBus.AzureServiceBusForwardingTopologySettings BundlePrefix(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, string prefix) { }
-        [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
-            " removed in version 9.0.0.", true)]
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> BundlePrefix(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> topologySettings, string prefix) { }
-        [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
-            " removed in version 9.0.0.", true)]
-        public static NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusTopologySettings<NServiceBus.ForwardingTopology> topologySettings, int number) { }
-        [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
-            " removed in version 9.0.0.", true)]
-        public static NServiceBus.AzureServiceBusForwardingTopologySettings NumberOfEntitiesInBundle(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, int number) { }
     }
     public class static AzureServiceBusHierarchyCompositionSettingsExtensions
     {
@@ -98,27 +83,13 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusQueueSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusQueueSettings DefaultMessageTimeToLive(System.TimeSpan defaultMessageTimeToLive) { }
         public NServiceBus.AzureServiceBusQueueSettings DescriptionCustomizer(System.Action<Microsoft.ServiceBus.Messaging.QueueDescription> customizer) { }
-        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<QueueDescription>)` inst" +
-            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
-            "ersion 9.0.0.", true)]
-        public NServiceBus.AzureServiceBusQueueSettings DescriptionFactory(System.Func<string, string, NServiceBus.Settings.ReadOnlySettings, Microsoft.ServiceBus.Messaging.QueueDescription> factory) { }
         public NServiceBus.AzureServiceBusQueueSettings DuplicateDetectionHistoryTimeWindow(System.TimeSpan duplicateDetectionHistoryTimeWindow) { }
         public NServiceBus.AzureServiceBusQueueSettings EnableBatchedOperations(bool enableBatchedOperations) { }
         public NServiceBus.AzureServiceBusQueueSettings EnableDeadLetteringOnMessageExpiration(bool enableDeadLetteringOnMessageExpiration) { }
-        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<QueueDescription>)` inst" +
-            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
-            "ersion 9.0.0.", true)]
-        public NServiceBus.AzureServiceBusQueueSettings EnableExpress(bool enableExpress) { }
-        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<QueueDescription>)` inst" +
-            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
-            "ersion 9.0.0.", true)]
-        public NServiceBus.AzureServiceBusQueueSettings EnableExpress(System.Func<string, bool> condition, bool enableExpress) { }
         public NServiceBus.AzureServiceBusQueueSettings EnablePartitioning(bool enablePartitioning) { }
         public NServiceBus.AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(System.Func<string, bool> condition, string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusQueueSettings LockDuration(System.TimeSpan duration) { }
-        [System.ObsoleteAttribute(@"MaxDeliveryCount is automatically set to the maximum and not required. Overriding is not recommended, but possible using AzureServiceBusQueueSettings.DescriptionCustomizer(). The member currently throws a NotImplementedException. Will be removed in version 9.0.0.", true)]
-        public NServiceBus.AzureServiceBusQueueSettings MaxDeliveryCount(int maxDeliveryCount) { }
         public NServiceBus.AzureServiceBusQueueSettings MaxSizeInMegabytes(NServiceBus.SizeInMegabytes maxSizeInMegabytes) { }
         public NServiceBus.AzureServiceBusQueueSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusQueueSettings SupportOrdering(bool supportOrdering) { }
@@ -150,49 +121,25 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusSubscriptionSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings DefaultMessageTimeToLive(System.TimeSpan expiryTimespan) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings DescriptionCustomizer(System.Action<Microsoft.ServiceBus.Messaging.SubscriptionDescription> factory) { }
-        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<SubscriptionDescription>" +
-            ")` instead. The member currently throws a NotImplementedException. Will be remov" +
-            "ed in version 9.0.0.", true)]
-        public NServiceBus.AzureServiceBusSubscriptionSettings DescriptionFactory(System.Func<string, string, NServiceBus.Settings.ReadOnlySettings, Microsoft.ServiceBus.Messaging.SubscriptionDescription> factory) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings EnableBatchedOperations(bool enableBatchedOperations) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings EnableDeadLetteringOnFilterEvaluationExceptions(bool enableDeadLetteringOnFilterEvaluationExceptions) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings EnableDeadLetteringOnMessageExpiration(bool enableDeadLetteringOnMessageExpiration) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings ForwardDeadLetteredMessagesTo(System.Func<string, bool> condition, string forwardDeadLetteredMessagesTo) { }
         public NServiceBus.AzureServiceBusSubscriptionSettings LockDuration(System.TimeSpan lockDuration) { }
-        [System.ObsoleteAttribute(@"MaxDeliveryCount is automatically set to the maximum and not required. Overriding is not recommended, but possible using AzureServiceBusQueueSettings.DescriptionCustomizer(). The member currently throws a NotImplementedException. Will be removed in version 9.0.0.", true)]
-        public NServiceBus.AzureServiceBusSubscriptionSettings MaxDeliveryCount(int maxDeliveryCount) { }
     }
     public class AzureServiceBusTopicSettings : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
     {
         public NServiceBus.AzureServiceBusTopicSettings AutoDeleteOnIdle(System.TimeSpan autoDeleteOnIdle) { }
         public NServiceBus.AzureServiceBusTopicSettings DefaultMessageTimeToLive(System.TimeSpan timeToLive) { }
         public NServiceBus.AzureServiceBusTopicSettings DescriptionCustomizer(System.Action<Microsoft.ServiceBus.Messaging.TopicDescription> factory) { }
-        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<TopicDescription>)` inst" +
-            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
-            "ersion 9.0.0.", true)]
-        public NServiceBus.AzureServiceBusTopicSettings DescriptionFactory(System.Func<string, string, NServiceBus.Settings.ReadOnlySettings, Microsoft.ServiceBus.Messaging.TopicDescription> factory) { }
         public NServiceBus.AzureServiceBusTopicSettings DuplicateDetectionHistoryTimeWindow(System.TimeSpan duplicateDetectionHistoryTimeWindow) { }
         public NServiceBus.AzureServiceBusTopicSettings EnableBatchedOperations(bool enableBatchedOperations) { }
-        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<TopicDescription>)` inst" +
-            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
-            "ersion 9.0.0.", true)]
-        public NServiceBus.AzureServiceBusTopicSettings EnableExpress(bool enableExpress) { }
-        [System.ObsoleteAttribute("Replaced with new API. Use `DescriptionCustomizer(Action<TopicDescription>)` inst" +
-            "ead. The member currently throws a NotImplementedException. Will be removed in v" +
-            "ersion 9.0.0.", true)]
-        public NServiceBus.AzureServiceBusTopicSettings EnableExpress(System.Func<string, bool> condition, bool enableExpress) { }
         public NServiceBus.AzureServiceBusTopicSettings EnableFilteringMessagesBeforePublishing(bool enableFilteringMessagesBeforePublishing) { }
         public NServiceBus.AzureServiceBusTopicSettings EnablePartitioning(bool enablePartitioning) { }
         public NServiceBus.AzureServiceBusTopicSettings MaxSizeInMegabytes(NServiceBus.SizeInMegabytes maxSizeInMegabytes) { }
         public NServiceBus.AzureServiceBusTopicSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusTopicSettings SupportOrdering(bool supported) { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class AzureServiceBusTopologySettings<T> : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport>
-        where T : NServiceBus.Transport.AzureServiceBus.ITopology
-    {
-        public AzureServiceBusTopologySettings(NServiceBus.Settings.SettingsHolder settings) { }
     }
     public class AzureServiceBusTransport : NServiceBus.Transport.TransportDefinition
     {
@@ -221,32 +168,9 @@ namespace NServiceBus
         public static NServiceBus.AzureServiceBusSubscriptionSettings Subscriptions(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusTopicSettings Topics(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void TransportType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, Microsoft.ServiceBus.Messaging.TransportType transportType) { }
-        [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
-            " removed in version 9.0.0.", true)]
-        public static void UseBrokeredMessageToIncomingMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
-            where T : NServiceBus.Transport.AzureServiceBus.IConvertBrokeredMessagesToIncomingMessages { }
         public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings UseEndpointOrientedTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusForwardingTopologySettings UseForwardingTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void UseNamespaceAliasesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
-        [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
-            " removed in version 9.0.0.", true)]
-        public static void UseOutgoingMessageToBrokeredMessageConverter<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
-            where T : NServiceBus.Transport.AzureServiceBus.IConvertOutgoingMessagesToBrokeredMessages { }
-        [System.ObsoleteAttribute("Internal contract. Use `transport.UseForwardingTopology() or transport.UseEndpoin" +
-            "tOrientedTopology()` instead. The member currently throws a NotImplementedExcept" +
-            "ion. Will be removed in version 9.0.0.", true)]
-        public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions)
-            where T : NServiceBus.Transport.AzureServiceBus.ITopology, new () { }
-        [System.ObsoleteAttribute("Internal contract. Use `transport.UseForwardingTopology() or transport.UseEndpoin" +
-            "tOrientedTopology()` instead. The member currently throws a NotImplementedExcept" +
-            "ion. Will be removed in version 9.0.0.", true)]
-        public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, System.Func<T> factory)
-            where T : NServiceBus.Transport.AzureServiceBus.ITopology { }
-        [System.ObsoleteAttribute("Internal contract. Use `transport.UseForwardingTopology() or transport.UseEndpoin" +
-            "tOrientedTopology()` instead. The member currently throws a NotImplementedExcept" +
-            "ion. Will be removed in version 9.0.0.", true)]
-        public static NServiceBus.AzureServiceBusTopologySettings<T> UseTopology<T>(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, T topology)
-            where T : NServiceBus.Transport.AzureServiceBus.ITopology { }
     }
     public class CoreIndividualization : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy
     {
@@ -255,11 +179,6 @@ namespace NServiceBus
     public class DiscriminatorBasedIndividualization : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy
     {
         public string Individualize(string endpointName) { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class EndpointOrientedTopology : NServiceBus.Transport.AzureServiceBus.ITopology
-    {
-        public EndpointOrientedTopology() { }
     }
     public enum EntityType
     {
@@ -278,11 +197,6 @@ namespace NServiceBus
     {
         public FlatComposition() { }
         public string GetEntityPath(string entityName, NServiceBus.EntityType entityType) { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class ForwardingTopology : NServiceBus.Transport.AzureServiceBus.ITopology
-    {
-        public ForwardingTopology() { }
     }
     public class HierarchyComposition : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy
     {
@@ -318,82 +232,15 @@ namespace NServiceBus
 }
 namespace NServiceBus.Transport.AzureServiceBus
 {
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class Batch
-    {
-        public Batch() { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class BatchedOperation
-    {
-        public BatchedOperation() { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class BrokeredMessageReceiveContext : NServiceBus.Transport.AzureServiceBus.ReceiveContext
-    {
-        public BrokeredMessageReceiveContext() { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class ConnectionString
-    {
-        public ConnectionString() { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class EntityInfo
-    {
-        public EntityInfo() { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class EntityRelationShipInfo
-    {
-        public EntityRelationShipInfo() { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public enum EntityRelationShipType { }
     public enum FailOverMode
     {
         Primary = 0,
         Secondary = 1,
     }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IBatcher { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IBrokerSideSubscriptionFilter { }
-    [System.ObsoleteAttribute("Deprecated and no longer required. Will be removed in version 9.0.0.", true)]
-    public interface ICacheSendingNamespaces
-    {
-        [System.ObsoleteAttribute("Deprecated and no longer required. Will be removed in version 9.0.0.", true)]
-        bool SendingNamespacesCanBeCached { get; }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IClientEntity { }
-    [System.ObsoleteAttribute("Internal unutilized contract that shouldn\'t be exposed. Will be removed in versio" +
-        "n 9.0.0.", true)]
-    public interface IClientSideSubscriptionFilter { }
     public interface ICompositionStrategy
     {
         string GetEntityPath(string entityName, NServiceBus.EntityType entityType);
     }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IConvertBrokeredMessagesToIncomingMessages { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IConvertOutgoingMessagesToBrokeredMessages { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ICreateAzureServiceBusQueues { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ICreateAzureServiceBusSubscriptions { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ICreateAzureServiceBusTopics { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ICreateMessageReceivers { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ICreateMessageSenders { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ICreateMessagingFactories { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ICreateNamespaceManagers { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ICreateTopology { }
     public interface IHandleOversizedBrokeredMessages
     {
         System.Threading.Tasks.Task Handle(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage);
@@ -402,52 +249,15 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         string Individualize(string endpointName);
     }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IManageMessageReceiverLifeCycle { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IManageMessageSenderLifeCycle { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IManageMessagingFactoryLifeCycle { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IManageNamespaceManagerLifeCycle { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IMessageReceiver : NServiceBus.Transport.AzureServiceBus.IClientEntity { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IMessageSender : NServiceBus.Transport.AzureServiceBus.IClientEntity { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IMessagingFactory : NServiceBus.Transport.AzureServiceBus.IClientEntity { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface INamespaceManager { }
     public interface INamespacePartitioningStrategy
     {
         bool SendingNamespacesCanBeCached { get; }
         System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo> GetNamespaces(NServiceBus.Transport.AzureServiceBus.PartitioningIntent partitioningIntent);
     }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class IncomingMessageDetails
-    {
-        public IncomingMessageDetails() { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface INotifyIncomingMessages { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IOperateTopology { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IRegisterTransportParts { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IResolveTransportParts { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface IRouteOutgoingBatches { }
     public interface ISanitizationStrategy
     {
         string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType);
     }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ITopology { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ITopologySectionManager { }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public interface ITransportPartsContainer : NServiceBus.Transport.AzureServiceBus.IRegisterTransportParts, NServiceBus.Transport.AzureServiceBus.IResolveTransportParts { }
     public class MessageTooLargeException : System.Exception
     {
         public MessageTooLargeException() { }
@@ -468,19 +278,11 @@ namespace NServiceBus.Transport.AzureServiceBus
         public NamespaceInfo(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose = 1) { }
         public string Alias { get; }
         public string Connection { get; }
-        [System.ObsoleteAttribute("Internal contract. The member currently throws a NotImplementedException. Will be" +
-            " removed in version 9.0.0.", true)]
-        public NServiceBus.Transport.AzureServiceBus.ConnectionString ConnectionString { get; }
         public NServiceBus.Transport.AzureServiceBus.NamespacePurpose Purpose { get; }
         public System.Collections.Generic.HashSet<string> RegisteredEndpoints { get; }
         public bool Equals(NServiceBus.Transport.AzureServiceBus.NamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class NamespaceManagerAdapter : NServiceBus.Transport.AzureServiceBus.INamespaceManager
-    {
-        public NamespaceManagerAdapter() { }
     }
     public enum NamespaceMode
     {
@@ -498,16 +300,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         Sending = 1,
         Creating = 2,
     }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public abstract class ReceiveContext
-    {
-        protected ReceiveContext() { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class RoutingOptions
-    {
-        public RoutingOptions() { }
-    }
     public class RuntimeNamespaceInfo : System.IEquatable<NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo>
     {
         public RuntimeNamespaceInfo(string alias, string connectionString, NServiceBus.Transport.AzureServiceBus.NamespacePurpose purpose = 1, NServiceBus.Transport.AzureServiceBus.NamespaceMode mode = 0) { }
@@ -518,16 +310,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
     }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class SubscriptionInfo : NServiceBus.Transport.AzureServiceBus.EntityInfo
-    {
-        public SubscriptionInfo() { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class SubscriptionMetadata
-    {
-        public SubscriptionMetadata() { }
-    }
     public enum SupportedBrokeredMessageBodyTypes
     {
         ByteArray = 0,
@@ -537,11 +319,6 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         public ThrowOnOversizedBrokeredMessages() { }
         public System.Threading.Tasks.Task Handle(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage) { }
-    }
-    [System.ObsoleteAttribute("Internal contract. Will be removed in version 9.0.0.", true)]
-    public class TopologySection
-    {
-        public TopologySection() { }
     }
     public class TransactionContainsTooManyMessages : System.Exception
     {

@@ -9,7 +9,7 @@
     /// <summary>
     /// Topics configuration settings.
     /// </summary>
-    public partial class AzureServiceBusTopicSettings : ExposeSettings
+    public class AzureServiceBusTopicSettings : ExposeSettings
     {
         internal AzureServiceBusTopicSettings(SettingsHolder settings) : base(settings)
         {
@@ -83,7 +83,7 @@
 
         /// <summary>
         /// <remarks> Default is false.</remarks>
-        /// <remarks>When using <see cref="ForwardingTopology" />, partitioning cannot be enabled.</remarks>
+        /// <remarks>When using Forwarding topology, partitioning cannot be enabled.</remarks>
         /// </summary>
         public AzureServiceBusTopicSettings EnablePartitioning(bool enablePartitioning)
         {

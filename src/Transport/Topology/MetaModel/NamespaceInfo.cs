@@ -4,7 +4,7 @@
     using System.Collections.Generic;
 
     /// <summary></summary>
-    public partial class NamespaceInfo : IEquatable<NamespaceInfo>
+    public class NamespaceInfo : IEquatable<NamespaceInfo>
     {
         /// <summary></summary>
         public NamespaceInfo(string alias, string connectionString, NamespacePurpose purpose = NamespacePurpose.Partitioning)
