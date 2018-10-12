@@ -89,7 +89,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                 var queue = await GetTestQueue();
 
                 Assert.IsTrue(received);
-                Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
+                Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it had " + queue.MessageCount + " instead");
             }
             finally
             {
@@ -141,6 +141,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         [Test]
         public async Task Should_retry_after_rollback_in_less_than_the_default_circuit_breaker_interval_when_using_via_queue()
         {
+            var stringBuilder = new StringBuilder();
             try
             {
                 var invocationCount = 0;
@@ -149,6 +150,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 await pump.Init(async context =>
                 {
+                    stringBuilder.AppendLine("Received " + invocationCount);
                     var bytes = Encoding.UTF8.GetBytes("Whatever");
                     var outgoingMessage = new OutgoingMessage("Id-1", new Dictionary<string, string>(), bytes);
 
@@ -163,13 +165,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
                     {
                         stopWatch = Stopwatch.StartNew();
 
+                        stringBuilder.AppendLine("Throwing " + invocationCount);
                         throw new Exception("Something bad happens");
                     }
 
                     // ReSharper disable once PossibleNullReferenceException
                     stopWatch.Stop();
+                    stringBuilder.AppendLine("Completing " + invocationCount);
                     completed.Set();
-                }, null, criticalError, new PushSettings(SourceQueueName, "error", false, TransportTransactionMode.SendsAtomicWithReceive));
+                }, context => Task.FromResult(ErrorHandleResult.RetryRequired), criticalError, new PushSettings(SourceQueueName, "error", false, TransportTransactionMode.SendsAtomicWithReceive));
 
                 // start the pump
                 pump.Start(new PushRuntimeSettings(1));
@@ -182,13 +186,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
 
                 var elapsed = stopWatch.Elapsed;
 
-                Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it didn't");
+                Assert.IsTrue(queue.MessageCount == 1, "'myqueue' was expected to have 1 message, but it had " + queue.MessageCount + " instead");
                 Assert.IsTrue(elapsed < timeToWaitBeforeTriggeringTheCircuitBreaker);
             }
             finally
             {
                 // cleanup
                 await pump.Stop();
+                
+                Console.WriteLine(stringBuilder);
             }
         }
 
@@ -226,7 +232,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Seam
         async Task WaitForCompletion()
         {
             await completed.WaitAsync(tokenSource.Token).IgnoreCancellation();
-            await Task.Delay(TimeSpan.FromSeconds(3)); // allow message count to update on queue
+            await Task.Delay(TimeSpan.FromSeconds(5)); // allow message count to update on queue
         }
 
         Task<QueueDescription> GetTestQueue()
