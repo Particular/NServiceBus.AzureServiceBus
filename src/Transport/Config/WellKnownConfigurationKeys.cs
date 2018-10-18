@@ -10,6 +10,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             public const string Selected = "AzureServiceBus.Settings.Topology.Selected";
             public const string ForwardingTopology = "ForwardingTopology";
             public const string EndpointOrientedTopology = "EndpointOrientedTopology";
+            public const string MigrationTopology = "MigrationTopology";
 
             public static class Addressing
             {

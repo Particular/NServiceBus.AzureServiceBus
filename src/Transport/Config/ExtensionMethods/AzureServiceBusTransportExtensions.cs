@@ -10,6 +10,17 @@ namespace NServiceBus
     /// </summary>
     public static class AzureServiceBusTransportExtensions
     {
+        
+        /// <summary>
+        /// Configures Azure Service Bus to use Forwarding topology.
+        /// </summary>
+        public static AzureServiceBusEndpointOrientedTopologySettings UseMigrationTopology(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
+        {
+            var settings = transportExtensions.GetSettings();
+            settings.Set(WellKnownConfigurationKeys.Topology.Selected, WellKnownConfigurationKeys.Topology.MigrationTopology);
+            return new AzureServiceBusEndpointOrientedTopologySettings(settings);
+        }
+        
         /// <summary>
         /// Configures Azure Service Bus to use Forwarding topology.
         /// </summary>

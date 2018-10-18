@@ -14,8 +14,10 @@
             this.topicSettings = topicSettings;
         }
 
+        
         public async Task<TopicDescription> Create(string topicPath, INamespaceManagerInternal namespaceManager)
         {
+            // TODO it probably makes sense for the section manager to apply all the global and local settings
             var topicDescription = new TopicDescription(topicPath)
             {
                 SupportOrdering = topicSettings.SupportOrdering,
@@ -26,7 +28,7 @@
                 EnableBatchedOperations = topicSettings.EnableBatchedOperations,
                 EnablePartitioning = topicSettings.EnablePartitioning,
                 AutoDeleteOnIdle = topicSettings.AutoDeleteOnIdle,
-                EnableFilteringMessagesBeforePublishing = topicSettings.EnableFilteringMessagesBeforePublishing
+                EnableFilteringMessagesBeforePublishing = topicSettings.EnableFilteringMessagesBeforePublishing,
             };
 
             topicSettings.DescriptionCustomizer(topicDescription);

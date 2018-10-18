@@ -50,6 +50,8 @@
                     return new EndpointOrientedTransportInfrastructure(settings);
                 case WellKnownConfigurationKeys.Topology.ForwardingTopology:
                     return new ForwardingTransportInfrastructure(settings);
+                case WellKnownConfigurationKeys.Topology.MigrationTopology:
+                    return new MigrationTransportInfrastructure(settings);
                 default:
                     throw new Exception("Azure Service Bus transport requires a topology to be specified. Use `.UseForwardingTopology()` or `.UseEndpointOrientedTopology()` configuration API to specify topology to use.");
             }
