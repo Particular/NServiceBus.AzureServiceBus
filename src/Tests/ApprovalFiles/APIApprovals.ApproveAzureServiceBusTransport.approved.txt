@@ -170,6 +170,7 @@ namespace NServiceBus
         public static void TransportType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, Microsoft.ServiceBus.Messaging.TransportType transportType) { }
         public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings UseEndpointOrientedTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static NServiceBus.AzureServiceBusForwardingTopologySettings UseForwardingTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
+        public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings UseMigrationTopology(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
         public static void UseNamespaceAliasesInsteadOfConnectionStrings(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
     }
     public class CoreIndividualization : NServiceBus.Transport.AzureServiceBus.IIndividualizationStrategy
