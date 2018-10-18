@@ -51,20 +51,65 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             foreach (var n in namespaces)
             {
-                // maybe tell the upper layer we need dedup
+                // legacy topic
                 entities.Add(new EntityInfoInternal
                 {
-                    Path = "migration",
+                    Path = addressingLogic.Apply(localAddress + ".events", EntityType.Topic).Name,
                     Type = EntityType.Topic,
-                    Namespace = n,
-                    // DeduplicationEnabled = true,
+                    Namespace = n
                 });
+                // bundle from forwarding
                 entities.Add(new EntityInfoInternal
                 {
                     Path = "bundle-1",
                     Type = EntityType.Topic,
                     Namespace = n,
                 });
+                // migration 
+                // TODO: Define dedup
+                entities.Add(new EntityInfoInternal
+                {
+                    Path = "migration",
+                    Type = EntityType.Topic,
+                    Namespace = n,
+                });
+                var subscription = new SubscriptionInfoInternal
+                {
+                    Namespace = n,
+                    Type = EntityType.Subscription,
+                    Path = "migration",
+                    Metadata = new SubscriptionMetadataInternal
+                    {
+                        Description = "Forwarding to bundle-1",
+                        SubscriptionNameBasedOnEventWithNamespace = "migration"
+                    },
+                    BrokerSideFilter = new EmptySubscriptionFilter(),
+                    ShouldBeListenedTo = false
+                };
+                subscription.RelationShips.Add(new EntityRelationShipInfoInternal
+                {
+                    Source = subscription,
+                    Target = new EntityInfoInternal
+                    {
+                        Namespace = n,
+                        Path = "migration",
+                        Type = EntityType.Topic
+                    },
+                    Type = EntityRelationShipTypeInternal.Subscription
+                });
+                subscription.RelationShips.Add(new EntityRelationShipInfoInternal
+                {
+                    Source = subscription,
+                    Target = new EntityInfoInternal
+                    {
+                        Namespace = n,
+                        Path = "bundle-1",
+                        Type = EntityType.Topic
+                    },
+                    Type = EntityRelationShipTypeInternal.Forward
+                });
+
+                entities.Add(subscription);
             }
 
             return new TopologySectionInternal
@@ -272,6 +317,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             var topics = new List<EntityInfoInternal>();
             var subs = new List<SubscriptionInfoInternal>();
+                        
             foreach (var publisher in publishers)
             {
                 var topicPath = $"{publisher}.events";
@@ -373,58 +419,12 @@ namespace NServiceBus.Transport.AzureServiceBus
                     CreateForwardingTopologyPart(eventType, subs, namespaces, sanitizedSubscriptionPath, ruleName, sanitizedInputQueuePath);
                 }
             }
-            
-            CreateMigrationTopicForwardingPart(subs, namespaces);
-                        
+
             return new TopologySectionInternal
             {
                 Entities = subs,
                 Namespaces = namespaces
             };
-        }
-
-        static void CreateMigrationTopicForwardingPart(List<SubscriptionInfoInternal> subs, RuntimeNamespaceInfo[] namespaces)
-        {
-            subs.AddRange(namespaces.Select(ns =>
-            {
-                var sub = new SubscriptionInfoInternal
-                {
-                    Namespace = ns,
-                    Type = EntityType.Subscription,
-                    Path = "migration",
-                    Metadata = new SubscriptionMetadataInternal
-                    {
-                        Description = "Forwarding to bundle-1",
-                        SubscriptionNameBasedOnEventWithNamespace = "migration"
-                    },
-                    BrokerSideFilter = new EmptySubscriptionFilter(),
-                    ShouldBeListenedTo = false
-                };
-                sub.RelationShips.Add(new EntityRelationShipInfoInternal
-                {
-                    Source = sub,
-                    Target = new EntityInfoInternal
-                    {
-                        Namespace = ns,
-                        Path = "migration",
-                        Type = EntityType.Topic
-                    },
-                    Type = EntityRelationShipTypeInternal.Subscription
-                });
-                sub.RelationShips.Add(new EntityRelationShipInfoInternal
-                {
-                    Source = sub,
-                    Target = new EntityInfoInternal
-                    {
-                        Namespace = ns,
-                        Path = "bundle-1",
-                        Type = EntityType.Topic
-                    },
-                    Type = EntityRelationShipTypeInternal.Forward
-                });
-
-                return sub;
-            }));
         }
 
         void CreateForwardingTopologyPart(Type eventType, List<SubscriptionInfoInternal> subs, RuntimeNamespaceInfo[] namespaces, string sanitizedSubscriptionPath, string ruleName, string sanitizedInputQueuePath)
