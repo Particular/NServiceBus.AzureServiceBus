@@ -248,6 +248,29 @@
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteQueue(queueToForwardTo.Path);
         }
+        
+        [Test]
+        public async Task Should_properly_set_ForwardTo_on_the_created_entity()
+        {
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+
+            var queueCreator = new AzureServiceBusQueueCreator(new TopologyQueueSettings(), DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer()));
+            var queueToForwardTo = await queueCreator.Create("forwardto", namespaceManager);
+
+            var creator = new AzureServiceBusSubscriptionCreator(new TopologySubscriptionSettings());
+
+            const string subscriptionName = "sub16";
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager, queueToForwardTo.Path);
+            // create again without forward to
+            await creator.Create(topicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+
+            var foundDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
+
+            Assert.IsNull(foundDescription.ForwardTo);
+
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
+            await namespaceManager.DeleteQueue(queueToForwardTo.Path);
+        }
 
         [Test]
         public async Task Should_properly_set_ForwardDeadLetteredMessagesTo_on_the_created_entity()
@@ -282,7 +305,6 @@
 
             var topicCreator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
             var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
-
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
