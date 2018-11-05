@@ -62,6 +62,36 @@
             Assert.AreEqual(metadata2.Description, subscriptionDescription.UserMetadata);
             Assert.AreEqual(metadata2.SubscriptionNameBasedOnEventWithNamespace, subscriptionDescription.Name);
         }
+        
+        [Test]
+        public async Task Should_properly_set_ForwardTo_on_the_created_entity()
+        {
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(Ns1.ReusedEvent).Name), new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize());
+            
+            var topicCreator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
+            var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
+
+            var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings());
+            var metadata1 = new SubscriptionMetadataInternal
+            {
+                SubscriptionNameBasedOnEventWithNamespace = typeof(Ns1.ReusedEvent).FullName,
+                Description = Guid.NewGuid().ToString()
+            };
+            
+            var subscriptionName = typeof(Ns1.ReusedEvent).Name;
+
+            await creator.Create(topicPath, subscriptionName, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager, topicToForwardTo.Path);
+            // create again without forward to
+            await creator.Create(topicPath, subscriptionName, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager);
+
+            var subscriptionDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
+            
+            Assert.IsNull(subscriptionDescription.ForwardTo);
+            
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
+            await namespaceManager.DeleteTopic(topicToForwardTo.Path);
+        }
     }
 }
 
