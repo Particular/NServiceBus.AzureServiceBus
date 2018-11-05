@@ -33,11 +33,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             topology = topologySection;
 
             StartNotifiersFor(topology.Entities);
-            
+
             running = true;
 
-            Action operation;
-            while (pendingStartOperations.TryTake(out operation))
+            while (pendingStartOperations.TryTake(out var operation))
             {
                 operation();
             }
