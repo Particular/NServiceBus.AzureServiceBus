@@ -56,6 +56,9 @@
             var subscriptionDescription = await namespaceManager.GetSubscription(topicPath, shortedSubscriptionName);
             Assert.AreEqual(metadata2.Description, subscriptionDescription.UserMetadata);
             Assert.AreEqual(metadata2.SubscriptionNameBasedOnEventWithNamespace, subscriptionDescription.Name);
+            
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, typeof(Ns1.ReusedEvent).Name));
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, typeof(Ns2.ReusedEvent).Name));
         }
         
         [Test]
