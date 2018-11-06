@@ -210,6 +210,7 @@
                    || existingDescription.EnableDeadLetteringOnFilterEvaluationExceptions != newDescription.EnableDeadLetteringOnFilterEvaluationExceptions
                    || existingDescription.MaxDeliveryCount != newDescription.MaxDeliveryCount
                    || existingDescription.EnableBatchedOperations != newDescription.EnableBatchedOperations
+                   || existingDescription.ForwardTo != newDescription.ForwardTo
                    || existingDescription.ForwardDeadLetteredMessagesTo != newDescription.ForwardDeadLetteredMessagesTo;
         }
 
