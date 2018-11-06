@@ -61,6 +61,41 @@
             var subscriptionDescription = await namespaceManager.GetSubscription(topicPath, shortedSubscriptionName);
             Assert.AreEqual(metadata2.Description, subscriptionDescription.UserMetadata);
             Assert.AreEqual(metadata2.SubscriptionNameBasedOnEventWithNamespace, subscriptionDescription.Name);
+            
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, typeof(Ns1.ReusedEvent).Name));
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, typeof(Ns2.ReusedEvent).Name));
+        }
+
+        [Test]
+        public async Task Should_properly_set_ForwardTo_on_the_created_entity()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(Ns1.ReusedEvent).Name), new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize());
+
+            var settings = new DefaultConfigurationValues().Apply(new SettingsHolder());
+
+            var topicCreator = new AzureServiceBusTopicCreator(settings);
+            var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
+
+            var creator = new AzureServiceBusSubscriptionCreatorV6(settings);
+            var metadata1 = new SubscriptionMetadata
+            {
+                SubscriptionNameBasedOnEventWithNamespace = typeof(Ns1.ReusedEvent).FullName,
+                Description = Guid.NewGuid().ToString()
+            };
+
+            var subscriptionName = typeof(Ns1.ReusedEvent).Name;
+
+            await creator.Create(topicPath, subscriptionName, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager, topicToForwardTo.Path);
+            // create again without forward to
+            await creator.Create(topicPath, subscriptionName, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager);
+
+            var subscriptionDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
+
+            Assert.IsNull(subscriptionDescription.ForwardTo);
+
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
+            await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
     }
 }
