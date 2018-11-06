@@ -83,7 +83,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         Description = "Forwarding to bundle-1",
                         SubscriptionNameBasedOnEventWithNamespace = MigrationTopicName
                     },
-                    BrokerSideFilter = new EmptySubscriptionFilter(),
+                    BrokerSideFilter = new CatchAllSubscriptionFilter(),
                     ShouldBeListenedTo = false
                 };
                 subscription.RelationShips.Add(new EntityRelationShipInfoInternal

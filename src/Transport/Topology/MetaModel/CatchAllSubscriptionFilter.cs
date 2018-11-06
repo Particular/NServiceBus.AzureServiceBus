@@ -1,6 +1,6 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
 {
-    class EmptySubscriptionFilter : IBrokerSideSubscriptionFilterInternal
+    class CatchAllSubscriptionFilter : IBrokerSideSubscriptionFilterInternal
     {
         public string Serialize()
         {
