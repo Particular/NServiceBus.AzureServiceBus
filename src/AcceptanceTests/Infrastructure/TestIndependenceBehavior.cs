@@ -12,7 +12,7 @@
 
         public TestIndependenceMutator(ScenarioContext scenarioContext)
         {
-            var id = (scenarioContext as IProvideTestRunId)?.NewTestRunId ?? scenarioContext.TestRunId;
+            var id = (scenarioContext as IProvideTestRunId)?.OverrideTestRunId ?? scenarioContext.TestRunId;
             testRunId = id.ToString();
         }
 
@@ -29,7 +29,7 @@
 
         public TestIndependenceSkipBehavior(ScenarioContext scenarioContext)
         {
-            var id = (scenarioContext as IProvideTestRunId)?.NewTestRunId ?? scenarioContext.TestRunId;
+            var id = (scenarioContext as IProvideTestRunId)?.OverrideTestRunId ?? scenarioContext.TestRunId;
             testRunId = id.ToString();
         }
 
@@ -47,6 +47,6 @@
 
     interface IProvideTestRunId
     {
-        Guid? NewTestRunId { get; }
+        Guid? OverrideTestRunId { get; }
     }
 }
