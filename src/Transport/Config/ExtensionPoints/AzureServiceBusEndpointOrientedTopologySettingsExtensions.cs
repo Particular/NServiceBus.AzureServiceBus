@@ -23,7 +23,7 @@
             AddScannerForPublisher(topologySettings.GetSettings(), publisherName, new AssemblyTypesScanner(assembly));
             return topologySettings;
         }
-        
+
         static void AddScannerForPublisher(SettingsHolder settings, string publisherName, ITypesScanner scanner)
         {
             if (!settings.TryGet<Dictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers, out var map))
@@ -49,6 +49,5 @@
             settings.Set(WellKnownConfigurationKeys.Topology.Selected, WellKnownConfigurationKeys.Topology.EndpointOrientedMigrationTopology);
             return new AzureServiceBusEndpointOrientedTopologySettings(settings);
         }
-
     }
 }
