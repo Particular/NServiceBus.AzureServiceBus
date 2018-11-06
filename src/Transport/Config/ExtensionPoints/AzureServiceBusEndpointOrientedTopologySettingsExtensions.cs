@@ -23,7 +23,7 @@
             AddScannerForPublisher(topologySettings.GetSettings(), publisherName, new AssemblyTypesScanner(assembly));
             return topologySettings;
         }
-
+        
         static void AddScannerForPublisher(SettingsHolder settings, string publisherName, ITypesScanner scanner)
         {
             if (!settings.TryGet<Dictionary<string, List<ITypesScanner>>>(WellKnownConfigurationKeys.Topology.Publishers, out var map))
@@ -39,5 +39,16 @@
 
             map[publisherName].Add(scanner);
         }
+
+        /// <summary>
+        /// Configures The topology in a forward compatible way towards the Forwarding topology.
+        /// </summary>
+        public static AzureServiceBusEndpointOrientedTopologySettings EnableMigrationToForwardingTopology(this AzureServiceBusEndpointOrientedTopologySettings transportExtensions)
+        {
+            var settings = transportExtensions.GetSettings();
+            settings.Set(WellKnownConfigurationKeys.Topology.Selected, WellKnownConfigurationKeys.Topology.EndpointOrientedMigrationTopology);
+            return new AzureServiceBusEndpointOrientedTopologySettings(settings);
+        }
+
     }
 }
