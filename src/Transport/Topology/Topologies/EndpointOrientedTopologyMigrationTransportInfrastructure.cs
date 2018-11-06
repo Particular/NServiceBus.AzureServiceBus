@@ -1,5 +1,6 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
+    using System;
     using Settings;
 
     class EndpointOrientedTopologyMigrationTransportInfrastructure : AzureServiceBusTransportInfrastructure
@@ -13,6 +14,21 @@ namespace NServiceBus.Transport.AzureServiceBus
             var conventions = Settings.Get<Conventions>();
             var publishersConfiguration = new PublishersConfiguration(conventions, Settings);
             var endpointName = Settings.EndpointName();
+            var topicSettings = Settings.GetOrCreate<TopologySettings>().TopicSettings;
+            var customizer = topicSettings.DescriptionCustomizer;
+            topicSettings.DescriptionCustomizer = description =>
+            {
+                // call customer defined one first
+                customizer(description);
+
+                if (description.Path != EndpointOrientedTopologyMigrationSectionManager.MigrationTopicName)
+                {
+                    return;
+                }
+
+                description.RequiresDuplicateDetection = true;
+                description.DuplicateDetectionHistoryTimeWindow = TimeSpan.FromSeconds(60);
+            };
 
             return new EndpointOrientedTopologyMigrationSectionManager(defaultAlias, namespaces, endpointName, publishersConfiguration, partitioning, addressing);
         }

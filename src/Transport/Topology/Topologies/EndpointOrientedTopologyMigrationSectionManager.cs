@@ -63,25 +63,25 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     Path = "bundle-1",
                     Type = EntityType.Topic,
-                    Namespace = n,
+                    Namespace = n
                 });
-                // migration 
-                // TODO: Define dedup
+                // migration
+                // Dedup is defined in custom descriptor override, ugly yes but necessary evil
                 entities.Add(new EntityInfoInternal
                 {
-                    Path = "migration",
+                    Path = MigrationTopicName,
                     Type = EntityType.Topic,
-                    Namespace = n,
+                    Namespace = n
                 });
                 var subscription = new SubscriptionInfoInternal
                 {
                     Namespace = n,
                     Type = EntityType.Subscription,
-                    Path = "migration",
+                    Path = MigrationTopicName,
                     Metadata = new SubscriptionMetadataInternal
                     {
                         Description = "Forwarding to bundle-1",
-                        SubscriptionNameBasedOnEventWithNamespace = "migration"
+                        SubscriptionNameBasedOnEventWithNamespace = MigrationTopicName
                     },
                     BrokerSideFilter = new EmptySubscriptionFilter(),
                     ShouldBeListenedTo = false
@@ -92,7 +92,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     Target = new EntityInfoInternal
                     {
                         Namespace = n,
-                        Path = "migration",
+                        Path = MigrationTopicName,
                         Type = EntityType.Topic
                     },
                     Type = EntityRelationShipTypeInternal.Subscription
@@ -239,6 +239,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             configured = namespaceConfiguration;
                         }
                     }
+
                     if (configured != null)
                     {
                         namespaces = new[]
@@ -361,7 +362,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             Target = new EntityInfoInternal
                             {
                                 Namespace = new RuntimeNamespaceInfo(ns.Alias, ns.Connection),
-                                Path = "migration",
+                                Path = MigrationTopicName,
                                 Type = EntityType.Topic
                             },
                             Type = EntityRelationShipTypeInternal.Forward
@@ -407,7 +408,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             Target = new EntityInfoInternal
                             {
                                 Namespace = ns,
-                                Path = "migration",
+                                Path = MigrationTopicName,
                                 Type = EntityType.Topic
                             },
                             Type = EntityRelationShipTypeInternal.Forward
@@ -482,5 +483,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         string originalEndpointName;
         string defaultNameSpaceAlias;
         NamespaceConfigurations namespaceConfigurations;
+        public const string MigrationTopicName = "migration";
     }
 }
