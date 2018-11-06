@@ -7,9 +7,9 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Threading.Tasks;
     using NServiceBus.AzureServiceBus;
 
-    class EndpointOrientedTopologyMigrationSectionManager : ITopologySectionManagerInternal
+    class EndpointOrientedMigrationTopologySectionManager : ITopologySectionManagerInternal
     {
-        public EndpointOrientedTopologyMigrationSectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string originalEndpointName, PublishersConfiguration publishersConfiguration, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic)
+        public EndpointOrientedMigrationTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string originalEndpointName, PublishersConfiguration publishersConfiguration, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic)
         {
             this.namespaceConfigurations = namespaceConfigurations;
             this.defaultNameSpaceAlias = defaultNameSpaceAlias;

@@ -3,14 +3,14 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
 
-    class EndpointOrientedTopologyMigrationSubscriptionCreator : ICreateAzureServiceBusSubscriptionsInternal
+    class EndpointOrientedMigrationTopologySubscriptionCreator : ICreateAzureServiceBusSubscriptionsInternal
     {
         AzureServiceBusSubscriptionCreatorV6 azureServiceBusSubscriptionCreatorV6;
         AzureServiceBusForwardingSubscriptionCreator azureServiceBusForwardingSubscriptionCreator;
 
-        public EndpointOrientedTopologyMigrationSubscriptionCreator(AzureServiceBusForwardingSubscriptionCreator fowardingCreator, AzureServiceBusSubscriptionCreatorV6 v6CompatibleCreator)
+        public EndpointOrientedMigrationTopologySubscriptionCreator(AzureServiceBusForwardingSubscriptionCreator forwardingCreator, AzureServiceBusSubscriptionCreatorV6 v6CompatibleCreator)
         {
-            azureServiceBusForwardingSubscriptionCreator = fowardingCreator;
+            azureServiceBusForwardingSubscriptionCreator = forwardingCreator;
             azureServiceBusSubscriptionCreatorV6 = v6CompatibleCreator;
         }
 
