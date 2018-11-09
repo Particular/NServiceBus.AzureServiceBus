@@ -13,6 +13,7 @@
     public class When_creating_subscription_backward_compatible_with_v6
     {
         const string topicPath = "topicV6";
+        const string hierarchyTopicPath = "hierarchy/tenant1/topicV6";
 
         [OneTimeSetUp]
         public void TopicSetup()
@@ -22,6 +23,11 @@
             {
                 namespaceManager.CreateTopic(new TopicDescription(topicPath)).Wait();
             }
+            
+            if (!namespaceManager.TopicExists(hierarchyTopicPath).Result)
+            {
+                namespaceManager.CreateTopic(new TopicDescription(hierarchyTopicPath)).Wait();
+            }
         }
 
         [OneTimeTearDown]
@@ -29,6 +35,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             namespaceManager.DeleteTopic(topicPath).Wait();
+            namespaceManager.DeleteTopic(hierarchyTopicPath).Wait();
         }
 
         [Test]
@@ -88,6 +95,36 @@
             Assert.IsNull(subscriptionDescription.ForwardTo);
             
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
+            await namespaceManager.DeleteTopic(topicToForwardTo.Path);
+        }
+        
+        [Test]
+        public async Task Should_properly_set_ForwardTo_on_the_created_entity_with_hierarchy()
+        {
+            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+            await namespaceManager.CreateSubscription(new SubscriptionDescription(hierarchyTopicPath, typeof(Ns1.ReusedEvent).Name), new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize());
+            
+            var topicCreator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
+            var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
+
+            var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings());
+            var metadata1 = new SubscriptionMetadataInternal
+            {
+                SubscriptionNameBasedOnEventWithNamespace = typeof(Ns1.ReusedEvent).FullName,
+                Description = Guid.NewGuid().ToString()
+            };
+            
+            var subscriptionName = typeof(Ns1.ReusedEvent).Name;
+
+            await creator.Create(hierarchyTopicPath, subscriptionName, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager, topicToForwardTo.Path);
+            // create again without forward to
+            await creator.Create(hierarchyTopicPath, subscriptionName, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager);
+
+            var subscriptionDescription = await namespaceManager.GetSubscription(hierarchyTopicPath, subscriptionName);
+            
+            Assert.IsNull(subscriptionDescription.ForwardTo);
+            
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(hierarchyTopicPath, subscriptionName));
             await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
     }
