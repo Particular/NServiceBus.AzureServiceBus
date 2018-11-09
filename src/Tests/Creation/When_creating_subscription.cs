@@ -17,6 +17,7 @@
     public class When_creating_subscription
     {
         const string topicPath = "topic";
+        const string hierarchyTopicPath = "hierarchy/tenant1/topic";
         static SubscriptionMetadata metadata = new SubscriptionMetadata { Description = "eventname" };
         const string sqlFilter = "1=1";
 
@@ -28,11 +29,19 @@
             {
                 namespaceManager.CreateTopic(new TopicDescription(topicPath)).GetAwaiter().GetResult();
             }
+            if (!namespaceManager.TopicExists(hierarchyTopicPath).Result)
+            {
+                namespaceManager.CreateTopic(new TopicDescription(hierarchyTopicPath)).GetAwaiter().GetResult();
+            }
 
             namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
             if (!namespaceManager.TopicExists(topicPath).Result)
             {
                 namespaceManager.CreateTopic(new TopicDescription(topicPath)).GetAwaiter().GetResult();
+            }
+            if (!namespaceManager.TopicExists(hierarchyTopicPath).Result)
+            {
+                namespaceManager.CreateTopic(new TopicDescription(hierarchyTopicPath)).GetAwaiter().GetResult();
             }
         }
 
@@ -41,9 +50,11 @@
         {
             var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             namespaceManager.DeleteTopic(topicPath).GetAwaiter().GetResult();
+            namespaceManager.DeleteTopic(hierarchyTopicPath).GetAwaiter().GetResult();
 
             namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Fallback));
             namespaceManager.DeleteTopic(topicPath).GetAwaiter().GetResult();
+            namespaceManager.DeleteTopic(hierarchyTopicPath).GetAwaiter().GetResult();
         }
 
         [Test]
@@ -297,6 +308,33 @@
             Assert.IsNull(foundDescription.ForwardTo);
 
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
+            await namespaceManager.DeleteQueue(queueToForwardTo.Path);
+        }
+        
+        [Test]
+        public async Task Should_properly_set_ForwardTo_on_the_created_entity_with_hierarchy()
+        {
+            var namespaceManager = new NamespaceManagerAdapter(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
+
+            var settings = new SettingsHolder();
+            var defaults = new DefaultConfigurationValues();
+            defaults.Apply(settings);
+
+            var queueCreator = new AzureServiceBusQueueCreator(settings);
+            var queueToForwardTo = await queueCreator.Create("forwardto", namespaceManager);
+
+            var creator = new AzureServiceBusSubscriptionCreator(settings);
+
+            const string subscriptionName = "sub17";
+            await creator.Create(hierarchyTopicPath, subscriptionName, metadata, sqlFilter, namespaceManager, queueToForwardTo.Path);
+            // create again without forward to
+            await creator.Create(hierarchyTopicPath, subscriptionName, metadata, sqlFilter, namespaceManager);
+
+            var foundDescription = await namespaceManager.GetSubscription(hierarchyTopicPath, subscriptionName);
+
+            Assert.IsNull(foundDescription.ForwardTo);
+
+            await namespaceManager.DeleteSubscription(new SubscriptionDescription(hierarchyTopicPath, subscriptionName));
             await namespaceManager.DeleteQueue(queueToForwardTo.Path);
         }
 
