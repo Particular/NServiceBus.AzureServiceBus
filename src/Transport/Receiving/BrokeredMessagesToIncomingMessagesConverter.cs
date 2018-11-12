@@ -42,13 +42,23 @@ namespace NServiceBus.Transport.AzureServiceBus
                         throw new UnsupportedBrokeredMessageBodyTypeException(errorMessage, e);
                     }
                     break;
+
                 case "application/octet-stream":
                 case "application/octect-stream":
                     var bodyStream = brokeredMessage.GetBody<Stream>();
-                    body = new byte[bodyStream.Length];
-                    // TODO : This could be async
-                    bodyStream.Read(body, 0, (int)bodyStream.Length);
+
+                    if (bodyStream != null)
+                    {
+                        body = new byte[bodyStream.Length];
+                        // TODO : This could be async
+                        bodyStream.Read(body, 0, (int)bodyStream.Length);
+                    }
+                    else
+                    {
+                        body = EmptyBody;
+                    }
                     break;
+
                 default:
                     throw new UnsupportedBrokeredMessageBodyTypeException("Unsupported brokered message body type configured");
             }
