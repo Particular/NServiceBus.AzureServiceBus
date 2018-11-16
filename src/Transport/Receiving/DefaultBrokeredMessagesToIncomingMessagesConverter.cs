@@ -53,7 +53,6 @@ namespace NServiceBus.Transport.AzureServiceBus
                 case "application/octect-stream":
                     var bodyStream = brokeredMessage.GetBody<Stream>() ?? new MemoryStream(EmptyBody);
                     body = new byte[bodyStream.Length];
-                    // TODO : This could be async
                     bodyStream.Read(body, 0, (int)bodyStream.Length);
                     break;
 
