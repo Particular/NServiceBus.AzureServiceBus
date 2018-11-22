@@ -10,15 +10,17 @@
         public bool SupportsNativePubSub { get; } = true;
         public bool SupportsNativeDeferral { get; } = true;
         public bool SupportsOutbox { get; } = false;
-     
+
         public IConfigureEndpointTestExecution CreatePersistenceConfiguration() => new ConfigureEndpointAzureServiceBusTransport();
 
         public IConfigureEndpointTestExecution CreateTransportConfiguration() => new ConfigureEndpointInMemoryPersistence();
 
         public string Topology { get; } = EnvironmentHelper.GetEnvironmentVariable("AzureServiceBusTransport.Topology");
 
-        public bool IsEndpointOrientedTopology => Topology != "ForwardingTopology";
+        public bool IsEndpointOrientedTopology => Topology == "EndpointOrientedTopology";
 
         public bool IsForwardingTopology => Topology == "ForwardingTopology";
+
+        public bool IsEndpointOrientedMigrationTopology => Topology == "EndpointOrientedMigrationTopology";
     }
 }
