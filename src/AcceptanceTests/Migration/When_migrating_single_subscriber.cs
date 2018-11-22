@@ -1,5 +1,6 @@
 namespace NServiceBus.AcceptanceTests.Migration
 {
+    using System;
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
@@ -13,6 +14,8 @@ namespace NServiceBus.AcceptanceTests.Migration
         {
             Requires.EndpointOrientedMigrationTopology();
 
+            var testTimeout = TimeSpan.FromSeconds(30);
+
             // initial
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(b =>
@@ -21,37 +24,41 @@ namespace NServiceBus.AcceptanceTests.Migration
                 .Done(c => c.EndpointsStarted && c.EventReceived)
                 .Run();
 
-            // subscriber migrated
+            Console.WriteLine();
+            Console.WriteLine("---- (1) Migrate subscriber");
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingMigrationTopology>()
                 .Done(c => c.EndpointsStarted && c.EventReceived)
-                .Run();
+                .Run(testTimeout);
 
-            // publisher migrated
+            Console.WriteLine();
+            Console.WriteLine("---- (2) Migrate publisher");
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingMigrationTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingMigrationTopology>()
                 .Done(c => c.EndpointsStarted && c.EventReceived)
-                .Run();
+                .Run(testTimeout);
 
-            // subscriber on forwarding
+            Console.WriteLine();
+            Console.WriteLine("---- (3) Migrate subscriber to forwarding topology");
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingMigrationTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingForwardingTopology>()
                 .Done(c => c.EndpointsStarted && c.EventReceived)
-                .Run();
+                .Run(testTimeout);
 
-            // publisher on forwarding
+            Console.WriteLine();
+            Console.WriteLine("---- (4) Migrate publisher to forwarding topology");
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingForwardingTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingForwardingTopology>()
                 .Done(c => c.EndpointsStarted && c.EventReceived)
-                .Run();
+                .Run(testTimeout);
         }
 
         [Test]
@@ -59,6 +66,8 @@ namespace NServiceBus.AcceptanceTests.Migration
         {
             Requires.EndpointOrientedMigrationTopology();
 
+            var testTimeout = TimeSpan.FromSeconds(30);
+
             // initial
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(b =>
@@ -67,37 +76,41 @@ namespace NServiceBus.AcceptanceTests.Migration
                 .Done(c => c.EndpointsStarted && c.EventReceived)
                 .Run();
 
-            // publisher migrated
+            Console.WriteLine();
+            Console.WriteLine("---- (1) Migrate publisher");
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingMigrationTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingEndpointOrientedTopology>()
                 .Done(c => c.EndpointsStarted && c.EventReceived)
-                .Run();
+                .Run(testTimeout);
 
-            // subscriber migrated
+            Console.WriteLine();
+            Console.WriteLine("---- (2) Migrate subscriber");
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingMigrationTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingMigrationTopology>()
                 .Done(c => c.EndpointsStarted && c.EventReceived)
-                .Run();
+                .Run(testTimeout);
 
-            // publisher on forwarding
+            Console.WriteLine();
+            Console.WriteLine("---- (3) Migrate publisher to forwarding topology");
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingForwardingTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingMigrationTopology>()
                 .Done(c => c.EndpointsStarted && c.EventReceived)
-                .Run();
+                .Run(testTimeout);
 
-            // subscriber on forwarding
+            Console.WriteLine();
+            Console.WriteLine("---- (4) Migrate subscriber to forwarding topology");
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingForwardingTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingForwardingTopology>()
                 .Done(c => c.EndpointsStarted && c.EventReceived)
-                .Run();
+                .Run(testTimeout);
         }
 
         public class PublisherUsingEndpointOrientedTopology : EndpointConfigurationBuilder

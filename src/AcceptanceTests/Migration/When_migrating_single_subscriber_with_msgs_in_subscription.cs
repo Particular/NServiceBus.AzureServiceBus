@@ -16,6 +16,8 @@ namespace NServiceBus.AcceptanceTests.Migration
         {
             Requires.EndpointOrientedMigrationTopology();
 
+            var testTimeout = TimeSpan.FromSeconds(30);
+
             // initial
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(b =>
@@ -26,61 +28,73 @@ namespace NServiceBus.AcceptanceTests.Migration
 
             var overrideTestRunId = Guid.NewGuid();
 
+            Console.WriteLine();
+            Console.WriteLine("---- (1) Publish message into subscription");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(
                     b => b.When(session => session.Publish(new MyEvent())))
                 .Done(c => c.EndpointsStarted)
-                .Run();
+                .Run(testTimeout);
 
-            // subscriber migrated
+            Console.WriteLine();
+            Console.WriteLine("---- (2) Migrate the subscriber");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingMigrationTopology>()
                 .Done(c => c.EndpointsStarted && c.EventsReceived == 2)
-                .Run();
+                .Run(testTimeout);
 
+            Console.WriteLine();
+            Console.WriteLine("---- (3) Publish message into subscription");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(
                     b => b.When(session => session.Publish(new MyEvent())))
                 .Done(c => c.EndpointsStarted)
-                .Run();
+                .Run(testTimeout);
 
-            // publisher migrated
+            Console.WriteLine();
+            Console.WriteLine("---- (4) Migrate the publisher");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingMigrationTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingMigrationTopology>()
                 .Done(c => c.EndpointsStarted && c.EventsReceived == 2)
-                .Run();
+                .Run(testTimeout);
 
+            Console.WriteLine();
+            Console.WriteLine("---- (5) Publish message into subscription");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(
                     b => b.When(session => session.Publish(new MyEvent())))
                 .Done(c => c.EndpointsStarted)
-                .Run();
+                .Run(testTimeout);
 
-            // subscriber on forwarding
+            Console.WriteLine();
+            Console.WriteLine("---- (6) Migrate subscriber to forwarding topology");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingMigrationTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingForwardingTopology>()
                 .Done(c => c.EndpointsStarted && c.EventsReceived == 2)
-                .Run();
+                .Run(testTimeout);
 
+            Console.WriteLine();
+            Console.WriteLine("---- (7) Publish message into subscription");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(
                     b => b.When(session => session.Publish(new MyEvent())))
                 .Done(c => c.EndpointsStarted)
-                .Run();
+                .Run(testTimeout);
 
-            // publisher on forwarding
+            Console.WriteLine();
+            Console.WriteLine("---- (8) Migrate the publisher to forwarding topology");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingForwardingTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingForwardingTopology>()
                 .Done(c => c.EndpointsStarted && c.EventsReceived == 2)
-                .Run();
+                .Run(testTimeout);
         }
 
         [Test]
@@ -88,6 +102,8 @@ namespace NServiceBus.AcceptanceTests.Migration
         {
             Requires.EndpointOrientedMigrationTopology();
 
+            var testTimeout = TimeSpan.FromSeconds(30);
+
             // initial
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(b =>
@@ -98,61 +114,73 @@ namespace NServiceBus.AcceptanceTests.Migration
 
             var overrideTestRunId = Guid.NewGuid();
 
+            Console.WriteLine();
+            Console.WriteLine("---- (1) Publish message into subscription");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(
                     b => b.When(session => session.Publish(new MyEvent())))
                 .Done(c => c.EndpointsStarted)
-                .Run();
+                .Run(testTimeout);
 
-            // publisher migrated
+            Console.WriteLine();
+            Console.WriteLine("---- (2) Migrate the publisher");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingMigrationTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingEndpointOrientedTopology>()
                 .Done(c => c.EndpointsStarted && c.EventsReceived == 2)
-                .Run();
+                .Run(testTimeout);
 
+            Console.WriteLine();
+            Console.WriteLine("---- (3) Publish message into subscription");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(
                     b => b.When(session => session.Publish(new MyEvent())))
                 .Done(c => c.EndpointsStarted)
-                .Run();
+                .Run(testTimeout);
 
-            // subscriber migrated
+            Console.WriteLine();
+            Console.WriteLine("---- (4) Migrate the subscriber");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingMigrationTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingMigrationTopology>()
                 .Done(c => c.EndpointsStarted && c.EventsReceived == 2)
-                .Run();
+                .Run(testTimeout);
 
+            Console.WriteLine();
+            Console.WriteLine("---- (5) Publish message into subscription");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(
                     b => b.When(session => session.Publish(new MyEvent())))
                 .Done(c => c.EndpointsStarted)
-                .Run();
+                .Run(testTimeout);
 
-            // publisher on forwarding
+            Console.WriteLine();
+            Console.WriteLine("---- (6) Migrate the publisher to forwarding topology");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingForwardingTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingMigrationTopology>()
                 .Done(c => c.EndpointsStarted && c.EventsReceived == 2)
-                .Run();
+                .Run(testTimeout);
 
+            Console.WriteLine();
+            Console.WriteLine("---- (7) Publish message into subscription");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(
                     b => b.When(session => session.Publish(new MyEvent())))
                 .Done(c => c.EndpointsStarted)
-                .Run();
+                .Run(testTimeout);
 
-            // subscriber on forwarding
+            Console.WriteLine();
+            Console.WriteLine("---- (8) Migrate the subscriber to forwarding topology");
             await Scenario.Define<Context>(c => c.OverrideTestRunId = overrideTestRunId)
                 .WithEndpoint<PublisherUsingForwardingTopology>(b =>
                     b.When(session => session.Publish(new MyEvent())))
                 .WithEndpoint<SubscriberUsingForwardingTopology>()
                 .Done(c => c.EndpointsStarted && c.EventsReceived == 2)
-                .Run();
+                .Run(testTimeout);
         }
 
         public class PublisherUsingEndpointOrientedTopology : EndpointConfigurationBuilder
