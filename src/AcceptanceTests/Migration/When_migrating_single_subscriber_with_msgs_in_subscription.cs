@@ -16,7 +16,7 @@ namespace NServiceBus.AcceptanceTests.Migration
         {
             Requires.EndpointOrientedMigrationTopology();
 
-            var testTimeout = TimeSpan.FromSeconds(30);
+            var testTimeout = TimeSpan.FromSeconds(45);
 
             // initial
             await Scenario.Define<Context>()
@@ -102,7 +102,7 @@ namespace NServiceBus.AcceptanceTests.Migration
         {
             Requires.EndpointOrientedMigrationTopology();
 
-            var testTimeout = TimeSpan.FromSeconds(30);
+            var testTimeout = TimeSpan.FromSeconds(45);
 
             // initial
             await Scenario.Define<Context>()
