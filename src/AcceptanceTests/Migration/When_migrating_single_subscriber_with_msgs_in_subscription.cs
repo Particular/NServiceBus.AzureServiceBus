@@ -14,6 +14,8 @@ namespace NServiceBus.AcceptanceTests.Migration
         [Test]
         public async Task Should_receive_at_all_stages_if_started_with_subscriber()
         {
+            Requires.EndpointOrientedMigrationTopology();
+
             // initial
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(b =>
@@ -84,6 +86,8 @@ namespace NServiceBus.AcceptanceTests.Migration
         [Test]
         public async Task Should_receive_at_all_stages_if_started_with_publisher()
         {
+            Requires.EndpointOrientedMigrationTopology();
+
             // initial
             await Scenario.Define<Context>()
                 .WithEndpoint<PublisherUsingEndpointOrientedTopology>(b =>
