@@ -12,7 +12,8 @@
 
         public TestIndependenceMutator(ScenarioContext scenarioContext)
         {
-            testRunId = scenarioContext.TestRunId.ToString();
+            var id = (scenarioContext as IProvideTestRunId)?.OverrideTestRunId ?? scenarioContext.TestRunId;
+            testRunId = id.ToString();
         }
 
         public Task MutateOutgoing(MutateOutgoingTransportMessageContext context)
@@ -28,7 +29,8 @@
 
         public TestIndependenceSkipBehavior(ScenarioContext scenarioContext)
         {
-            testRunId = scenarioContext.TestRunId.ToString();
+            var id = (scenarioContext as IProvideTestRunId)?.OverrideTestRunId ?? scenarioContext.TestRunId;
+            testRunId = id.ToString();
         }
 
         public Task Invoke(ITransportReceiveContext context, Func<ITransportReceiveContext, Task> next)
@@ -41,5 +43,10 @@
 
             return next(context);
         }
+    }
+
+    interface IProvideTestRunId
+    {
+        Guid? OverrideTestRunId { get; }
     }
 }

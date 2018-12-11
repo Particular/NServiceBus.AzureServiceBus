@@ -8,7 +8,7 @@
         {
             if (!TestSuiteConstraints.Current.IsForwardingTopology)
             {
-                Assert.Ignore("Ignoring this test because it requires the forwarding topology to be configured.");
+                Assert.Ignore("Ignoring this test because it requires the Forwarding topology to be configured.");
             }
         }
 
@@ -16,7 +16,14 @@
         {
             if (!TestSuiteConstraints.Current.IsEndpointOrientedTopology)
             {
-                Assert.Ignore("Ignoring this test because it requires the endpoint oriented topology to be configured.");
+                Assert.Ignore("Ignoring this test because it requires the Endpoint-Oriented topology to be configured.");
+            }
+        }
+        public static void EndpointOrientedMigrationTopology()
+        {
+            if (!TestSuiteConstraints.Current.IsEndpointOrientedMigrationTopology)
+            {
+                Assert.Ignore("Ignoring this test because it requires the Endpoint-Oriented Migration topology to be configured.");
             }
         }
     }

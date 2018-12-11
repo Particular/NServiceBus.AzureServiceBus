@@ -20,6 +20,7 @@ namespace NServiceBus
     public class AzureServiceBusEndpointOrientedTopologySettings : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> { }
     public class static AzureServiceBusEndpointOrientedTopologySettingsExtensions
     {
+        public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings EnableMigrationToForwardingTopology(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings transportExtensions) { }
         public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings topologySettings, System.Type type, string publisherName) { }
         public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings topologySettings, System.Reflection.Assembly assembly, string publisherName) { }
     }
