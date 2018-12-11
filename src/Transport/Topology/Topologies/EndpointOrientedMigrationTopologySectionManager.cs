@@ -327,6 +327,9 @@ namespace NServiceBus.Transport.AzureServiceBus
                 var destinationsOutsideTopology = namespaceConfigurations.Where(c => c.RegisteredEndpoints.Contains(publisher, StringComparer.OrdinalIgnoreCase)).ToList();
                 if (destinationsOutsideTopology.Any())
                 {
+                    // It's important to create Forwarding topology subscription infrastructure first in order not to lose messages in flight auto-forwarded by subscriptions under Endpoint-oriented topology
+                    CreateForwardingTopologyPart(eventType, subs, namespaces, sanitizedSubscriptionPath, ruleName, sanitizedInputQueuePath);
+
                     topics.AddRange(destinationsOutsideTopology.Select(ns => new EntityInfoInternal
                     {
                         Namespace = new RuntimeNamespaceInfo(ns.Alias, ns.Connection, NamespacePurpose.Routing),
@@ -369,11 +372,12 @@ namespace NServiceBus.Transport.AzureServiceBus
                         });
                         return sub;
                     }));
-
-                    CreateForwardingTopologyPart(eventType, subs, namespaces, sanitizedSubscriptionPath, ruleName, sanitizedInputQueuePath);
                 }
                 else
                 {
+                    // It's important to create Forwarding topology subscription infrastructure first in order not to lose messages in flight auto-forwarded by subscriptions under Endpoint-oriented topology
+                    CreateForwardingTopologyPart(eventType, subs, namespaces, sanitizedSubscriptionPath, ruleName, sanitizedInputQueuePath);
+
                     topics.AddRange(namespaces.Select(ns => new EntityInfoInternal
                     {
                         Namespace = ns,
@@ -416,8 +420,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                         return sub;
                     }));
-
-                    CreateForwardingTopologyPart(eventType, subs, namespaces, sanitizedSubscriptionPath, ruleName, sanitizedInputQueuePath);
                 }
             }
 
