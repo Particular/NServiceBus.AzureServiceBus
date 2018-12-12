@@ -37,6 +37,11 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
         else
         {
             var endpointOrientedTopology = transportConfig.UseEndpointOrientedTopology();
+            if (topology == "EndpointOrientedMigrationTopology")
+            {
+                endpointOrientedTopology.EnableMigrationToForwardingTopology();
+            }
+
             foreach (var publisher in publisherMetadata.Publishers)
             {
                 foreach (var eventType in publisher.Events)

@@ -39,5 +39,15 @@
 
             map[publisherName].Add(scanner);
         }
+
+        /// <summary>
+        /// Configures The topology in a forward compatible way towards the Forwarding topology.
+        /// </summary>
+        public static AzureServiceBusEndpointOrientedTopologySettings EnableMigrationToForwardingTopology(this AzureServiceBusEndpointOrientedTopologySettings transportExtensions)
+        {
+            var settings = transportExtensions.GetSettings();
+            settings.Set(WellKnownConfigurationKeys.Topology.Selected, WellKnownConfigurationKeys.Topology.EndpointOrientedMigrationTopology);
+            return new AzureServiceBusEndpointOrientedTopologySettings(settings);
+        }
     }
 }
