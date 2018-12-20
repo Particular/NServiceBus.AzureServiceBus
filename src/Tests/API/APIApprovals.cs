@@ -9,7 +9,7 @@
     {
         [Test]
         public void ApproveAzureServiceBusTransport()
-        {           
+        {
             var publicApi = ApiGenerator.GeneratePublicApi(typeof(AzureServiceBusTransport).Assembly);
             Approver.Verify(publicApi);
         }
