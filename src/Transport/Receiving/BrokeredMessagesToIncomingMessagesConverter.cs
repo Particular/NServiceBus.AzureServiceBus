@@ -60,8 +60,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public Dictionary<string, string> GetHeaders(BrokeredMessage brokeredMessage)
         {
             var headers = brokeredMessage.Properties
-                .Where(kvp => kvp.Key != BrokeredMessageHeaders.TransportEncoding)
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
+                .Where(kvp => kvp.Key != BrokeredMessageHeaders.TransportEncoding && kvp.Key != BrokeredMessageHeaders.EstimatedMessageSize)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value == null ? null : System.Convert.ToString(kvp.Value, CultureInfo.InvariantCulture));
 
             var replyToHeaderValue = headers.ContainsKey(Headers.ReplyToAddress) ? headers[Headers.ReplyToAddress] : brokeredMessage.ReplyTo;
 
