@@ -74,7 +74,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
 
         MessagingFactory factory;
 
-        static readonly string connectionString = connectionString = TestUtility.DefaultConnectionString;
+        static readonly string connectionString = TestUtility.DefaultConnectionString;
 
         class Context : ScenarioContext
         {
