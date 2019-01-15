@@ -41,6 +41,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         var errorMessage = transportEncodingWasSpecified ? $"Unsupported brokered message body type `${transportEncodingToUse}` configured" : "No brokered message body type was found. Attempt to process message body as byte array has failed.";
                         throw new UnsupportedBrokeredMessageBodyTypeException(errorMessage, e);
                     }
+
                     break;
 
                 case "application/octet-stream":
@@ -89,9 +90,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             return configuredDefault == SupportedBrokeredMessageBodyTypes.ByteArray ? "wcf/byte-array" : "application/octect-stream";
         }
 
-        ILog logger = LogManager.GetLogger<BrokeredMessagesToIncomingMessagesConverter>();
-        DefaultConnectionStringToNamespaceAliasMapper mapper;
-        string defaultTransportEncoding;
-        static byte[] EmptyBody = new byte[0];
+        readonly ILog logger = LogManager.GetLogger<BrokeredMessagesToIncomingMessagesConverter>();
+        readonly DefaultConnectionStringToNamespaceAliasMapper mapper;
+        readonly string defaultTransportEncoding;
+        static readonly byte[] EmptyBody = new byte[0];
     }
 }
