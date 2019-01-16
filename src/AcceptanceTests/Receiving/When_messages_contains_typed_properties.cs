@@ -1,6 +1,8 @@
 namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routing
 {
+    using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AcceptanceTesting.Customization;
@@ -33,6 +35,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         public async Task Should_be_preserved()
         {
             var satellitePath = $"{Conventions.EndpointNamingConvention(typeof(Receiver))}-satellite";
+            var now = DateTime.UtcNow;
 
             var context = await Scenario.Define<Context>()
                 .WithEndpoint<Receiver>(b => b.When(async (s, ctx) =>
@@ -47,6 +50,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                         message.Properties[BrokeredMessageHeaders.TransportEncoding] = "application/octet-stream";
                         message.Properties["CustomIntHeader"] = 200;
                         message.Properties["CustomBoolHeader"] = true;
+                        message.Properties["CustomDateTimeHeader"] = now;
                         message.Properties["CustomStringHeader"] = "Custom";
                         message.Properties["CustomEmptyStringHeader"] = "";
                         // ReSharper disable once RedundantCast
@@ -66,6 +70,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             Assert.That(context.Headers, Does.Not.ContainKey(BrokeredMessageHeaders.TransportEncoding));
             Assert.That(context.Headers, Does.ContainKey("CustomIntHeader").And.ContainValue("200"));
             Assert.That(context.Headers, Does.ContainKey("CustomBoolHeader").And.ContainValue("True"));
+            Assert.That(context.Headers, Does.ContainKey("CustomDateTimeHeader").And.ContainValue(now.ToString(CultureInfo.InvariantCulture)));
             Assert.That(context.Headers, Does.ContainKey("CustomStringHeader").And.ContainValue("Custom"));
             Assert.That(context.Headers, Does.ContainKey("CustomEmptyStringHeader").And.ContainValue(""));
             Assert.That(context.Headers, Does.ContainKey("CustomNullStringHeader").And.ContainValue(null));
@@ -102,9 +107,14 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     context.AddSatelliteReceiver("customSatellite", $"{Conventions.EndpointNamingConvention(typeof(Receiver))}-satellite", new PushRuntimeSettings(1), DefaultRecoverabilityPolicy.Invoke, Handle);
                 }
 
-                Task Handle(IBuilder builder, MessageContext context)
+                static Task Handle(IBuilder builder, MessageContext context)
                 {
                     var scenarioContext = builder.Build<Context>();
+                    if (context.Headers["$AcceptanceTesting.TestRunId"] != scenarioContext.TestRunId.ToString())
+                    {
+                        return Task.CompletedTask;
+                    }
+
                     scenarioContext.Headers = context.Headers;
                     scenarioContext.Received = true;
                     return Task.CompletedTask;
