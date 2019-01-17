@@ -29,8 +29,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
 
             var headers = brokeredMessage.Properties
-                .Where(kvp => kvp.Key != BrokeredMessageHeaders.TransportEncoding)
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
+                .Where(kvp => kvp.Key != BrokeredMessageHeaders.TransportEncoding && kvp.Key != BrokeredMessageHeaders.EstimatedMessageSize)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value == null ? null : System.Convert.ToString(kvp.Value, CultureInfo.InvariantCulture));
 
             var transportEncodingWasSpecified = brokeredMessage.Properties.ContainsKey(BrokeredMessageHeaders.TransportEncoding);
             var transportEncodingToUse = transportEncodingWasSpecified ? brokeredMessage.Properties[BrokeredMessageHeaders.TransportEncoding] as string : GetDefaultTransportEncoding();
@@ -48,6 +48,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         var errorMessage = transportEncodingWasSpecified ? $"Unsupported brokered message body type `${transportEncodingToUse}` configured" : "No brokered message body type was found. Attempt to process message body as byte array has failed.";
                         throw new UnsupportedBrokeredMessageBodyTypeException(errorMessage, e);
                     }
+
                     break;
 
                 case "application/octect-stream":
