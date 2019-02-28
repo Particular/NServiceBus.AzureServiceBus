@@ -43,7 +43,7 @@
         async Task<bool> SubscriptionIsReusedAcrossDifferentNamespaces(SubscriptionDescription subscriptionDescription, string sqlFilter, INamespaceManagerInternal namespaceManager)
         {
             var rules = await namespaceManager.GetRules(subscriptionDescription).ConfigureAwait(false);
-            if (rules.First().Filter is SqlFilter filter && filter.SqlExpression != sqlFilter)
+            if (rules.First().Filter is SqlFilter filter && !filter.SqlExpression.Contains(sqlFilter))
             {
                 logger.Debug("Looks like this subscription name is already taken as the sql filter does not match the subscribed event name.");
                 return true;
