@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
@@ -23,7 +24,7 @@
             {
                 namespaceManager.CreateTopic(new TopicDescription(topicPath)).Wait();
             }
-            
+
             if (!namespaceManager.TopicExists(hierarchyTopicPath).Result)
             {
                 namespaceManager.CreateTopic(new TopicDescription(hierarchyTopicPath)).Wait();
@@ -33,9 +34,9 @@
         [OneTimeTearDown]
         public void TopicCleanUp()
         {
-            var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
-            namespaceManager.DeleteTopic(topicPath).Wait();
-            namespaceManager.DeleteTopic(hierarchyTopicPath).Wait();
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);
+            namespaceManager.DeleteTopic(topicPath);
+            namespaceManager.DeleteTopic(hierarchyTopicPath);
         }
 
         [Test]
@@ -63,17 +64,17 @@
             var subscriptionDescription = await namespaceManager.GetSubscription(topicPath, shortedSubscriptionName);
             Assert.AreEqual(metadata2.Description, subscriptionDescription.UserMetadata);
             Assert.AreEqual(metadata2.SubscriptionNameBasedOnEventWithNamespace, subscriptionDescription.Name);
-            
+
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, typeof(Ns1.ReusedEvent).Name));
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, typeof(Ns2.ReusedEvent).Name));
         }
-        
+
         [Test]
         public async Task Should_properly_set_ForwardTo_on_the_created_entity()
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(Ns1.ReusedEvent).Name), new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize());
-            
+
             var topicCreator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
             var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
 
@@ -83,7 +84,7 @@
                 SubscriptionNameBasedOnEventWithNamespace = typeof(Ns1.ReusedEvent).FullName,
                 Description = Guid.NewGuid().ToString()
             };
-            
+
             var subscriptionName = typeof(Ns1.ReusedEvent).Name;
 
             await creator.Create(topicPath, subscriptionName, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager, topicToForwardTo.Path);
@@ -91,19 +92,19 @@
             await creator.Create(topicPath, subscriptionName, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager);
 
             var subscriptionDescription = await namespaceManager.GetSubscription(topicPath, subscriptionName);
-            
+
             Assert.IsNull(subscriptionDescription.ForwardTo);
-            
+
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
-        
+
         [Test]
         public async Task Should_properly_set_ForwardTo_on_the_created_entity_with_hierarchy()
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.CreateSubscription(new SubscriptionDescription(hierarchyTopicPath, typeof(Ns1.ReusedEvent).Name), new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize());
-            
+
             var topicCreator = new AzureServiceBusTopicCreator(new TopologyTopicSettings());
             var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
 
@@ -113,7 +114,7 @@
                 SubscriptionNameBasedOnEventWithNamespace = typeof(Ns1.ReusedEvent).FullName,
                 Description = Guid.NewGuid().ToString()
             };
-            
+
             var subscriptionName = typeof(Ns1.ReusedEvent).Name;
 
             await creator.Create(hierarchyTopicPath, subscriptionName, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager, topicToForwardTo.Path);
@@ -121,12 +122,59 @@
             await creator.Create(hierarchyTopicPath, subscriptionName, metadata1, new SqlSubscriptionFilter(typeof(Ns1.ReusedEvent)).Serialize(), namespaceManager);
 
             var subscriptionDescription = await namespaceManager.GetSubscription(hierarchyTopicPath, subscriptionName);
-            
+
             Assert.IsNull(subscriptionDescription.ForwardTo);
-            
+
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(hierarchyTopicPath, subscriptionName));
             await namespaceManager.DeleteTopic(topicToForwardTo.Path);
         }
+
+        [Test]
+        public async Task Should_not_create_create_a_duplicate_subscription__issue_811()
+        {
+            var nativeManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);
+            var namespaceManager = new NamespaceManagerAdapterInternal(nativeManager);
+
+            try
+            {
+                await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(Ns3.SomeEvent).Name), new SqlSubscriptionFilter_UsedPriorToVersion9(typeof(Ns3.SomeEvent)).Serialize());
+
+                var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings());
+                var metadata = new SubscriptionMetadataInternal
+                {
+                    SubscriptionNameBasedOnEventWithNamespace = typeof(Ns3.SomeEvent).FullName,
+                    Description = Guid.NewGuid().ToString()
+                };
+
+                await creator.Create(topicPath, typeof(Ns3.SomeEvent).Name, metadata, new SqlSubscriptionFilter(typeof(Ns3.SomeEvent)).Serialize(), namespaceManager);
+
+                var shortenedSubscriptionName = typeof(Ns3.SomeEvent).FullName;
+                var foundSubcriptions = await nativeManager.GetSubscriptionsAsync(topicPath);
+
+                Assert.AreEqual(1, foundSubcriptions.Count());
+            }
+            finally
+            {
+                await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, typeof(Ns3.SomeEvent).Name));
+                await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, typeof(Ns3.SomeEvent).Name));
+            }
+        }
+
+    }
+
+    class SqlSubscriptionFilter_UsedPriorToVersion9 : IBrokerSideSubscriptionFilterInternal
+    {
+        public SqlSubscriptionFilter_UsedPriorToVersion9(Type eventType)
+        {
+            this.eventType = eventType;
+        }
+
+        public string Serialize()
+        {
+            return string.Format("[{0}] LIKE '{1}%' OR [{0}] LIKE '%{1}%' OR [{0}] LIKE '%{1}' OR [{0}] = '{1}'", Headers.EnclosedMessageTypes, eventType.FullName);
+        }
+
+        Type eventType;
     }
 }
 
@@ -138,4 +186,9 @@ namespace Ns1
 namespace Ns2
 {
     class ReusedEvent { }
+}
+
+namespace Ns3
+{
+    class SomeEvent { }
 }
