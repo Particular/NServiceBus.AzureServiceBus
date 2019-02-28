@@ -134,32 +134,24 @@
         {
             var nativeManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);
             var namespaceManager = new NamespaceManagerAdapterInternal(nativeManager);
+            var subscriptionName = typeof(Ns3.SomeEvent).Name;
 
-            try
+            await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, subscriptionName), new SqlSubscriptionFilter_UsedPriorToVersion9(typeof(Ns3.SomeEvent)).Serialize());
+
+            var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings());
+            var metadata = new SubscriptionMetadataInternal
             {
-                await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, typeof(Ns3.SomeEvent).Name), new SqlSubscriptionFilter_UsedPriorToVersion9(typeof(Ns3.SomeEvent)).Serialize());
+                SubscriptionNameBasedOnEventWithNamespace = typeof(Ns3.SomeEvent).FullName,
+                Description = Guid.NewGuid().ToString()
+            };
+            var properSqlFilter = new SqlSubscriptionFilter(typeof(Ns3.SomeEvent)).Serialize();
 
-                var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings());
-                var metadata = new SubscriptionMetadataInternal
-                {
-                    SubscriptionNameBasedOnEventWithNamespace = typeof(Ns3.SomeEvent).FullName,
-                    Description = Guid.NewGuid().ToString()
-                };
+            await creator.Create(topicPath, subscriptionName, metadata, properSqlFilter, namespaceManager);
 
-                await creator.Create(topicPath, typeof(Ns3.SomeEvent).Name, metadata, new SqlSubscriptionFilter(typeof(Ns3.SomeEvent)).Serialize(), namespaceManager);
+            var foundSubcriptions = await nativeManager.GetSubscriptionsAsync(topicPath);
 
-                var shortenedSubscriptionName = typeof(Ns3.SomeEvent).FullName;
-                var foundSubcriptions = await nativeManager.GetSubscriptionsAsync(topicPath);
-
-                Assert.AreEqual(1, foundSubcriptions.Count());
-            }
-            finally
-            {
-                await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, typeof(Ns3.SomeEvent).Name));
-                await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, typeof(Ns3.SomeEvent).Name));
-            }
+            Assert.AreEqual(1, foundSubcriptions.Count());
         }
-
     }
 
     class SqlSubscriptionFilter_UsedPriorToVersion9 : IBrokerSideSubscriptionFilterInternal
