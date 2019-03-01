@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
+    using Ns3;
     using TestUtils;
     using Transport.AzureServiceBus;
     using NUnit.Framework;
@@ -134,23 +135,37 @@
         {
             var nativeManager = NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value);
             var namespaceManager = new NamespaceManagerAdapterInternal(nativeManager);
-            var subscriptionName = typeof(Ns3.SomeEvent).Name;
 
-            await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, subscriptionName), new SqlSubscriptionFilter_UsedPriorToVersion9(typeof(Ns3.SomeEvent)).Serialize());
-
-            var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings());
-            var metadata = new SubscriptionMetadataInternal
+            var topicForTest = $"{topicPath}_issue811";
+            try
             {
-                SubscriptionNameBasedOnEventWithNamespace = typeof(Ns3.SomeEvent).FullName,
-                Description = Guid.NewGuid().ToString()
-            };
-            var properSqlFilter = new SqlSubscriptionFilter(typeof(Ns3.SomeEvent)).Serialize();
+                if (!await nativeManager.TopicExistsAsync(topicForTest))
+                {
+                    await nativeManager.CreateTopicAsync(new TopicDescription(topicForTest));
+                }
 
-            await creator.Create(topicPath, subscriptionName, metadata, properSqlFilter, namespaceManager);
+                var subscriptionName = typeof(SomeEvent).Name;
 
-            var foundSubcriptions = await nativeManager.GetSubscriptionsAsync(topicPath);
+                await namespaceManager.CreateSubscription(new SubscriptionDescription(topicForTest, subscriptionName), new SqlSubscriptionFilter_UsedPriorToVersion9(typeof(SomeEvent)).Serialize());
 
-            Assert.AreEqual(1, foundSubcriptions.Count());
+                var creator = new AzureServiceBusSubscriptionCreatorV6(new TopologySubscriptionSettings());
+                var metadata = new SubscriptionMetadataInternal
+                {
+                    SubscriptionNameBasedOnEventWithNamespace = typeof(SomeEvent).FullName,
+                    Description = Guid.NewGuid().ToString()
+                };
+                var properSqlFilter = new SqlSubscriptionFilter(typeof(SomeEvent)).Serialize();
+
+                await creator.Create(topicForTest, subscriptionName, metadata, properSqlFilter, namespaceManager);
+
+                var foundSubcriptions = await nativeManager.GetSubscriptionsAsync(topicForTest);
+
+                Assert.AreEqual(1, foundSubcriptions.Count());
+            }
+            finally
+            {
+                await nativeManager.DeleteTopicAsync(topicForTest);
+            }
         }
     }
 
