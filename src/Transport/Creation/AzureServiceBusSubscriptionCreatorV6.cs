@@ -42,11 +42,21 @@
 
         async Task<bool> SubscriptionIsReusedAcrossDifferentNamespaces(SubscriptionDescription subscriptionDescription, string sqlFilter, INamespaceManagerInternal namespaceManager)
         {
-            var rules = await namespaceManager.GetRules(subscriptionDescription).ConfigureAwait(false);
-            if (rules.First().Filter is SqlFilter filter && filter.SqlExpression != sqlFilter)
+            var foundRules = await namespaceManager.GetRules(subscriptionDescription).ConfigureAwait(false);
+            var rules = foundRules as RuleDescription[] ?? foundRules.ToArray();
+
+            if (rules.First().Filter is SqlFilter filter)
             {
-                logger.Debug("Looks like this subscription name is already taken as the sql filter does not match the subscribed event name.");
-                return true;
+                if (!filter.SqlExpression.Contains(sqlFilter))
+                {
+                    logger.Debug("Looks like this subscription name is already taken as the sql filter does not match the subscribed event name.");
+                    return true;
+                }
+
+                if (sqlFilter.Length != filter.SqlExpression.Length && rules.Length == 1)
+                {
+                    logger.Info($"SQL filter of the existing subscription '{subscriptionDescription.Name}' should be optimized.\nUpdate Rule filter from \"{filter.SqlExpression}\" to \"{sqlFilter}\".");
+                }
             }
 
             return false;
