@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
 
+    /// <summary></summary>
     public partial class NamespaceInfo : IEquatable<NamespaceInfo>
     {
         /// <summary></summary>
