@@ -67,6 +67,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
             topologyOperator.OnError(exception => circuitBreaker.Failure(exception));
             topologyOperator.OnProcessingFailure(onError);
+            container.Register<CriticalError>(() => criticalError);
 
             return TaskEx.Completed;
         }

@@ -24,7 +24,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             topology = topologySection;
 
             StartNotifiersFor(topology.Entities);
-            
+
             running = true;
 
             Action operation;
@@ -74,6 +74,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         void StartNotifiersFor(IEnumerable<EntityInfo> entities)
         {
+            var criticalError = container.Resolve<CriticalError>();
+
             foreach (var entity in entities)
             {
                 if (!entity.ShouldBeListenedTo)
@@ -83,6 +85,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     var n = CreateNotifier(entity.Type);
                     n.Initialize(e, onMessage, onError, onProcessingFailure, maxConcurrency);
+                    n.CriticalError = criticalError;
                     return n;
                 });
 
@@ -90,11 +93,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        INotifyIncomingMessages CreateNotifier(EntityType type)
+        INotifyIncomingMessagesWithCriticalError CreateNotifier(EntityType type)
         {
             if (type == EntityType.Queue || type == EntityType.Subscription)
             {
-                return (INotifyIncomingMessages) container.Resolve(typeof(MessageReceiverNotifier));
+                return (INotifyIncomingMessagesWithCriticalError) container.Resolve(typeof(MessageReceiverNotifier));
             }
 
             throw new NotSupportedException("Entity type " + type + " not supported");

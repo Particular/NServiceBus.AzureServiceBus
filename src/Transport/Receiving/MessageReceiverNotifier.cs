@@ -13,7 +13,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using NServiceBus.AzureServiceBus.Utils;
     using Settings;
 
-    class MessageReceiverNotifier : INotifyIncomingMessages
+    class MessageReceiverNotifier : INotifyIncomingMessagesWithCriticalError
     {
         public MessageReceiverNotifier(ICreateMessageReceivers receiverCreator, IConvertBrokeredMessagesToIncomingMessages brokeredMessageConverter, ReadOnlySettings settings)
         {
@@ -23,9 +23,11 @@ namespace NServiceBus.Transport.AzureServiceBus
         }
 
         public bool IsRunning { get; set; }
-        
+
         public int RefCount { get; set; }
-        
+
+        public CriticalError CriticalError { get; set; }
+
         public void Initialize(EntityInfo entity, Func<IncomingMessageDetails, ReceiveContext, Task> callback, Func<Exception, Task> errorCallback, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
         {
             receiveMode = settings.Get<ReceiveMode>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.ReceiveMode);
@@ -63,7 +65,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             if (Interlocked.Increment(ref refCount) == 1)
             {
-                StartInternal();                
+                StartInternal();
             }
         }
 
@@ -113,7 +115,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 } while (attempt < 2);
             });
             if (exceptions.Count > 0) throw new AggregateException(exceptions);
-            
+
             IsRunning = true;
         }
 
@@ -277,14 +279,22 @@ namespace NServiceBus.Transport.AzureServiceBus
                     transportTransaction.Set(context);
                     var errorContext = new ErrorContext(exception, incomingMessage.Headers, incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
 
-                    var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
-                    if (result == ErrorHandleResult.RetryRequired)
+                    try
                     {
-                        await Abandon(message, exception).ConfigureAwait(false);
+                        var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
+                        if (result == ErrorHandleResult.RetryRequired)
+                        {
+                            await Abandon(message, exception).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
+                        CriticalError.Raise($"Failed to execute recoverability policy for message with native ID: `{message.MessageId}`", ex);
+                        await Abandon(message, exception).ConfigureAwait(false);
                     }
                 }
             }
