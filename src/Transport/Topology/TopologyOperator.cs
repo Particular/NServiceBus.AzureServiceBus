@@ -6,7 +6,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Threading.Tasks;
     using Logging;
 
-    class TopologyOperator : IOperateTopology, IDisposable
+    class TopologyOperator : IOperateTopology2, IDisposable
     {
         public TopologyOperator(ITransportPartsContainer container)
         {
@@ -16,6 +16,11 @@ namespace NServiceBus.Transport.AzureServiceBus
         public void Dispose()
         {
             // Injected
+        }
+
+        public void Init(CriticalError criticalError)
+        {
+            this.criticalError = criticalError;
         }
 
         public void Start(TopologySection topologySection, int maximumConcurrency)
@@ -74,8 +79,6 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         void StartNotifiersFor(IEnumerable<EntityInfo> entities)
         {
-            var criticalError = container.Resolve<CriticalError>();
-
             foreach (var entity in entities)
             {
                 if (!entity.ShouldBeListenedTo)
@@ -134,5 +137,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
 
         int maxConcurrency;
+        CriticalError criticalError;
     }
 }
