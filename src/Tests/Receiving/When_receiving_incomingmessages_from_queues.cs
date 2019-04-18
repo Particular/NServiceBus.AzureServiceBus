@@ -192,7 +192,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                     return TaskEx.Completed;
                 },
                 null,
-                exception =>
+                (message, exception) =>
                 {
                     ex = exception;
 

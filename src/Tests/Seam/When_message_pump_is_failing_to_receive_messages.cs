@@ -152,7 +152,7 @@
                 onError = func;
             }
 
-            public void OnCritical(Action<Exception> action)
+            public void SetCriticalError(CriticalError criticalError)
             {
             }
 

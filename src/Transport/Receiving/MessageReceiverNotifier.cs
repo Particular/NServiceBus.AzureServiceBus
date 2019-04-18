@@ -21,10 +21,10 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.settings = settings;
         }
 
-        public void Initialize(EntityInfoInternal entity, Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> callback, Func<Exception, Task> errorCallback, Action<Exception> criticalError, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
+        public void Initialize(EntityInfoInternal entity, Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> callback, Func<Exception, Task> errorCallback, Action<string, Exception> raiseCriticalError, Func<ErrorContext, Task<ErrorHandleResult>> processingFailureCallback, int maximumConcurrency)
         {
             incomingCallback = callback;
-            this.criticalError = criticalError;
+            this.raiseCriticalError = raiseCriticalError;
             this.errorCallback = errorCallback ?? EmptyErrorCallback;
             this.processingFailureCallback = processingFailureCallback;
             this.entity = entity;
@@ -85,7 +85,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 if (!exceptions.IsEmpty)
                 {
-                    criticalError(new AggregateException(exceptions));
+                    raiseCriticalError("Failed to receive message from Azure Service Bus.", new AggregateException(exceptions));
                 }
             });
         }
@@ -285,14 +285,22 @@ namespace NServiceBus.Transport.AzureServiceBus
                                 transportTransaction.Set(context);
                                 var errorContext = new ErrorContext(exception, brokeredMessageConverter.GetHeaders(message), incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
 
-                                var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
-                                if (result == ErrorHandleResult.RetryRequired)
+                                try
                                 {
-                                    await Abandon(message, exception).ConfigureAwait(false);
+                                    var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
+                                    if (result == ErrorHandleResult.RetryRequired)
+                                    {
+                                        await Abandon(message, exception).ConfigureAwait(false);
+                                    }
+                                    else
+                                    {
+                                        wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
+                                    }
                                 }
-                                else
+                                catch (Exception ex)
                                 {
-                                    wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
+                                    raiseCriticalError($"Failed to execute recoverability policy for message with native ID: `{message.MessageId}`", ex);
+                                    await Abandon(message, exception).ConfigureAwait(false);
                                 }
                             }
                             finally
@@ -393,7 +401,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         MessageReceiverNotifierSettings settings;
         static ILog logger = LogManager.GetLogger<MessageReceiverNotifier>();
         Task startTask;
-        Action<Exception> criticalError;
+        Action<string, Exception> raiseCriticalError;
         readonly MessageReceiverCreator messageReceiverCreator;
     }
 }
