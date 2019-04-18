@@ -6,7 +6,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Threading.Tasks;
     using Logging;
 
-    class TopologyOperator : IOperateTopology, IDisposable
+    class TopologyOperator : IOperateTopology2, IDisposable
     {
         public TopologyOperator(ITransportPartsContainer container)
         {
@@ -18,13 +18,18 @@ namespace NServiceBus.Transport.AzureServiceBus
             // Injected
         }
 
+        public void Init(CriticalError criticalError)
+        {
+            this.criticalError = criticalError;
+        }
+
         public void Start(TopologySection topologySection, int maximumConcurrency)
         {
             maxConcurrency = maximumConcurrency;
             topology = topologySection;
 
             StartNotifiersFor(topology.Entities);
-            
+
             running = true;
 
             Action operation;
@@ -83,6 +88,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 {
                     var n = CreateNotifier(entity.Type);
                     n.Initialize(e, onMessage, onError, onProcessingFailure, maxConcurrency);
+                    n.CriticalError = criticalError;
                     return n;
                 });
 
@@ -90,11 +96,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        INotifyIncomingMessages CreateNotifier(EntityType type)
+        INotifyIncomingMessagesWithCriticalError CreateNotifier(EntityType type)
         {
             if (type == EntityType.Queue || type == EntityType.Subscription)
             {
-                return (INotifyIncomingMessages) container.Resolve(typeof(MessageReceiverNotifier));
+                return (INotifyIncomingMessagesWithCriticalError) container.Resolve(typeof(MessageReceiverNotifier));
             }
 
             throw new NotSupportedException("Entity type " + type + " not supported");
@@ -131,5 +137,6 @@ namespace NServiceBus.Transport.AzureServiceBus
         ILog logger = LogManager.GetLogger(typeof(TopologyOperator));
 
         int maxConcurrency;
+        CriticalError criticalError;
     }
 }

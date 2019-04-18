@@ -68,6 +68,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             topologyOperator.OnError(exception => circuitBreaker.Failure(exception));
             topologyOperator.OnProcessingFailure(onError);
 
+            if (topologyOperator is IOperateTopology2)
+            {
+                ((IOperateTopology2)topologyOperator).Init(criticalError);
+            }
+       
             return TaskEx.Completed;
         }
 

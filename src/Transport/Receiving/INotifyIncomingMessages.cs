@@ -15,4 +15,9 @@ namespace NServiceBus.Transport.AzureServiceBus
         void Start();
         Task Stop();
     }
+
+    interface INotifyIncomingMessagesWithCriticalError : INotifyIncomingMessages
+    {
+        CriticalError CriticalError { get; set; }
+    }
 }

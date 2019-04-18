@@ -34,4 +34,9 @@
 
         void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> onError);
     }
+
+    interface IOperateTopology2 : IOperateTopology
+    {
+        void Init(CriticalError criticalError);
+    }
 }
