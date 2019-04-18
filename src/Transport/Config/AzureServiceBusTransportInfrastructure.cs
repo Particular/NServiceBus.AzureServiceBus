@@ -102,6 +102,11 @@
 
         public override Task Stop()
         {
+            if (messagingFactoryLifeCycleManager == null)
+            {
+                return Task.FromResult(0);
+            }
+
             return messagingFactoryLifeCycleManager.CloseAll();
         }
 
