@@ -1,5 +1,6 @@
 namespace NServiceBus
 {
+    using AzureServiceBus.Connectivity;
     using Settings;
     using Transport.AzureServiceBus;
 
@@ -14,8 +15,9 @@ namespace NServiceBus
             var conventions = Settings.Get<Conventions>();
             var publishersConfiguration = new PublishersConfiguration(conventions, Settings);
             var endpointName = Settings.EndpointName();
+            var brokerSideSubscriptionFilterFactory = (ICreateBrokerSideSubscriptionFilter)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.BrokerSideSubscriptionFilterFactoryInstance);
 
-            return new EndpointOrientedTopologySectionManager(defaultAlias, namespaces, endpointName, publishersConfiguration, partitioning, addressing);
+            return new EndpointOrientedTopologySectionManager(defaultAlias, namespaces, endpointName, publishersConfiguration, partitioning, addressing, brokerSideSubscriptionFilterFactory);
         }
 
         protected override ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator()

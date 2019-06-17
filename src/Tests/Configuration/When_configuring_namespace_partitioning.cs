@@ -2,6 +2,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 {
     using System;
     using System.Collections.Generic;
+    using AzureServiceBus.Connectivity;
     using Transport.AzureServiceBus;
     using NServiceBus.Configuration.AdvancedExtensibility;
     using Settings;
@@ -37,6 +38,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             CollectionAssert.Contains(namespacesDefinition, new NamespaceInfo(name, connectionString));
         }
 
+        [Test]
+        public void Should_be_able_to_set_broker_side_subscription_filter_factory_instance()
+        {
+            var settings = new SettingsHolder();
+            var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
+
+            var myCreateBrokerSideSubscriptionFilter = new MyCreateBrokerSideSubscriptionFilter();
+            var partitioningSettings = extensions.NamespacePartitioning().OverrideBrokerSideSubscriptionFilterFactory(myCreateBrokerSideSubscriptionFilter);
+
+            Assert.AreEqual(myCreateBrokerSideSubscriptionFilter, partitioningSettings.GetSettings().Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.BrokerSideSubscriptionFilterFactoryInstance));
+        }
+
+
         class MyNamespacePartitioningStrategy : INamespacePartitioningStrategy
         {
             public bool SendingNamespacesCanBeCached { get; }
@@ -44,6 +58,19 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
             public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
             {
                 throw new NotImplementedException(); // not relevant for the test
+            }
+        }
+
+        public class MyCreateBrokerSideSubscriptionFilter : ICreateBrokerSideSubscriptionFilter
+        {
+            public IBrokerSideSubscriptionFilter Create(Type type)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IBrokerSideSubscriptionFilter CreateCatchAll()
+            {
+                throw new NotImplementedException();
             }
         }
     }

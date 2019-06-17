@@ -1,6 +1,7 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
     using System;
+    using NServiceBus.AzureServiceBus.Connectivity;
     using Settings;
 
     class EndpointOrientedMigrationTopologyTransportInfrastructure : AzureServiceBusTransportInfrastructure
@@ -15,7 +16,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             var publishersConfiguration = new PublishersConfiguration(conventions, Settings);
             var endpointName = Settings.EndpointName();
             var topicSettings = Settings.GetOrCreate<TopologySettings>().TopicSettings;
-            var topicCustomizer = topicSettings.DescriptionCustomizer;
+            var topicCustomizer = topicSettings.DescriptionCustomizer; 
+            var brokerSideSubscriptionFilterFactory = (ICreateBrokerSideSubscriptionFilter)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.BrokerSideSubscriptionFilterFactoryInstance);
+
             topicSettings.DescriptionCustomizer = description =>
             {
                 // call customer defined one first
@@ -30,7 +33,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                 description.DuplicateDetectionHistoryTimeWindow = TimeSpan.FromSeconds(60);
             };
 
-            return new EndpointOrientedMigrationTopologySectionManager(defaultAlias, namespaces, endpointName, publishersConfiguration, partitioning, addressing);
+            return new EndpointOrientedMigrationTopologySectionManager(defaultAlias, namespaces, endpointName, publishersConfiguration, partitioning, addressing, brokerSideSubscriptionFilterFactory);
         }
 
         protected override ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator()

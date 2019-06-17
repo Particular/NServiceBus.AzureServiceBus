@@ -5,11 +5,12 @@ namespace NServiceBus.Transport.AzureServiceBus
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using NServiceBus.AzureServiceBus.Connectivity;
     using NServiceBus.AzureServiceBus.Topology.MetaModel;
 
     class ForwardingTopologySectionManager : ITopologySectionManagerInternal
     {
-        public ForwardingTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string originalEndpointName, int numberOfEntitiesInBundle, string bundlePrefix, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic)
+        public ForwardingTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string originalEndpointName, int numberOfEntitiesInBundle, string bundlePrefix, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic, ICreateBrokerSideSubscriptionFilter brokerSideSubscriptionFilterFactory)
         {
             this.bundlePrefix = bundlePrefix;
             this.numberOfEntitiesInBundle = numberOfEntitiesInBundle;
@@ -18,6 +19,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.addressingLogic = addressingLogic;
             this.namespacePartitioningStrategy = namespacePartitioningStrategy;
             this.originalEndpointName = originalEndpointName;
+            this.brokerSideSubscriptionFilterFactory = brokerSideSubscriptionFilterFactory;
         }
 
         public NamespaceBundleConfigurations BundleConfigurations { get; set; }
@@ -277,7 +279,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                             NamespaceInfo = ns,
                             SubscribedEventFullName = eventType.FullName
                         },
-                        BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                        BrokerSideFilter = brokerSideSubscriptionFilterFactory.Create(eventType),
                         ShouldBeListenedTo = false
                     };
                     sub.RelationShips.Add(new EntityRelationShipInfoInternal
@@ -315,6 +317,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         AddressingLogic addressingLogic;
         string defaultNameSpaceAlias;
         NamespaceConfigurations namespaceConfigurations;
+        ICreateBrokerSideSubscriptionFilter brokerSideSubscriptionFilterFactory;
         int numberOfEntitiesInBundle;
         string bundlePrefix;
     }

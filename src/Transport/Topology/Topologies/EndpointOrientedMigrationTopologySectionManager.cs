@@ -1,15 +1,16 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
+    using NServiceBus.AzureServiceBus;
+    using NServiceBus.AzureServiceBus.Connectivity;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using NServiceBus.AzureServiceBus;
 
     class EndpointOrientedMigrationTopologySectionManager : ITopologySectionManagerInternal
     {
-        public EndpointOrientedMigrationTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string originalEndpointName, PublishersConfiguration publishersConfiguration, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic)
+        public EndpointOrientedMigrationTopologySectionManager(string defaultNameSpaceAlias, NamespaceConfigurations namespaceConfigurations, string originalEndpointName, PublishersConfiguration publishersConfiguration, INamespacePartitioningStrategy namespacePartitioningStrategy, AddressingLogic addressingLogic, ICreateBrokerSideSubscriptionFilter brokerSideSubscriptionFilterFactory)
         {
             this.namespaceConfigurations = namespaceConfigurations;
             this.defaultNameSpaceAlias = defaultNameSpaceAlias;
@@ -17,6 +18,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.addressingLogic = addressingLogic;
             this.namespacePartitioningStrategy = namespacePartitioningStrategy;
             this.publishersConfiguration = publishersConfiguration;
+            this.brokerSideSubscriptionFilterFactory = brokerSideSubscriptionFilterFactory;
         }
 
         public Func<Task> Initialize { get; set; } = () => TaskEx.Completed;
@@ -83,7 +85,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         Description = "Forwarding to bundle-1",
                         SubscriptionNameBasedOnEventWithNamespace = MigrationTopicName
                     },
-                    BrokerSideFilter = new CatchAllSubscriptionFilter(),
+                    BrokerSideFilter = brokerSideSubscriptionFilterFactory.CreateCatchAll(),
                     ShouldBeListenedTo = false
                 };
                 subscription.RelationShips.Add(new EntityRelationShipInfoInternal
@@ -350,7 +352,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                                 Description = $"{originalEndpointName} subscribed to {eventType.FullName}",
                                 SubscriptionNameBasedOnEventWithNamespace = subscriptionName
                             },
-                            BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                            BrokerSideFilter = brokerSideSubscriptionFilterFactory.Create(eventType),
                             ShouldBeListenedTo = false
                         };
                         sub.RelationShips.Add(new EntityRelationShipInfoInternal
@@ -397,7 +399,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                                 Description = $"{originalEndpointName} subscribed to {eventType.FullName}",
                                 SubscriptionNameBasedOnEventWithNamespace = subscriptionName
                             },
-                            BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                            BrokerSideFilter = brokerSideSubscriptionFilterFactory.Create(eventType),
                             ShouldBeListenedTo = false
                         };
                         sub.RelationShips.Add(new EntityRelationShipInfoInternal
@@ -446,7 +448,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                         NamespaceInfo = ns,
                         SubscribedEventFullName = eventType.FullName
                     },
-                    BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                    BrokerSideFilter = brokerSideSubscriptionFilterFactory.Create(eventType),
                     ShouldBeListenedTo = false
                 };
                 sub.RelationShips.Add(new EntityRelationShipInfoInternal
@@ -485,6 +487,7 @@ namespace NServiceBus.Transport.AzureServiceBus
         string originalEndpointName;
         string defaultNameSpaceAlias;
         NamespaceConfigurations namespaceConfigurations;
+        ICreateBrokerSideSubscriptionFilter brokerSideSubscriptionFilterFactory;
         public const string MigrationTopicName = "migration";
     }
 }

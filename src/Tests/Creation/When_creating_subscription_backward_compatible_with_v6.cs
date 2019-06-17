@@ -169,7 +169,7 @@
         }
     }
 
-    class SqlSubscriptionFilter_UsedPriorToVersion9 : IBrokerSideSubscriptionFilterInternal
+    class SqlSubscriptionFilter_UsedPriorToVersion9 : IBrokerSideSubscriptionFilter
     {
         public SqlSubscriptionFilter_UsedPriorToVersion9(Type eventType)
         {

@@ -1,5 +1,6 @@
 ﻿namespace NServiceBus
 {
+    using AzureServiceBus.Connectivity;
     using Configuration.AdvancedExtensibility;
     using Settings;
     using Transport.AzureServiceBus;
@@ -25,6 +26,16 @@
         public AzureServiceBusNamespacePartitioningSettings UseStrategy<T>() where T : INamespacePartitioningStrategy
         {
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Partitioning.Strategy, typeof(T));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Namespace partitioning strategy to use.
+        /// </summary>
+        public AzureServiceBusNamespacePartitioningSettings OverrideBrokerSideSubscriptionFilterFactory<T>(T instance) where T : ICreateBrokerSideSubscriptionFilter
+        {
+            settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.BrokerSideSubscriptionFilterFactoryInstance, instance);
 
             return this;
         }

@@ -1,6 +1,7 @@
 namespace NServiceBus
 {
     using System.Threading;
+    using AzureServiceBus.Connectivity;
     using Settings;
     using Transport.AzureServiceBus;
 
@@ -21,8 +22,9 @@ namespace NServiceBus
             var endpointName = Settings.EndpointName();
             var numberOfEntitiesInBundle = Settings.Get<int>(WellKnownConfigurationKeys.Topology.Bundling.NumberOfEntitiesInBundle);
             bundlePrefix = Settings.Get<string>(WellKnownConfigurationKeys.Topology.Bundling.BundlePrefix);
+            var brokerSideSubscriptionFilterFactory = (ICreateBrokerSideSubscriptionFilter)Settings.Get(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.BrokerSideSubscriptionFilterFactoryInstance);
 
-            topologySectionManager = new ForwardingTopologySectionManager(defaultAlias, namespaces, endpointName, numberOfEntitiesInBundle, bundlePrefix, partitioning, addressing);
+            topologySectionManager = new ForwardingTopologySectionManager(defaultAlias, namespaces, endpointName, numberOfEntitiesInBundle, bundlePrefix, partitioning, addressing, brokerSideSubscriptionFilterFactory);
             // By design the topology section manager should determine the resources to create without needing information
             // from ASB. When we realized one bundle was enough we had to call out for backward compatibility reasons to query
             // how many bundles there are. This is async but should happen outside the actual section manager. Thus

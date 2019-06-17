@@ -45,6 +45,7 @@ namespace NServiceBus.Transport.AzureServiceBus
                     public const string SubscriptionNameSanitizer = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.SubscriptionNameSanitizer";
                     public const string RuleNameSanitizer = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.RuleNameSanitizer";
                     public const string Hash = "AzureServiceBus.Settings.Topology.Addressing.Sanitization.Hash";
+                    public const string BrokerSideSubscriptionFilterFactoryInstance = "AzureServiceBus.Connectivity.MessageSenders.BrokerSideSubscriptionFilterFactoryInstance";
                 }
 
                 public static class Individualization

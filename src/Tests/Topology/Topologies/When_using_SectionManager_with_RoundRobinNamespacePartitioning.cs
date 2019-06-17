@@ -40,7 +40,7 @@
         {
             var namespaceConfigurations = new NamespaceConfigurations();
             var addressingLogic = new AddressingLogic(new ThrowOnFailedValidation(settings), new FlatComposition());
-            var sectionManager = new ForwardingTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", 1, "bundle", namespacePartitioningStrategy, addressingLogic);
+            var sectionManager = new ForwardingTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", 1, "bundle", namespacePartitioningStrategy, addressingLogic, new DefaultCreateBrokerSideSubscriptionFilter());
             sectionManager.BundleConfigurations = new NamespaceBundleConfigurations
             {
                 {PrimaryName, 1},
@@ -60,7 +60,7 @@
             var conventions = new Conventions();
             conventions.AddSystemMessagesConventions(type => type != typeof(SomeEvent));
             var publishersConfiguration = new PublishersConfiguration(conventions, new SettingsHolder());
-            var sectionManager = new EndpointOrientedTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", publishersConfiguration, namespacePartitioningStrategy, addressingLogic);
+            var sectionManager = new EndpointOrientedTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", publishersConfiguration, namespacePartitioningStrategy, addressingLogic, new DefaultCreateBrokerSideSubscriptionFilter());
 
             sectionManager.DeterminePublishDestination(typeof(SomeEvent), "sales");
             var publishDestination2 = sectionManager.DeterminePublishDestination(typeof(SomeEvent), "sales");
@@ -76,7 +76,7 @@
         {
             var namespaceConfigurations = new NamespaceConfigurations();
             var addressingLogic = new AddressingLogic(new ThrowOnFailedValidation(settings), new FlatComposition());
-            var sectionManager = new ForwardingTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", 1, "bundle", namespacePartitioningStrategy, addressingLogic);
+            var sectionManager = new ForwardingTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", 1, "bundle", namespacePartitioningStrategy, addressingLogic, new DefaultCreateBrokerSideSubscriptionFilter());
             sectionManager.BundleConfigurations = new NamespaceBundleConfigurations
             {
                 {PrimaryName, 1},
@@ -96,7 +96,7 @@
             var conventions = new Conventions();
             conventions.AddSystemMessagesConventions(type => type != typeof(SomeEvent));
             var publishersConfiguration = new PublishersConfiguration(conventions, new SettingsHolder());
-            var sectionManager = new EndpointOrientedTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", publishersConfiguration, namespacePartitioningStrategy, addressingLogic);
+            var sectionManager = new EndpointOrientedTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", publishersConfiguration, namespacePartitioningStrategy, addressingLogic, new DefaultCreateBrokerSideSubscriptionFilter());
 
             sectionManager.DetermineSendDestination($"sales@{PrimaryName}");
             var sendDestination2 = sectionManager.DetermineSendDestination($"sales@{PrimaryName}");

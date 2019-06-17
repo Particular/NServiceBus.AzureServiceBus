@@ -1,9 +1,10 @@
 ﻿namespace NServiceBus.AzureServiceBus
 {
-    using System;
     using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
     using Settings;
+    using System;
+    using Topology.MetaModel;
     using Transport.AzureServiceBus;
 
     static class DefaultConfigurationValues
@@ -76,6 +77,7 @@
         static void ApplyDefaultValuesForSubscriptions(SettingsHolder settings)
         {
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength, 50);
+            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.BrokerSideSubscriptionFilterFactoryInstance, new DefaultCreateBrokerSideSubscriptionFilter());
         }
 
         static void ApplyDefaultValuesForRules(SettingsHolder settings)

@@ -2,7 +2,7 @@
 {
     using System;
 
-    class SqlSubscriptionFilter : IBrokerSideSubscriptionFilterInternal
+    class SqlSubscriptionFilter : IBrokerSideSubscriptionFilter
     {
         public SqlSubscriptionFilter(Type eventType)
         {
