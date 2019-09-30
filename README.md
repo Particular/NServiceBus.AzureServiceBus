@@ -1,10 +1,10 @@
-# Azure ServiceBus Transport for NServiceBus
+# Legacy Azure Service Bus transport for NServiceBus
 
 The Azure ServiceBus transport for NServiceBus enables the use of the Azure Service Bus Brokered Messaging service as the underlying transport used by NServiceBus. 
 
 ## Documentation
 
-[Azure Service Bus Transport](https://docs.particular.net/nservicebus/azure-service-bus/)
+[Azure Service Bus Transport](https://docs.particular.net/transports/azure-service-bus/legacy/)
 
 [Samples](http://docs.particular.net/samples/azure/)
 
@@ -19,8 +19,5 @@ Follow these steps to run the acceptance tests locally:
 
 * Add a new environment variable `AzureServiceBus.ConnectionString`containing a connection string to your Azure Service Bus namespace (could be same as for acceptance tests)
 * Add a new environment variable `AzureServiceBus.ConnectionString.Fallback` containing a connection string to your Azure Service Bus fallback namespace
-
-## Maintainers
-The following team is responsible for this repository: @Particular/azure-maintainers
 
 
