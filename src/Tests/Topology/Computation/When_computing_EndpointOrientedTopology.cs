@@ -20,7 +20,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         public async Task Determines_the_namespace_from_partitioning_strategy()
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<Conventions>(new Conventions());
+            settings.Set(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             settings.SetDefault("NServiceBus.SharedQueue", "sales");
@@ -38,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         public async Task Determines_there_should_be_a_queue_with_same_name_as_endpointname()
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<Conventions>(new Conventions());
+            settings.Set(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             settings.SetDefault("NServiceBus.SharedQueue", "sales");
@@ -55,7 +55,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         public async Task Should_fail_sanitization_for_invalid_endpoint_name(string reasonToFail, string endpointName)
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<Conventions>(new Conventions());
+            settings.Set(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             settings.SetDefault("NServiceBus.SharedQueue", "sales");
@@ -73,7 +73,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         public async Task Determines_there_should_be_a_topic_with_same_name_as_endpointname_followed_by_dot_events()
         {
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-            settings.Set<Conventions>(new Conventions());
+            settings.Set(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
             settings.SetDefault("NServiceBus.SharedQueue", "sales");
