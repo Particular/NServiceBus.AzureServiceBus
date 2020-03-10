@@ -3,6 +3,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
     using System;
     using AzureServiceBus;
     using NUnit.Framework;
+    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -22,7 +23,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase(validEntityNameForSubscriptionOrQueue, EntityType.Topic)]
         public void Should_not_change_valid_paths_or_names(string entityPathOrName, EntityType entityType)
         {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var sanitization = new ThrowOnFailedValidation(settings);
 
             var sanitizedResult = sanitization.Sanitize(entityPathOrName, entityType);
@@ -36,7 +37,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase(illegalCharacterEntityNameForSubscriptionOrRule, EntityType.Rule)]
         public void Should_throw_on_invalid_characters(string entityPathOrName, EntityType entityType)
         {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var sanitization = new ThrowOnFailedValidation(settings);
 
             Assert.Throws<Exception>(() => sanitization.Sanitize(entityPathOrName, entityType));
@@ -48,7 +49,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Sanitization
         [TestCase(tooLongEntityNameForSubscriptionOrRule, EntityType.Rule)]
         public void Should_throw_on_invalid_length(string entityPathOrName, EntityType entityType)
         {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var sanitization = new ThrowOnFailedValidation(settings);
 
             Assert.Throws<Exception>(() => sanitization.Sanitize(entityPathOrName, entityType));

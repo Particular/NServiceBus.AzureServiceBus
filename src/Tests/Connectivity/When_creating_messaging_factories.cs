@@ -4,6 +4,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
     using TestUtils;
     using Transport.AzureServiceBus;
     using NUnit.Framework;
+    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -12,7 +13,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         [Test]
         public void Creates_new_factories_for_namespace()
         {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
 

@@ -19,7 +19,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         [Test]
         public async Task Determines_the_namespace_from_partitioning_strategy()
         {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
@@ -37,7 +37,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         [Test]
         public async Task Determines_there_should_be_a_queue_with_same_name_as_endpointname()
         {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
@@ -54,7 +54,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         [TestCase("Path contains invalid character", "input%queue")]
         public async Task Should_fail_sanitization_for_invalid_endpoint_name(string reasonToFail, string endpointName)
         {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");
@@ -72,7 +72,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
         [Test]
         public async Task Determines_there_should_be_a_topic_with_same_name_as_endpointname_followed_by_dot_events()
         {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new Conventions());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             settings.SetDefault("NServiceBus.Routing.EndpointName", "sales");

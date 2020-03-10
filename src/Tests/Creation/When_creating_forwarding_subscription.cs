@@ -9,6 +9,7 @@
     using TestUtils;
     using Transport.AzureServiceBus;
     using NUnit.Framework;
+    using Settings;
 
     [TestFixture]
     [Category("AzureServiceBus")]
@@ -89,7 +90,7 @@
         [Test]
         public async Task Should_properly_set_use_subscription_description_provided_by_user()
         {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
@@ -116,7 +117,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var autoDeleteTime = TimeSpan.FromDays(1);
@@ -143,7 +144,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var timeToLive = TimeSpan.FromDays(10);
@@ -166,7 +167,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.UseForwardingTopology().Subscriptions().EnableBatchedOperations(false);
@@ -188,7 +189,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.UseForwardingTopology().Subscriptions().EnableDeadLetteringOnFilterEvaluationExceptions(true);
@@ -210,7 +211,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.UseForwardingTopology().Subscriptions().EnableDeadLetteringOnMessageExpiration(true);
@@ -232,7 +233,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             var lockDuration = TimeSpan.FromMinutes(2);
@@ -255,10 +256,11 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var queueCreator = new AzureServiceBusQueueCreator(new TopologyQueueSettings(), DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer()));
+            var queueCreator = new AzureServiceBusQueueCreator(new TopologyQueueSettings(), DefaultConfigurationValues.Apply(new SettingsHolder()));
             var queueToForwardTo = await queueCreator.Create("forwardto", namespaceManager);
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings2 = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(settings2);
             var creator = new AzureServiceBusForwardingSubscriptionCreator(settings.Get<TopologySettings>().SubscriptionSettings);
 
             const string subscriptionName = "endpoint15";
@@ -281,7 +283,7 @@
             var topicToForwardTo = await topicCreator.Create("topic2forward2", namespaceManager);
 
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.UseForwardingTopology().Subscriptions().ForwardDeadLetteredMessagesTo(topicToForwardTo.Path);
@@ -308,7 +310,7 @@
             var notUsedEntity = await topicCreator.Create("topic2forward2", namespaceManager);
 
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
             extensions.UseForwardingTopology().Subscriptions().ForwardDeadLetteredMessagesTo(subPath => subPath.EndsWith("endpoint14"), notUsedEntity.Path);
@@ -357,7 +359,7 @@
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
             await namespaceManager.CreateSubscription(new SubscriptionDescription(topicPath, "existingendpoint1"), sqlFilter);
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.UseForwardingTopology().Subscriptions().DescriptionCustomizer(description =>
             {
@@ -383,7 +385,7 @@
                 RequiresSession = true
             }, "1=1");
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.UseForwardingTopology().Subscriptions().DescriptionCustomizer(description =>
             {
@@ -400,7 +402,7 @@
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.UseForwardingTopology().Subscriptions().DescriptionCustomizer(description =>
             {
@@ -431,7 +433,7 @@
             };
 
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.UseForwardingTopology().Topics().EnablePartitioning(true);
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));

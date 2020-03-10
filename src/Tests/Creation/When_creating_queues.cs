@@ -8,6 +8,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
     using TestUtils;
     using Transport.AzureServiceBus;
     using NUnit.Framework;
+    using Settings;
     using Transport;
 
     [TestFixture]
@@ -17,7 +18,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         [Test]
         public async Task Uses_queue_description_when_provided_by_user()
         {
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
@@ -43,12 +44,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
             // forwarding queue needs to exist before you can use it as a forwarding target
             // needs to be created with different settings as it cannot forward to itself obviously
-            var originalsettings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var originalsettings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var originalcreator = new AzureServiceBusQueueCreator(new TopologyQueueSettings(), originalsettings);
             await originalcreator.Create("myotherqueue", namespaceManager);
 
             // actual test
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings2 = new SettingsHolder();
+            var settings = DefaultConfigurationValues.Apply(settings2);
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -72,7 +74,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -98,7 +100,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -124,7 +126,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             //make sure any previously created queues with this name are removed as the EnablePartitioning cannot be updated
             await namespaceManager.DeleteQueue("myqueue");
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -147,7 +149,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -170,7 +172,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
@@ -189,7 +191,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
            
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
@@ -208,7 +210,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var bindings = new QueueBindings();
             bindings.BindSending("myqueue");
             settings.Set(bindings);
@@ -231,7 +233,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -254,7 +256,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -277,7 +279,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -300,7 +302,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -323,7 +325,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -346,7 +348,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -369,7 +371,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         {
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
 
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
 
@@ -394,7 +396,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             await namespaceManager.DeleteQueue("existingqueue").ConfigureAwait(false);
             await namespaceManager.CreateQueue(new QueueDescription("existingqueue"));
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Queues().DescriptionCustomizer(qd =>
             {
@@ -434,7 +436,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             Assert.IsTrue(queueDescription.EnablePartitioning);
             Assert.IsTrue(queueDescription.RequiresDuplicateDetection);
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             var extensions = new TransportExtensions<AzureServiceBusTransport>(settings);
             extensions.Queues().DescriptionCustomizer(qd =>
             {
@@ -470,7 +472,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
                 await namespaceManager.CreateQueue(new QueueDescription(queuePath)).ConfigureAwait(false);
             }
 
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(WellKnownConfigurationKeys.Core.RecoverabilityNumberOfImmediateRetries, 2);
             var queueBindings = new QueueBindings();
             queueBindings.BindSending(queuePath);

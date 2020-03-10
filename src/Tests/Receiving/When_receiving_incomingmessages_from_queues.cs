@@ -18,7 +18,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public async Task Can_start_and_stop_notifier()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -53,7 +53,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         public async Task Can_start_stop_and_restart_notifier()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -92,7 +92,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -160,7 +160,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);

@@ -10,6 +10,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
     using NUnit.Framework;
     using TestUtils;
     using Microsoft.ServiceBus;
+    using Settings;
     using Transport;
     using Transport.AzureServiceBus;
 
@@ -37,7 +38,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Can_route_an_outgoing_single_message()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -102,7 +103,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Can_route_an_outgoing_batch_of_messages()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -173,7 +174,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Can_route_a_batch_of_large_messages_that_total_size_exceeds_256KB()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -243,7 +244,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Should_throw_exception_for_a_message_that_exceeds_maximum_size()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -303,7 +304,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Should_invoke_oversized_brokered_message_handler_for_a_message_that_exceeds_maximum_size()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("namespace", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -368,7 +369,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Should_route_via_active_namespace_first()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -448,7 +449,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Can_route_via_fallback_namespace()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -522,7 +523,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Should_invoke_non_throwing_oversized_brokered_message_handler_for_a_message_that_exceeds_maximum_size_only_once_even_if_fallback_namespace_is_set()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
@@ -593,7 +594,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         public async Task Should_throw_exception_for_a_message_that_exceeds_maximum_size_and_not_handle_fallback_on_message_too_large_Exception()
         {
             // default settings
-            var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
+            var settings = DefaultConfigurationValues.Apply(new SettingsHolder());
             settings.Set(new TopologySettings());
             var namespacesDefinition = settings.Get<NamespaceConfigurations>(WellKnownConfigurationKeys.Topology.Addressing.Namespaces);
             namespacesDefinition.Add("primary", AzureServiceBusConnectionString.Value, NamespacePurpose.Partitioning);
