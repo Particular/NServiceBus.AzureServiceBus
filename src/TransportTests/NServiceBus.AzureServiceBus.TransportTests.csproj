@@ -4,6 +4,7 @@
     <TargetFramework>net462</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(SolutionDir)NServiceBus.snk</AssemblyOriginatorKeyFile>
+    <NoWarn>0618</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
