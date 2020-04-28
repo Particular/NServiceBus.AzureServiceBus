@@ -10,6 +10,8 @@
     using Transport.AzureServiceBus;
 
     /// <summary>Transport definition for Azure Service Bus.</summary>
+    [ObsoleteEx(Message = "Azure Service Bus legacy transport is deprecated and will go out of support. Migrate from the NServiceBus.Azure.Transports.WindowsAzureServiceBus package to the NServiceBus.Transport.AzureServiceBus package.",
+        TreatAsErrorFromVersion = "11", RemoveInVersion = "12")]
     public class AzureServiceBusTransport : TransportDefinition
     {
         /// <summary>
