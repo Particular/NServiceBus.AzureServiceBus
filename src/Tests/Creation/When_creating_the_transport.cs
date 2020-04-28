@@ -60,20 +60,23 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
 
         public void Warn(string message) => LastWarnMessage = message;
 
-        public void Warn(string message, Exception exception) => throw new NotImplementedException();
-        public void WarnFormat(string format, params object[] args) => throw new NotImplementedException();
-        public void Debug(string message) => throw new NotImplementedException();
-        public void Debug(string message, Exception exception) => throw new NotImplementedException();
-        public void DebugFormat(string format, params object[] args) => throw new NotImplementedException();
-        public void Info(string message) => throw new NotImplementedException();
-        public void Info(string message, Exception exception) => throw new NotImplementedException();
-        public void InfoFormat(string format, params object[] args) => throw new NotImplementedException();
-        public void Error(string message) => throw new NotImplementedException();
-        public void Error(string message, Exception exception) => throw new NotImplementedException();
-        public void ErrorFormat(string format, params object[] args) => throw new NotImplementedException();
-        public void Fatal(string message) => throw new NotImplementedException();
-        public void Fatal(string message, Exception exception) => throw new NotImplementedException();
-        public void FatalFormat(string format, params object[] args) => throw new NotImplementedException();
+        public void Warn(string message, Exception exception)
+        {
+        }
+
+        public void WarnFormat(string format, params object[] args) {}
+        public void Debug(string message) {}
+        public void Debug(string message, Exception exception) {}
+        public void DebugFormat(string format, params object[] args) {}
+        public void Info(string message) {}
+        public void Info(string message, Exception exception) {}
+        public void InfoFormat(string format, params object[] args) {}
+        public void Error(string message) {}
+        public void Error(string message, Exception exception) {}
+        public void ErrorFormat(string format, params object[] args) {}
+        public void Fatal(string message) {}
+        public void Fatal(string message, Exception exception) {}
+        public void FatalFormat(string format, params object[] args) {}
 
         public bool IsDebugEnabled { get; }
         public bool IsInfoEnabled { get; }
