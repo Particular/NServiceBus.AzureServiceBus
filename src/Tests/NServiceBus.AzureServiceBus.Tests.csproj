@@ -4,6 +4,7 @@
     <TargetFramework>net462</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(SolutionDir)NServiceBus.snk</AssemblyOriginatorKeyFile>
+    <NoWarn>0618</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +14,7 @@
   <ItemGroup>
     <PackageReference Include="FakeItEasy" Version="6.0.1" />
     <PackageReference Include="NServiceBus" Version="7.2.4" />
+    <PackageReference Include="NServiceBus.Testing" Version="7.2.0" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.1" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />

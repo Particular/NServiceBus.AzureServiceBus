@@ -142,6 +142,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusTopicSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusTopicSettings SupportOrdering(bool supported) { }
     }
+    [System.ObsoleteAttribute(@"Azure Service Bus legacy transport is deprecated and will go out of support. Migrate from the NServiceBus.Azure.Transports.WindowsAzureServiceBus package to the NServiceBus.Transport.AzureServiceBus package. Will be treated as an error from version 11.0.0. Will be removed in version 12.0.0.", false)]
     public class AzureServiceBusTransport : NServiceBus.Transport.TransportDefinition
     {
         public AzureServiceBusTransport() { }
