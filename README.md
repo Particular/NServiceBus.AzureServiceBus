@@ -1,6 +1,7 @@
 # Legacy Azure Service Bus transport for NServiceBus
 
 The Azure ServiceBus transport for NServiceBus enables the use of the Azure Service Bus Brokered Messaging service as the underlying transport used by NServiceBus. 
+This transport targets the legacy [WindowsAzure.ServiceBus nuget package](https://www.nuget.org/packages/WindowsAzure.ServiceBus/).
 
 ## Documentation
 
