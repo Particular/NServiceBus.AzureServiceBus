@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FakeItEasy" Version="6.1.0" />
+    <PackageReference Include="FakeItEasy" Version="6.2.0" />
     <PackageReference Include="NServiceBus" Version="7.3.0" />
     <PackageReference Include="NServiceBus.Testing" Version="7.2.0" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.2" />
