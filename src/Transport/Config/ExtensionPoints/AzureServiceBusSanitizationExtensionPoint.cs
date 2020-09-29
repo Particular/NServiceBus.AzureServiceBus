@@ -48,7 +48,6 @@ namespace NServiceBus
         /// <summary>
         /// Rule name validator to be used.
         /// </summary>
-
         public AzureServiceBusSanitizationExtensionPoint<T> RuleNameValidation(Func<string, ValidationResult> ruleNameValidator)
         {
             Guard.AgainstNull(nameof(ruleNameValidator), ruleNameValidator);

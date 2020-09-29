@@ -175,7 +175,8 @@ namespace NServiceBus.Transport.AzureServiceBus
                         exceptions.Enqueue(ex);
                     }
                 }
-            } while (attempt < 2);
+            }
+            while (attempt < 2);
         }
 
         // Intentionally made async void since we don't care about the outcome here

@@ -116,7 +116,8 @@
                     do
                     {
                         await PushInBatches().ConfigureAwait(false);
-                    } while (Interlocked.Read(ref numberOfPushedItems) > 0);
+                    }
+                    while (Interlocked.Read(ref numberOfPushedItems) > 0);
                 }
 
 
@@ -225,7 +226,8 @@
                     itemListAndListBuffer.Item2.Enqueue(itemListAndListBuffer.Item1);
                 }, Tuple.Create(items, itemListBuffer), TaskContinuationOptions.ExecuteSynchronously);
                 tasks.Add(task);
-            } while (numberOfItems == batchSize && concurrency <= maxConcurrency);
+            }
+            while (numberOfItems == batchSize && concurrency <= maxConcurrency);
         }
 
         readonly int batchSize;

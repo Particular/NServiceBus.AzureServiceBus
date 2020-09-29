@@ -1,5 +1,4 @@
 ﻿namespace NServiceBus.Transport.AzureServiceBus
-
 {
     class SubscriptionMetadataInternal
     {

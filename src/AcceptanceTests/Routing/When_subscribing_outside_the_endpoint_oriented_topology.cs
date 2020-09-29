@@ -3,11 +3,11 @@
     using System.Threading.Tasks;
     using AcceptanceTesting;
     using AzureServiceBus.AcceptanceTests.Infrastructure;
+    using Features;
     using NServiceBus.AcceptanceTests;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
-    using Conventions = AcceptanceTesting.Customization.Conventions;
-    using Features;
     using NUnit.Framework;
+    using Conventions = AcceptanceTesting.Customization.Conventions;
 
     public class When_subscribing_outside_the_endpoint_oriented_topology : NServiceBusAcceptanceTest
     {

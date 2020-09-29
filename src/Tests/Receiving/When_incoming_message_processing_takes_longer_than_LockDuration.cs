@@ -62,8 +62,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                 MessageId = Guid.NewGuid().ToString()
             };
             await sender.Send(messageToSend);
+            
             // sending messages to the queue is done
-
             var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, messageReceiverNotifierSettings);
             notifier.Initialize(new EntityInfoInternal { Path = "autorenewtimeout", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) },
                 async (message, context) =>

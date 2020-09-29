@@ -55,7 +55,7 @@
 
         public static bool TryParse(string value, out ConnectionStringInternal connectionString)
         {
-            var t = _parsingResults.GetOrAdd(value, s =>
+            var t = parsingResults.GetOrAdd(value, s =>
             {
                 try
                 {
@@ -106,6 +106,6 @@
         static readonly string Sample = "Endpoint=sb://[namespace name].servicebus.windows.net;SharedAccessKeyName=[shared access key name];SharedAccessKey=[shared access key]";
         static string Pattern = "^Endpoint=sb://(?<namespaceName>[A-Za-z][A-Za-z0-9-]{4,48}[A-Za-z0-9])\\.(?<domain>[A-Za-z0-9-.]+)/?(;SharedAccessKeyName=(?<sharedAccessPolicyName>[\\w\\W]+);SharedAccessKey=(?<sharedAccessPolicyValue>[\\w\\W]+))?$";
 
-        static ConcurrentDictionary<string, Tuple<bool, ConnectionStringInternal>> _parsingResults = new ConcurrentDictionary<string, Tuple<bool, ConnectionStringInternal>>();
+        static ConcurrentDictionary<string, Tuple<bool, ConnectionStringInternal>> parsingResults = new ConcurrentDictionary<string, Tuple<bool, ConnectionStringInternal>>();
     }
 }

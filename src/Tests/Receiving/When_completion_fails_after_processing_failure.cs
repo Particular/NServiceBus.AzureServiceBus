@@ -63,8 +63,8 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                 MessageId = Guid.NewGuid().ToString()
             };
             await sender.Send(messageToSend);
+            
             // sending messages to the queue is done
-
             var rolledBack = new RollbackDetection();
 
             var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, messageReceiverNotifierSettings);

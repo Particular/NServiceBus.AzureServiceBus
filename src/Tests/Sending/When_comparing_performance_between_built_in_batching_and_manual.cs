@@ -46,7 +46,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-
             var sw = new Stopwatch();
 
             sw.Start();
@@ -106,7 +105,6 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             await creator.Create("myqueue", namespaceManager);
 
             // perform the test
-
             var sw = new Stopwatch();
 
             sw.Start();

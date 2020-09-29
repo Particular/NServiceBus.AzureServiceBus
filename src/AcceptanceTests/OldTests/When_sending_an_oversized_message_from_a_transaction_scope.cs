@@ -26,7 +26,6 @@
                    }))
                    .Run();
             }
-            // ReSharper disable once UnusedVariable
             catch (Exception ex) when (ex is MessageTooLargeException)
             {
             }

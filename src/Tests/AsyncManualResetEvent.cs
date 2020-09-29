@@ -59,7 +59,8 @@
                 }
 
                 sw.SpinOnce();
-            } while (true);
+            }
+            while (true);
         }
 
         volatile TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();

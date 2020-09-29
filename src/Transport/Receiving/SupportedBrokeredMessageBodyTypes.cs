@@ -9,6 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         /// <summary>Serialized byte array.</summary>
         ByteArray,
+
         /// <summary>Stream of bytes.</summary>
         Stream
     }

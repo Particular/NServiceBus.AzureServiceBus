@@ -27,8 +27,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 return DispatchBatches(outgoingBatches, brokeredMessageReceiveContext);
             }
-            // case when the receive context is different from brokered messaging (like eventhub)
 
+            // case when the receive context is different from brokered messaging (like eventhub)
             return routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext, DispatchConsistency.Default); // otherwise send out immediately
         }
 
@@ -39,9 +39,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 return routeOutgoingBatches.RouteBatches(outgoingBatches, receiveContext, DispatchConsistency.Default);
             }
+
             // default behavior is to postpone sends until complete (and potentially complete them as a single tx if possible)
             // but some messages may need to go out immediately
-
             return DispatchAccordingToIsolationLevel(outgoingBatches, receiveContext);
         }
 

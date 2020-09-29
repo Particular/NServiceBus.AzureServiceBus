@@ -26,7 +26,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public int Capacity
         {
-            get { return capacity; }
+            get => capacity;
             set
             {
                 if (value == capacity)

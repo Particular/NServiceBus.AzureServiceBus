@@ -7,6 +7,7 @@
     {
         /// <summary>Primary namespace is used.</summary>
         Primary,
+
         /// <summary>Secondary namespace is used.</summary>
         Secondary
     }
