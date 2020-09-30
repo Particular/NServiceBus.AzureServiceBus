@@ -5,6 +5,7 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         /// <summary></summary>
         Active,
+
         /// <summary></summary>
         Passive
     }

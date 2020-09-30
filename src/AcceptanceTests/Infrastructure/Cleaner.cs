@@ -10,7 +10,8 @@
 
     public class Cleaner : NServiceBusAcceptanceTest
     {
-        [Test, Explicit("Intended to be executed explicitly to delete all queues and topics.")]
+        [Test]
+        [Explicit("Intended to be executed explicitly to delete all queues and topics.")]
         [Category("Cleanup")]
         public async Task DeleteEntities()
         {

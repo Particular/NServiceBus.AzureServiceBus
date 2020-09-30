@@ -3,7 +3,6 @@ using NServiceBus;
 using NServiceBus.AcceptanceTesting.Support;
 using NServiceBus.AcceptanceTests.DelayedDelivery;
 using NServiceBus.AcceptanceTests.Routing;
-using TestConventions = NServiceBus.AcceptanceTesting.Customization.Conventions;
 using NServiceBus.AcceptanceTests.Routing.NativePublishSubscribe;
 using NServiceBus.AcceptanceTests.Sagas;
 using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -12,6 +11,7 @@ using NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Routin
 using NServiceBus.AzureServiceBus.AcceptanceTests.Infrastructure;
 using NServiceBus.Configuration.AdvancedExtensibility;
 using NUnit.Framework;
+using TestConventions = NServiceBus.AcceptanceTesting.Customization.Conventions;
 
 public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestExecution
 {

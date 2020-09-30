@@ -18,7 +18,6 @@ namespace NServiceBus
         /// <summary>
         /// Calculate <param name="entityName" /> entity path using <param name="entityType" /> information and path generator specified at configuration time.
         /// </summary>
-        /// <returns></returns>
         public string GetEntityPath(string entityName, EntityType entityType)
         {
             switch (entityType)

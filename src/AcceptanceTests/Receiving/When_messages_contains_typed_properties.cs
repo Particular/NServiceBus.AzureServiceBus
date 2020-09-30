@@ -53,7 +53,6 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                         message.Properties["CustomDateTimeHeader"] = now;
                         message.Properties["CustomStringHeader"] = "Custom";
                         message.Properties["CustomEmptyStringHeader"] = "";
-                        // ReSharper disable once RedundantCast
                         message.Properties["CustomNullStringHeader"] = (string)null;
                         message.Properties["CustomNullHeader"] = null;
                         await sender.SendAsync(message);

@@ -44,7 +44,8 @@
             CollectionAssert.Contains(publishers["publisherName"], new AssemblyTypesScanner(Assembly.GetExecutingAssembly()));
         }
 
-        [Test, Explicit("Works as per design. It's impossible to access Publisher API using a topology other than `EndpointOrientedTopology`")]
+        [Test]
+        [Explicit("Works as per design. It's impossible to access Publisher API using a topology other than `EndpointOrientedTopology`")]
         public void Should_not_be_possible_configure_publishers_using_forwarding_topology()
         {
 //            var topologySettings = extensions.UseTopology<ForwardingTopology>();

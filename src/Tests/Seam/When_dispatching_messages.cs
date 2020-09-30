@@ -94,7 +94,6 @@
             public IList<BatchInternal> ToBatches(TransportOperations operations)
             {
                 // we don't care about incoming operations as we'll fake batcher and return pre-canned batches
-
                 var @namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value);
 
                 var bytes = Encoding.UTF8.GetBytes("Whatever");

@@ -11,9 +11,6 @@ namespace NServiceBus
         /// <summary>
         /// Allows to set the bundle prefix
         /// </summary>
-        /// <param name="topologySettings"></param>
-        /// <param name="prefix"></param>
-        /// <returns></returns>
         public static AzureServiceBusForwardingTopologySettings BundlePrefix(this AzureServiceBusForwardingTopologySettings topologySettings, string prefix)
         {
             var settings = topologySettings.GetSettings();

@@ -26,12 +26,16 @@
 
         /// <summary></summary>
         public static SizeInMegabytes Size1024 = new SizeInMegabytes(1024);
+
         /// <summary></summary>
         public static SizeInMegabytes Size2048 = new SizeInMegabytes(2048);
+
         /// <summary></summary>
         public static SizeInMegabytes Size3072 = new SizeInMegabytes(3072);
+
         /// <summary></summary>
         public static SizeInMegabytes Size4096 = new SizeInMegabytes(4096);
+
         /// <summary></summary>
         public static SizeInMegabytes Size5120 = new SizeInMegabytes(5120);
     }
