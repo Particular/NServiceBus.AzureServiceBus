@@ -1,6 +1,4 @@
-﻿// ReSharper disable MemberHidesStaticFromOuterClass
-
-namespace NServiceBus.Transport.AzureServiceBus
+﻿namespace NServiceBus.Transport.AzureServiceBus
 {
     static class WellKnownConfigurationKeys
     {
