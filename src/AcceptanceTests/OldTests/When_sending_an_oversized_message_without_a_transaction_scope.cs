@@ -8,7 +8,7 @@
     using NUnit.Framework;
 
     public class When_sending_an_oversized_message_without_a_transaction_scope : NServiceBusAcceptanceTest
-    {  
+    {
         [Test]
         public async Task Should_throw_message_too_large_exception()
         {
@@ -18,7 +18,7 @@
                    .WithEndpoint<MyEndpoint>(b => b.When(async bus => await bus.SendLocal(new OversizedRequest())))
                    .Run();
             }
-            catch (MessageTooLargeException ex) when(ex is MessageTooLargeException)
+            catch (MessageTooLargeException)
             {
             }
         }
