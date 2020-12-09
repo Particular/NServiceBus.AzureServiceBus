@@ -10,7 +10,7 @@
         [Test]
         public void ApproveAzureServiceBusTransport()
         {
-            var publicApi = ApiGenerator.GeneratePublicApi(typeof(AzureServiceBusTransport).Assembly);
+            var publicApi = ApiGenerator.GeneratePublicApi(typeof(AzureServiceBusTransport).Assembly, excludeAttributes: new[] { "System.Runtime.Versioning.TargetFrameworkAttribute", "System.Reflection.AssemblyMetadataAttribute" });
             Approver.Verify(publicApi);
         }
     }
