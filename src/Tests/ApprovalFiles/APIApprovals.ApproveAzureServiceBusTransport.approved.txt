@@ -1,9 +1,8 @@
-[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute(@"DynamicProxyGenAssembly2, PublicKey=0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute(@"NServiceBus.AzureServiceBus.AcceptanceTests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100db5719402b853e11b7a2141f51a4d1a6741ac3db3c7ef6ae1eb294151615b72b7993460451a4a75c14f66831b86b4560f7d875c15f20f4e8a5fe591b1fd49f3a67ce8bf14a0fc7fb42f29927b941d584e82ec41d0868965f2455973844776e4ff9e24d87b81253570dde6c907e55dc191dfbf4951d512165fa02a314917acec0")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute(@"NServiceBus.AzureServiceBus.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100dde965e6172e019ac82c2639ffe494dd2e7dd16347c34762a05732b492e110f2e4e2e1b5ef2d85c848ccfb671ee20a47c8d1376276708dc30a90ff1121b647ba3b7259a6bc383b2034938ef0e275b58b920375ac605076178123693c6c4f1331661a62eba28c249386855637780e3ff5f23a6d854700eaa6803ef48907513b92")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute(@"NServiceBus.AzureServiceBus.TransportTests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100dde965e6172e019ac82c2639ffe494dd2e7dd16347c34762a05732b492e110f2e4e2e1b5ef2d85c848ccfb671ee20a47c8d1376276708dc30a90ff1121b647ba3b7259a6bc383b2034938ef0e275b58b920375ac605076178123693c6c4f1331661a62eba28c249386855637780e3ff5f23a6d854700eaa6803ef48907513b92")]
-[assembly: System.Runtime.InteropServices.ComVisibleAttribute(false)]
-[assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETFramework,Version=v4.6.2", FrameworkDisplayName=".NET Framework 4.6.2")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(@"DynamicProxyGenAssembly2, PublicKey=0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(@"NServiceBus.AzureServiceBus.AcceptanceTests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100db5719402b853e11b7a2141f51a4d1a6741ac3db3c7ef6ae1eb294151615b72b7993460451a4a75c14f66831b86b4560f7d875c15f20f4e8a5fe591b1fd49f3a67ce8bf14a0fc7fb42f29927b941d584e82ec41d0868965f2455973844776e4ff9e24d87b81253570dde6c907e55dc191dfbf4951d512165fa02a314917acec0")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(@"NServiceBus.AzureServiceBus.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100dde965e6172e019ac82c2639ffe494dd2e7dd16347c34762a05732b492e110f2e4e2e1b5ef2d85c848ccfb671ee20a47c8d1376276708dc30a90ff1121b647ba3b7259a6bc383b2034938ef0e275b58b920375ac605076178123693c6c4f1331661a62eba28c249386855637780e3ff5f23a6d854700eaa6803ef48907513b92")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(@"NServiceBus.AzureServiceBus.TransportTests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100dde965e6172e019ac82c2639ffe494dd2e7dd16347c34762a05732b492e110f2e4e2e1b5ef2d85c848ccfb671ee20a47c8d1376276708dc30a90ff1121b647ba3b7259a6bc383b2034938ef0e275b58b920375ac605076178123693c6c4f1331661a62eba28c249386855637780e3ff5f23a6d854700eaa6803ef48907513b92")]
+[assembly: System.Runtime.InteropServices.ComVisible(false)]
 namespace NServiceBus
 {
     public class AzureServiceBusCompositionExtensionPoint<T> : NServiceBus.Configuration.AdvancedExtensibility.ExposeSettings
@@ -13,23 +12,23 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusCompositionExtensionPoint<T> UseStrategy<T>()
             where T : NServiceBus.Transport.AzureServiceBus.ICompositionStrategy { }
     }
-    public class static AzureServiceBusDiscriminatorBasedIndividualizationSettingsExtensions
+    public static class AzureServiceBusDiscriminatorBasedIndividualizationSettingsExtensions
     {
         public static NServiceBus.AzureServiceBusIndividualizationExtensionPoint<NServiceBus.DiscriminatorBasedIndividualization> DiscriminatorGenerator(this NServiceBus.AzureServiceBusIndividualizationExtensionPoint<NServiceBus.DiscriminatorBasedIndividualization> individualizationStrategy, System.Func<string, string> discriminatorGenerator) { }
     }
     public class AzureServiceBusEndpointOrientedTopologySettings : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> { }
-    public class static AzureServiceBusEndpointOrientedTopologySettingsExtensions
+    public static class AzureServiceBusEndpointOrientedTopologySettingsExtensions
     {
         public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings EnableMigrationToForwardingTopology(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings transportExtensions) { }
-        public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings topologySettings, System.Type type, string publisherName) { }
         public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings topologySettings, System.Reflection.Assembly assembly, string publisherName) { }
+        public static NServiceBus.AzureServiceBusEndpointOrientedTopologySettings RegisterPublisher(this NServiceBus.AzureServiceBusEndpointOrientedTopologySettings topologySettings, System.Type type, string publisherName) { }
     }
     public class AzureServiceBusForwardingTopologySettings : NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> { }
-    public class static AzureServiceBusForwardingTopologySettingsExtensions
+    public static class AzureServiceBusForwardingTopologySettingsExtensions
     {
         public static NServiceBus.AzureServiceBusForwardingTopologySettings BundlePrefix(this NServiceBus.AzureServiceBusForwardingTopologySettings topologySettings, string prefix) { }
     }
-    public class static AzureServiceBusHierarchyCompositionSettingsExtensions
+    public static class AzureServiceBusHierarchyCompositionSettingsExtensions
     {
         public static NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.HierarchyComposition> PathGenerator(this NServiceBus.AzureServiceBusCompositionExtensionPoint<NServiceBus.HierarchyComposition> composition, System.Func<string, string> pathGenerator) { }
     }
@@ -142,7 +141,7 @@ namespace NServiceBus
         public NServiceBus.AzureServiceBusTopicSettings RequiresDuplicateDetection(bool requiresDuplicateDetection) { }
         public NServiceBus.AzureServiceBusTopicSettings SupportOrdering(bool supported) { }
     }
-    [System.ObsoleteAttribute(@"Azure Service Bus legacy transport is deprecated and will go out of support. Migrate from the NServiceBus.Azure.Transports.WindowsAzureServiceBus package to the NServiceBus.Transport.AzureServiceBus package. Will be treated as an error from version 11.0.0. Will be removed in version 12.0.0.", false)]
+    [System.Obsolete(@"Azure Service Bus legacy transport is deprecated and will go out of support. Migrate from the NServiceBus.Azure.Transports.WindowsAzureServiceBus package to the NServiceBus.Transport.AzureServiceBus package. Will be treated as an error from version 11.0.0. Will be removed in version 12.0.0.", false)]
     public class AzureServiceBusTransport : NServiceBus.Transport.TransportDefinition
     {
         public AzureServiceBusTransport() { }
@@ -150,7 +149,7 @@ namespace NServiceBus
         public override bool RequiresConnectionString { get; }
         public override NServiceBus.Transport.TransportInfrastructure Initialize(NServiceBus.Settings.SettingsHolder settings, string connectionString) { }
     }
-    public class static AzureServiceBusTransportExtensions
+    public static class AzureServiceBusTransportExtensions
     {
         public static void BrokeredMessageBodyType(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions, NServiceBus.Transport.AzureServiceBus.SupportedBrokeredMessageBodyTypes type) { }
         public static NServiceBus.AzureServiceBusCompositionSettings Composition(this NServiceBus.TransportExtensions<NServiceBus.AzureServiceBusTransport> transportExtensions) { }
@@ -261,12 +260,13 @@ namespace NServiceBus.Transport.AzureServiceBus
     {
         string Sanitize(string entityPathOrName, NServiceBus.EntityType entityType);
     }
+    [System.Serializable]
     public class MessageTooLargeException : System.Exception
     {
         public MessageTooLargeException() { }
         public MessageTooLargeException(string message) { }
-        public MessageTooLargeException(string message, System.Exception inner) { }
         protected MessageTooLargeException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        public MessageTooLargeException(string message, System.Exception inner) { }
     }
     public class NamespaceConfigurations : System.Collections.Generic.IEnumerable<NServiceBus.Transport.AzureServiceBus.NamespaceInfo>, System.Collections.IEnumerable
     {
@@ -312,8 +312,8 @@ namespace NServiceBus.Transport.AzureServiceBus
         public bool Equals(NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo other) { }
         public override bool Equals(object obj) { }
         public override int GetHashCode() { }
-        public static bool ==(NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo left, NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo right) { }
-        public static bool !=(NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo left, NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo right) { }
+        public static bool operator !=(NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo left, NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo right) { }
+        public static bool operator ==(NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo left, NServiceBus.Transport.AzureServiceBus.RuntimeNamespaceInfo right) { }
     }
     public enum SupportedBrokeredMessageBodyTypes
     {
@@ -325,20 +325,22 @@ namespace NServiceBus.Transport.AzureServiceBus
         public ThrowOnOversizedBrokeredMessages() { }
         public System.Threading.Tasks.Task Handle(Microsoft.ServiceBus.Messaging.BrokeredMessage brokeredMessage) { }
     }
+    [System.Serializable]
     public class TransactionContainsTooManyMessages : System.Exception
     {
         public TransactionContainsTooManyMessages() { }
-        public TransactionContainsTooManyMessages(string message = "Azure Service Bus cannot send more than 100 messages in a signle transaction. Reduce number of messages sent out or reduce transport transaction mode.") { }
-        public TransactionContainsTooManyMessages(string message, System.Exception inner) { }
         public TransactionContainsTooManyMessages(System.Exception inner) { }
+        public TransactionContainsTooManyMessages(string message = "Azure Service Bus cannot send more than 100 messages in a signle transaction. Reduce number of messages sent out or reduce transport transaction mode.") { }
         protected TransactionContainsTooManyMessages(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        public TransactionContainsTooManyMessages(string message, System.Exception inner) { }
     }
+    [System.Serializable]
     public class UnsupportedBrokeredMessageBodyTypeException : System.Exception
     {
         public UnsupportedBrokeredMessageBodyTypeException() { }
         public UnsupportedBrokeredMessageBodyTypeException(string message) { }
-        public UnsupportedBrokeredMessageBodyTypeException(string message, System.Exception innerException) { }
         protected UnsupportedBrokeredMessageBodyTypeException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        public UnsupportedBrokeredMessageBodyTypeException(string message, System.Exception innerException) { }
     }
     public class ValidationResult
     {
