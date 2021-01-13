@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Particular.CodeRules" Version="0.7.0" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.2" />
     <PackageReference Include="NServiceBus.TransportTests.Sources" Version="7.4.4" />
     <PackageReference Include="NUnit" Version="3.12.0" />
