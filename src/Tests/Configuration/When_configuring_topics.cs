@@ -65,7 +65,7 @@
         [Test]
         public void Should_be_able_to_set_EnablePartitioning()
         {
-           extensions.Topics().EnablePartitioning(true);
+            extensions.Topics().EnablePartitioning(true);
 
             Assert.IsTrue(settings.Get<TopologySettings>().TopicSettings.EnablePartitioning);
         }

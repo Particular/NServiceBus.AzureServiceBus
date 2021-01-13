@@ -99,10 +99,7 @@
             }
         }
 
-        static void SetConnectivityMode(SettingsHolder settings)
-        {
-            ServiceBusEnvironment.SystemConnectivity.Mode = settings.Get<ConnectivityMode>(WellKnownConfigurationKeys.Connectivity.ConnectivityMode);
-        }
+        static void SetConnectivityMode(SettingsHolder settings) => ServiceBusEnvironment.SystemConnectivity.Mode = settings.Get<ConnectivityMode>(WellKnownConfigurationKeys.Connectivity.ConnectivityMode);
 
         static void RegisterConnectionStringAsNamespace(string connectionString, ReadOnlySettings settings)
         {

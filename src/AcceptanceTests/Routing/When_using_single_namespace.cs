@@ -31,7 +31,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
             Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");
             Assert.IsTrue(context.ReplyToContainsNamespaceName, "context.ReplyToContainsNamespaceName");
         }
-      
+
 
         public class SourceEndpoint : EndpointConfigurationBuilder
         {

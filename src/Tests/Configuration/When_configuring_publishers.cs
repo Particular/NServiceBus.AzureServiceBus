@@ -47,10 +47,10 @@
         [Test, Explicit("Works as per design. It's impossible to access Publisher API using a topology other than `EndpointOrientedTopology`")]
         public void Should_not_be_possible_configure_publishers_using_forwarding_topology()
         {
-//            var topologySettings = extensions.UseTopology<ForwardingTopology>();
+            //            var topologySettings = extensions.UseTopology<ForwardingTopology>();
 
-//            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisher("publisherName", typeof(MyType)));
-//            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisher("publisherName", Assembly.GetExecutingAssembly()));
+            //            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisher("publisherName", typeof(MyType)));
+            //            Assert.Throws<InvalidOperationException>(() => topologySettings.RegisterPublisher("publisherName", Assembly.GetExecutingAssembly()));
         }
 
         class MyType

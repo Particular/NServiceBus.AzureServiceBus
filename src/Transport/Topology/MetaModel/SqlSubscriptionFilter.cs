@@ -9,10 +9,7 @@
             this.eventType = eventType;
         }
 
-        public string Serialize()
-        {
-            return $"[{Headers.EnclosedMessageTypes}] LIKE '%{eventType.FullName}%'";
-        }
+        public string Serialize() => $"[{Headers.EnclosedMessageTypes}] LIKE '%{eventType.FullName}%'";
 
         Type eventType;
     }

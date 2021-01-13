@@ -12,15 +12,9 @@
             namespaceBundles = new List<NamespaceBundleInfo>();
         }
 
-        public IEnumerator<NamespaceBundleInfo> GetEnumerator()
-        {
-            return namespaceBundles.GetEnumerator();
-        }
+        public IEnumerator<NamespaceBundleInfo> GetEnumerator() => namespaceBundles.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public void Add(string namespaceAlias, int numberOfTopicsInBundle)
         {

@@ -32,10 +32,7 @@
             settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.Strategy, typeof(ThrowOnFailedValidation));
         }
 
-        static void ApplyDefaultValuesForSerialization(SettingsHolder settings)
-        {
-            settings.SetDefault(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType, SupportedBrokeredMessageBodyTypes.ByteArray);
-        }
+        static void ApplyDefaultValuesForSerialization(SettingsHolder settings) => settings.SetDefault(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType, SupportedBrokeredMessageBodyTypes.ByteArray);
 
         static void ApplyDefaultValuesForAddressing(SettingsHolder settings)
         {
@@ -63,24 +60,12 @@
             settings.SetDefault(WellKnownConfigurationKeys.Connectivity.MessageSenders.OversizedBrokeredMessageHandlerInstance, new ThrowOnOversizedBrokeredMessages());
         }
 
-        static void ApplyDefaultValuesForQueueDescriptions(SettingsHolder settings)
-        {
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength, 260);
-        }
+        static void ApplyDefaultValuesForQueueDescriptions(SettingsHolder settings) => settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.QueuePathMaximumLength, 260);
 
-        static void ApplyDefaultValuesForTopics(SettingsHolder settings)
-        {
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength, 260);
-        }
+        static void ApplyDefaultValuesForTopics(SettingsHolder settings) => settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.TopicPathMaximumLength, 260);
 
-        static void ApplyDefaultValuesForSubscriptions(SettingsHolder settings)
-        {
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength, 50);
-        }
+        static void ApplyDefaultValuesForSubscriptions(SettingsHolder settings) => settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.SubscriptionNameMaximumLength, 50);
 
-        static void ApplyDefaultValuesForRules(SettingsHolder settings)
-        {
-            settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameMaximumLength, 50);
-        }
+        static void ApplyDefaultValuesForRules(SettingsHolder settings) => settings.SetDefault(WellKnownConfigurationKeys.Topology.Addressing.Sanitization.RuleNameMaximumLength, 50);
     }
 }

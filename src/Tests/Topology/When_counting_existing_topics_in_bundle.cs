@@ -44,9 +44,6 @@
         }
 
         [TearDown]
-        public Task TearDown()
-        {
-            return namespaceManager.DeleteTopic(nonBundledTopic);
-        }
+        public Task TearDown() => namespaceManager.DeleteTopic(nonBundledTopic);
     }
 }

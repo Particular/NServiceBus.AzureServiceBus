@@ -60,30 +60,15 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public Task Stop(IEnumerable<EntityInfoInternal> subscriptions)
-        {
-            return StopNotifiersForAsync(subscriptions);
-        }
+        public Task Stop(IEnumerable<EntityInfoInternal> subscriptions) => StopNotifiersForAsync(subscriptions);
 
-        public void OnIncomingMessage(Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> func)
-        {
-            onMessage = func;
-        }
+        public void OnIncomingMessage(Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> func) => onMessage = func;
 
-        public void OnError(Func<Exception, Task> func)
-        {
-            onError = func;
-        }
+        public void OnError(Func<Exception, Task> func) => onError = func;
 
-        public void SetCriticalError(CriticalError criticalError)
-        {
-            this.criticalError = criticalError;
-        }
+        public void SetCriticalError(CriticalError criticalError) => this.criticalError = criticalError;
 
-        public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func)
-        {
-            onProcessingFailure = func;
-        }
+        public void OnProcessingFailure(Func<ErrorContext, Task<ErrorHandleResult>> func) => onProcessingFailure = func;
 
         void StartNotifiersFor(IEnumerable<EntityInfoInternal> entities)
         {

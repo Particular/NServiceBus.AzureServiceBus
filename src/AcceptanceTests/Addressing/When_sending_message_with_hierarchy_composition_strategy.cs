@@ -116,14 +116,8 @@
 
             public ConcurrentStack<string> ReplyToAddresses { get; }
 
-            public void ReceivedRequest()
-            {
-                Interlocked.Increment(ref receivedRequest);
-            }
-            public void ReceivedResponse()
-            {
-                Interlocked.Increment(ref receivedResponse);
-            }
+            public void ReceivedRequest() => Interlocked.Increment(ref receivedRequest);
+            public void ReceivedResponse() => Interlocked.Increment(ref receivedResponse);
         }
     }
 }

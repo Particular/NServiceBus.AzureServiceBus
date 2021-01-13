@@ -53,10 +53,7 @@
         /// <summary>
         /// Return a set of namespaces required by strategy for <see cref="PartitioningIntent"/>.
         /// </summary>
-        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
-        {
-            return runtimeNamespaces;
-        }
+        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent) => runtimeNamespaces;
 
         RuntimeNamespaceInfo[] runtimeNamespaces;
     }

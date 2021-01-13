@@ -19,10 +19,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             configuredBodyType = settings.Get<SupportedBrokeredMessageBodyTypes>(WellKnownConfigurationKeys.Serialization.BrokeredMessageBodyType);
         }
 
-        public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperationInternal> outgoingMessages, RoutingOptionsInternal routingOptions)
-        {
-            return outgoingMessages.Select(x => Convert(x, routingOptions));
-        }
+        public IEnumerable<BrokeredMessage> Convert(IEnumerable<BatchedOperationInternal> outgoingMessages, RoutingOptionsInternal routingOptions) => outgoingMessages.Select(x => Convert(x, routingOptions));
 
         internal BrokeredMessage Convert(BatchedOperationInternal outgoingOperation, RoutingOptionsInternal routingOptions)
         {
@@ -45,10 +42,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return brokeredMessage;
         }
 
-        void SetEstimatedMessageSizeHeader(BrokeredMessage brokeredMessage, long estimatedSize)
-        {
-            brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize] = estimatedSize;
-        }
+        void SetEstimatedMessageSizeHeader(BrokeredMessage brokeredMessage, long estimatedSize) => brokeredMessage.Properties[BrokeredMessageHeaders.EstimatedMessageSize] = estimatedSize;
 
         void SetViaPartitionKeyToIncomingBrokeredMessagePartitionKey(BrokeredMessage brokeredMessage, RoutingOptionsInternal routingOptions)
         {

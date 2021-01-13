@@ -38,9 +38,6 @@
         }
 
         [Test]
-        public void Should_not_be_possible_not_to_define_an_assembly()
-        {
-            Assert.Throws<ArgumentNullException>(() => new AssemblyTypesScanner(null));
-        }
+        public void Should_not_be_possible_not_to_define_an_assembly() => Assert.Throws<ArgumentNullException>(() => new AssemblyTypesScanner(null));
     }
 }

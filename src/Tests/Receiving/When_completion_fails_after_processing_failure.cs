@@ -109,48 +109,27 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             {
             }
 
-            public override EntityAddress Map(EntityAddress value)
-            {
-                return value;
-            }
+            public override EntityAddress Map(EntityAddress value) => value;
         }
 
         public class EmulateCompletionFailure : IEnlistmentNotification
         {
-            public void Prepare(PreparingEnlistment preparingEnlistment)
-            {
-                preparingEnlistment.ForceRollback();
-            }
+            public void Prepare(PreparingEnlistment preparingEnlistment) => preparingEnlistment.ForceRollback();
 
-            public void Commit(Enlistment enlistment)
-            {
-               enlistment.Done();
-            }
+            public void Commit(Enlistment enlistment) => enlistment.Done();
 
-            public void Rollback(Enlistment enlistment)
-            {
-               enlistment.Done();
-            }
+            public void Rollback(Enlistment enlistment) => enlistment.Done();
 
-            public void InDoubt(Enlistment enlistment)
-            {
-                enlistment.Done();
-            }
+            public void InDoubt(Enlistment enlistment) => enlistment.Done();
         }
 
         public class RollbackDetection : IEnlistmentNotification
         {
             public bool RolledBack { get; set; }
 
-            public void Prepare(PreparingEnlistment preparingEnlistment)
-            {
-                preparingEnlistment.Prepared();
-            }
+            public void Prepare(PreparingEnlistment preparingEnlistment) => preparingEnlistment.Prepared();
 
-            public void Commit(Enlistment enlistment)
-            {
-                enlistment.Done();
-            }
+            public void Commit(Enlistment enlistment) => enlistment.Done();
 
             public void Rollback(Enlistment enlistment)
             {
@@ -158,10 +137,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                 enlistment.Done();
             }
 
-            public void InDoubt(Enlistment enlistment)
-            {
-                enlistment.Done();
-            }
+            public void InDoubt(Enlistment enlistment) => enlistment.Done();
         }
     }
 }

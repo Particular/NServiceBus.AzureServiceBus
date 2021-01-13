@@ -110,8 +110,5 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
         }
     }
 
-    public Task Cleanup()
-    {
-        return Task.FromResult(0);
-    }
+    public Task Cleanup() => Task.FromResult(0);
 }

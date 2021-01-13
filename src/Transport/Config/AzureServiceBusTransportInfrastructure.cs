@@ -100,15 +100,9 @@
             await topologyCreator.Create(topicsToCreate).ConfigureAwait(false);
         }
 
-        public override Task Stop()
-        {
-            return messagingFactoryLifeCycleManager?.CloseAll() ?? TaskEx.Completed;
-        }
+        public override Task Stop() => messagingFactoryLifeCycleManager?.CloseAll() ?? TaskEx.Completed;
 
-        public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance)
-        {
-            return new EndpointInstance(individualization.Individualize(instance.Endpoint), instance.Discriminator, instance.Properties);
-        }
+        public override EndpointInstance BindToLocalEndpoint(EndpointInstance instance) => new EndpointInstance(individualization.Individualize(instance.Endpoint), instance.Discriminator, instance.Properties);
 
         public override string ToTransportAddress(LogicalAddress logicalAddress)
         {
@@ -133,9 +127,7 @@
         // all dependencies required are passed in. no protected field can be assumed created
         protected abstract ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator();
 
-        public override TransportReceiveInfrastructure ConfigureReceiveInfrastructure()
-        {
-            return new TransportReceiveInfrastructure(
+        public override TransportReceiveInfrastructure ConfigureReceiveInfrastructure() => new TransportReceiveInfrastructure(
                 () =>
                 {
                     InitializeIfNecessary();
@@ -147,27 +139,20 @@
                     return new TransportResourcesCreator(topologyCreator, topologyManager, localAddress);
                 },
                 () => Task.FromResult(StartupCheckResult.Success));
-        }
 
-        public override TransportSendInfrastructure ConfigureSendInfrastructure()
-        {
-            return new TransportSendInfrastructure(
+        public override TransportSendInfrastructure ConfigureSendInfrastructure() => new TransportSendInfrastructure(
                 () =>
                 {
                     InitializeIfNecessary();
                     return new Dispatcher(new OutgoingBatchRouter(new BatchedOperationsToBrokeredMessagesConverter(Settings), senderLifeCycleManager, Settings, oversizedMessageHandler), new Batcher(topologyManager, messageSizePaddingPercentage, localAddress));
                 },
                 () => Task.FromResult(StartupCheckResult.Success));
-        }
 
-        public override TransportSubscriptionInfrastructure ConfigureSubscriptionInfrastructure()
-        {
-            return new TransportSubscriptionInfrastructure(() =>
-            {
-                InitializeIfNecessary();
-                return new SubscriptionManager(topologyManager, topologyOperator, topologyCreator, localAddress);
-            });
-        }
+        public override TransportSubscriptionInfrastructure ConfigureSubscriptionInfrastructure() => new TransportSubscriptionInfrastructure(() =>
+                                                                                                               {
+                                                                                                                   InitializeIfNecessary();
+                                                                                                                   return new SubscriptionManager(topologyManager, topologyOperator, topologyCreator, localAddress);
+                                                                                                               });
 
         protected IOperateTopologyInternal topologyOperator;
         // exposed as internal for component tests

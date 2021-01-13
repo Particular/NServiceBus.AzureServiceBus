@@ -29,9 +29,9 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                         })
                     .When(async (bus, c) =>
                     {
-                            var sendOptions = new SendOptions();
-                            sendOptions.SetDestination("usingmultiplenamespaces.endpointintargetnamespace@target");
-                            await bus.Send(new MyRequest(), sendOptions);
+                        var sendOptions = new SendOptions();
+                        sendOptions.SetDestination("usingmultiplenamespaces.endpointintargetnamespace@target");
+                        await bus.Send(new MyRequest(), sendOptions);
                     });
                 })
                 .WithEndpoint<EndpointInTargetNamespace>(b => b.CustomConfig(c =>
@@ -41,7 +41,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     transport.NamespaceRouting().AddNamespace("source", connectionString);
                     transport.NamespacePartitioning().AddNamespace("target", targetConnectionString);
                 }))
-                .Done(c => c.ReplyReceived )
+                .Done(c => c.ReplyReceived)
                 .Run();
 
             Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
@@ -84,26 +84,26 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         [Test]
         public async Task Should_support_request_reply_across_namespaces_using_contained_endpoint()
         {
-           var context = await Scenario.Define<Context>()
-                .WithEndpoint<EndpointInSourceNamespace>(b =>
-                {
-                    b.CustomConfig(c =>
-                    {
-                        var transport = c.ConfigureAzureServiceBus();
-                        transport.NamespacePartitioning().AddNamespace("source", connectionString);
-                        var targetNamespace = transport.NamespaceRouting().AddNamespace("target", targetConnectionString);
-                        targetNamespace.RegisteredEndpoints.Add(Conventions.EndpointNamingConvention(typeof(EndpointInTargetNamespace)));
-                    })
-                    .When((bus, c) => bus.Send(new MyRequest()));
-                })
-                .WithEndpoint<EndpointInTargetNamespace>(b => b.CustomConfig(c =>
-                {
-                    var transport = c.ConfigureAzureServiceBus();
-                    transport.NamespaceRouting().AddNamespace("source", connectionString);
-                    transport.NamespacePartitioning().AddNamespace("target", targetConnectionString);
-                }))
-                .Done(c => c.ReplyReceived)
-                .Run();
+            var context = await Scenario.Define<Context>()
+                 .WithEndpoint<EndpointInSourceNamespace>(b =>
+                 {
+                     b.CustomConfig(c =>
+                     {
+                         var transport = c.ConfigureAzureServiceBus();
+                         transport.NamespacePartitioning().AddNamespace("source", connectionString);
+                         var targetNamespace = transport.NamespaceRouting().AddNamespace("target", targetConnectionString);
+                         targetNamespace.RegisteredEndpoints.Add(Conventions.EndpointNamingConvention(typeof(EndpointInTargetNamespace)));
+                     })
+                     .When((bus, c) => bus.Send(new MyRequest()));
+                 })
+                 .WithEndpoint<EndpointInTargetNamespace>(b => b.CustomConfig(c =>
+                 {
+                     var transport = c.ConfigureAzureServiceBus();
+                     transport.NamespaceRouting().AddNamespace("source", connectionString);
+                     transport.NamespacePartitioning().AddNamespace("target", targetConnectionString);
+                 }))
+                 .Done(c => c.ReplyReceived)
+                 .Run();
 
             Assert.IsTrue(context.RequestReceived, "context.RequestReceived");
             Assert.IsTrue(context.ReplyReceived, "context.ReplyReceived");

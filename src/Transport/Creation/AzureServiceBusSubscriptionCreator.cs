@@ -101,6 +101,9 @@
 
         public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
+            _ = sqlFilter;
+            _ = forwardTo;
+
             var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName);
 
             try
@@ -132,8 +135,7 @@
 
             if (removeCacheEntry)
             {
-                Task<bool> dummy;
-                rememberExistence.TryRemove(key, out dummy);
+                rememberExistence.TryRemove(key, out Task<bool> dummy);
             }
 
             var exists = await rememberExistence.GetOrAdd(key, notFoundKey =>
@@ -180,15 +182,9 @@
             return result;
         }
 
-        static string GenerateSubscriptionKey(Uri namespaceAddress, string topicPath, string subscriptionName)
-        {
-            return namespaceAddress + topicPath + subscriptionName;
-        }
+        static string GenerateSubscriptionKey(Uri namespaceAddress, string topicPath, string subscriptionName) => namespaceAddress + topicPath + subscriptionName;
 
-        void OverrideImmutableMembers(SubscriptionDescription existingDescription, SubscriptionDescription newDescription)
-        {
-            newDescription.RequiresSession = existingDescription.RequiresSession;
-        }
+        void OverrideImmutableMembers(SubscriptionDescription existingDescription, SubscriptionDescription newDescription) => newDescription.RequiresSession = existingDescription.RequiresSession;
 
         TopologySubscriptionSettings subscriptionSettings;
         ConcurrentDictionary<string, Task<bool>> rememberExistence = new ConcurrentDictionary<string, Task<bool>>();

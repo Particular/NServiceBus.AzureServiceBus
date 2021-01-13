@@ -19,16 +19,10 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
     public class When_incoming_s_contains_typed_properties : NServiceBusAcceptanceTest
     {
         [SetUp]
-        public void Setup()
-        {
-            factory = MessagingFactory.CreateFromConnectionString(connectionString);
-        }
+        public void Setup() => factory = MessagingFactory.CreateFromConnectionString(connectionString);
 
         [TearDown]
-        public void TearDown()
-        {
-            factory.Close();
-        }
+        public void TearDown() => factory.Close();
 
 
         [Test]
@@ -54,7 +48,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                         message.Properties["CustomStringHeader"] = "Custom";
                         message.Properties["CustomEmptyStringHeader"] = "";
                         // ReSharper disable once RedundantCast
-                        message.Properties["CustomNullStringHeader"] = (string)null;
+                        message.Properties["CustomNullStringHeader"] = null;
                         message.Properties["CustomNullHeader"] = null;
                         await sender.SendAsync(message);
                     }
@@ -102,10 +96,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     EnableByDefault();
                 }
 
-                protected override void Setup(FeatureConfigurationContext context)
-                {
-                    context.AddSatelliteReceiver("customSatellite", $"{Conventions.EndpointNamingConvention(typeof(Receiver))}-satellite", new PushRuntimeSettings(1), DefaultRecoverabilityPolicy.Invoke, Handle);
-                }
+                protected override void Setup(FeatureConfigurationContext context) => context.AddSatelliteReceiver("customSatellite", $"{Conventions.EndpointNamingConvention(typeof(Receiver))}-satellite", new PushRuntimeSettings(1), DefaultRecoverabilityPolicy.Invoke, Handle);
 
                 static Task Handle(IBuilder builder, MessageContext context)
                 {

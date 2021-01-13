@@ -33,9 +33,6 @@ namespace NServiceBus.Transport.AzureServiceBus
             return new EndpointOrientedMigrationTopologySectionManager(defaultAlias, namespaces, endpointName, publishersConfiguration, partitioning, addressing);
         }
 
-        protected override ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator()
-        {
-            return new EndpointOrientedMigrationTopologySubscriptionCreator(new AzureServiceBusForwardingSubscriptionCreator(TopologySettings.SubscriptionSettings), new AzureServiceBusSubscriptionCreatorV6(TopologySettings.SubscriptionSettings));
-        }
+        protected override ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator() => new EndpointOrientedMigrationTopologySubscriptionCreator(new AzureServiceBusForwardingSubscriptionCreator(TopologySettings.SubscriptionSettings), new AzureServiceBusSubscriptionCreatorV6(TopologySettings.SubscriptionSettings));
     }
 }

@@ -102,10 +102,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             {
             }
 
-            public override EntityAddress Map(EntityAddress value)
-            {
-                return value;
-            }
+            public override EntityAddress Map(EntityAddress value) => value;
         }
     }
 }

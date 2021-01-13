@@ -12,10 +12,7 @@
         NamespaceBundleConfigurations namespaceBundleConfigurations;
 
         [SetUp]
-        public void SetUp()
-        {
-            namespaceBundleConfigurations = new NamespaceBundleConfigurations();
-        }
+        public void SetUp() => namespaceBundleConfigurations = new NamespaceBundleConfigurations();
 
         [Test]
         [TestCase("alias", 3)]

@@ -13,10 +13,7 @@ namespace NServiceBus.AcceptanceTests
     public partial class NServiceBusAcceptanceTest
     {
         [OneTimeSetUp]
-        public void OneTimeSetup()
-        {
-            Scenario.GetLoggerFactory = ctx => new StaticLoggerFactory(ctx);
-        }
+        public void OneTimeSetup() => Scenario.GetLoggerFactory = ctx => new StaticLoggerFactory(ctx);
     }
 
     class StaticLoggerFactory : ILoggerFactory
@@ -28,19 +25,13 @@ namespace NServiceBus.AcceptanceTests
             CurrentContext = currentContext;
         }
 
-        public ILog GetLogger(Type type)
-        {
-            return GetLogger(type.FullName);
-        }
+        public ILog GetLogger(Type type) => GetLogger(type.FullName);
 
-        public ILog GetLogger(string name)
-        {
-            return new StaticContextAppender();
-        }
+        public ILog GetLogger(string name) => new StaticContextAppender();
     }
 
     class StaticContextAppender : ILog
-    {        
+    {
         public bool IsDebugEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Debug;
         public bool IsInfoEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Info;
         public bool IsWarnEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Warn;
@@ -48,10 +39,7 @@ namespace NServiceBus.AcceptanceTests
         public bool IsFatalEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Fatal;
 
 
-        public void Debug(string message)
-        {
-            Log(message, LogLevel.Debug);
-        }
+        public void Debug(string message) => Log(message, LogLevel.Debug);
 
         public void Debug(string message, Exception exception)
         {
@@ -65,10 +53,7 @@ namespace NServiceBus.AcceptanceTests
             Log(fullMessage, LogLevel.Debug);
         }
 
-        public void Info(string message)
-        {
-            Log(message, LogLevel.Info);
-        }
+        public void Info(string message) => Log(message, LogLevel.Info);
 
 
         public void Info(string message, Exception exception)
@@ -83,10 +68,7 @@ namespace NServiceBus.AcceptanceTests
             Log(fullMessage, LogLevel.Info);
         }
 
-        public void Warn(string message)
-        {
-            Log(message, LogLevel.Warn);
-        }
+        public void Warn(string message) => Log(message, LogLevel.Warn);
 
         public void Warn(string message, Exception exception)
         {
@@ -100,10 +82,7 @@ namespace NServiceBus.AcceptanceTests
             Log(fullMessage, LogLevel.Warn);
         }
 
-        public void Error(string message)
-        {
-            Log(message, LogLevel.Error);
-        }
+        public void Error(string message) => Log(message, LogLevel.Error);
 
         public void Error(string message, Exception exception)
         {
@@ -117,10 +96,7 @@ namespace NServiceBus.AcceptanceTests
             Log(fullMessage, LogLevel.Error);
         }
 
-        public void Fatal(string message)
-        {
-            Log(message, LogLevel.Fatal);
-        }
+        public void Fatal(string message) => Log(message, LogLevel.Fatal);
 
         public void Fatal(string message, Exception exception)
         {

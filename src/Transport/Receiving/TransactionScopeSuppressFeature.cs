@@ -4,9 +4,6 @@ namespace NServiceBus.AzureServiceBus
 
     class TransactionScopeSuppressFeature : Feature
     {
-        protected override void Setup(FeatureConfigurationContext context)
-        {
-            context.Pipeline.Register(new TransactionScopeSuppressBehavior.Registration());
-        }
+        protected override void Setup(FeatureConfigurationContext context) => context.Pipeline.Register(new TransactionScopeSuppressBehavior.Registration());
     }
 }

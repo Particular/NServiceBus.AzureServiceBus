@@ -29,10 +29,7 @@
         /// <summary>
         /// <remarks> Default is set not to forward.</remarks>
         /// </summary>
-        public AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo)
-        {
-            return ForwardDeadLetteredMessagesTo(n => true, forwardDeadLetteredMessagesTo);
-        }
+        public AzureServiceBusQueueSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo) => ForwardDeadLetteredMessagesTo(n => true, forwardDeadLetteredMessagesTo);
 
         /// <summary>
         /// <remarks> Default is set not to forward.</remarks>

@@ -16,10 +16,7 @@
             }
         }
 
-        public Task WaitAsync()
-        {
-            return WaitAsync(CancellationToken.None);
-        }
+        public Task WaitAsync() => WaitAsync(CancellationToken.None);
 
         public async Task WaitAsync(CancellationToken cancellationToken)
         {
@@ -33,10 +30,7 @@
             }
         }
 
-        public void Set()
-        {
-            tcs.TrySetResult(true);
-        }
+        public void Set() => tcs.TrySetResult(true);
 
         public void Reset()
         {

@@ -42,7 +42,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             var next = first;
 
             var reuseInPool = false;
-            for (var i = 0; i < poolSize-1; i++)
+            for (var i = 0; i < poolSize - 1; i++)
             {
                 var n = lifecycleManager.Get(AzureServiceBusConnectionString.Value);
                 reuseInPool &= next == n;
@@ -89,40 +89,23 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedFactory : IMessagingFactoryInternal
         {
-            bool isClosed;
+            public bool IsClosed { get; private set; }
 
-            public bool IsClosed => isClosed;
-
-            public void Close()
-            {
-                isClosed = true;
-            }
+            public void Close() => IsClosed = true;
 
             public RetryPolicy RetryPolicy
             {
-                get { throw new System.NotImplementedException(); }
-                set { throw new System.NotImplementedException(); }
+                get => throw new System.NotImplementedException();
+                set => throw new System.NotImplementedException();
             }
 
-            public Task<IMessageReceiverInternal> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
-            {
-                throw new System.NotImplementedException();
-            }
+            public Task<IMessageReceiverInternal> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode) => throw new System.NotImplementedException();
 
-            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath)
-            {
-                throw new System.NotImplementedException();
-            }
+            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath) => throw new System.NotImplementedException();
 
-            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath, string viaEntityPath)
-            {
-                throw new System.NotImplementedException();
-            }
+            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath, string viaEntityPath) => throw new System.NotImplementedException();
 
-            public Task CloseAsync()
-            {
-                throw new System.NotImplementedException();
-            }
+            public Task CloseAsync() => throw new System.NotImplementedException();
         }
     }
 }

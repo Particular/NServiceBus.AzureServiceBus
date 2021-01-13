@@ -13,10 +13,7 @@
         NamespaceConfigurations namespaces;
 
         [SetUp]
-        public void SetUp()
-        {
-            namespaces = new NamespaceConfigurations();
-        }
+        public void SetUp() => namespaces = new NamespaceConfigurations();
 
         [Test]
         [TestCase("")]
@@ -80,9 +77,6 @@
         }
 
         [Test]
-        public void Should_throws_an_exception_if_namespace_name_has_not_been_registered()
-        {
-            Assert.Throws<KeyNotFoundException>(() => namespaces.GetConnectionString("alias"));
-        }
+        public void Should_throws_an_exception_if_namespace_name_has_not_been_registered() => Assert.Throws<KeyNotFoundException>(() => namespaces.GetConnectionString("alias"));
     }
 }

@@ -38,12 +38,9 @@
         public HashSet<string> RegisteredEndpoints { get; }
 
         /// <summary></summary>
-        public bool Equals(NamespaceInfo other)
-        {
-            return other != null
+        public bool Equals(NamespaceInfo other) => other != null
                    && Alias.Equals(other.Alias, StringComparison.OrdinalIgnoreCase)
                    && connectionString.Equals(other.connectionString);
-        }
 
         /// <summary></summary>
         public override bool Equals(object obj)

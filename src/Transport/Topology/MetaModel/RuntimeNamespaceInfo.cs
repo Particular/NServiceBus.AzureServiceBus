@@ -22,10 +22,7 @@
         public NamespaceMode Mode { get; }
 
         /// <summary></summary>
-        public bool Equals(RuntimeNamespaceInfo other)
-        {
-            return other != null && info.Equals(other.info);
-        }
+        public bool Equals(RuntimeNamespaceInfo other) => other != null && info.Equals(other.info);
 
         /// <summary></summary>
         public override bool Equals(object obj)
@@ -35,10 +32,7 @@
         }
 
         /// <summary></summary>
-        public override int GetHashCode()
-        {
-            return info.GetHashCode();
-        }
+        public override int GetHashCode() => info.GetHashCode();
 
         /// <summary></summary>
         public static bool operator ==(RuntimeNamespaceInfo left, RuntimeNamespaceInfo right)

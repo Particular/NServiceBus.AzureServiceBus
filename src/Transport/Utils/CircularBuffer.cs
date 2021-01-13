@@ -26,7 +26,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public int Capacity
         {
-            get { return capacity; }
+            get => capacity;
             set
             {
                 if (value == capacity)
@@ -68,10 +68,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        void ICollection.CopyTo(Array array, int arrayIndex)
-        {
-            CopyTo((T[])array, arrayIndex);
-        }
+        void ICollection.CopyTo(Array array, int arrayIndex) => CopyTo((T[])array, arrayIndex);
 
         public bool Contains(T item)
         {
@@ -105,19 +102,13 @@ namespace NServiceBus.Transport.AzureServiceBus
             tail = 0;
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            CopyTo(0, array, arrayIndex, Size);
-        }
+        public void CopyTo(T[] array, int arrayIndex) => CopyTo(0, array, arrayIndex, Size);
 
         int ICollection<T>.Count => Size;
 
         bool ICollection<T>.IsReadOnly => false;
 
-        void ICollection<T>.Add(T item)
-        {
-            Put(item);
-        }
+        void ICollection<T>.Add(T item) => Put(item);
 
         bool ICollection<T>.Remove(T item)
         {
@@ -130,20 +121,11 @@ namespace NServiceBus.Transport.AzureServiceBus
             return true;
         }
 
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public int Put(T[] src)
-        {
-            return Put(src, 0, src.Length);
-        }
+        public int Put(T[] src) => Put(src, 0, src.Length);
 
         public int Put(T[] src, int offset, int count)
         {
@@ -199,10 +181,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return dst;
         }
 
-        public int Get(T[] dst)
-        {
-            return Get(dst, 0, dst.Length);
-        }
+        public int Get(T[] dst) => Get(dst, 0, dst.Length);
 
         public int Get(T[] dst, int offset, int count)
         {
@@ -243,13 +222,12 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public void CopyTo(T[] array)
-        {
-            CopyTo(array, 0);
-        }
+        public void CopyTo(T[] array) => CopyTo(array, 0);
 
         void CopyTo(int index, T[] array, int arrayIndex, int count)
         {
+            _ = index;
+
             if (count > Size)
             {
                 throw new ArgumentOutOfRangeException("count", "Message read count is larger than size");
@@ -280,10 +258,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public T[] GetBuffer()
-        {
-            return buffer;
-        }
+        public T[] GetBuffer() => buffer;
 
         public T[] ToArray()
         {
