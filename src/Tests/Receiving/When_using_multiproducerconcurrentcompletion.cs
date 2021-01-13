@@ -17,10 +17,10 @@
         {
             var receivedItems = new ConcurrentQueue<List<int>>[4]
             {
-                new ConcurrentQueue<List<int>>(), 
-                new ConcurrentQueue<List<int>>(), 
-                new ConcurrentQueue<List<int>>(), 
-                new ConcurrentQueue<List<int>>(), 
+                new ConcurrentQueue<List<int>>(),
+                new ConcurrentQueue<List<int>>(),
+                new ConcurrentQueue<List<int>>(),
+                new ConcurrentQueue<List<int>>(),
             };
 
             var countDownEvent = new CountdownEvent(16);
@@ -256,7 +256,7 @@
 
         int TriangularNumber(int numberOfItems)
         {
-            return numberOfItems*(numberOfItems + 1)/2;
+            return numberOfItems * (numberOfItems + 1) / 2;
         }
 
         IEnumerable<int> Flatten(ConcurrentQueue<List<int>>[] captured)

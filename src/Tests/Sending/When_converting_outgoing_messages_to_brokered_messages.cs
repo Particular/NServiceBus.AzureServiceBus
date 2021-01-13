@@ -290,7 +290,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
             var converter = new BatchedOperationsToBrokeredMessagesConverter(settings);
             var brokeredMessage = converter.Convert(batchedOperation, new RoutingOptionsInternal
             {
-               DestinationNamespace = new RuntimeNamespaceInfo("alias2", "Endpoint=sb://name-y.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key")
+                DestinationNamespace = new RuntimeNamespaceInfo("alias2", "Endpoint=sb://name-y.servicebus.windows.net;SharedAccessKeyName=keyname;SharedAccessKey=key")
             });
 
             Assert.That(brokeredMessage.ReplyTo, Is.EqualTo(expectedReplyToAddress));

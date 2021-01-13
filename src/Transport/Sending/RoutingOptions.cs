@@ -1,6 +1,6 @@
 namespace NServiceBus.Transport.AzureServiceBus
 {
-    internal class RoutingOptionsInternal
+    class RoutingOptionsInternal
     {
         public string DestinationEntityPath { get; set; }
         public RuntimeNamespaceInfo DestinationNamespace { get; set; }

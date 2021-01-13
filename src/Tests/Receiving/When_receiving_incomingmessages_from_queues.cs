@@ -40,7 +40,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // perform the test
             var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
-            notifier.Initialize(new EntityInfoInternal { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, null, 10);
+            notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, null, 10);
 
             notifier.Start();
             await notifier.Stop();

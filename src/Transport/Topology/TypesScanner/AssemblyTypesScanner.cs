@@ -8,12 +8,7 @@
     {
         public AssemblyTypesScanner(Assembly assembly)
         {
-            if (assembly == null)
-            {
-                throw new ArgumentNullException(nameof(assembly), "It's not possible to initialize an AssemblyTypesScanner without specifing an assembly");
-            }
-
-            this.assembly = assembly;
+            this.assembly = assembly ?? throw new ArgumentNullException(nameof(assembly), "It's not possible to initialize an AssemblyTypesScanner without specifing an assembly");
         }
 
         public bool Equals(AssemblyTypesScanner other)

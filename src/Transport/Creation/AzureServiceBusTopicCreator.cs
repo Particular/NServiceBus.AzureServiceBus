@@ -92,8 +92,7 @@
 
             if (removeCacheEntry)
             {
-                Task<bool> dummy;
-                rememberExistence.TryRemove(key, out dummy);
+                rememberExistence.TryRemove(key, out Task<bool> dummy);
             }
 
             var exists = await rememberExistence.GetOrAdd(key, notFoundTopicPath =>

@@ -85,11 +85,11 @@
 
         public static bool operator ==(ConnectionStringInternal connectionString1, ConnectionStringInternal connectionString2)
         {
-            if (ReferenceEquals(connectionString1, null) && ReferenceEquals(connectionString2, null))
+            if (connectionString1 is null && connectionString2 is null)
             {
                 return true;
             }
-            if (ReferenceEquals(connectionString1, null) || ReferenceEquals(connectionString2, null))
+            if (connectionString1 is null || connectionString2 is null)
             {
                 return false;
             }

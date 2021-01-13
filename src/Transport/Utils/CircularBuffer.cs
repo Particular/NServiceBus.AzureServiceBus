@@ -250,6 +250,8 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         void CopyTo(int index, T[] array, int arrayIndex, int count)
         {
+            _ = index;
+
             if (count > Size)
             {
                 throw new ArgumentOutOfRangeException("count", "Message read count is larger than size");

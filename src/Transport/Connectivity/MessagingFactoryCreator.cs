@@ -46,6 +46,8 @@ namespace NServiceBus.Transport.AzureServiceBus
                                 BatchFlushInterval = batchFlushInterval
                             };
                             break;
+                        default:
+                            break;
                     }
 
                     return factorySettings;

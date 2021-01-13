@@ -21,7 +21,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                 .WithEndpoint<EndpointThatShouldNotReceive>()
                 .Done(ctx => delay.IsCompleted || ctx.TimesDispatchedMessageReceived > 0)
                 .Run();
-            
+
             Assert.That(context.TimesDispatchedMessageReceived, Is.Zero);
         }
 

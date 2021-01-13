@@ -71,10 +71,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
         {
             public bool IsInvoked;
 
-            public bool IsClosed
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public bool IsClosed => throw new NotImplementedException();
 
             public RetryPolicy RetryPolicy
             {

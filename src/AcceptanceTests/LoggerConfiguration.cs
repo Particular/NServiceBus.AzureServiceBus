@@ -40,7 +40,7 @@ namespace NServiceBus.AcceptanceTests
     }
 
     class StaticContextAppender : ILog
-    {        
+    {
         public bool IsDebugEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Debug;
         public bool IsInfoEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Info;
         public bool IsWarnEnabled => StaticLoggerFactory.CurrentContext.LogLevel <= LogLevel.Warn;

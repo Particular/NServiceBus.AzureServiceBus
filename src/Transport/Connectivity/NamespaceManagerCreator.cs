@@ -27,7 +27,7 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public INamespaceManagerInternal Create(string @namespace)
         {
-            
+
             var connectionString = @namespace;
             if (!ConnectionStringInternal.IsConnectionString(connectionString))
             {

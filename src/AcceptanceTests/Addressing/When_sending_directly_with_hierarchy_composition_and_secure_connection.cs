@@ -88,6 +88,8 @@
                     case EntityType.Rule:
                         entityPathOrNameMaxLength = 50;
                         break;
+                    default:
+                        break;
                 }
 
                 if (entityPathOrName.Length > entityPathOrNameMaxLength)

@@ -19,8 +19,7 @@
 
         public async Task<SubscriptionDescription> Create(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
-            var meta = metadata as ForwardingTopologySubscriptionMetadata;
-            if (meta == null)
+            if (!(metadata is ForwardingTopologySubscriptionMetadata meta))
             {
                 throw new InvalidOperationException($"Cannot create subscription `{subscriptionName}` for topic `{topicPath}` without namespace information required.");
             }
@@ -135,7 +134,7 @@
         public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
             var meta = metadata as ForwardingTopologySubscriptionMetadata;
-//            var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
+            //            var subscriptionDescription = subscriptionDescriptionFactory(topicPath, subscriptionName, settings);
             var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName);
 
             try
@@ -181,8 +180,7 @@
 
             if (removeCacheEntry)
             {
-                Task<bool> dummy;
-                rememberExistence.TryRemove(key, out dummy);
+                rememberExistence.TryRemove(key, out Task<bool> dummy);
             }
 
             var exists = await rememberExistence.GetOrAdd(key, notFoundKey =>

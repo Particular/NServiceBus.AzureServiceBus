@@ -53,7 +53,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                         message.Properties["CustomDateTimeHeader"] = now;
                         message.Properties["CustomStringHeader"] = "Custom";
                         message.Properties["CustomEmptyStringHeader"] = "";
-                        message.Properties["CustomNullStringHeader"] = (string)null;
+                        message.Properties["CustomNullStringHeader"] = null;
                         message.Properties["CustomNullHeader"] = null;
                         await sender.SendAsync(message);
                     }

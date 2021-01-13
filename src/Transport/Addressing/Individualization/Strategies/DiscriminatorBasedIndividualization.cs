@@ -14,7 +14,7 @@ namespace NServiceBus
             var found = settings.TryGet(WellKnownConfigurationKeys.Topology.Addressing.Individualization.DiscriminatorBasedIndividualizationDiscriminatorGenerator, out discriminatorGenerator);
             if (found == false)
             {
-                var strategyName = typeof(DiscriminatorBasedIndividualization).Name;
+                var strategyName = nameof(DiscriminatorBasedIndividualization);
                 throw new Exception($"{strategyName} required discrimination generator to be registered. Use `.UseStrategy<{strategyName}>().DiscriminatorGenerator()` configuration API to register discrimination generator.");
             }
         }

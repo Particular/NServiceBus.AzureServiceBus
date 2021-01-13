@@ -40,11 +40,13 @@
         {
             var namespaceConfigurations = new NamespaceConfigurations();
             var addressingLogic = new AddressingLogic(new ThrowOnFailedValidation(settings), new FlatComposition());
-            var sectionManager = new ForwardingTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", 1, "bundle", namespacePartitioningStrategy, addressingLogic);
-            sectionManager.BundleConfigurations = new NamespaceBundleConfigurations
+            var sectionManager = new ForwardingTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", 1, "bundle", namespacePartitioningStrategy, addressingLogic)
+            {
+                BundleConfigurations = new NamespaceBundleConfigurations
             {
                 {PrimaryName, 1},
                 {SecondaryName, 1}
+            }
             };
 
             sectionManager.DeterminePublishDestination(typeof(SomeEvent), "sales");
@@ -76,11 +78,13 @@
         {
             var namespaceConfigurations = new NamespaceConfigurations();
             var addressingLogic = new AddressingLogic(new ThrowOnFailedValidation(settings), new FlatComposition());
-            var sectionManager = new ForwardingTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", 1, "bundle", namespacePartitioningStrategy, addressingLogic);
-            sectionManager.BundleConfigurations = new NamespaceBundleConfigurations
+            var sectionManager = new ForwardingTopologySectionManager(PrimaryName, namespaceConfigurations, "sales", 1, "bundle", namespacePartitioningStrategy, addressingLogic)
+            {
+                BundleConfigurations = new NamespaceBundleConfigurations
             {
                 {PrimaryName, 1},
                 {SecondaryName, 1}
+            }
             };
 
             sectionManager.DetermineSendDestination($"sales@{PrimaryName}");
