@@ -56,36 +56,24 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 this.factory = factory;
             }
 
-            public IMessagingFactoryInternal Get(string namespaceName)
-            {
-                return factory;
-            }
+            public IMessagingFactoryInternal Get(string namespaceName) => factory;
 
-            public Task CloseAll()
-            {
-                throw new NotImplementedException();
-            }
+            public Task CloseAll() => throw new NotImplementedException();
         }
 
         class InterceptedMessagingFactory : IMessagingFactoryInternal
         {
             public bool IsInvoked;
 
-            public bool IsClosed
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public bool IsClosed => throw new NotImplementedException();
 
             public RetryPolicy RetryPolicy
             {
-                get { throw new NotImplementedException(); }
-                set { throw new NotImplementedException(); }
+                get => throw new NotImplementedException();
+                set => throw new NotImplementedException();
             }
 
-            public Task<IMessageReceiverInternal> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<IMessageReceiverInternal> CreateMessageReceiver(string entitypath, ReceiveMode receiveMode) => throw new NotImplementedException();
 
             public Task<IMessageSenderInternal> CreateMessageSender(string entitypath)
             {
@@ -94,15 +82,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 return Task.FromResult<IMessageSenderInternal>(new FakeMessageSender());
             }
 
-            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath, string viaEntityPath)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<IMessageSenderInternal> CreateMessageSender(string entitypath, string viaEntityPath) => throw new NotImplementedException();
 
-            public Task CloseAsync()
-            {
-                throw new NotImplementedException();
-            }
+            public Task CloseAsync() => throw new NotImplementedException();
         }
 
         class FakeMessageSender : IMessageSenderInternal
@@ -114,15 +96,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
                 get; set;
             }
 
-            public Task Send(BrokeredMessage message)
-            {
-                throw new NotImplementedException();
-            }
+            public Task Send(BrokeredMessage message) => throw new NotImplementedException();
 
-            public Task SendBatch(IEnumerable<BrokeredMessage> messages)
-            {
-                throw new NotImplementedException();
-            }
+            public Task SendBatch(IEnumerable<BrokeredMessage> messages) => throw new NotImplementedException();
         }
     }
 }

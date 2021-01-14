@@ -12,10 +12,7 @@
         [TestCase(null)]
         [TestCase("")]
         [TestCase(" ")]
-        public void Should_throws_an_exception_if_value_is_empty(string value)
-        {
-            Assert.Throws<ArgumentException>(() => new EntityAddress(value));
-        }
+        public void Should_throws_an_exception_if_value_is_empty(string value) => Assert.Throws<ArgumentException>(() => new EntityAddress(value));
 
         [Test]
         [TestCase("EntityName")]

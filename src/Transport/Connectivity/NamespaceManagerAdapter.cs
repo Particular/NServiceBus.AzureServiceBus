@@ -31,101 +31,44 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        public Task CreateQueue(QueueDescription description)
-        {
-            return manager.CreateQueueAsync(description);
-        }
+        public Task CreateQueue(QueueDescription description) => manager.CreateQueueAsync(description);
 
-        public Task UpdateQueue(QueueDescription description)
-        {
-            return manager.UpdateQueueAsync(description);
-        }
+        public Task UpdateQueue(QueueDescription description) => manager.UpdateQueueAsync(description);
 
-        public Task<QueueDescription> GetQueue(string path)
-        {
-            return manager.GetQueueAsync(path);
-        }
+        public Task<QueueDescription> GetQueue(string path) => manager.GetQueueAsync(path);
 
-        public Task<bool> QueueExists(string path)
-        {
-            return manager.QueueExistsAsync(path);
-        }
+        public Task<bool> QueueExists(string path) => manager.QueueExistsAsync(path);
 
-        public Task<TopicDescription> CreateTopic(TopicDescription topicDescription)
-        {
-            return manager.CreateTopicAsync(topicDescription);
-        }
+        public Task<TopicDescription> CreateTopic(TopicDescription topicDescription) => manager.CreateTopicAsync(topicDescription);
 
-        public Task DeleteQueue(string path)
-        {
-            return manager.DeleteQueueAsync(path);
-        }
+        public Task DeleteQueue(string path) => manager.DeleteQueueAsync(path);
 
-        public Task DeleteTopic(string path)
-        {
-            return manager.DeleteTopicAsync(path);
-        }
+        public Task DeleteTopic(string path) => manager.DeleteTopicAsync(path);
 
-        public Task<bool> SubscriptionExists(string topicPath, string subscriptionName)
-        {
-            return manager.SubscriptionExistsAsync(topicPath, subscriptionName);
-        }
+        public Task<bool> SubscriptionExists(string topicPath, string subscriptionName) => manager.SubscriptionExistsAsync(topicPath, subscriptionName);
 
-        public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, string sqlFilter)
-        {
-            return manager.CreateSubscriptionAsync(subscriptionDescription, new SqlFilter(sqlFilter));
-        }
+        public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, string sqlFilter) => manager.CreateSubscriptionAsync(subscriptionDescription, new SqlFilter(sqlFilter));
 
-        public Task<SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName)
-        {
-            return manager.GetSubscriptionAsync(topicPath, subscriptionName);
-        }
+        public Task<SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName) => manager.GetSubscriptionAsync(topicPath, subscriptionName);
 
-        public Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription)
-        {
-            return manager.UpdateSubscriptionAsync(subscriptionDescription);
-        }
+        public Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription) => manager.UpdateSubscriptionAsync(subscriptionDescription);
 
-        public Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription)
-        {
-            return manager.GetRulesAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
-        }
+        public Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription) => manager.GetRulesAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
 
-        public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription)
-        {
-            return manager.CreateSubscriptionAsync(subscriptionDescription, ruleDescription);
-        }
+        public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription) => manager.CreateSubscriptionAsync(subscriptionDescription, ruleDescription);
 
-        public Task<IEnumerable<TopicDescription>> GetTopics(string filter)
-        {
-            return manager.GetTopicsAsync(filter);
-        }
+        public Task<IEnumerable<TopicDescription>> GetTopics(string filter) => manager.GetTopicsAsync(filter);
 
-        public Task<TopicDescription> UpdateTopic(TopicDescription topicDescription)
-        {
-            return manager.UpdateTopicAsync(topicDescription);
-        }
+        public Task<TopicDescription> UpdateTopic(TopicDescription topicDescription) => manager.UpdateTopicAsync(topicDescription);
 
-        public Task<bool> TopicExists(string path)
-        {
-            return manager.TopicExistsAsync(path);
-        }
+        public Task<bool> TopicExists(string path) => manager.TopicExistsAsync(path);
 
-        public Task<TopicDescription> GetTopic(string path)
-        {
-            return manager.GetTopicAsync(path);
-        }
+        public Task<TopicDescription> GetTopic(string path) => manager.GetTopicAsync(path);
 
-        public Task DeleteSubscription(SubscriptionDescription subscriptionDescription)
-        {
-            return manager.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
-        }
+        public Task DeleteSubscription(SubscriptionDescription subscriptionDescription) => manager.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name);
 
         // TODO: delete this once NamespaceManagerAdapterInternal is internalized
-        public Task DeleteSubscriptionAsync(string topicPath, string subscriptionName)
-        {
-            return DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
-        }
+        public Task DeleteSubscriptionAsync(string topicPath, string subscriptionName) => DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
 
         NamespaceManager manager;
     }

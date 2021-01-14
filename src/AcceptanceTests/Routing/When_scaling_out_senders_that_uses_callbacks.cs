@@ -102,13 +102,10 @@
 
             class MyRequestHandler : IHandleMessages<MyRequest>
             {
-                public Task Handle(MyRequest message, IMessageHandlerContext context)
+                public Task Handle(MyRequest message, IMessageHandlerContext context) => context.Reply(new MyResponse
                 {
-                    return context.Reply(new MyResponse
-                    {
-                        Client = message.Client
-                    });
-                }
+                    Client = message.Client
+                });
             }
         }
 
@@ -128,10 +125,7 @@
 
             public int RepliesReceived => repliesReceived;
 
-            public void ReplyReceived()
-            {
-                Interlocked.Increment(ref repliesReceived);
-            }
+            public void ReplyReceived() => Interlocked.Increment(ref repliesReceived);
         }
     }
 }

@@ -6,9 +6,6 @@
 
         internal static readonly string Sample = Build();
 
-        internal static string Build(string namespaceName = "namespace", string sharedAccessPolicyName = "RootManageSharedAccessKey", string sharedAccessPolicyValue = "YourSecret")
-        {
-            return string.Format(Template, namespaceName, sharedAccessPolicyName, sharedAccessPolicyValue);
-        }
+        internal static string Build(string namespaceName = "namespace", string sharedAccessPolicyName = "RootManageSharedAccessKey", string sharedAccessPolicyValue = "YourSecret") => string.Format(Template, namespaceName, sharedAccessPolicyName, sharedAccessPolicyValue);
     }
 }

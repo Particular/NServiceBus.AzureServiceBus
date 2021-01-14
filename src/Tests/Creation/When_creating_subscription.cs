@@ -259,7 +259,7 @@
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteQueue(queueToForwardTo.Path);
         }
-        
+
         [Test]
         public async Task Should_properly_set_ForwardTo_on_the_created_entity()
         {
@@ -282,7 +282,7 @@
             await namespaceManager.DeleteSubscription(new SubscriptionDescription(topicPath, subscriptionName));
             await namespaceManager.DeleteQueue(queueToForwardTo.Path);
         }
-        
+
         [Test]
         public async Task Should_properly_set_ForwardTo_on_the_created_entity_with_hierarchy()
         {

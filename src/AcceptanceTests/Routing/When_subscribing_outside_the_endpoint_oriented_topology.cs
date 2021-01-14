@@ -56,7 +56,7 @@
                 .Run();
 
             Assert.That(context.SubscriberGotTheEvent, Is.True, "Should receive the event");
-         }
+        }
 
         public class Context : ScenarioContext
         {
@@ -91,13 +91,13 @@
 
                 public Task Handle(MyEvent message, IMessageHandlerContext context)
                 {
-                    Context.SubscriberGotTheEvent =  true;
+                    Context.SubscriberGotTheEvent = true;
                     return Task.FromResult(0);
                 }
             }
         }
 
-        public interface MyEvent : IEvent
+        public class MyEvent : IEvent
         {
         }
     }

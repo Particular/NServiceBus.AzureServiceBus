@@ -4,14 +4,11 @@
 
     struct EntityAddress : IEquatable<EntityAddress>
     {
-        public bool Equals(EntityAddress other)
-        {
-            return string.Equals(Name, other.Name) && string.Equals(Suffix, other.Suffix);
-        }
+        public bool Equals(EntityAddress other) => string.Equals(Name, other.Name) && string.Equals(Suffix, other.Suffix);
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (obj is null)
             {
                 return false;
             }
@@ -74,10 +71,7 @@
         public bool HasConnectionString { get; }
         public bool HasSuffix { get; }
 
-        public override string ToString()
-        {
-            return HasSuffix ? $"{Name}@{Suffix}" : Name;
-        }
+        public override string ToString() => HasSuffix ? $"{Name}@{Suffix}" : Name;
 
         static char[] seperators =
         {

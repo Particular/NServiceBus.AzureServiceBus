@@ -105,15 +105,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
-        {
-            return namespacePartitioningStrategy.SendingNamespacesCanBeCached ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish(localAddress)) : CreateSectionForPublish(localAddress);
-        }
+        public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress) => namespacePartitioningStrategy.SendingNamespacesCanBeCached ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish(localAddress)) : CreateSectionForPublish(localAddress);
 
-        public TopologySectionInternal DetermineSendDestination(string destination)
-        {
-            return namespacePartitioningStrategy.SendingNamespacesCanBeCached ? sendDestinations.GetOrAdd(destination, d => CreateSectionForSend(d)) : CreateSectionForSend(destination);
-        }
+        public TopologySectionInternal DetermineSendDestination(string destination) => namespacePartitioningStrategy.SendingNamespacesCanBeCached ? sendDestinations.GetOrAdd(destination, d => CreateSectionForSend(d)) : CreateSectionForSend(destination);
 
         public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
         {

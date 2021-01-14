@@ -38,10 +38,7 @@
 
         public bool SendingNamespacesCanBeCached { get; } = false;
 
-        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
-        {
-            return namespaces.Get();
-        }
+        public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent) => namespaces.Get();
 
         readonly CircularBuffer<RuntimeNamespaceInfo[]> namespaces;
     }

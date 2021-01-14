@@ -103,10 +103,7 @@
             return description;
         }
 
-        bool IsSystemQueue(string queuePath)
-        {
-            return systemQueueAddresses.Any(address => address.Equals(queuePath, StringComparison.OrdinalIgnoreCase));
-        }
+        bool IsSystemQueue(string queuePath) => systemQueueAddresses.Any(address => address.Equals(queuePath, StringComparison.OrdinalIgnoreCase));
 
         async Task<bool> ExistsAsync(INamespaceManagerInternal namespaceClient, string queuePath, bool removeCacheEntry = false)
         {
@@ -115,8 +112,7 @@
 
             if (removeCacheEntry)
             {
-                Task<bool> dummy;
-                rememberExistence.TryRemove(key, out dummy);
+                rememberExistence.TryRemove(key, out Task<bool> dummy);
             }
 
             var exists = await rememberExistence.GetOrAdd(key, s =>

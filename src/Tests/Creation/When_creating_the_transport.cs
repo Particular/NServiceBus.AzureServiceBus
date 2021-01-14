@@ -25,10 +25,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
         }
 
         [TearDown]
-        public void Teardown()
-        {
-            scope.Dispose();
-        }
+        public void Teardown() => scope.Dispose();
 
         [Test]
         public void Should_log_a_deprecation_warning()

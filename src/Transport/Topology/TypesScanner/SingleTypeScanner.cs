@@ -10,11 +10,8 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.target = target;
         }
 
-        public bool Equals(SingleTypeScanner other)
-        {
-            return other != null
+        public bool Equals(SingleTypeScanner other) => other != null
                    && target == other.target;
-        }
 
         public IEnumerable<Type> Scan()
         {
@@ -27,10 +24,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             return Equals(target);
         }
 
-        public override int GetHashCode()
-        {
-            return target.GetHashCode();
-        }
+        public override int GetHashCode() => target.GetHashCode();
 
         Type target;
     }

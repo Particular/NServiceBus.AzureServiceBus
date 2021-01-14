@@ -17,9 +17,7 @@
         const string NamespaceHierarchyPrefix = "scadapter/";
 
         [Test]
-        public async Task Should_send_and_receive_message()
-        {
-            await Scenario.Define<Context>()
+        public async Task Should_send_and_receive_message() => await Scenario.Define<Context>()
                 .WithEndpoint<SourceEndpoint>(b =>
                 {
                     b.When(async (bus, c) =>
@@ -32,7 +30,6 @@
                 .WithEndpoint<TargetEndpoint>()
                 .Done(c => c.RequestsReceived == 1)
                 .Run();
-        }
 
 
         public class SourceEndpoint : EndpointConfigurationBuilder
@@ -88,6 +85,8 @@
                     case EntityType.Rule:
                         entityPathOrNameMaxLength = 50;
                         break;
+                    default:
+                        break;
                 }
 
                 if (entityPathOrName.Length > entityPathOrNameMaxLength)
@@ -138,10 +137,7 @@
 
             public long RequestsReceived => Interlocked.Read(ref receivedRequest);
 
-            public void ReceivedRequest()
-            {
-                Interlocked.Increment(ref receivedRequest);
-            }
+            public void ReceivedRequest() => Interlocked.Increment(ref receivedRequest);
         }
     }
 }

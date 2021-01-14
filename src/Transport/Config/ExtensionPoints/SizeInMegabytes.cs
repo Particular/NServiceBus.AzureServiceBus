@@ -17,10 +17,7 @@
         }
 
         /// <summary></summary>
-        public static SizeInMegabytes Create(long sizeInMegabytes)
-        {
-            return new SizeInMegabytes(sizeInMegabytes);
-        }
+        public static SizeInMegabytes Create(long sizeInMegabytes) => new SizeInMegabytes(sizeInMegabytes);
 
         readonly long sizeInMegabytes;
 

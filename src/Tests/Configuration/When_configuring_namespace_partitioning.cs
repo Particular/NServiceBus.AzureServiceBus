@@ -41,10 +41,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
         {
             public bool SendingNamespacesCanBeCached { get; }
 
-            public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent)
-            {
-                throw new NotImplementedException(); // not relevant for the test
-            }
+            public IEnumerable<RuntimeNamespaceInfo> GetNamespaces(PartitioningIntent partitioningIntent) => throw new NotImplementedException(); // not relevant for the test
         }
     }
 }

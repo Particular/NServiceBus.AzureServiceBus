@@ -65,10 +65,7 @@
                 func = onCriticalErrorAction;
             }
 
-            public override void Raise(string errorMessage, Exception exception)
-            {
-                func(new CriticalErrorContext(() => TaskEx.Completed, errorMessage, exception)).GetAwaiter().GetResult();
-            }
+            public override void Raise(string errorMessage, Exception exception) => func(new CriticalErrorContext(() => TaskEx.Completed, errorMessage, exception)).GetAwaiter().GetResult();
         }
 
         class FakeReceiveContext : ReceiveContextInternal
@@ -79,47 +76,26 @@
         {
             public Func<Task> Initialize { get; set; } = () => TaskEx.Completed;
 
-            public TopologySectionInternal DetermineReceiveResources(string inputQueue)
+            public TopologySectionInternal DetermineReceiveResources(string inputQueue) => new TopologySectionInternal
             {
-                return new TopologySectionInternal
-                {
-                    Namespaces = new List<RuntimeNamespaceInfo>
+                Namespaces = new List<RuntimeNamespaceInfo>
                     {
                         new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample)
                     },
-                    Entities = new List<EntityInfoInternal>()
-                };
-            }
+                Entities = new List<EntityInfoInternal>()
+            };
 
-            public TopologySectionInternal DetermineTopicsToCreate(string localAddress)
-            {
-                return new TopologySectionInternal();
-            }
+            public TopologySectionInternal DetermineTopicsToCreate(string localAddress) => new TopologySectionInternal();
 
-            public TopologySectionInternal DetermineQueuesToCreate(QueueBindings queueBindings, string localAddress)
-            {
-                return new TopologySectionInternal();
-            }
+            public TopologySectionInternal DetermineQueuesToCreate(QueueBindings queueBindings, string localAddress) => new TopologySectionInternal();
 
-            public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
-            {
-                return new TopologySectionInternal();
-            }
+            public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress) => new TopologySectionInternal();
 
-            public TopologySectionInternal DetermineSendDestination(string destination)
-            {
-                return new TopologySectionInternal();
-            }
+            public TopologySectionInternal DetermineSendDestination(string destination) => new TopologySectionInternal();
 
-            public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
-            {
-                return new TopologySectionInternal();
-            }
+            public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress) => new TopologySectionInternal();
 
-            public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
-            {
-                return new TopologySectionInternal();
-            }
+            public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype) => new TopologySectionInternal();
         }
 
         class FakeTopologyOperator : IOperateTopologyInternal
@@ -128,29 +104,17 @@
             {
             }
 
-            public Task Stop()
-            {
-                return TaskEx.Completed;
-            }
+            public Task Stop() => TaskEx.Completed;
 
             public void Start(IEnumerable<EntityInfoInternal> subscriptions)
             {
             }
 
-            public Task Stop(IEnumerable<EntityInfoInternal> subscriptions)
-            {
-                return TaskEx.Completed;
-            }
+            public Task Stop(IEnumerable<EntityInfoInternal> subscriptions) => TaskEx.Completed;
 
-            public void OnIncomingMessage(Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> func)
-            {
-                onIncomingMessage = func;
-            }
+            public void OnIncomingMessage(Func<IncomingMessageDetailsInternal, ReceiveContextInternal, Task> func) => onIncomingMessage = func;
 
-            public void OnError(Func<Exception, Task> func)
-            {
-                onError = func;
-            }
+            public void OnError(Func<Exception, Task> func) => onError = func;
 
             public void SetCriticalError(CriticalError criticalError)
             {

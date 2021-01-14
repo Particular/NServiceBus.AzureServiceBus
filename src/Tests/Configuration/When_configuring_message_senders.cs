@@ -119,10 +119,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
         class MyOversizedBrokeredMessageHandler : IHandleOversizedBrokeredMessages
         {
-            public Task Handle(BrokeredMessage brokeredMessage)
-            {
-                return TaskEx.Completed;
-            }
+            public Task Handle(BrokeredMessage brokeredMessage) => TaskEx.Completed;
         }
     }
 

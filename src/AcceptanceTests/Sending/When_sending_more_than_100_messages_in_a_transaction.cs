@@ -15,15 +15,12 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
         const int NumberOfMessagesToSendInAnAtomicBatch = 101;
 
         [Test]
-        public Task Should_throw_a_custom_exception_and_move_the_incoming_message_to_the_error_queue()
-        {
-            return Scenario.Define<Context>()
+        public Task Should_throw_a_custom_exception_and_move_the_incoming_message_to_the_error_queue() => Scenario.Define<Context>()
                 .WithEndpoint<Sender>(b => b.DoNotFailOnErrorMessages()
                     .When((session, ctx) => session.SendLocal(new KickOffCommand { Id = ctx.TestRunId })))
                 .WithEndpoint<ErrorSpy>()
                 .Done(c => c.MessageMovedToErrorQueue && c.ExceptionType == typeof(TransactionContainsTooManyMessages).FullName)
                 .Run();
-        }
 
         public class Context : ScenarioContext
         {
@@ -61,10 +58,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ro
                     }
                 }
 
-                public Task Handle(Cmd message, IMessageHandlerContext context)
-                {
-                    return Task.FromResult(0);
-                }
+                public Task Handle(Cmd message, IMessageHandlerContext context) => Task.FromResult(0);
             }
         }
 

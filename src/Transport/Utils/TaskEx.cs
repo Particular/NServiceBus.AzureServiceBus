@@ -5,10 +5,6 @@
 
     static class TaskEx
     {
-        public static void Ignore(this Task task)
-        {
-        }
-
         public static async Task IgnoreCancellation(this Task task)
         {
             try

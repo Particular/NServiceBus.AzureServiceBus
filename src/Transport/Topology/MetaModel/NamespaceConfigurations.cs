@@ -24,15 +24,9 @@
         public int Count => inner.Count;
 
         /// <summary>Return enumerator.</summary>
-        public IEnumerator<NamespaceInfo> GetEnumerator()
-        {
-            return inner.GetEnumerator();
-        }
+        public IEnumerator<NamespaceInfo> GetEnumerator() => inner.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>Add a namespace with its alias, connections string, and <see cref="NamespacePurpose"/>.</summary>
         public NamespaceInfo Add(string alias, string connectionString, NamespacePurpose purpose)

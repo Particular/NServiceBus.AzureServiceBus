@@ -84,34 +84,22 @@ namespace NServiceBus
         /// <summary>
         /// Access to message receivers configuration.
         /// </summary>
-        public static AzureServiceBusMessageReceiverSettings MessageReceivers(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusMessageReceiverSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusMessageReceiverSettings MessageReceivers(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusMessageReceiverSettings(transportExtensions.GetSettings());
 
         /// <summary>
         /// Access to message senders configuration.
         /// </summary>
-        public static AzureServiceBusMessageSenderSettings MessageSenders(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusMessageSenderSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusMessageSenderSettings MessageSenders(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusMessageSenderSettings(transportExtensions.GetSettings());
 
         /// <summary>
         /// Access to messaging factories configuration.
         /// </summary>
-        public static AzureServiceBusMessagingFactoriesSettings MessagingFactories(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusMessagingFactoriesSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusMessagingFactoriesSettings MessagingFactories(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusMessagingFactoriesSettings(transportExtensions.GetSettings());
 
         /// <summary>
         /// Access to namespace managers configuration.
         /// </summary>
-        public static AzureServiceBusNamespaceManagersSettings NamespaceManagers(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusNamespaceManagersSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusNamespaceManagersSettings NamespaceManagers(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusNamespaceManagersSettings(transportExtensions.GetSettings());
 
         /// <summary>
         /// Force usage of namespace aliases instead of raw connection strings.
@@ -134,66 +122,42 @@ namespace NServiceBus
         /// <summary>
         /// Access to queues configuration.
         /// </summary>
-        public static AzureServiceBusQueueSettings Queues(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusQueueSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusQueueSettings Queues(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusQueueSettings(transportExtensions.GetSettings());
 
         /// <summary>
         /// Access to topics configuration.
         /// </summary>
-        public static AzureServiceBusTopicSettings Topics(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusTopicSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusTopicSettings Topics(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusTopicSettings(transportExtensions.GetSettings());
 
         /// <summary>
         /// Access to subscriptions configuration.
         /// </summary>
-        public static AzureServiceBusSubscriptionSettings Subscriptions(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusSubscriptionSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusSubscriptionSettings Subscriptions(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusSubscriptionSettings(transportExtensions.GetSettings());
 
 
         /// <summary>
         /// Access to namespace partitioning configuration.
         /// </summary>
-        public static AzureServiceBusNamespacePartitioningSettings NamespacePartitioning(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusNamespacePartitioningSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusNamespacePartitioningSettings NamespacePartitioning(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusNamespacePartitioningSettings(transportExtensions.GetSettings());
 
         /// <summary>
         /// Access to namespace routing.
         /// </summary>
-        public static AzureServiceBusNamespaceRoutingSettings NamespaceRouting(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusNamespaceRoutingSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusNamespaceRoutingSettings NamespaceRouting(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusNamespaceRoutingSettings(transportExtensions.GetSettings());
 
         /// <summary>
         /// Access to entities composition configuration.
         /// </summary>
-        public static AzureServiceBusCompositionSettings Composition(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusCompositionSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusCompositionSettings Composition(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusCompositionSettings(transportExtensions.GetSettings());
 
         /// <summary>
         /// Access to entities path/name sanitization configuration.
         /// </summary>
-        public static AzureServiceBusSanitizationSettings Sanitization(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusSanitizationSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusSanitizationSettings Sanitization(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusSanitizationSettings(transportExtensions.GetSettings());
 
         /// <summary>
         /// Access to input queue individualization configuration.
         /// </summary>
-        public static AzureServiceBusIndividualizationSettings Individualization(this TransportExtensions<AzureServiceBusTransport> transportExtensions)
-        {
-            return new AzureServiceBusIndividualizationSettings(transportExtensions.GetSettings());
-        }
+        public static AzureServiceBusIndividualizationSettings Individualization(this TransportExtensions<AzureServiceBusTransport> transportExtensions) => new AzureServiceBusIndividualizationSettings(transportExtensions.GetSettings());
     }
 }

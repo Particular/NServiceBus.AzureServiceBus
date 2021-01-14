@@ -65,7 +65,7 @@
             var body = new byte[0];
             var deliveryConstraints = new List<DeliveryConstraint>();
 
-            var operation1 = new TransportOperation(new OutgoingMessage("id-1", headers, body), new MulticastAddressTag(typeof(EventA)) , DispatchConsistency.Default, deliveryConstraints);
+            var operation1 = new TransportOperation(new OutgoingMessage("id-1", headers, body), new MulticastAddressTag(typeof(EventA)), DispatchConsistency.Default, deliveryConstraints);
             var operation2 = new TransportOperation(new OutgoingMessage("id-2", headers, body), new MulticastAddressTag(typeof(EventA)), DispatchConsistency.Isolated, deliveryConstraints);
             var operation3 = new TransportOperation(new OutgoingMessage("id-3", headers, body), new UnicastAddressTag("CommandA"), DispatchConsistency.Default, deliveryConstraints);
             var operation4 = new TransportOperation(new OutgoingMessage("id-4", headers, body), new UnicastAddressTag("CommandA"), DispatchConsistency.Isolated, deliveryConstraints);
@@ -85,7 +85,7 @@
         [Test]
         public void Should_calculate_size_of_each_batched_operation()
         {
-            var headers = new Dictionary<string, string>{ { "header", "value"} };
+            var headers = new Dictionary<string, string> { { "header", "value" } };
             var body = new byte[100];
             var deliveryConstraints = new List<DeliveryConstraint>();
 
@@ -115,52 +115,30 @@
     {
         public Func<Task> Initialize { get; set; } = () => TaskEx.Completed;
 
-        public TopologySectionInternal DetermineReceiveResources(string inputQueue)
-        {
-            throw new NotImplementedException();
-        }
+        public TopologySectionInternal DetermineReceiveResources(string inputQueue) => throw new NotImplementedException();
 
-        public TopologySectionInternal DetermineTopicsToCreate(string translatedEndpointName)
-        {
-            throw new NotImplementedException();
-        }
+        public TopologySectionInternal DetermineTopicsToCreate(string translatedEndpointName) => throw new NotImplementedException();
 
-        public TopologySectionInternal DetermineQueuesToCreate(QueueBindings queueBindings, string localAddress)
-        {
-            throw new NotImplementedException();
-        }
+        public TopologySectionInternal DetermineQueuesToCreate(QueueBindings queueBindings, string localAddress) => throw new NotImplementedException();
 
-        public TopologySectionInternal DeterminePublishDestination(Type eventType, string translatedEndpointName)
+        public TopologySectionInternal DeterminePublishDestination(Type eventType, string translatedEndpointName) => new TopologySectionInternal
         {
-            return new TopologySectionInternal
-            {
-                Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
-                Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
-            };
-        }
+            Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
+            Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
+        };
 
-        public TopologySectionInternal DetermineSendDestination(string destination)
+        public TopologySectionInternal DetermineSendDestination(string destination) => new TopologySectionInternal
         {
-            return new TopologySectionInternal
-            {
-                Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
-                Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
-            };
+            Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
+            Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
+        };
 
-        }
-
-        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
+        public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress) => new TopologySectionInternal
         {
-            return new TopologySectionInternal
-            {
-                Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
-                Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
-            };
-        }
+            Namespaces = new List<RuntimeNamespaceInfo> { new RuntimeNamespaceInfo("name", ConnectionStringValue.Sample) },
+            Entities = new List<EntityInfoInternal> { new EntityInfoInternal() }
+        };
 
-        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype)
-        {
-            throw new NotImplementedException();
-        }
+        public TopologySectionInternal DetermineResourcesToUnsubscribeFrom(Type eventtype) => throw new NotImplementedException();
     }
 }

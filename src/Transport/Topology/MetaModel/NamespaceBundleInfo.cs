@@ -13,12 +13,9 @@
         public string Alias { get; }
         public int NumberOfTopicsInBundle { get; }
 
-        public bool Equals(NamespaceBundleInfo other)
-        {
-            return other != null
+        public bool Equals(NamespaceBundleInfo other) => other != null
                    && Alias.Equals(other.Alias, StringComparison.OrdinalIgnoreCase)
                    && NumberOfTopicsInBundle == other.NumberOfTopicsInBundle;
-        }
 
         public override bool Equals(object obj)
         {

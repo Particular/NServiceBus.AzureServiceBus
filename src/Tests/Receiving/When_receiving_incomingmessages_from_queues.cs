@@ -40,7 +40,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             // perform the test
             var notifier = new MessageReceiverNotifier(messageReceiverCreator, brokeredMessageConverter, BuildMessageReceiverNotifierSettings(settings));
 
-            notifier.Initialize(new EntityInfoInternal { Path =  "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value)}, (message, context) => TaskEx.Completed, null, null, null, 10);
+            notifier.Initialize(new EntityInfoInternal { Path = "myqueue", Namespace = new RuntimeNamespaceInfo("namespace", AzureServiceBusConnectionString.Value) }, (message, context) => TaskEx.Completed, null, null, null, 10);
 
             notifier.Start();
             await notifier.Stop();
@@ -208,15 +208,13 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             Assert.IsNotNull(ex);
         }
 
-        static MessageReceiverNotifierSettings BuildMessageReceiverNotifierSettings(SettingsHolder settings)
-        {
+        static MessageReceiverNotifierSettings BuildMessageReceiverNotifierSettings(SettingsHolder settings) =>
             // default values set by DefaultConfigurationValues.Apply - shouldn't hardcode those here, so OK to use settings
-            return new MessageReceiverNotifierSettings(
+            new MessageReceiverNotifierSettings(
                 ReceiveMode.PeekLock,
                 settings.HasExplicitValue<TransportTransactionMode>() ? settings.Get<TransportTransactionMode>() : settings.SupportedTransactionMode(),
                 settings.Get<TimeSpan>(WellKnownConfigurationKeys.Connectivity.MessageReceivers.AutoRenewTimeout),
                 settings.Get<int>(WellKnownConfigurationKeys.Connectivity.NumberOfClientsPerEntity));
-        }
 
         class PassThroughMapper : DefaultConnectionStringToNamespaceAliasMapper
         {
@@ -224,10 +222,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
             {
             }
 
-            public override EntityAddress Map(EntityAddress value)
-            {
-                return value;
-            }
+            public override EntityAddress Map(EntityAddress value) => value;
         }
     }
 }

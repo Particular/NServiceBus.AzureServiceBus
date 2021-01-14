@@ -124,10 +124,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
 
             public ConcurrentBag<string> NamespaceNames { get; }
 
-            public void Received()
-            {
-                Interlocked.Increment(ref received);
-            }
+            public void Received() => Interlocked.Increment(ref received);
 
             long received;
         }

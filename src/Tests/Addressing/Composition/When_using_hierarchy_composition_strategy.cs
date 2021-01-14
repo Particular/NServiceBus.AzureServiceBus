@@ -22,24 +22,15 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Addressing.Composition
 
         [TestCase("myQueue", EntityType.Queue)]
         [TestCase("myTopic", EntityType.Topic)]
-        public void Hierarchy_composition_will_prefix_entity_name_with_path_for_queues_and_topics(string entityPath, EntityType entityType)
-        {
-            Assert.AreEqual($"{Prefix}{entityPath}", strategy.GetEntityPath(entityPath, entityType));
-        }
+        public void Hierarchy_composition_will_prefix_entity_name_with_path_for_queues_and_topics(string entityPath, EntityType entityType) => Assert.AreEqual($"{Prefix}{entityPath}", strategy.GetEntityPath(entityPath, entityType));
 
         [TestCase("my/path/myQueue", EntityType.Queue)]
         [TestCase("my/path/myTopic", EntityType.Topic)]
-        public void Hierarchy_composition_will_not_prefix_entity_name_if_prefix_is_already_applied_to_queues_and_topics(string entityPath, EntityType entityType)
-        {
-            Assert.AreEqual(entityPath, strategy.GetEntityPath(entityPath, entityType));
-        }
+        public void Hierarchy_composition_will_not_prefix_entity_name_if_prefix_is_already_applied_to_queues_and_topics(string entityPath, EntityType entityType) => Assert.AreEqual(entityPath, strategy.GetEntityPath(entityPath, entityType));
 
 
         [TestCase("mySubscription", EntityType.Subscription)]
         [TestCase("myRule", EntityType.Rule)]
-        public void Hierarchy_composition_will_not_prefix_entity_name_with_path_for_subscriptions_and_rules(string entityName, EntityType entityType)
-        {
-            Assert.AreEqual(entityName, strategy.GetEntityPath(entityName, entityType));
-        }
+        public void Hierarchy_composition_will_not_prefix_entity_name_with_path_for_subscriptions_and_rules(string entityName, EntityType entityType) => Assert.AreEqual(entityName, strategy.GetEntityPath(entityName, entityType));
     }
 }

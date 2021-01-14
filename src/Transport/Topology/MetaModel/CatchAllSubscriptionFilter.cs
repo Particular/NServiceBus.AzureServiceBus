@@ -2,9 +2,6 @@
 {
     class CatchAllSubscriptionFilter : IBrokerSideSubscriptionFilterInternal
     {
-        public string Serialize()
-        {
-            return "1=1";
-        }
+        public string Serialize() => "1=1";
     }
 }

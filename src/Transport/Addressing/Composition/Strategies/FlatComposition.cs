@@ -9,9 +9,6 @@ namespace NServiceBus
     {
         /// <summary>Get entity full path.</summary>
         /// <returns>Returns <param name="entityName"/> as-is, irregardless of the <param name="entityType" />.</returns>
-        public string GetEntityPath(string entityName, EntityType entityType)
-        {
-            return entityName;
-        }
+        public string GetEntityPath(string entityName, EntityType entityType) => entityName;
     }
 }

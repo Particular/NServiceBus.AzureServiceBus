@@ -16,24 +16,15 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public RetryPolicy RetryPolicy
         {
-            get { return sender.RetryPolicy; }
-            set { sender.RetryPolicy = value; }
+            get => sender.RetryPolicy;
+            set => sender.RetryPolicy = value;
         }
 
-        public Task Send(BrokeredMessage message)
-        {
-            return sender.SendAsync(message);
-        }
+        public Task Send(BrokeredMessage message) => sender.SendAsync(message);
 
-        public Task SendBatch(IEnumerable<BrokeredMessage> messages)
-        {
-            return sender.SendBatchAsync(messages);
-        }
+        public Task SendBatch(IEnumerable<BrokeredMessage> messages) => sender.SendBatchAsync(messages);
 
-        public Task CloseAsync()
-        {
-            return sender.CloseAsync();
-        }
+        public Task CloseAsync() => sender.CloseAsync();
 
         MessageSender sender;
     }

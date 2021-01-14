@@ -131,10 +131,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Configuration
 
         class MySanitizationStrategy : ISanitizationStrategy
         {
-            public string Sanitize(string entityPathOrName, EntityType entityType)
-            {
-                throw new NotImplementedException();//not relevant for test
-            }
+            public string Sanitize(string entityPathOrName, EntityType entityType) => throw new NotImplementedException();//not relevant for test
         }
     }
 }

@@ -55,110 +55,47 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedManager : INamespaceManagerInternal
         {
-            public NamespaceManagerSettings Settings
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public NamespaceManagerSettings Settings => throw new NotImplementedException();
 
-            public Uri Address
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public Uri Address => throw new NotImplementedException();
 
-            public Task<bool> CanManageEntities()
-            {
-                throw new NotImplementedException();
-            }
+            public Task<bool> CanManageEntities() => throw new NotImplementedException();
 
-            public Task CreateQueue(QueueDescription description)
-            {
-                throw new NotImplementedException();
-            }
+            public Task CreateQueue(QueueDescription description) => throw new NotImplementedException();
 
-            public Task UpdateQueue(QueueDescription description)
-            {
-                throw new NotImplementedException();
-            }
+            public Task UpdateQueue(QueueDescription description) => throw new NotImplementedException();
 
-            public Task DeleteQueue(string path)
-            {
-                throw new NotImplementedException();
-            }
+            public Task DeleteQueue(string path) => throw new NotImplementedException();
 
-            public Task<QueueDescription> GetQueue(string path)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<QueueDescription> GetQueue(string path) => throw new NotImplementedException();
 
-            public Task<bool> QueueExists(string path)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<bool> QueueExists(string path) => throw new NotImplementedException();
 
-            public Task<TopicDescription> CreateTopic(TopicDescription topicDescription)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<TopicDescription> CreateTopic(TopicDescription topicDescription) => throw new NotImplementedException();
 
-            public Task<TopicDescription> GetTopic(string path)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<TopicDescription> GetTopic(string path) => throw new NotImplementedException();
 
-            public Task<TopicDescription> UpdateTopic(TopicDescription topicDescription)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<TopicDescription> UpdateTopic(TopicDescription topicDescription) => throw new NotImplementedException();
 
-            public Task<bool> TopicExists(string path)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<bool> TopicExists(string path) => throw new NotImplementedException();
 
-            public Task DeleteTopic(string path)
-            {
-                throw new NotImplementedException();
-            }
+            public Task DeleteTopic(string path) => throw new NotImplementedException();
 
-            public Task<bool> SubscriptionExists(string topicPath, string subscriptionName)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<bool> SubscriptionExists(string topicPath, string subscriptionName) => throw new NotImplementedException();
 
-            public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, string sqlFilter)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, string sqlFilter) => throw new NotImplementedException();
 
-            public Task<SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<SubscriptionDescription> GetSubscription(string topicPath, string subscriptionName) => throw new NotImplementedException();
 
-            public Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<SubscriptionDescription> UpdateSubscription(SubscriptionDescription subscriptionDescription) => throw new NotImplementedException();
 
-            public Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<IEnumerable<RuleDescription>> GetRules(SubscriptionDescription subscriptionDescription) => throw new NotImplementedException();
 
-            public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<SubscriptionDescription> CreateSubscription(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription) => throw new NotImplementedException();
 
-            public Task<IEnumerable<TopicDescription>> GetTopics(string filter)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<IEnumerable<TopicDescription>> GetTopics(string filter) => throw new NotImplementedException();
 
-            public Task DeleteSubscription(SubscriptionDescription subscriptionDescription)
-            {
-                throw new NotImplementedException();
-            }
+            public Task DeleteSubscription(SubscriptionDescription subscriptionDescription) => throw new NotImplementedException();
         }
     }
 }

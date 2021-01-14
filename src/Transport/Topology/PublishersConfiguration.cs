@@ -56,10 +56,7 @@
             return new ReadOnlyCollection<string>(publishers[type]);
         }
 
-        public bool HasPublishersFor(Type type)
-        {
-            return publishers.ContainsKey(type);
-        }
+        public bool HasPublishersFor(Type type) => publishers.ContainsKey(type);
 
         void AddPublisherForType(string publisherName, Type type)
         {

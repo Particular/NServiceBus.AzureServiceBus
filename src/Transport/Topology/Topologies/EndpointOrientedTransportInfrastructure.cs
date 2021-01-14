@@ -18,9 +18,6 @@ namespace NServiceBus
             return new EndpointOrientedTopologySectionManager(defaultAlias, namespaces, endpointName, publishersConfiguration, partitioning, addressing);
         }
 
-        protected override ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator()
-        {
-            return new AzureServiceBusSubscriptionCreatorV6(TopologySettings.SubscriptionSettings);
-        }
+        protected override ICreateAzureServiceBusSubscriptionsInternal CreateSubscriptionCreator() => new AzureServiceBusSubscriptionCreatorV6(TopologySettings.SubscriptionSettings);
     }
 }

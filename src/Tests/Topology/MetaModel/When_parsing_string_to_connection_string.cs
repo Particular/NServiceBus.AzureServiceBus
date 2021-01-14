@@ -110,7 +110,7 @@
         {
             var namespace1 = string.Format(Template, "namespace1", "RootManageSharedAccessKey", "YourSecret");
             var namespace2 = string.Format(Template, "namespace2", "RootManageSharedAccessKey", "YourSecret");
-            
+
             var connectionString1 = new ConnectionStringInternal(namespace1);
             var connectionString2 = new ConnectionStringInternal(namespace2);
 

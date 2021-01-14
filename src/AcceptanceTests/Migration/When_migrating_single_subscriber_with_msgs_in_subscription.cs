@@ -313,10 +313,7 @@ namespace NServiceBus.AcceptanceTests.Migration
 
             public Guid? OverrideTestRunId { get; set; }
 
-            public void ReceivedEvent()
-            {
-                Interlocked.Increment(ref eventsReceived);
-            }
+            public void ReceivedEvent() => Interlocked.Increment(ref eventsReceived);
         }
 
     }

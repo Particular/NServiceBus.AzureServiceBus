@@ -26,13 +26,10 @@
         public string SharedAccessPolicyName { get; }
         public string SharedAccessPolicyValue { get; }
 
-        public bool Equals(ConnectionStringInternal other)
-        {
-            return other != null &&
+        public bool Equals(ConnectionStringInternal other) => other != null &&
                    string.Equals(NamespaceName, other.NamespaceName, StringComparison.OrdinalIgnoreCase) &&
                    string.Equals(SharedAccessPolicyName, other.SharedAccessPolicyName, StringComparison.OrdinalIgnoreCase) &&
                    string.Equals(SharedAccessPolicyValue, other.SharedAccessPolicyValue);
-        }
 
         public override bool Equals(object obj)
         {
@@ -48,10 +45,7 @@
             return string.Concat(namespaceName, sharedAccessPolicyName, SharedAccessPolicyValue).GetHashCode();
         }
 
-        public override string ToString()
-        {
-            return value;
-        }
+        public override string ToString() => value;
 
         public static bool TryParse(string value, out ConnectionStringInternal connectionString)
         {
@@ -73,10 +67,7 @@
             return t.Item1;
         }
 
-        public static bool IsConnectionString(string value)
-        {
-            return TryParse(value, out var _);
-        }
+        public static bool IsConnectionString(string value) => TryParse(value, out var _);
 
         public static implicit operator string(ConnectionStringInternal connectionString)
         {
@@ -85,11 +76,11 @@
 
         public static bool operator ==(ConnectionStringInternal connectionString1, ConnectionStringInternal connectionString2)
         {
-            if (ReferenceEquals(connectionString1, null) && ReferenceEquals(connectionString2, null))
+            if (connectionString1 is null && connectionString2 is null)
             {
                 return true;
             }
-            if (ReferenceEquals(connectionString1, null) || ReferenceEquals(connectionString2, null))
+            if (connectionString1 is null || connectionString2 is null)
             {
                 return false;
             }

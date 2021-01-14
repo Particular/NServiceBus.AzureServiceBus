@@ -14,9 +14,6 @@ namespace NServiceBus
         /// <summary>
         /// Return <param name="endpointName"> as-is.</param>
         /// </summary>
-        public string Individualize(string endpointName)
-        {
-            return endpointName;
-        }
+        public string Individualize(string endpointName) => endpointName;
     }
 }

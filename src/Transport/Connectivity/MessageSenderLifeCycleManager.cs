@@ -42,7 +42,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             {
                 await entry.Semaphore.WaitAsync()
                     .ConfigureAwait(false);
-                
+
                 if (entry.ClientEntity.IsClosed)
                 {
                     entry.ClientEntity = await senderFactory.Create(entitypath, viaEntityPath, namespaceName)

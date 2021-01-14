@@ -66,10 +66,7 @@ namespace NServiceBus
         /// <summary>
         /// <remarks> Default is set not to forward.</remarks>
         /// </summary>
-        public AzureServiceBusSubscriptionSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo)
-        {
-            return ForwardDeadLetteredMessagesTo(s => true, forwardDeadLetteredMessagesTo);
-        }
+        public AzureServiceBusSubscriptionSettings ForwardDeadLetteredMessagesTo(string forwardDeadLetteredMessagesTo) => ForwardDeadLetteredMessagesTo(s => true, forwardDeadLetteredMessagesTo);
 
         /// <summary>
         /// <remarks> Default is set not to forward.</remarks>

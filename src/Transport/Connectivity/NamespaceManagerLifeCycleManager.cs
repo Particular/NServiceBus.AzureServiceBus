@@ -9,10 +9,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             this.factory = factory;
         }
 
-        public INamespaceManagerInternal Get(string namespaceAlias)
-        {
-            return namespaceManagers.GetOrAdd(namespaceAlias, s => factory.Create(s));
-        }
+        public INamespaceManagerInternal Get(string namespaceAlias) => namespaceManagers.GetOrAdd(namespaceAlias, s => factory.Create(s));
 
         ICreateNamespaceManagersInternal factory;
         ConcurrentDictionary<string, INamespaceManagerInternal> namespaceManagers = new ConcurrentDictionary<string, INamespaceManagerInternal>();

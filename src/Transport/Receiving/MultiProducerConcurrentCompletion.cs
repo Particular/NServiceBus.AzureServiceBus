@@ -47,10 +47,7 @@
         /// Specifies a pump function. As soon as items are available pumping begins within the specified constraints
         /// </summary>
         /// <remarks>This member is not thread safe.</remarks>
-        public void Start(Func<List<TItem>, int, object, CancellationToken, Task> pump)
-        {
-            Start(pump, null);
-        }
+        public void Start(Func<List<TItem>, int, object, CancellationToken, Task> pump) => Start(pump, null);
 
         /// <summary>
         /// Specifies a pump function. As soon as items are available pumping begins within the specified constraints

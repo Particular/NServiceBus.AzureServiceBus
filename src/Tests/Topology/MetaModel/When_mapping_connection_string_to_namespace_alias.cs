@@ -13,10 +13,12 @@
         [SetUp]
         public void SetUp()
         {
-            var namespaceConfigurations = new NamespaceConfigurations();
-            namespaceConfigurations.Add("alias1", "Endpoint=sb://namespace1.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning);
-            namespaceConfigurations.Add("alias2", "Endpoint=sb://namespace2.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning);
-            namespaceConfigurations.Add("alias3", "Endpoint=sb://namespace3.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning);
+            var namespaceConfigurations = new NamespaceConfigurations
+            {
+                { "alias1", "Endpoint=sb://namespace1.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning },
+                { "alias2", "Endpoint=sb://namespace2.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning },
+                { "alias3", "Endpoint=sb://namespace3.servicebus.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=secret", NamespacePurpose.Partitioning }
+            };
             var settings = new SettingsHolder();
             settings.Set(WellKnownConfigurationKeys.Topology.Addressing.Namespaces, namespaceConfigurations);
 

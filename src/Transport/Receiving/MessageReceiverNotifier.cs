@@ -221,11 +221,11 @@ namespace NServiceBus.Transport.AzureServiceBus
         {
             var processTask = ProcessMessage(internalReceiver, message, slotNumber);
             pipelineInvocations.TryAdd(processTask, processTask);
-            processTask.ContinueWith((t, state) =>
+            _ = processTask.ContinueWith((t, state) =>
             {
                 var invocations = (ConcurrentDictionary<Task, Task>)state;
                 invocations.TryRemove(t, out var _);
-            }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously).Ignore();
+            }, pipelineInvocations, TaskContinuationOptions.ExecuteSynchronously);
             return processTask;
         }
 
@@ -252,66 +252,66 @@ namespace NServiceBus.Transport.AzureServiceBus
 
                 var context = new BrokeredMessageReceiveContextInternal(message, entity, internalReceiver.Mode);
 
-                    var scope = wrapInScope
-                        ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
-                        {
-                            IsolationLevel = IsolationLevel.Serializable
-                        }, TransactionScopeAsyncFlowOption.Enabled)
-                        : null;
+                var scope = wrapInScope
+                    ? new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
                     {
-                        using (scope)
+                        IsolationLevel = IsolationLevel.Serializable
+                    }, TransactionScopeAsyncFlowOption.Enabled)
+                    : null;
+                {
+                    using (scope)
+                    {
+                        var wasCompleted = false;
+                        try
                         {
-                            var wasCompleted = false;
+                            await incomingCallback(incomingMessage, context).ConfigureAwait(false);
+
+                            if (context.CancellationToken.IsCancellationRequested)
+                            {
+                                await AbandonOnCancellation(message).ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
+                            }
+                        }
+                        catch (Exception exception) when (!stopping)
+                        {
+                            // and go into recovery mode so that no new messages are added to the transfer queue
+                            context.Recovering = true;
+
+                            // pass the context into the error pipeline
+                            var transportTransaction = new TransportTransaction();
+                            transportTransaction.Set(context);
+                            var errorContext = new ErrorContext(exception, brokeredMessageConverter.GetHeaders(message), incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
+
                             try
                             {
-                                await incomingCallback(incomingMessage, context).ConfigureAwait(false);
-
-                                if (context.CancellationToken.IsCancellationRequested)
+                                var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
+                                if (result == ErrorHandleResult.RetryRequired)
                                 {
-                                    await AbandonOnCancellation(message).ConfigureAwait(false);
+                                    await Abandon(message, exception).ConfigureAwait(false);
                                 }
                                 else
                                 {
                                     wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
                                 }
                             }
-                            catch (Exception exception) when (!stopping)
+                            catch (Exception ex)
                             {
-                                // and go into recovery mode so that no new messages are added to the transfer queue
-                                context.Recovering = true;
-
-                                // pass the context into the error pipeline
-                                var transportTransaction = new TransportTransaction();
-                                transportTransaction.Set(context);
-                                var errorContext = new ErrorContext(exception, brokeredMessageConverter.GetHeaders(message), incomingMessage.MessageId, incomingMessage.Body, transportTransaction, message.DeliveryCount);
-
-                                try
-                                {
-                                    var result = await processingFailureCallback(errorContext).ConfigureAwait(false);
-                                    if (result == ErrorHandleResult.RetryRequired)
-                                    {
-                                        await Abandon(message, exception).ConfigureAwait(false);
-                                    }
-                                    else
-                                    {
-                                        wasCompleted = await HandleCompletion(message, context, completionCanBeBatched, slotNumber).ConfigureAwait(false);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    raiseCriticalError($"Failed to execute recoverability policy for message with native ID: `{message.MessageId}`", ex);
-                                    await Abandon(message, exception).ConfigureAwait(false);
-                                }
+                                raiseCriticalError($"Failed to execute recoverability policy for message with native ID: `{message.MessageId}`", ex);
+                                await Abandon(message, exception).ConfigureAwait(false);
                             }
-                            finally
+                        }
+                        finally
+                        {
+                            if (wasCompleted)
                             {
-                                if (wasCompleted)
-                                {
-                                    scope?.Complete();
-                                }
+                                scope?.Complete();
                             }
                         }
                     }
+                }
 
             }
             catch (Exception onErrorException)
@@ -378,10 +378,7 @@ namespace NServiceBus.Transport.AzureServiceBus
             }
         }
 
-        static Task EmptyErrorCallback(Exception exception)
-        {
-            return TaskEx.Completed;
-        }
+        static Task EmptyErrorCallback(Exception exception) => TaskEx.Completed;
 
         BrokeredMessagesToIncomingMessagesConverter brokeredMessageConverter;
         IMessageReceiverInternal[] internalReceivers;

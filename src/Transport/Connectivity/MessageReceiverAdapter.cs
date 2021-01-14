@@ -17,32 +17,23 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public RetryPolicy RetryPolicy
         {
-            get { return receiver.RetryPolicy; }
-            set { receiver.RetryPolicy = value; }
+            get => receiver.RetryPolicy;
+            set => receiver.RetryPolicy = value;
         }
 
         public int PrefetchCount
         {
-            get { return receiver.PrefetchCount; }
-            set { receiver.PrefetchCount = value; }
+            get => receiver.PrefetchCount;
+            set => receiver.PrefetchCount = value;
         }
 
         public ReceiveMode Mode => receiver.Mode;
 
-        public void OnMessage(Func<BrokeredMessage, Task> callback, OnMessageOptions options)
-        {
-            receiver.OnMessageAsync(callback, options);
-        }
+        public void OnMessage(Func<BrokeredMessage, Task> callback, OnMessageOptions options) => receiver.OnMessageAsync(callback, options);
 
-        public Task CloseAsync()
-        {
-            return receiver.CloseAsync();
-        }
+        public Task CloseAsync() => receiver.CloseAsync();
 
-        public Task CompleteBatchAsync(IEnumerable<Guid> lockTokens)
-        {
-            return receiver.CompleteBatchAsync(lockTokens);
-        }
+        public Task CompleteBatchAsync(IEnumerable<Guid> lockTokens) => receiver.CompleteBatchAsync(lockTokens);
 
         MessageReceiver receiver;
     }

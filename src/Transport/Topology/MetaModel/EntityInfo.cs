@@ -19,14 +19,11 @@ namespace NServiceBus.Transport.AzureServiceBus
 
         public bool ShouldBeListenedTo { get; set; } = true;
 
-        protected bool Equals(EntityInfoInternal other)
-        {
-            return string.Equals(Path, other.Path) && Type == other.Type && Equals(Namespace, other.Namespace);
-        }
+        protected bool Equals(EntityInfoInternal other) => string.Equals(Path, other.Path) && Type == other.Type && Equals(Namespace, other.Namespace);
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (obj is null)
             {
                 return false;
             }

@@ -8,24 +8,13 @@
     {
         public AssemblyTypesScanner(Assembly assembly)
         {
-            if (assembly == null)
-            {
-                throw new ArgumentNullException(nameof(assembly), "It's not possible to initialize an AssemblyTypesScanner without specifing an assembly");
-            }
-
-            this.assembly = assembly;
+            this.assembly = assembly ?? throw new ArgumentNullException(nameof(assembly), "It's not possible to initialize an AssemblyTypesScanner without specifing an assembly");
         }
 
-        public bool Equals(AssemblyTypesScanner other)
-        {
-            return other != null
+        public bool Equals(AssemblyTypesScanner other) => other != null
                    && assembly.Equals(other.assembly);
-        }
 
-        public IEnumerable<Type> Scan()
-        {
-            return assembly.GetTypes();
-        }
+        public IEnumerable<Type> Scan() => assembly.GetTypes();
 
         public override bool Equals(object obj)
         {
@@ -33,10 +22,7 @@
             return Equals(target);
         }
 
-        public override int GetHashCode()
-        {
-            return assembly.GetHashCode();
-        }
+        public override int GetHashCode() => assembly.GetHashCode();
 
         Assembly assembly;
     }

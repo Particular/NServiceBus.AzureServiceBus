@@ -157,15 +157,9 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress)
-        {
-            return namespacePartitioningStrategy.SendingNamespacesCanBeCached ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish(localAddress)) : CreateSectionForPublish(localAddress);
-        }
+        public TopologySectionInternal DeterminePublishDestination(Type eventType, string localAddress) => namespacePartitioningStrategy.SendingNamespacesCanBeCached ? publishDestinations.GetOrAdd(eventType, t => CreateSectionForPublish(localAddress)) : CreateSectionForPublish(localAddress);
 
-        public TopologySectionInternal DetermineSendDestination(string destination)
-        {
-            return namespacePartitioningStrategy.SendingNamespacesCanBeCached ? sendDestinations.GetOrAdd(destination, d => CreateSectionForSend(d)) : CreateSectionForSend(destination);
-        }
+        public TopologySectionInternal DetermineSendDestination(string destination) => namespacePartitioningStrategy.SendingNamespacesCanBeCached ? sendDestinations.GetOrAdd(destination, d => CreateSectionForSend(d)) : CreateSectionForSend(destination);
 
         public TopologySectionInternal DetermineResourcesToSubscribeTo(Type eventType, string localAddress)
         {
@@ -430,51 +424,48 @@ namespace NServiceBus.Transport.AzureServiceBus
             };
         }
 
-        void CreateForwardingTopologyPart(Type eventType, List<SubscriptionInfoInternal> subs, RuntimeNamespaceInfo[] namespaces, string sanitizedSubscriptionPath, string ruleName, string sanitizedInputQueuePath)
-        {
-            subs.AddRange(namespaces.Select(ns =>
-            {
-                var sub = new SubscriptionInfoInternal
-                {
-                    Namespace = ns,
-                    Type = EntityType.Subscription,
-                    Path = sanitizedSubscriptionPath,
-                    Metadata = new ForwardingTopologySubscriptionMetadata
-                    {
-                        Description = $"Events {originalEndpointName} is subscribed to",
-                        SubscriptionNameBasedOnEventWithNamespace = ruleName,
-                        NamespaceInfo = ns,
-                        SubscribedEventFullName = eventType.FullName
-                    },
-                    BrokerSideFilter = new SqlSubscriptionFilter(eventType),
-                    ShouldBeListenedTo = false
-                };
-                sub.RelationShips.Add(new EntityRelationShipInfoInternal
-                {
-                    Source = sub,
-                    Target = new EntityInfoInternal
-                    {
-                        Namespace = ns,
-                        Path = "bundle-1",
-                        Type = EntityType.Topic
-                    },
-                    Type = EntityRelationShipTypeInternal.Subscription
-                });
-                sub.RelationShips.Add(new EntityRelationShipInfoInternal
-                {
-                    Source = sub,
-                    Target = new EntityInfoInternal
-                    {
-                        Namespace = ns,
-                        Path = sanitizedInputQueuePath,
-                        Type = EntityType.Queue
-                    },
-                    Type = EntityRelationShipTypeInternal.Forward
-                });
+        void CreateForwardingTopologyPart(Type eventType, List<SubscriptionInfoInternal> subs, RuntimeNamespaceInfo[] namespaces, string sanitizedSubscriptionPath, string ruleName, string sanitizedInputQueuePath) => subs.AddRange(namespaces.Select(ns =>
+                                                                                                                                                                                                                      {
+                                                                                                                                                                                                                          var sub = new SubscriptionInfoInternal
+                                                                                                                                                                                                                          {
+                                                                                                                                                                                                                              Namespace = ns,
+                                                                                                                                                                                                                              Type = EntityType.Subscription,
+                                                                                                                                                                                                                              Path = sanitizedSubscriptionPath,
+                                                                                                                                                                                                                              Metadata = new ForwardingTopologySubscriptionMetadata
+                                                                                                                                                                                                                              {
+                                                                                                                                                                                                                                  Description = $"Events {originalEndpointName} is subscribed to",
+                                                                                                                                                                                                                                  SubscriptionNameBasedOnEventWithNamespace = ruleName,
+                                                                                                                                                                                                                                  NamespaceInfo = ns,
+                                                                                                                                                                                                                                  SubscribedEventFullName = eventType.FullName
+                                                                                                                                                                                                                              },
+                                                                                                                                                                                                                              BrokerSideFilter = new SqlSubscriptionFilter(eventType),
+                                                                                                                                                                                                                              ShouldBeListenedTo = false
+                                                                                                                                                                                                                          };
+                                                                                                                                                                                                                          sub.RelationShips.Add(new EntityRelationShipInfoInternal
+                                                                                                                                                                                                                          {
+                                                                                                                                                                                                                              Source = sub,
+                                                                                                                                                                                                                              Target = new EntityInfoInternal
+                                                                                                                                                                                                                              {
+                                                                                                                                                                                                                                  Namespace = ns,
+                                                                                                                                                                                                                                  Path = "bundle-1",
+                                                                                                                                                                                                                                  Type = EntityType.Topic
+                                                                                                                                                                                                                              },
+                                                                                                                                                                                                                              Type = EntityRelationShipTypeInternal.Subscription
+                                                                                                                                                                                                                          });
+                                                                                                                                                                                                                          sub.RelationShips.Add(new EntityRelationShipInfoInternal
+                                                                                                                                                                                                                          {
+                                                                                                                                                                                                                              Source = sub,
+                                                                                                                                                                                                                              Target = new EntityInfoInternal
+                                                                                                                                                                                                                              {
+                                                                                                                                                                                                                                  Namespace = ns,
+                                                                                                                                                                                                                                  Path = sanitizedInputQueuePath,
+                                                                                                                                                                                                                                  Type = EntityType.Queue
+                                                                                                                                                                                                                              },
+                                                                                                                                                                                                                              Type = EntityRelationShipTypeInternal.Forward
+                                                                                                                                                                                                                          });
 
-                return sub;
-            }));
-        }
+                                                                                                                                                                                                                          return sub;
+                                                                                                                                                                                                                      }));
 
         ConcurrentDictionary<Type, TopologySectionInternal> subscriptions = new ConcurrentDictionary<Type, TopologySectionInternal>();
         ConcurrentDictionary<string, TopologySectionInternal> sendDestinations = new ConcurrentDictionary<string, TopologySectionInternal>();
