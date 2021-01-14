@@ -55,15 +55,9 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedManager : INamespaceManagerInternal
         {
-            public NamespaceManagerSettings Settings
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public NamespaceManagerSettings Settings => throw new NotImplementedException();
 
-            public Uri Address
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public Uri Address => throw new NotImplementedException();
 
             public Task<bool> CanManageEntities()
             {

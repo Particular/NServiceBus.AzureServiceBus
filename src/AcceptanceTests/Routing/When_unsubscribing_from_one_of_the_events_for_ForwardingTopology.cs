@@ -97,8 +97,8 @@
             }
         }
 
-        public class MyEvent : IEvent {}
-        public class MyOtherEvent : IEvent {}
+        public class MyEvent : IEvent { }
+        public class MyOtherEvent : IEvent { }
     }
 
     static class MD5HashBuilder

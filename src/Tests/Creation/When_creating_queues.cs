@@ -190,7 +190,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Creation
             var namespaceManager = new NamespaceManagerAdapterInternal(NamespaceManager.CreateFromConnectionString(AzureServiceBusConnectionString.Value));
 
             var settings = DefaultConfigurationValues.Apply(SettingsHolderFactory.BuildWithSerializer());
-           
+
             var creator = new AzureServiceBusQueueCreator(settings.Get<TopologySettings>().QueueSettings, settings);
 
             await creator.Create("myqueue", namespaceManager);

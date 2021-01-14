@@ -12,8 +12,8 @@
         public async Task Should_be_delivered_to_self()
         {
             var context = await Scenario.Define<Context>()
-                .WithEndpoint<PublisherAndSubscriber>(builder => 
-                    builder.When(session => session.Publish(new MyEvent()))) 
+                .WithEndpoint<PublisherAndSubscriber>(builder =>
+                    builder.When(session => session.Publish(new MyEvent())))
                 .Done(c => c.GotTheEvent)
                 .Run();
 
@@ -32,7 +32,7 @@
             {
                 EndpointSetup<DefaultPublisher>(c =>
                 {
-                    c.OverrideLocalAddress("myinputqueue");                    
+                    c.OverrideLocalAddress("myinputqueue");
                 });
             }
 

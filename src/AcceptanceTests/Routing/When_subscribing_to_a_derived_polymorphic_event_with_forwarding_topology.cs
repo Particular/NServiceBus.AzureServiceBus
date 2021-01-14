@@ -100,17 +100,16 @@
             }
         }
 
-        public interface BaseEvent : IEvent
+        public class BaseEvent : IEvent
         {
         }
 
-        public interface DerivedEvent : BaseEvent
+        public class DerivedEvent : BaseEvent
         {
         }
 
         public class EventWasRaisedSoStopProcessing : ICommand
         {
-
         }
     }
 }

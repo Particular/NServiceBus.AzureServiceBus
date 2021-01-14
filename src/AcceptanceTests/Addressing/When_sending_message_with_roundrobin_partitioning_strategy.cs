@@ -39,7 +39,7 @@ namespace NServiceBus.Azure.Transports.WindowsAzureServiceBus.AcceptanceTests.Ad
                 $"{Conventions.EndpointNamingConvention(typeof(TargetEndpoint))}@namespace1",
             }, context.NamespaceNames);
         }
-      
+
 
         public class SourceEndpoint : EndpointConfigurationBuilder
         {

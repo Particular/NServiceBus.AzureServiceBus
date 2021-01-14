@@ -63,7 +63,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
                 MessageId = Guid.NewGuid().ToString()
             };
             await sender.Send(messageToSend);
-            
+
             // sending messages to the queue is done
             var rolledBack = new RollbackDetection();
 
@@ -124,12 +124,12 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Receiving
 
             public void Commit(Enlistment enlistment)
             {
-               enlistment.Done();
+                enlistment.Done();
             }
 
             public void Rollback(Enlistment enlistment)
             {
-               enlistment.Done();
+                enlistment.Done();
             }
 
             public void InDoubt(Enlistment enlistment)

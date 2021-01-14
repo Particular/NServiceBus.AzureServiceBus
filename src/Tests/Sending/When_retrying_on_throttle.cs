@@ -19,9 +19,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         {
             var sender = new FakeMessageSender();
 
-            var tasks = new List<Task>();
-
-            tasks.Add(sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
+            var tasks = new List<Task>
+            {
+                sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5)
+            };
 
             await Task.WhenAll(tasks);
 
@@ -33,8 +34,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         [Test]
         public void Non_server_busy_exceptions_will_bubble_up_without_retry()
         {
-            var sender = new FakeMessageSender();
-            sender.ExceptionToThrow = i => { throw new NotSupportedException(); };
+            var sender = new FakeMessageSender
+            {
+                ExceptionToThrow = i => { throw new NotSupportedException(); }
+            };
 
             //validate
             Assert.ThrowsAsync<NotSupportedException>(async () => await sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(10), 5));
@@ -45,8 +48,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         [Test]
         public void Server_busy_exceptions_will_bubble_up_with_retry()
         {
-            var sender = new FakeMessageSender();
-            sender.ExceptionToThrow = i => { throw new ServerBusyException("Sorry, don't feel like serving you right now"); };
+            var sender = new FakeMessageSender
+            {
+                ExceptionToThrow = i => { throw new ServerBusyException("Sorry, don't feel like serving you right now"); }
+            };
 
             Assert.ThrowsAsync<ServerBusyException>(async () => await sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(1), 5));
 
@@ -57,8 +62,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         [Test]
         public async Task Server_busy_exceptions_will_not_bubble_up_after_successfull_retry()
         {
-            var sender = new FakeMessageSender();
-            sender.ExceptionToThrow = i => { if (i < 4) { throw new ServerBusyException("Sorry, don't feel like serving you right now"); } };
+            var sender = new FakeMessageSender
+            {
+                ExceptionToThrow = i => { if (i < 4) { throw new ServerBusyException("Sorry, don't feel like serving you right now"); } }
+            };
 
             await sender.RetryOnThrottleAsync(s => s.Send(new BrokeredMessage()), s => s.Send(new BrokeredMessage()), TimeSpan.FromSeconds(1), 5);
 
@@ -69,8 +76,10 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Sending
         [Test]
         public void Server_busy_exceptions_will_delay_retry()
         {
-            var sender = new FakeMessageSender();
-            sender.ExceptionToThrow = i => { throw new ServerBusyException("Sorry, don't feel like serving you right now"); };
+            var sender = new FakeMessageSender
+            {
+                ExceptionToThrow = i => { throw new ServerBusyException("Sorry, don't feel like serving you right now"); }
+            };
 
             var sw = new Stopwatch();
             sw.Start();

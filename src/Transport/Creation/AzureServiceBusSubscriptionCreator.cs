@@ -101,6 +101,9 @@
 
         public async Task DeleteSubscription(string topicPath, string subscriptionName, SubscriptionMetadataInternal metadata, string sqlFilter, INamespaceManagerInternal namespaceManager, string forwardTo)
         {
+            _ = forwardTo;
+            _ = sqlFilter;
+
             var subscriptionDescription = new SubscriptionDescription(topicPath, subscriptionName);
 
             try
@@ -132,8 +135,7 @@
 
             if (removeCacheEntry)
             {
-                Task<bool> dummy;
-                rememberExistence.TryRemove(key, out dummy);
+                rememberExistence.TryRemove(key, out Task<bool> dummy);
             }
 
             var exists = await rememberExistence.GetOrAdd(key, notFoundKey =>

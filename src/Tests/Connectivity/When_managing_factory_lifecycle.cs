@@ -42,7 +42,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
             var next = first;
 
             var reuseInPool = false;
-            for (var i = 0; i < poolSize-1; i++)
+            for (var i = 0; i < poolSize - 1; i++)
             {
                 var n = lifecycleManager.Get(AzureServiceBusConnectionString.Value);
                 reuseInPool &= next == n;
@@ -89,13 +89,11 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Connectivity
 
         class InterceptedFactory : IMessagingFactoryInternal
         {
-            bool isClosed;
-
-            public bool IsClosed => isClosed;
+            public bool IsClosed { get; private set; }
 
             public void Close()
             {
-                isClosed = true;
+                IsClosed = true;
             }
 
             public RetryPolicy RetryPolicy
