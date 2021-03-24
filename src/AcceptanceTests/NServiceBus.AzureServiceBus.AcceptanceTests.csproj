@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.3" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.5" />
     <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="2.2.0" />
     <PackageReference Include="NServiceBus.AcceptanceTests.Sources" Version="7.4.4" />
     <PackageReference Include="NUnit" Version="3.13.1" />
