@@ -15,7 +15,7 @@
     <PackageReference Include="FakeItEasy" Version="7.0.1" />
     <PackageReference Include="NServiceBus" Version="7.4.4" />
     <PackageReference Include="NServiceBus.Testing" Version="7.2.0" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.5" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.1.0" />
     <PackageReference Include="NUnit" Version="3.13.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
