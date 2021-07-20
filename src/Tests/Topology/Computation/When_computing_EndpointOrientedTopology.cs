@@ -6,6 +6,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
     using AzureServiceBus;
     using NUnit.Framework;
     using Settings;
+    using TestUtils;
     using Transport;
     using Transport.AzureServiceBus;
 
@@ -13,7 +14,7 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
     [Category("AzureServiceBus")]
     public class When_computing_EndpointOrientedTopology
     {
-        static string Connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        static string Connectionstring = AzureServiceBusConnectionString.Value;
         static string Name = "name";
 
         [Test]

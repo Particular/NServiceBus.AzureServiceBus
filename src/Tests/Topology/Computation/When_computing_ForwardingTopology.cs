@@ -6,13 +6,14 @@ namespace NServiceBus.Azure.WindowsAzureServiceBus.Tests.Topology.Computation
     using AzureServiceBus;
     using Transport.AzureServiceBus;
     using NUnit.Framework;
+    using TestUtils;
     using Transport;
 
     [TestFixture]
     [Category("AzureServiceBus")]
     public class When_computing_ForwardingTopology
     {
-        const string Connectionstring = "Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=somesecretkey";
+        string Connectionstring = AzureServiceBusConnectionString.Value;
         const string Name = "name";
 
         [Test]
