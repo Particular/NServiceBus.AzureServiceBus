@@ -5,6 +5,7 @@
     using AcceptanceTesting;
     using Pipeline;
     using MessageMutator;
+    using NUnit.Framework;
 
     class TestIndependenceMutator : IMutateOutgoingTransportMessages
     {
@@ -35,9 +36,9 @@
 
         public Task Invoke(ITransportReceiveContext context, Func<ITransportReceiveContext, Task> next)
         {
-            if (!context.Message.Headers.TryGetValue("$AcceptanceTesting.TestRunId", out var runId) || runId != testRunId)
+            if (context.Message.Headers.TryGetValue("$AcceptanceTesting.TestRunId", out var runId) && runId != testRunId)
             {
-                Console.WriteLine($"Skipping message {context.Message.MessageId} from previous test run");
+                TestContext.WriteLine($"Skipping message {context.Message.MessageId} from previous test run");
                 return Task.FromResult(0);
             }
 
