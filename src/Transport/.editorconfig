@@ -1,0 +1,2 @@
+dotnet_diagnostic.CA1710.severity = none
+dotnet_diagnostic.CA1711.severity = none
