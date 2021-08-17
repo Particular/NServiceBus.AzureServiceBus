@@ -5,7 +5,9 @@ namespace NServiceBus.Transport.AzureServiceBus
 
     /// <summary>Exception thrown by the transport when a batch contains more than 100 messages.</summary>
     [Serializable]
+#pragma warning disable CA1710 // Identifiers should have correct suffix
     public class TransactionContainsTooManyMessages : Exception
+#pragma warning restore CA1710 // Identifiers should have correct suffix
     {
         /// <summary></summary>
         public TransactionContainsTooManyMessages()
