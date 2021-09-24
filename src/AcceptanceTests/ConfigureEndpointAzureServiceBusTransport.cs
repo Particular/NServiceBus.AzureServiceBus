@@ -65,8 +65,8 @@ public class ConfigureEndpointAzureServiceBusTransport : IConfigureEndpointTestE
 
             endpointOrientedTopology.RegisterPublisher(typeof(When_replying_to_saga_event.DidSomething), TestConventions.EndpointNamingConvention(typeof(When_replying_to_saga_event.SagaEndpoint)));
 
-            endpointOrientedTopology.RegisterPublisher(typeof(When_started_by_base_event_from_other_saga.BaseEvent), TestConventions.EndpointNamingConvention(typeof(When_started_by_base_event_from_other_saga.Publisher)));
-            endpointOrientedTopology.RegisterPublisher(typeof(When_started_by_event_from_another_saga.SomethingHappenedEvent), TestConventions.EndpointNamingConvention(typeof(When_started_by_event_from_another_saga.SagaThatPublishesAnEvent)));
+            endpointOrientedTopology.RegisterPublisher(typeof(When_started_by_base_event_from_other_saga.IBaseEvent), TestConventions.EndpointNamingConvention(typeof(When_started_by_base_event_from_other_saga.Publisher)));
+            endpointOrientedTopology.RegisterPublisher(typeof(When_started_by_event_from_another_saga.ISomethingHappenedEvent), TestConventions.EndpointNamingConvention(typeof(When_started_by_event_from_another_saga.SagaThatPublishesAnEvent)));
 
             //When_two_sagas_subscribe_to_the_same_event
             endpointOrientedTopology.RegisterPublisher(typeof(When_two_sagas_subscribe_to_the_same_event.GroupPendingEvent), TestConventions.EndpointNamingConvention(typeof(When_two_sagas_subscribe_to_the_same_event.Publisher)));
